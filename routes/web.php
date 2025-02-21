@@ -20,10 +20,6 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-Route::middleware(['auth'])->group(function () {
-    Route::patch('leaves/{leave}/approve', [LeaveController::class, 'approve'])->name('leaves.approve');
-    Route::patch('leaves/{leave}/reject', [LeaveController::class, 'reject'])->name('leaves.reject');
-});
 
 //Employee Route
 Route::middleware(['auth', 'employeeMiddleware'])->group(function () {
@@ -32,12 +28,16 @@ Route::middleware(['auth', 'employeeMiddleware'])->group(function () {
     Route::get('/my-requests/{id}', [EmployeeController::class, 'show'])->name('employee.leave_show');
     Route::post('/request-leave', [EmployeeController::class, 'store'])->name('request.leave');
     Route::get('/profile', [EmployeeController::class, 'profile'])->name('employee.profile');
+
 });
 
 //Admin Route
 Route::middleware(['auth', 'adminMiddleware'])->group(function () {
     Route::get('/admin/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
-    Route::post('/admin/leave/update/{id}', [AdminController::class, 'updateStatus'])->name('admin.leave.update');
+    Route::get('/admin/requests', [AdminController::class, 'requests'])->name('admin.requests');
+    Route::post('/admin/leave/update/{leave}', [AdminController::class, 'approve'])->name('admin.leave.update');
 });
 
+Route::get('/leave-calendar', action: [EmployeeController::class, 'showCalendar'])->name('leave.calendar');
+Route::get('/api/leaves', [EmployeeController::class, 'getLeaves']); // API for fetching leaves
 require __DIR__.'/auth.php';

@@ -5,7 +5,7 @@
 
         <!-- Navigation Links -->
         <nav id="menu" class="flex items-center space-x-6">
-            <!-- Desktop View: List Your Boarding House -->
+            @if (Auth::check())
             <a href="{{ route('employee.dashboard') }}" 
             class="hidden md:block text-gray-600 font-semibold py-2 rounded-lg hover:text-blue-500">
              Make a Request
@@ -14,7 +14,7 @@
                class="hidden md:block text-gray-600 font-semibold py-2 rounded-lg hover:text-blue-500">
                 My Requests
             </a>
-
+            @endif
             @if (Auth::check())
             <!-- Dropdown Menu -->
             <div class="relative">
@@ -44,7 +44,7 @@
                         </li>
                         <li>
                         <li>
-                            <a href="{{ route('employee.profile')}}" class="block px-4 py-2 hover:bg-gray-100 hover:text-blue-500">Profile</a>
+                            <a href="{{ route('employee.profile')}}" class="block w-full text-left px-4 py-2 hover:bg-gray-100 hover:text-blue-500">Profile</a>
                         </li>
                         <li>
                             <form action="{{ route('logout') }}" method="POST">

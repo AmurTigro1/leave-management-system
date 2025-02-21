@@ -25,7 +25,7 @@
     <div class="w-1/2 flex items-center justify-center relative">
         <img src="https://img.freepik.com/free-vector/flat-hand-drawn-coworking-space_52683-54823.jpg?ga=GA1.1.1609491871.1738904251&semt=ais_hybrid" alt="Office Illustration"
             class="max-w-lg rounded-lg shadow-xl transform hover:scale-105 transition duration-500">
-        <div class="absolute top-10 right-10 animate-pulse bg-accent text-white text-sm px-4 py-2 rounded-lg shadow-lg">
+        <div class="absolute top-10 right-28 animate-pulse bg-accent text-white text-sm px-4 py-2 rounded-lg shadow-lg">
             ✅ Secure & Reliable
         </div>
         <div class="absolute animate-bounce bg-primary text-white text-sm px-4 py-2 rounded-lg shadow-lg">

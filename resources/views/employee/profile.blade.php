@@ -22,14 +22,19 @@
             </div>
 
             <!-- Leave Balance -->
-            <div class="mt-4 p-4 bg-blue-50 rounded-lg shadow">
+            {{-- <div class="mt-4 p-4 bg-blue-50 rounded-lg shadow">
                 <h3 class="text-lg font-semibold text-blue-700">Leave Balance</h3>
                 <div class="flex gap-4 mt-2">
                     <span class="bg-green-500 text-white px-3 py-1 rounded text-sm">{{ $user->leave_balance}} days</span>
-                    {{-- <span class="bg-yellow-500 text-white px-3 py-1 rounded text-sm">Sick: {{ $user->leave_balance['sick'] ?? 0 }} days</span>
-                    <span class="bg-red-500 text-white px-3 py-1 rounded text-sm">Casual: {{ $user->leave_balance['casual'] ?? 0 }} days</span> --}}
+                    <span class="bg-yellow-500 text-white px-3 py-1 rounded text-sm">Sick: {{ $user->leave_balance['sick'] ?? 0 }} days</span>
+                    <span class="bg-red-500 text-white px-3 py-1 rounded text-sm">Casual: {{ $user->leave_balance['casual'] ?? 0 }} days</span>
                 </div>
+            </div> --}}
+            <div class="bg-purple-500 text-white p-6 rounded-lg shadow-md">
+                <h3 class="text-lg font-semibold">Remaining Leave Balance</h3>
+                <p class="text-3xl font-bold">{{ auth()->user()->leave_balance }} days</p>
             </div>
+            
 
             <!-- Buttons -->
             <div class="mt-6 flex gap-4">
