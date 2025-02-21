@@ -4,7 +4,7 @@
 <!-- Leave Request List -->
 <div class=" px-32">
 <!-- Leave Request List -->
-<h3 class="text-2xl font-bold mt-6 text-gray-800">Your Leave Requests</h3>
+<h3 class="text-2xl font-bold mt-6 mb-3 text-gray-800">Your Leave Requests</h3>
     <!-- Compact Holiday Calendar -->
     <div class="bg-white p-4 rounded-lg border border-gray-200 shadow mb-6">
         <h3 class="text-lg font-semibold text-gray-700 flex items-center mb-3">
