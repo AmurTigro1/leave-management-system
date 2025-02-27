@@ -1,4 +1,4 @@
-@extends('main_resources.index')
+@extends('layouts.admin.sidebar-header')
 
 @section('content')
 <div class="container mx-auto p-6">

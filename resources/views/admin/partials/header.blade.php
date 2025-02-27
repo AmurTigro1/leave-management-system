@@ -1,5 +1,5 @@
-<header class="py-4">
-    <div class="container mx-auto flex justify-between items-center text-center mb-2">
+<header class="py-4 bg-white shadow-md w-full">
+    <div class="container mx-auto flex justify-between items-center text-center">
         <!-- Logo -->
         <a href="/" class="text-blue-600 font-bold text-2xl">DILG</a>
 
@@ -16,7 +16,7 @@
                         </a>
                     @else
                         <!-- Regular User Links -->
-                        <a href="{{ route('employee.make_request') }}" class="hidden md:block text-gray-600 font-semibold py-2 rounded-lg hover:text-blue-500">
+                        <a href="{{ route('employee.dashboard') }}" class="hidden md:block text-gray-600 font-semibold py-2 rounded-lg hover:text-blue-500">
                             Make a Request
                         </a>
                         <a href="{{ route('employee.leave_request') }}" class="hidden md:block text-gray-600 font-semibold py-2 rounded-lg hover:text-blue-500">
@@ -29,8 +29,8 @@
             <div class="relative">
                 <button id="dropdown-btn" class="flex items-center text-gray-600 font-semibold px-2 py-1 rounded-lg hover:bg-gray-100 focus:outline-none">
                     <div class="w-8 h-8 rounded-full overflow-hidden bg-gray-200 flex items-center justify-center mr-2">
-                        @if (auth()->user()->profile_image)
-                        <img src="{{ asset('storage/profile_images/' . auth()->user()->profile_image) }}" alt="Profile Photo" class="w-full h-full object-cover">
+                        @if (auth()->user()->profile_photo_path)
+                        <img src="{{ asset('storage/' . auth()->user()->profile_photo_path) }}" alt="Profile Photo" class="w-full h-full object-cover">
                         @else
                         <svg class="w-6 h-6 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"></path>

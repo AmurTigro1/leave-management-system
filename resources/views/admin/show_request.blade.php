@@ -1,65 +1,50 @@
-@extends('main_resources.index')
+@extends('layouts.admin.sidebar-header')
 
 @section('content')
-<div class="max-w-6xl mx-auto p-6 bg-white shadow rounded-lg">
-    <h2 class="text-2xl font-bold mb-4">Admin Dashboard - Leave Requests</h2>
-
-    <!-- Success Message -->
-    @if (session('success'))
-        <div class="mb-4 p-2 bg-green-100 border-l-4 border-green-500 text-green-700">
-            {{ session('success') }}
-        </div>
-    @endif
-
-    <div class="bg-gray-100 p-4 rounded-lg">
-        <table class="w-full border-collapse">
-            <thead>
-                <tr class="bg-gray-200">
-                    <th class="p-2 text-left">Employee</th>
-                    <th class="p-2 text-left">Leave Type</th>
-                    <th class="p-2 text-left">Start Date</th>
-                    <th class="p-2 text-left">End Date</th>
-                    <th class="p-2 text-left">Status</th>
-                    <th class="p-2 text-left">Action</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach ($leaves as $leave)
-                    <tr class="border-b">
-                        <td class="p-2">{{ $leave->user->name }}</td>
-                        <td class="p-2">{{ $leave->leave_type }}</td>
-                        <td class="p-2">{{ $leave->start_date }}</td>
-                        <td class="p-2">{{ $leave->end_date }}</td>
-                        <td class="p-2">
-                            <span class="py-1 rounded 
-                            @if ($leave->status === 'approved') 
-                                text-green-600 
-                            @elseif ($leave->status === 'pending') 
-                                text-yellow-600 
-                            @elseif ($leave->status === 'rejected') 
-                                text-red-600 
-                            @endif">
-                            {{ $leave->status }}
-                            </span>
-                        </td>
-                        <td class="p-2">
-                            @if ($leave->status == 'pending')
-                                <form method="POST" action="{{ route('admin.leave.update', $leave->id) }}">
-                                    @csrf
-                                    <select name="status" class="p-1 border rounded">
-                                        <option value="Approved">Approve</option>
-                                        <option value="Rejected">Reject</option>
-                                    </select>
-                                    <button type="submit" class="bg-blue-500 text-white px-3 py-1 rounded">Update</button>
-                                </form>
-                            @else
-                                <span class="text-gray-500">No Action Needed</span>
-                            @endif
-                        </td>
-                    </tr>
-                @endforeach
-            </tbody>
-        </table>
+<div class="p-12 space-y-6">
+    <h2 class="text-2xl font-semibold text-gray-800">Admin Dashboard - Leave Requests</h2>
+    
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        @foreach ($leaves as $leave)
+            <div class="bg-white shadow-lg rounded-lg p-6 transition-transform transform hover:scale-105 hover:shadow-xl">
+                <h3 class="text-lg font-semibold text-gray-900">{{ $leave->user->name }}</h3>
+                <p class="text-gray-600 text-sm">{{ $leave->leave_type }}</p>
+                <p class="text-gray-700 mt-2">{{ $leave->reason }}</p>
+                <p class="text-gray-500 text-sm mt-2">
+                    From: <span class="font-semibold">{{ \Carbon\Carbon::parse($leave->start_date)->format('l, F j, Y') }}</span>
+                    <br>
+                    To: <span class="font-semibold">{{ \Carbon\Carbon::parse($leave->end_date)->format('l, F j, Y') }}</span>
+                </p>
+                <p class="text-gray-700 mt-2">Duration: <span class="font-semibold">{{ \Carbon\Carbon::parse($leave->start_date)->diffInDays(\Carbon\Carbon::parse($leave->end_date)) + 1 }} days</span></p>
+                
+                <span class="inline-block px-3 py-1 mt-3 text-sm font-medium rounded
+                    @if ($leave->status === 'approved') 
+                        bg-green-100 text-green-600
+                    @elseif ($leave->status === 'pending') 
+                        bg-yellow-100 text-yellow-600
+                    @elseif ($leave->status === 'rejected') 
+                        bg-red-100 text-red-600
+                    @endif">
+                    {{ ucfirst($leave->status) }}
+                </span>
+                
+                @if ($leave->status == 'pending')
+                    <form method="POST" action="{{ route('admin.leave.update', $leave->id) }}" class="mt-4">
+                        @csrf
+                        <div class="flex items-center space-x-2">
+                            <select name="status" class="p-2 border rounded w-full">
+                                <option value="Approved">Approve</option>
+                                <option value="Rejected">Reject</option>
+                            </select>
+                            <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition">Update</button>
+                        </div>
+                    </form>
+                @else
+                    <p class="text-gray-400 text-sm mt-2">No Action Needed</p>
+                @endif
+            </div>
+        @endforeach
     </div>
 </div>
+
 @endsection

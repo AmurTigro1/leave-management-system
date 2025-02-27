@@ -22,7 +22,8 @@ class User extends Authenticatable
         'email',
         'password',
         'role', 
-        'leave_balance'
+        'leave_balance',
+        'profile_image',
     ];
 
     public function leaves() {

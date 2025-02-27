@@ -13,21 +13,23 @@
     @vite('resources/js/app.js')
     @vite('resources/css/app.css')
 </head>
-<body class="font-poppins">
-    @include('main_resources.header')
+<body class="font-poppins h-screen overflow-hidden">
+    <div x-data="{ sidebarOpen: false }" class="flex h-screen">
+        <!-- Sidebar -->
+        @include('admin.partials.sidebar')
 
-    
+        <!-- Main Content -->
+        <div class="flex-1 flex flex-col h-screen">
+            <!-- Header -->
+            @include('admin.partials.header')
 
-
-    <div class="content">
-        @yield('content')
+            <!-- Page Content (Scrollable Area) -->
+            <main class="flex-1 p-6 overflow-y-auto">
+                @yield('content')
+            </main>
+        </div>
     </div>
-
-
-    <!-- Footer -->
-    <footer class="mt-12 p-6 text-center border-t dark:border-gray-700">
-        <p>&copy; {{ date('Y') }} DILG - Bohol. All rights reserved.</p>
-    </footer>   
-    
 </body>
+
+
 </html>
