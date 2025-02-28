@@ -1,7 +1,7 @@
 <header class="py-4">
     <div class="container mx-auto flex justify-between items-center text-center mb-2">
         <!-- Logo -->
-        <a href="/" class="text-blue-600 font-bold text-2xl">DILG</a>
+        <a href="/" class="text-blue-600 font-bold text-2xl">DILG CTO & LMS</a>
 
              <!-- Navigation Links -->
              <nav id="menu" class="flex items-center space-x-6">
@@ -68,12 +68,15 @@
             </div>
             @else
             <div class="flex items-center space-x-4">
-                <a href="{{ route('login') }}" class="text-gray-600 hover:text-blue-600 font-semibold text-lg">
-                    {{ __('Login') }}
-                </a>
+                <select id="loginDropdown" class="px-3 py-2 rounded-md text-gray-600 font-semibold text-lg bg-transparent border-none">
+                    <option value="" disabled selected>Login</option>
+                    <option value="cto_login"><a href="/cto_login">CTO Login</a></option>
+                    <option value="lms_login"><a href="/lms_login">LMS Login</a></option>
+                </select>
+{{--             
                 <a href="{{ route('register') }}" class="text-gray-600 hover:text-blue-600 font-semibold text-lg">
                     {{ __('Register') }}
-                </a>
+                </a> --}}
             </div>
             @endif
         </nav>
@@ -81,6 +84,12 @@
 </header>
 
 <script>
+     document.getElementById('loginDropdown').addEventListener('change', function() {
+        let selectedValue = this.value;
+        if (selectedValue) {
+            window.location.href = selectedValue;
+        }
+    });
     document.addEventListener("DOMContentLoaded", () => {
         const dropdownBtn = document.getElementById("dropdown-btn");
         const dropdownMenu = document.getElementById("dropdown-menu");
