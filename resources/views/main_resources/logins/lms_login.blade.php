@@ -61,7 +61,7 @@
     <div class="bg-white shadow-lg rounded-lg px-8 py-6 w-full max-w-md">
         <div class="text-center">
             <img class="mx-auto mb-3 w-16" src="/img/dilg-main.png" alt="DILG Logo">
-            <h1 class="font-bold text-2xl">Department of the Interior and Local Government</h1>
+            <a href="/" class="font-bold text-2xl">Department of the Interior and Local Government</a>
             <div class="flex justify-center items-center text-blue-600 font-bold mt-4 text-lg font-bold">
                 <p class="mr-3"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 9V5.25A2.25 2.25 0 0 1 10.5 3h6a2.25 2.25 0 0 1 2.25 2.25v13.5A2.25 2.25 0 0 1 16.5 21h-6a2.25 2.25 0 0 1-2.25-2.25V15M12 9l3 3m0 0-3 3m3-3H2.25" />
