@@ -9,6 +9,14 @@ Route::get('/', function () {
     return view('employee.landing');
 });
 
+//Login Route
+Route::get('/cto_login', function (){
+    return view('main_resources.logins.cto_login');
+});
+Route::get('/lms_login', function (){
+    return view('main_resources.logins.lms_login');
+});
+
 // Route::get('/dashboard', function () {
 //     return view('dashboard');
 // })->middleware(['auth', 'verified'])->name('dashboard');
