@@ -21,6 +21,7 @@
         "@fullcalendar/daygrid": "^6.1.15",
         "@fullcalendar/interaction": "^6.1.15",
         "@tailwindcss/vite": "^4.0.7",
-        "chart.js": "^4.4.8"
+        "chart.js": "^4.4.8",
+        "lucide-react": "^0.476.0"
     }
 }

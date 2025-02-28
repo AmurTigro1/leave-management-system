@@ -1,7 +1,7 @@
 @extends('layouts.sidebar-header')
 
 @section('content')
-<div class="max-w-2xl mx-auto mt-10 p-6 bg-white shadow-2xl rounded-lg transform transition-all duration-500 hover:scale-105">
+<div class=" bg-white rounded-lg ">
     <!-- Back Button with Animation -->
     <a href="{{ route('employee.leave_request') }}" class="text-blue-600 hover:text-blue-800 text-sm flex items-center mb-4 transition-transform duration-300 hover:translate-x-2">
         &larr; Back to Leave Requests
@@ -14,7 +14,7 @@
     </h2>
 
     <!-- Leave Information with Gradient Background and Hover Effect -->
-    <div class="mt-4 p-6 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300">
+    <div class="mt-4 p-6 bg-gray-50 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300">
         <!-- Leave Type with Icon -->
         <p class="text-lg flex items-center">
             <span class="font-semibold">Leave Type:</span>
@@ -73,9 +73,34 @@
             </span>
         </p>
     </div>
+<!-- Leave request information and HR remarks -->
+<div class=" bg-gradient-to-r from-purple-50 to-blue-50 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 ease-in-out transform hover:-translate-y-1">
+    <!-- Leave request details -->
+    <div class=" text-gray-700">
+        <!-- Disapproval Reason -->
+        <div class="bg-white p-4 rounded-lg shadow-sm">
+            @if($leave->status === 'rejected')
+            <div class="bg-white p-4 rounded-lg shadow-sm">
+                <p class="text-sm font-semibold text-red-600">Disapproval Reason:</p>
+                <p class="mt-1 text-gray-600">{{$leave->disapproval_reason}}</p>
+            </div>
+        @endif
 
+        <!-- Approved Days with Pay -->
+        <div class="bg-white p-4 rounded-lg shadow-sm">
+            <p class="text-sm font-semibold text-blue-600">Approved Days with Pay:</p>
+            <p class="mt-1 text-gray-600">{{$leave->approved_days_with_pay}}</p>
+        </div>
+
+        <!-- Approved Days without Pay -->
+        <div class="bg-white p-4 rounded-lg shadow-sm">
+            <p class="text-sm font-semibold text-blue-600">Approved Days without Pay:</p>
+            <p class="mt-1 text-gray-600">{{$leave->approved_days_without_pay}}</p>
+        </div>
+    </div>
+</div>
     <!-- Additional Information Section -->
-    <div class="mt-8 p-6 bg-gradient-to-r from-purple-50 to-blue-50 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300">
+    <div class="mt-8 p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300">
         <h3 class="text-xl font-bold text-gray-800 mb-4">Additional Information</h3>
         <p class="text-gray-600">If you have any questions or need further assistance regarding your leave request, please contact the HR department.</p>
         <button class="mt-4 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors duration-300">Contact HR</button>
@@ -89,6 +114,8 @@
                 Download PDF
             </a>
         </div>
+</div>
+
 </div>
 
 <!-- Custom CSS for Animations -->

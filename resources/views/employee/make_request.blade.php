@@ -1,7 +1,7 @@
 @extends('layouts.sidebar-header')
     
 @section('content')
-    <div class="max-w-6xl mx-auto p-6 bg-white shadow rounded-lg mt-4">
+    <div class="max-w-6xl mx-auto p-6rounded-lg">
         <h2 class="text-2xl font-bold mb-4 text-center">Leave Request Form</h2>
     
         <!-- Success Message -->
@@ -22,7 +22,7 @@
     @endif
     
         <!-- Leave Request Form -->
-        <form method="POST" action="{{ route('request.leave') }}" class="bg-gray-100 p-4 rounded-lg">
+        <form method="POST" action="{{ route('request.leave') }}" class=" p-4 rounded-lg">
             @csrf
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
@@ -41,7 +41,7 @@
                         <option value="Special Leave Benefits for Women Leave">Special Leave Benefits for Women (R>A. No. 9710/CSC MC No. 25, s. 2010))</option>
                         <option value="Special Emergency Leave">Special Emergency (Calamity) Leave (CSC MC No. 2, s. 2012, as amended)</option>
                         <option value="Adoption Leave ">Adoption Leave (R.A. No. 8552)</option>
-                        <option value="Other">Other Purposes</option>
+                        <option value="Other Purposes">Other Purposes</option>
                         <option value="Others">Others</option> 
                     </select>
                     @error('leave_type')
@@ -50,37 +50,67 @@
                 </div>
                 <div class="mb-4">
                     <label class="block">Office/Department:</label>
-                    <input type="text" name="department" class="w-full border px-3 py-2 rounded" required>
+                    <input type="text" name="department" class="w-full border px-3 py-2 rounded" required placeholder="Enter Office or Departmet">
                 </div>
                 <div class="mb-4">
                     <label class="block font-medium">Salary File</label>
-                    <input type="text" name="salary_file" class="w-full border p-2 rounded" required>
+                    <input type="text" name="salary_file" class="w-full border p-2 rounded" required placeholder="Enter Salary File">
                 </div>
-        
+
+
                 <div>
                     <label class="block text-sm font-medium">Start of time-off</label>
-                    <input type="date" name="start_date" class="mt-1 w-full p-2 border rounded">
+                    <input type="date" name="start_date" id="start_date" class="mt-1 w-full p-2 border rounded" required>
                     @error('start_date')
                     <p class="text-red-500 text-sm">{{ $message }}</p>
                     @enderror
+                    <div class="">
+                        <input type="checkbox" id="one_day_leave" class="mr-2" onclick="toggleEndDate()">
+                        <label for="one_day_leave" class="text-sm">One-day leave</label>
+                    </div>
                 </div>
+            
+                
                 <div>
                     <label class="block text-sm font-medium">End of time-off</label>
-                    <input type="date" name="end_date" class="mt-1 w-full p-2 border rounded">
+                    <input type="date" name="end_date" id="end_date" class="mt-1 w-full p-2 border rounded" required>
                     @error('end_date')
                     <p class="text-red-500 text-sm">{{ $message }}</p>
                     @enderror
                 </div>
+                
+                <script>
+                function toggleEndDate() {
+                    let startDate = document.getElementById("start_date");
+                    let endDate = document.getElementById("end_date");
+                    let oneDayLeave = document.getElementById("one_day_leave");
+                
+                    if (oneDayLeave.checked) {
+                        endDate.value = startDate.value;
+                        endDate.readOnly = true;
+                    } else {
+                        endDate.readOnly = false;
+                    }
+                }
+                
+                // Ensure that when selecting a start date, the end date updates if one-day leave is checked
+                document.getElementById("start_date").addEventListener("change", function() {
+                    if (document.getElementById("one_day_leave").checked) {
+                        document.getElementById("end_date").value = this.value;
+                    }
+                });
+                </script>
+                
                 <div>
                     <label class="block text-sm font-medium">Position</label>
-                    <input type="text" name="position" class="mt-1 w-full p-2 border rounded">
+                    <input type="text" name="position" class="mt-1 w-full p-2 border rounded" placeholder="Enter Position">
                     @error('position')
                     <p class="text-red-500 text-sm">{{ $message }}</p>
                     @enderror
                 </div>
                 <div class="">
                     <label class="block mt-2">Days Applied:</label>
-                    <input type="number" name="days_applied" class="w-full border p-2 rounded" min="1" required>
+                    <input type="number" name="days_applied" class="w-full border p-2 rounded" min="1" required placeholder="Enter Days Applied">
             
                     <label class="block mt-2">Commutation:</label>
                     <select name="commutation" class="w-full border p-2 rounded">
@@ -91,7 +121,7 @@
                 <div>
                     <label class="block text-sm font-medium">Reason (Optional)</label>
                     {{-- <input type="text" name="reason" class="mt-1 w-full p-2 border rounded"> --}}
-                    <textarea name="reason" id="reason" cols="30" rows="10" class="mt-1 w-full p-2 border rounded" placeholder="Enter reason"></textarea>
+                    <textarea name="reason" id="reason" cols="15" rows="5" class="mt-1 w-full p-2 border rounded" placeholder="Enter Reason"></textarea>
                 </div>
             </div>
             
@@ -102,7 +132,7 @@
             @error('within_philippines')
             <p class="text-red-500 text-sm">{{ $message }}</p>
             @enderror
-
+            <br>
             <label>
                 <input type="checkbox" name="abroad" value="1"> Abroad
                 <input type="text" name="abroad_details" class="border rounded p-1" placeholder="Specify">
@@ -112,17 +142,18 @@
             </label>
         </div>
 
-    <!-- Sick Leave -->
-    <div id="sick_leave_options" class="hidden">
-        <label>
-            <input type="checkbox" name="in_hospital" value="1"> In Hospital:
-            <input type="text" name="in_hospital_details" class="border rounded p-1" placeholder="Specify Illness">
-        </label>
-        <label>
-            <input type="checkbox" name="out_patient" value="1"> Out Patient:
-            <input type="text" name="out_patient_details" class="border rounded p-1" placeholder="Specify Illness">
-        </label>
-    </div>
+<!-- Sick Leave -->
+<div id="sick_leave_options" class="hidden">
+    <label>
+        <input type="checkbox" name="in_hospital" value="1"> In Hospital:
+        <input type="text" name="in_hospital_details" class="border rounded p-1" placeholder="Specify Illness">
+    </label>
+    <br>
+    <label>
+        <input type="checkbox" name="out_patient" value="1"> Out Patient:
+        <input type="text" name="out_patient_details" class="border rounded p-1" placeholder="Specify Illness">
+    </label>
+</div>
 
     <!-- Study Leave -->
     <div id="study_leave_options" class="hidden">
@@ -141,9 +172,9 @@
         <label class="block text-sm font-medium">Specify Leave Details</label>
         {{-- <input type="text" name="others_details" class="mt-1 w-full p-2 border rounded" placeholder="Enter leave details"> --}}
         <textarea name="others_details" id="others_details" cols="30" rows="10" class="mt-1 w-full p-2 border rounded" placeholder="Enter leave details"></textarea>
+        
     </div>  
-
-        <button type="submit" class="mt-4 bg-blue-500 text-white px-4 py-2 rounded">Request Leave</button>
+    <button type="submit" class="mt-4 bg-blue-500 text-white px-4 py-2 rounded">Request Leave</button>
     </form>
  </div>
 
@@ -174,7 +205,7 @@
             sickLeaveOptions.classList.remove("hidden");
         } else if (selectedValue === "Study Leave") {
             studyLeaveOptions.classList.remove("hidden");
-        } else if (selectedValue === "Other") {
+        } else if (selectedValue === "Other Purposes") {
             otherPurposesOptions.classList.remove("hidden");
         }
     }

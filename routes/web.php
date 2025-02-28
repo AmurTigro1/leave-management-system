@@ -42,6 +42,10 @@ Route::middleware(['auth', 'employeeMiddleware'])->group(function () {
     Route::get('/dashboard', [EmployeeController::class, 'index'])->name('employee.dashboard');
     Route::get('/make-request', [EmployeeController::class, 'makeRequest'])->name('employee.make_request');
     Route::get('/my-requests', [EmployeeController::class, 'showRequests'])->name('employee.leave_request');
+    Route::get('/my-requests/edit/{id}', [EmployeeController::class, 'editLeave'])->name('employee.leave_edit');
+    Route::put('/my-requests/update/{id}', [EmployeeController::class, 'updateLeave'])->name('employee.leave_update');
+    Route::delete('/my-requests/delete/{id}', [EmployeeController::class, 'deleteLeave'])->name('employee.leave_delete');
+    
     Route::get('/details/{id}', [EmployeeController::class, 'show'])->name('employee.leave_show');
     Route::post('/request-leave', [EmployeeController::class, 'store'])->name('request.leave');
     Route::get('/profile', [EmployeeController::class, 'profile'])->name('employee.profile');

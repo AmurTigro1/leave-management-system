@@ -215,4 +215,102 @@ class EmployeeController extends Controller
         });
         return view('employee.holiday-calendar', compact('holidays'));
     }
+
+    public function editLeave($id) {
+        $leave = Leave::findOrFail($id);
+        return view('employee.edit', compact('id', 'leave'));
+    }
+
+    public function updateLeave(Request $request, $id)
+    {
+        // Validate the form input
+        $request->validate([
+            'leave_type' => 'required|string|max:255',
+            'department' => 'required|string|max:255',
+            'salary_file' => 'required|string|max:255',
+            'start_date' => 'required|date',
+            'end_date' => 'required|date|after_or_equal:start_date',
+            'position' => 'nullable|string|max:255',
+            'days_applied' => 'required|integer|min:1',
+            'commutation' => 'required|boolean',
+            'reason' => 'nullable|string',
+            'abroad_details' => 'nullable|string', // Ensure it's validated
+        ]);
+    
+        // Find the leave record
+        $leave = Leave::findOrFail($id);
+    
+        // Initialize leave details array
+        $leaveDetails = [];
+    
+        // **Vacation Leave / Special Privilege Leave**
+        if ($request->leave_type === 'Vacation Leave' || $request->leave_type === 'Special Privilege Leave') {
+            if ($request->filled('within_philippines')) {
+                $leaveDetails['Within the Philippines'] = $request->within_philippines; // Store the text input
+            }
+            if ($request->filled('abroad_details')) {
+                $leaveDetails['Abroad'] = $request->abroad_details; // Store the text input
+            }
+        }
+    
+        // **Sick Leave**
+        if ($request->leave_type === 'Sick Leave') {
+            if ($request->has('in_hospital')) {
+                $leaveDetails['In Hospital'] = $request->input('in_hospital_details', 'Yes');
+            }
+            if ($request->has('out_patient')) {
+                $leaveDetails['Out Patient'] = $request->input('out_patient_details', 'Yes');
+            }
+        }
+    
+        // **Study Leave**
+        if ($request->leave_type === 'Study Leave') {
+            if ($request->has('completion_masters')) {
+                $leaveDetails[] = 'Completion of Master\'s Degree';
+            }
+            if ($request->has('bar_review')) {
+                $leaveDetails[] = 'BAR Review';
+            }
+        }
+    
+        // **Other Purposes**
+        if ($request->leave_type === 'Other Purposes') {
+            if ($request->has('monetization')) {
+                $leaveDetails[] = 'Monetization of Leave Credits';
+            }
+            if ($request->has('terminal_leave')) {
+                $leaveDetails[] = 'Terminal Leave';
+            }
+        }
+    
+        // **Others Leave Type**
+        if ($request->leave_type === 'Others') {
+            if ($request->filled('others_details')) {
+                $leaveDetails[] = 'Other Details';
+                $leaveDetails[] = $request->others_details;
+            }
+        }
+    
+        // Update leave details
+        $leave->update([
+            'leave_type' => $request->leave_type,
+            'department' => $request->department,
+            'salary_file' => $request->salary_file,
+            'start_date' => $request->start_date,
+            'end_date' => $request->end_date,
+            'position' => $request->position,
+            'days_applied' => $request->days_applied,
+            'commutation' => $request->commutation,
+            'reason' => $request->reason,
+            'leave_details' => !empty($leaveDetails) ? json_encode($leaveDetails) : null, // Save as JSON
+        ]);
+    
+        return redirect()->back()->with('success', 'Leave request updated successfully.');
+    }
+
+    public function deleteLeave($id) {
+        Leave::findOrFail($id)->delete();
+        return redirect()->back()->with('success', 'Leave request deleted successfully.');
+    }
+    
 }

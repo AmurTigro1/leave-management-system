@@ -13,9 +13,15 @@ class LeaveApplicationController extends Controller
         if (Auth::user()->role !== 'hr') {
             abort(403, 'Unauthorized access.');
         }
-        $leaveApplications = Leave::where('status', 'pending')->get();
+    
+        // Fetch pending leave applications, ordered by the oldest request first
+        $leaveApplications = Leave::where('status', 'pending')
+                                  ->orderBy('created_at', 'asc') // Oldest first
+                                  ->get();
+    
         return view('leave.review', compact('leaveApplications'));
     }
+    
 
     
 public function showLeaveCertification($leaveId)
@@ -66,18 +72,6 @@ public function review(Request $request, Leave $leave)
 }
 
 
-
-    // Supervisor final approval
-    // public function approve(Leave $leave)
-    // {
-    //     $leave->update([
-    //         'status' => 'Approved',
-    //         'supervisor_id' => Auth::id(),
-    //     ]);
-
-    //     return redirect()->back()->with('success', 'Leave application approved.');
-    // }
-
     // Supervisor gives final approval
     public function approve(Request $request, Leave $leave)
     {
@@ -91,7 +85,7 @@ public function review(Request $request, Leave $leave)
             return redirect()->back()->with('error', 'HR approval is required before supervisor approval.');
         }
     
-        // Get the user who requested the leave
+     
         $user = $leave->user;
     
         // Calculate the total leave days requested

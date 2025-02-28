@@ -29,9 +29,9 @@
       </main>
 
       <!-- Footer (Placed inside the flex container) -->
-      <footer class="p-6 text-center border-t dark:border-gray-700">
+      {{-- <footer class="p-6 text-center border-t dark:border-gray-700">
           <p>&copy; {{ date('Y') }} DILG - Bohol. All rights reserved.</p>
-      </footer>
+      </footer> --}}
   </div>
 </div> 
 </body>

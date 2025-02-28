@@ -14,6 +14,7 @@ class Leave extends Model
     'supervisor_status',
     'hr_status',  ];
 
+    
     public function user() {
         return $this->belongsTo(User::class);
     }
