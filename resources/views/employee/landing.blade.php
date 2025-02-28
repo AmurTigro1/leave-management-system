@@ -39,7 +39,7 @@
     <div class="w-1/2 flex flex-col justify-center px-24">
         <img src="/img/dilg-main.png" alt="DILG Logo" class="h-[100px] w-[100px] mb-4">
         <h1 class="text-5xl font-bold text-primary leading-tight">
-            DILG Leave & Compensatory Time Off. <br> Management System
+            DILG Compensatory <br> Time Off. & Leave Management System
         </h1>
         <p class="text-gray-600 text-lg mt-4">
             A seamless and secure platform for managing leave requests and tracking employee records within the Department of the Interior and Local Government.
