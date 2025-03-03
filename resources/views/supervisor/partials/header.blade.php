@@ -5,25 +5,6 @@
 
              <!-- Navigation Links -->
              <nav id="menu" class="flex items-center space-x-6">
-                @if (Auth::check())
-                    @if (Auth::user()->role === 'admin')
-                        <!-- Admin Links -->
-                        <a href="{{ route('admin.dashboard') }}" class="hidden md:block text-gray-600 font-semibold py-2 rounded-lg hover:text-blue-500">
-                            Admin Dashboard
-                        </a>
-                        <a href="{{ route('admin.requests') }}" class="hidden md:block text-gray-600 font-semibold py-2 rounded-lg hover:text-blue-500">
-                            Manage Requests
-                        </a>
-                    @else
-                        <!-- Regular User Links -->
-                        <a href="{{ route('employee.dashboard') }}" class="hidden md:block text-gray-600 font-semibold py-2 rounded-lg hover:text-blue-500">
-                            Make a Request
-                        </a>
-                        <a href="{{ route('employee.leave_request') }}" class="hidden md:block text-gray-600 font-semibold py-2 rounded-lg hover:text-blue-500">
-                            My Requests
-                        </a>
-                    @endif
-                @endif
             @if (Auth::check())
             <!-- Dropdown Menu -->
             <div class="relative">

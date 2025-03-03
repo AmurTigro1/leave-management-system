@@ -6,13 +6,10 @@
              <!-- Navigation Links -->
              <nav id="menu" class="flex items-center space-x-6">
                 @if (Auth::check())
-                    @if (Auth::user()->role === 'admin')
-                        <!-- Admin Links -->
-                        <a href="{{ route('admin.dashboard') }}" class="hidden md:block text-gray-600 font-semibold py-2 rounded-lg hover:text-blue-500">
-                            Admin Dashboard
-                        </a>
-                        <a href="{{ route('admin.requests') }}" class="hidden md:block text-gray-600 font-semibold py-2 rounded-lg hover:text-blue-500">
-                            Manage Requests
+                    @if (Auth::user()->role === 'supervisor')
+                        <!-- supervisor Links -->
+                        <a href="{{ route('supervisor.dashboard') }}" class="hidden md:block text-gray-600 font-semibold py-2 rounded-lg hover:text-blue-500">
+                            Dashboard
                         </a>
                     @else
                         <!-- Regular User Links -->

@@ -18,8 +18,6 @@
         </div>
     @endif
 <!-- Leave Request List -->
-<div class=" overflow-hidden">
-<!-- Leave Request List -->
 <h3 class="text-2xl font-bold mt-6 text-gray-800">Your Leave Requests</h3>
 
 <!-- Showing X out of Y -->
@@ -27,24 +25,24 @@
     Showing {{ $leaves->firstItem() }} to {{ $leaves->lastItem() }} of {{ $leaves->total() }} leave requests
 </p>
 
-<div class="bg-white shadow-md rounded-lg overflow-hidden">
+<div class="bg-white shadow-md rounded-lg overflow-hidden p-6">
     <table class="w-full border-collapse">
         <thead>
-            <tr class=" text-left">
-                <th class="p-3">Type</th>
-                <th class="p-3">Leave Details</th>
-                <th class="p-3">Reason</th>
-                <th class="p-3">Start Date</th>
-                <th class="p-3">End Date</th>
-                <th class="p-6">Status</th>
-                <th class="p-3">Total Days</th>
+            <tr class="text-gray-600 text-sm bg-gray-100 border-b">
+                <th class="p-3 text-left">Type</th>
+                <th class="p-3 text-left">Leave Details</th>
+                <th class="p-3 text-left">Reason</th>
+                <th class="p-3 text-left">Start Date</th>
+                <th class="p-3 text-left">End Date</th>
+                <th class="p-3 text-left">Status</th>
+                <th class="p-3 text-left">Total Days</th>
                 <th class="p-3 text-center">Action</th>
             </tr>
         </thead>
         <tbody>
             @foreach ($leaves as $leave)
-                <tr class="border-b even:bg-gray-50 hover:bg-gray-100 transition ">
-                    <td class="p-3 font-medium">{{ $leave->leave_type }}</td>
+                <tr class="border-b even:bg-gray-50 hover:bg-gray-100 transition">
+                    <td class="p-3 font-medium text-gray-800">{{ $leave->leave_type }}</td>
                     <td class="p-3">
                         @php $details = json_decode($leave->leave_details, true); @endphp
                         @if($details)
@@ -59,80 +57,56 @@
                             <span class="text-gray-500">N/A</span>
                         @endif
                     </td>
-                    <td class="p-3">{{ $leave->reason ?? 'No reason provided' }}</td>
-                    <td class="p-3">{{ $leave->start_date }}</td>
-                    <td class="p-3">{{ $leave->end_date }}</td>
-                    {{-- < class="p-3">
-                        <span class="px-3 py-1 rounded text-white text-sm
-                        {{ $leave->status == 'approved' ? 'bg-green-500' : ($leave->status == 'rejected' ? 'bg-red-500' : 'bg-yellow-500') }}">
-                        {{ $leave->status }}
+                    <td class="p-3 text-gray-700">{{ $leave->reason ?? 'No reason provided' }}</td>
+                    <td class="p-3 text-gray-700">{{ $leave->start_date }}</td>
+                    <td class="p-3 text-gray-700">{{ $leave->end_date }}</td>
+                    <td class="p-3">
+                        @php
+                            $status_classes = [
+                                'pending' => 'bg-yellow-500',
+                                'approved' => 'bg-green-500',
+                                'rejected' => 'bg-red-500',
+                                'waiting' => 'bg-orange-500',
+                            ];
+                            $status = 'pending';
+                            if ($leave->hr_status == 'approved' && $leave->supervisor_status == 'pending') {
+                                $status = 'waiting';
+                            } elseif ($leave->hr_status == 'approved' && $leave->supervisor_status == 'approved') {
+                                $status = 'approved';
+                            } elseif ($leave->hr_status == 'rejected' || $leave->supervisor_status == 'rejected') {
+                                $status = 'rejected';
+                            }
+                        @endphp
+                        <span class="px-2 py-1 text-xs text-white rounded-lg {{ $status_classes[$status] }}">
+                            {{ ucfirst($status) }}
                         </span>
-                    </> --}}
-                    <td class="p-3">
-                        @if ($leave->hr_status == 'approved' && $leave->supervisor_status == 'pending')
-                            <span class="px-2 py-1 text-sm text-white bg-orange-500 rounded-lg">
-                                Waiting for Supervisor Approval
-                            </span>
-                        @elseif ($leave->hr_status == 'approved' && $leave->supervisor_status == 'approved')
-                            <span class="px-2 py-1 text-sm text-white bg-green-500 rounded-lg">
-                                Approved
-                            </span>
-                        @elseif ($leave->hr_status == 'rejected' || $leave->supervisor_status == 'rejected')
-                            <span class="px-2 py-1 text-sm text-white bg-red-500 rounded-lg">
-                                Rejected
-                            </span>
-                        @else
-                            <span class="px-2 py-1 text-sm text-white bg-yellow-500 rounded-lg">
-                                Pending
-                            </span>
-                        @endif
                     </td>
-                    
+                    <td class="p-3 text-gray-800">
+                        {{ \Carbon\Carbon::parse($leave->start_date)->diffInDays(\Carbon\Carbon::parse($leave->end_date)) + 1 }}
                     </td>
-                    <td class="p-3">
-                    <span class="ml-2">{{ \Carbon\Carbon::parse($leave->start_date)->diffInDays(\Carbon\Carbon::parse($leave->end_date)) + 1 }}</span>
-                </td>
-                <td class="p-3 flex space-x-2">
-                    <a href="{{ route('employee.leave_show', ['id' => $leave->id]) }}" 
-                       class="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition">
-                        View
-                    </a>
-                
-                    <a href="{{ route('employee.leave_edit', $leave->id) }}" 
-                       class="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700 transition">
-                        Edit
-                    </a>
-                
-                    <form action="{{ route('employee.leave_delete', $leave->id) }}" method="POST" class="inline-block">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" 
-                                onclick="return confirm('Are you sure you want to delete this leave request?')" 
-                                class="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 transition">
-                            Delete
-                        </button>
-                    </form>
-                </td>
-                
+                    <td class="p-3 flex space-x-2 justify-center">
+                        <a href="{{ route('employee.leave_show', ['id' => $leave->id]) }}" 
+                           class="px-4 py-2 text-xs font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition">
+                            View
+                        </a>
+                        <a href="{{ route('employee.leave_edit', $leave->id) }}" 
+                           class="px-4 py-2 text-xs font-medium text-white bg-green-600 rounded-lg hover:bg-green-700 transition">
+                            Edit
+                        </a>
+                        <form action="{{ route('employee.leave_delete', $leave->id) }}" method="POST">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" 
+                                    onclick="return confirm('Are you sure you want to delete this leave request?')" 
+                                    class="px-4 py-2 text-xs font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 transition">
+                                Delete
+                            </button>
+                        </form>
+                    </td>
                 </tr>
             @endforeach
         </tbody>
     </table>
-</div>
-<!-- Edit Leave Modal -->
-<div id="editModal" class="hidden fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center">
-    <div class="bg-white p-5 rounded shadow-lg">
-        <h3 class="text-lg font-bold mb-3">Edit Leave Request</h3>
-        <form id="editLeaveForm">
-            <input type="hidden" id="editLeaveId">
-            <label class="block">Start Date:</label>
-            <input type="date" id="editStartDate" class="border p-2 w-full mb-2">
-            <label class="block">End Date:</label>
-            <input type="date" id="editEndDate" class="border p-2 w-full mb-4">
-            <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">Update</button>
-            <button type="button" onclick="closeEditModal()" class="ml-2 text-gray-500">Cancel</button>
-        </form>
-    </div>
 </div>
 
 <!-- Pagination -->
@@ -144,7 +118,7 @@
         {{ $leaves->appends(request()->query())->links() }}
     </div>
 </div>
-</div>
+
 
 <script>
    

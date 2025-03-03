@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="p-12 space-y-6">
-    <h2 class="text-2xl font-semibold text-gray-800">Admin Dashboard - Leave Requests</h2>
+    <h2 class="text-2xl font-semibold text-gray-800">supervisor Dashboard - Leave Requests</h2>
     
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         @foreach ($leaves as $leave)
@@ -29,7 +29,7 @@
                 </span>
                 
                 @if ($leave->status == 'pending')
-                    <form method="POST" action="{{ route('admin.leave.update', $leave->id) }}" class="mt-4">
+                    <form method="POST" action="{{ route('supervisor.approve', $leave->id) }}" class="mt-4">
                         @csrf
                         <div class="flex items-center space-x-2">
                             <select name="status" class="p-2 border rounded w-full">

@@ -1,8 +1,8 @@
 <?php
 use App\Http\Controllers\LeaveApplicationController;
-use App\Http\Controllers\AdminController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\SupervisorController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -22,7 +22,7 @@ Route::get('/lms_login', function (){
 // })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     Route::post('/profile/update-image', [EmployeeController::class, 'updateProfileImage'])->name('profile.update-image');
@@ -30,6 +30,16 @@ Route::middleware('auth')->group(function () {
     Route::get('/leave', [LeaveApplicationController::class, 'index'])->name('leave.index');
     Route::post('/leave', [LeaveApplicationController::class, 'store'])->name('leave.store');
 });
+
+//Supervisor Routes
+Route::middleware(['auth', 'SupervisorMiddleware'])->group(function () {
+    Route::get('/supervisor/dashboard', [SupervisorController::class, 'index'])->name('supervisor.dashboard');
+    Route::get('/supervisor/requests', [SupervisorController::class, 'requests'])->name('supervisor.requests');
+    Route::post('/supervisor/{leave}/approve', [SupervisorController::class, 'approve'])->name('supervisor.approve');
+    Route::post('/supervisor/reject/{leave}', [SupervisorController::class, 'reject'])->name('supervisor.reject');
+    // Route::get('/supervisor/requests', [SupervisorController::class, 'requests'])->name('supervisor.requests');
+});
+
 //HR Officer Route
 Route::middleware(['auth', 'hrMiddleware'])->group(function () {
     Route::get('/hr-dashboard', [LeaveApplicationController::class, 'hrDashboard'])->name('hr.dashboard');
@@ -37,12 +47,6 @@ Route::middleware(['auth', 'hrMiddleware'])->group(function () {
     Route::post('/leave/{leave}/review', [LeaveApplicationController::class, 'review'])->name('leave.review');
     Route::get('/leave-report/{id}', [LeaveApplicationController::class, 'generateLeaveReport'])->name('leave.report');
 
-});
-//Supervisor Routes
-Route::middleware(['auth', 'SupervisorMiddleware'])->group(function () {
-    Route::get('/supervisor/leaves', [LeaveApplicationController::class, 'supervisorDashboard'])->name('supervisor.dashboard');
-    Route::post('/supervisor/{leave}/approve', [LeaveApplicationController::class, 'approve'])->name('supervisor.approve');  // Final approve
-    Route::post('/supervisor/reject/{leave}', [LeaveApplicationController::class, 'reject'])->name('supervisor.reject');  // Final reject
 });
 
 //Employee Route
@@ -63,11 +67,11 @@ Route::middleware(['auth', 'employeeMiddleware'])->group(function () {
 });
 
 //Admin Route
-Route::middleware(['auth', 'adminMiddleware'])->group(function () {
-    Route::get('/admin/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
-    Route::get('/admin/requests', [AdminController::class, 'requests'])->name('admin.requests');
-    Route::post('/admin/leave/update/{leave}', [AdminController::class, 'approve'])->name('admin.leave.update');
-});
+// Route::middleware(['auth', 'SupervisorMiddleware'])->group(function () {
+//     Route::get('/supervisor/dashboard', [AdminController::class, 'index'])->name('supervisor.dashboard');
+//     Route::get('/supervisor/requests', [AdminController::class, 'requests'])->name('supervisor.requests');
+//     Route::post('/supervisor/leave/update/{leave}', [AdminController::class, 'approve'])->name('supervisor.leave.update');
+// });
 
 Route::get('/leave-calendar', action: [EmployeeController::class, 'showCalendar'])->name('leave.calendar');
 Route::get('/api/leaves', [EmployeeController::class, 'getLeaves']); 

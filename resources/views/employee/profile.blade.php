@@ -51,7 +51,7 @@
 
             <!-- Buttons -->
             <div class="mt-6 flex gap-4">
-                <a href="" class="bg-gray-600 text-white px-4 py-2 rounded shadow hover:bg-gray-700 transition">
+                <a href="{{route('profile.edit') }}" class="bg-gray-600 text-white px-4 py-2 rounded shadow hover:bg-gray-700 transition">
                     Edit Profile
                 </a>
                 <a href="/" class="bg-blue-600 text-white px-4 py-2 rounded shadow hover:bg-blue-700 transition">

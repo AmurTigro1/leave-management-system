@@ -37,14 +37,14 @@
 
     <!-- Navigation Links -->
     <nav class="mt-6">
-        <a href="{{ route('admin.dashboard') }}" 
+        <a href="{{ route('supervisor.dashboard') }}" 
            class="flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-all duration-200 hover:text-blue-500 hover:bg-blue-100 
-           {{ request()->routeIs('admin.dashboard') || request()->routeIs('profile.edit') ? 'text-white bg-blue-500' : 'text-gray-600' }}">
+           {{ request()->routeIs('supervisor.dashboard') || request()->routeIs('profile.edit') ? 'text-white bg-blue-500' : 'text-gray-600' }}">
             Dashboard
         </a>
-        <a href="{{route('admin.requests')}}" 
+        <a href="{{route('supervisor.requests')}}" 
            class="flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-all duration-200 hover:text-blue-500 hover:bg-blue-100 
-           {{ request()->routeIs('admin.requests')  || request()->routeIs('boarding_house.edit') || request()->routeIs('rooms.edit') || request()->routeIs('boarding_house-rooms.index') ? 'text-white bg-blue-500' : 'text-gray-600' }}">
+           {{ request()->routeIs('supervisor.requests')  || request()->routeIs('boarding_house.edit') || request()->routeIs('rooms.edit') || request()->routeIs('boarding_house-rooms.index') ? 'text-white bg-blue-500' : 'text-gray-600' }}">
             Manage Requests 
         </a>
         <a href="" 

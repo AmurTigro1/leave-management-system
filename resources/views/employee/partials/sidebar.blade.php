@@ -1,12 +1,11 @@
-{{-- @php
-    $hasBoardingHouseWithRooms = $hasBoardingHouseWithRooms ?? (auth()->check() && auth()->user()->boardingHouses()->whereHas('rooms')->exists());
-@endphp --}}
+
 <div 
     :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'"
     class="fixed inset-y-0 left-0 z-30 w-64 bg-white shadow-lg text-gray-600 transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0"
 >
+<aside class="w-64 bg-white h-screen shadow-md fixed">
     <!-- Header Section -->
-    <div class="flex items-center justify-between px-4 py-1 border-b border-gray-200 overflow-y-auto ">
+    <div class="flex items-center bg-white justify-between px-4 py-1 border-b border-gray-200 overflow-y-auto ">
         <!-- User Info Section -->
         <div class="flex items-center space-x-4">
             <!-- User Profile Picture -->
@@ -85,3 +84,4 @@
     </a>
 </nav>
 </div>
+</aside>
