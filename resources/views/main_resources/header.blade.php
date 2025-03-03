@@ -1,7 +1,7 @@
 <header class="py-4">
     <div class="container mx-auto flex justify-between items-center text-center mb-2">
         <!-- Logo -->
-        <a href="/" class="text-blue-600 font-bold text-2xl">DILG CTO & LMS</a>
+        <p class="text-blue-600 font-bold text-2xl">DILG CTO & LMS</p>
 
              <!-- Navigation Links -->
              <nav id="menu" class="flex items-center space-x-6">
