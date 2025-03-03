@@ -22,7 +22,7 @@ Route::get('/lms_login', function (){
 // })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     Route::post('/profile/update-image', [EmployeeController::class, 'updateProfileImage'])->name('profile.update-image');
@@ -53,7 +53,6 @@ Route::middleware(['auth', 'employeeMiddleware'])->group(function () {
     Route::get('/my-requests/edit/{id}', [EmployeeController::class, 'editLeave'])->name('employee.leave_edit');
     Route::put('/my-requests/update/{id}', [EmployeeController::class, 'updateLeave'])->name('employee.leave_update');
     Route::delete('/my-requests/delete/{id}', [EmployeeController::class, 'deleteLeave'])->name('employee.leave_delete');
-    
     Route::get('/details/{id}', [EmployeeController::class, 'show'])->name('employee.leave_show');
     Route::post('/request-leave', [EmployeeController::class, 'store'])->name('request.leave');
     Route::get('/profile', [EmployeeController::class, 'profile'])->name('employee.profile');
