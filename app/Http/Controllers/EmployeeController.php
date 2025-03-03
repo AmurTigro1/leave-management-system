@@ -188,8 +188,9 @@ class EmployeeController extends Controller
             }
 
             // Store new image
-            $imagePath = $request->file('profile_image')->store('public/profile_images');
+            $imagePath = $request->file('profile_image')->store('profile_images', 'public');
             $filename = basename($imagePath);
+
 
             $user->update(['profile_image' => $filename]);
         }
