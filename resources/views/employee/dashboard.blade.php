@@ -1,11 +1,11 @@
-@extends('layouts.sidebar-header')
+@extends('main_resources.index')
 
 @section('content')
 <!-- Calendar Section -->
-<section class="max-w-4xl mx-auto p-6 bg-white shadow-lg rounded-xl border border-gray-200 backdrop-blur-lg relative overflow-hidden">
+<section class="max-w-6xl mx-auto p-6 bg-white rounded-xl backdrop-blur-lg relative overflow-hidden">
     <div class="absolute inset-0  opacity-30"></div>
     <h2 class="text-2xl font-extrabold text-gray-900 text-center mb-6 relative z-10">Employee Leave Calendar</h2>
-    <div id="leaveCalendar" class="p-6 bg-gray-100 rounded-xl shadow-inner relative z-10"></div>
+    <div id="leaveCalendar" class="p-6  rounded-xl shadow-inner relative z-10"></div>
     
     <!-- Legend -->
     <div class="mt-4 flex justify-center space-x-4 relative z-10">

@@ -82,7 +82,7 @@
         </nav>
     </div>
 </header>
-
+{{-- 
 <script>
      document.getElementById('loginDropdown').addEventListener('change', function() {
         let selectedValue = this.value;
@@ -105,4 +105,22 @@
             }
         });
     });
+</script> --}}
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const dropdownBtn = document.getElementById("dropdown-btn");
+        const dropdownMenu = document.getElementById("dropdown-menu");
+
+        dropdownBtn.addEventListener("click", (e) => {
+            e.stopPropagation(); // Prevent event propagation to document
+            dropdownMenu.classList.toggle("hidden");
+        });
+
+        document.addEventListener("click", () => {
+            if (!dropdownMenu.classList.contains("hidden")) {
+                dropdownMenu.classList.add("hidden");
+            }
+        });
+    });
 </script>
+
