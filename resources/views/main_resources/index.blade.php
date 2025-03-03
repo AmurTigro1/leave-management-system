@@ -14,8 +14,6 @@
     @vite('resources/css/app.css')
 </head>
 <body class="font-poppins min-h-screen flex flex-col">
-    @include('main_resources.header')
-
     <div class="content flex-grow">
         @yield('content')
     </div>

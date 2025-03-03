@@ -1,9 +1,9 @@
 <header class="py-4">
     <div class="container mx-auto flex justify-between items-center text-center mb-2">
         <!-- Logo -->
-        <a href="/" onclick="localStorage.removeItem('selectedLogin');" class="text-blue-600 font-bold text-2xl">
+        <div class="text-blue-600 font-bold text-2xl">
             DILG CTO & LMS
-        </a>
+        </div>
         
         <!-- Navigation Links -->
         <nav id="menu" class="flex items-center space-x-6">
@@ -74,14 +74,14 @@
 
                 @if (!in_array($currentPath, ['cto_login', 'lms_login']))
                     <div class="relative">
-                        <button id="customDropdownBtn" class="px-3 py-2 w-40 rounded-md text-gray-600 font-semibold text-lg bg-white border border-gray-300 flex justify-between items-center">
+                        <button id="customDropdownBtn" class="px-3 py-2 w-40 rounded-md font-semibold text-lg flex justify-between items-center">
                             Login
-                            <svg id="dropdownArrow" class="w-4 h-4 text-gray-500 ml-2 transition-transform duration-300 transform" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                            <svg id="dropdownArrow" class="w-4 h-4 ml-2 transition-transform duration-300 transform" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                                 <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 011.414 1.414l-4 4a1 1 0-1.414z" clip-rule="evenodd"/>
                             </svg>
                         </button>
                         
-                        <div id="customDropdownMenu" class="absolute hidden bg-white border border-gray-300 rounded-md w-40 mt-2 shadow-lg z-50">
+                        <div id="customDropdownMenu" class="absolute hidden bg-white rounded-md w-40 shadow-lg z-50">
                             <ul class="py-2">
                                 <li>
                                     <a href="/cto_login" class="block px-4 py-2 text-gray-600 hover:bg-gray-100">CTO Login</a>
@@ -97,53 +97,35 @@
         </nav>
     </div>
 </header>
-
-@if (request()->is('/'))
-    <script>
-        document.addEventListener("DOMContentLoaded", () => {
-            const savedLogin = localStorage.getItem("selectedLogin");
-            if (savedLogin) window.location.href = savedLogin;
-        });
-    </script>
-@endif
-
 <script>
-document.addEventListener("DOMContentLoaded", () => {
-    const dropdownBtn = document.getElementById("customDropdownBtn");
-    const dropdownMenu = document.getElementById("customDropdownMenu");
-    const dropdownArrow = document.getElementById("dropdownArrow");
-
-    if (dropdownBtn) {
-        dropdownBtn.addEventListener("click", (e) => {
-            e.stopPropagation();
-            dropdownMenu.classList.toggle("hidden");
-            dropdownArrow.classList.toggle("rotate-180");
-        });
-
-        document.addEventListener("click", () => dropdownMenu.classList.add("hidden"));
-
-        document.querySelectorAll("#customDropdownMenu a").forEach(link => {
-            link.addEventListener("click", (e) => {
-                e.preventDefault();
-                localStorage.setItem("selectedLogin", link.getAttribute("href"));
-                window.location.href = link.getAttribute("href");
+    document.addEventListener("DOMContentLoaded", () => {
+        // Profile Dropdown
+        const profileDropdownBtn = document.getElementById("dropdown-btn");
+        const profileDropdownMenu = document.getElementById("dropdown-menu");
+    
+        if (profileDropdownBtn) {
+            profileDropdownBtn.addEventListener("click", (e) => {
+                e.stopPropagation();
+                profileDropdownMenu.classList.toggle("hidden");
             });
-        });
-    }
-});
-</script>
-
-@if (request()->is('/'))
-    <script>
-        document.addEventListener("DOMContentLoaded", () => {
-            const savedLogin = localStorage.getItem("selectedLogin");
-            if (savedLogin) {
-                // Check if the user actually wants to go to the homepage
-                if (!document.referrer.includes(savedLogin)) {
-                    localStorage.removeItem("selectedLogin"); // Clear stored login
-                }
-            }
-        });
+    
+            document.addEventListener("click", () => profileDropdownMenu.classList.add("hidden"));
+        }
+    
+        // Login Dropdown
+        const loginDropdownBtn = document.getElementById("customDropdownBtn");
+        const loginDropdownMenu = document.getElementById("customDropdownMenu");
+        const loginDropdownArrow = document.getElementById("dropdownArrow");
+    
+        if (loginDropdownBtn) {
+            loginDropdownBtn.addEventListener("click", (e) => {
+                e.stopPropagation();
+                loginDropdownMenu.classList.toggle("hidden");
+                loginDropdownArrow.classList.toggle("rotate-180");
+            });
+    
+            document.addEventListener("click", () => loginDropdownMenu.classList.add("hidden"));
+        }
+    });
     </script>
-@endif
-
+    

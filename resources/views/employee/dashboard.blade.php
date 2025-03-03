@@ -1,4 +1,5 @@
 @extends('main_resources.index')
+@include('main_resources.header')
 
 @section('content')
 <!-- Calendar Section -->
