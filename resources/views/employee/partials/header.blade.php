@@ -16,12 +16,12 @@
                         </a>
                     @else
                         <!-- Regular User Links -->
-                        <a href="{{ route('employee.dashboard') }}" class="hidden md:block text-gray-600 font-semibold py-2 rounded-lg hover:text-blue-500">
+                        {{-- <a href="{{ route('employee.make_request') }}" class="hidden md:block text-gray-600 font-semibold py-2 rounded-lg hover:text-blue-500">
                             Make a Request
                         </a>
                         <a href="{{ route('employee.leave_request') }}" class="hidden md:block text-gray-600 font-semibold py-2 rounded-lg hover:text-blue-500">
                             My Requests
-                        </a>
+                        </a> --}}
                     @endif
                 @endif
             @if (Auth::check())
