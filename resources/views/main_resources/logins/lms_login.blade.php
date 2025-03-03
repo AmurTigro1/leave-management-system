@@ -58,6 +58,8 @@
 </style>
 
 <div class="flex items-center justify-center mt-[80px]">
+    <a href="/" class="text-blue-600 font-bold text-2xl">DILG CTO & LMS</a>
+
     <div class="bg-white shadow-lg rounded-lg px-8 py-6 w-full max-w-md">
         <div class="text-center">
             <img class="mx-auto mb-3 w-16" src="/img/dilg-main.png" alt="DILG Logo">
