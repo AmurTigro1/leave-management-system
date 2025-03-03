@@ -11,8 +11,8 @@
         <div class="flex items-center space-x-4">
             <!-- User Profile Picture -->
             <div class="w-16 h-16 rounded-full overflow-hidden bg-gray-200 flex items-center justify-center">
-                @if (auth()->user()->profile_picture)
-                    <img src="{{ asset('storage/' . auth()->user()->profile_picture) }}" alt="Profile Photo" class="w-full h-full object-cover">
+                @if (auth()->user()->profile_image)
+                    <img src="{{ auth()->user()->profile_image ? asset('storage/profile_images/' . auth()->user()->profile_image) : asset('default-avatar.png') }}" class="w-full h-full object-cover">
                 @else
                     <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"></path>

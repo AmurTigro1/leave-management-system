@@ -1,28 +1,34 @@
 @extends('layouts.sidebar-header')
 @section('content')
-<div class="max-w-4xl mx-auto mt-10 p-6 bg-white shadow-lg rounded-lg">
-    <h2 class="text-2xl font-bold text-gray-800 mb-4">user Profile</h2>
+<div class="max-w-4xl mx-auto p-6 bg-white rounded-lg">
+    <h2 class="text-2xl text-start font-bold text-gray-800 mb-4">User Profile</h2>
 
-    <div class="flex flex-col md:flex-row items-center md:items-start gap-6">
+    <div class="">
 
             <!-- Display Profile Image -->
-    <div class="flex items-center justify-center">
+    <div class="flex items-center justify-start">
         <img id="profile-preview"
-        src="{{ auth()->user()->profile_image ? Storage::url('public/profile_images/' . auth()->user()->profile_image) : asset('default-avatar.png') }}"
+        src="{{ auth()->user()->profile_image ? asset('storage/profile_images/' . auth()->user()->profile_image) : asset('default-avatar.png') }}"
         class="w-32 h-32 rounded-full object-cover border-2 border-gray-300">
-           
-             <p class="text-lg font-semibold mt-3">{{ $user->name }}</p>
-             <p class="text-gray-600">{{ $user->role ?? 'user' }}</p>
+
+
+        <form action="{{ route('profile.update-image') }}" method="POST" enctype="multipart/form-data" class="ml-10">
+            @csrf
+            <label class="block text-gray-700 text-sm font-bold mb-2">Upload New Profile Image</label>
+            <input type="file" name="profile_image" id="profile_image" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:border-0 file:text-sm file:font-semibold file:bg-gray-200 file:text-gray-700 hover:file:bg-gray-300 cursor-pointer">
+            
+            <button type="submit" class="mt-3 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600">Update Profile</button>
+        </form>
+    </div>
+    
+
+    <div class="text-start">
+        <p class="text-lg font-semibold mt-3"><span>Name:</span> {{ $user->name }}</p>
+             <p class="text-gray-600"><span>Role:</span> {{ $user->role ?? 'user' }}</p>
     </div>
 
+    <h3 class="border mt-2 mb-2"></h3>
     <!-- Profile Image Upload Form -->
-    <form action="{{ route('profile.update-image') }}" method="POST" enctype="multipart/form-data" class="mt-4">
-        @csrf
-        <label class="block text-gray-700 text-sm font-bold mb-2">Upload New Profile Image</label>
-        <input type="file" name="profile_image" id="profile_image" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:border-0 file:text-sm file:font-semibold file:bg-gray-200 file:text-gray-700 hover:file:bg-gray-300 cursor-pointer">
-        
-        <button type="submit" class="mt-3 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600">Update Profile</button>
-    </form>
 
         <!-- user Details -->
         <div class="flex-1">
