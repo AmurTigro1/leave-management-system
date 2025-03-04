@@ -50,7 +50,7 @@ Route::middleware(['auth', 'hrMiddleware'])->group(function () {
 });
 
 //Employee Route
-Route::middleware(['auth', 'employeeMiddleware'])->group(function () {
+Route::middleware(['auth.redirect', 'employeeMiddleware'])->group(function () {
     Route::get('/lms/dashboard', [EmployeeController::class, 'indexLMS'])->name('lms.dashboard');
     Route::get('/cto/dashboard', [EmployeeController::class, 'indexCTO'])->name('cto.dashboard');
 
