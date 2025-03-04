@@ -3,6 +3,7 @@ use App\Http\Controllers\LeaveApplicationController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SupervisorController;
+use App\Http\Controllers\OvertimeRequestController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -52,8 +53,8 @@ Route::middleware(['auth', 'hrMiddleware'])->group(function () {
 //Employee Route
 Route::middleware(['auth.redirect', 'employeeMiddleware'])->group(function () {
     Route::get('/lms/dashboard', [EmployeeController::class, 'indexLMS'])->name('lms.dashboard');
-    Route::get('/cto/dashboard', [EmployeeController::class, 'indexCTO'])->name('cto.dashboard');
 
+    //LMS
     Route::get('/make-request', [EmployeeController::class, 'makeRequest'])->name('employee.make_request');
     Route::get('/my-requests', [EmployeeController::class, 'showRequests'])->name('employee.leave_request');
     Route::get('/my-requests/edit/{id}', [EmployeeController::class, 'editLeave'])->name('employee.leave_edit');
@@ -64,6 +65,10 @@ Route::middleware(['auth.redirect', 'employeeMiddleware'])->group(function () {
     Route::get('/profile', [EmployeeController::class, 'profile'])->name('employee.profile');
     Route::get('/leave/download/{id}', [EmployeeController::class, 'downloadPdf'])->name('leave.downloadPdf');
 
+    //CTO
+    Route::get('/cto/dashboard', [OvertimeRequestController::class, 'dashboard'])->name('cto.dashboard');
+    Route::get('/overtime-request', [OvertimeRequestController::class, 'index'])->name('cto.overtime_request');
+    Route::post('/overtime-request/store', [OvertimeRequestController::class, 'store'])->name('overtime_request.store');
 
 });
 

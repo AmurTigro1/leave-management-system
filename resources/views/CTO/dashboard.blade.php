@@ -1,64 +1,63 @@
 {{-- @extends('main_resources.index') --}}
-@extends('layouts.sidebar-header')
+@extends('CTO.layouts.sidebar-header')
 
 @section('content')
-<!-- Calendar Section -->
-<h1>CTO</h1>
-<section class="max-w-6xl mx-auto p-6 bg-white rounded-xl backdrop-blur-lg relative overflow-hidden">
-    <div class="absolute inset-0  opacity-30"></div>
-    <h2 class="text-2xl font-extrabold text-gray-900 text-center mb-6 relative z-10">Employee Leave Calendar</h2>
-    <div id="leaveCalendar" class="p-6  rounded-xl shadow-inner relative z-10"></div>
-    
-    <!-- Legend -->
-    <div class="mt-4 flex justify-center space-x-4 relative z-10">
-        <div class="flex items-center space-x-2">
-            <span class="w-4 h-4 bg-green-500 rounded-full"></span>
-            <span class="text-gray-600 text-sm">Approved</span>
-        </div>
-        <div class="flex items-center space-x-2">
-            <span class="w-4 h-4 bg-yellow-300 rounded-full"></span>
-            <span class="text-gray-600 text-sm">Pending</span>
-        </div>
-        <div class="flex items-center space-x-2">
-            <span class="w-4 h-4 bg-red-500 rounded-full"></span>
-            <span class="text-gray-600 text-sm">Rejected</span>
-        </div>
-    </div>
-</section>
+<div class="container mx-auto p-6">
 
-<!-- Employee Leave Modal -->
-<div id="leaveModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden transition-opacity duration-300">
-    <div class="bg-white p-6 rounded-lg shadow-lg w-96">
-        <button onclick="document.getElementById('leaveModal').classList.add('hidden')" class="absolute top-2 right-2 text-gray-500 hover:text-gray-700 text-xl">
-            ✖
-        </button>
-        <div id="leaveModalContent"></div>
+    <!-- Title -->
+    <h1 class="text-3xl font-bold mb-6">🏆 Employee Overtime Dashboard</h1>
+
+    <!-- Summary Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        <div class="bg-blue-500 text-white p-4 rounded shadow">
+            <h2 class="text-xl font-bold">Total Applied Hours</h2>
+            <p class="text-2xl">{{ $totalAppliedHours }} hrs</p>
+        </div>
+        <div class="bg-green-500 text-white p-4 rounded shadow">
+            <h2 class="text-xl font-bold">Total Earned Hours</h2>
+            <p class="text-2xl">{{ $totalEarnedHours }} hrs</p>
+        </div>
+        <div class="bg-yellow-500 text-white p-4 rounded shadow">
+            <h2 class="text-xl font-bold">Pending Requests</h2>
+            <p class="text-2xl">{{ $pendingRequests }}</p>
+        </div>
     </div>
+
+    <!-- Recent Overtime Requests Table -->
+    <div class="bg-white shadow-md rounded p-4">
+        <h2 class="text-xl font-bold mb-4">📌 Recent Overtime Requests</h2>
+        
+        <table class="w-full border-collapse border border-gray-200">
+            <thead>
+                <tr class="bg-gray-100">
+                    <th class="border p-2">Date Filed</th>
+                    <th class="border p-2">Start Date</th>
+                    <th class="border p-2">End Date</th>
+                    <th class="border p-2">Hours Applied</th>
+                    <th class="border p-2">Earned Hours</th>
+                </tr>
+            </thead>
+            <tbody>
+                @forelse($overtimes as $overtime)
+                    <tr class="border">
+                        <td class="p-2">{{ $overtime->date_filed }}</td>
+                        <td class="p-2">{{ $overtime->inclusive_date_start }}</td>
+                        <td class="p-2">{{ $overtime->inclusive_date_end }}</td>
+                        <td class="p-2">{{ $overtime->working_hours_applied }} hrs</td>
+                        <td class="p-2 
+                            @if($overtime->earned_hours > 0) text-green-500 font-bold 
+                            @else text-red-500 font-bold @endif">
+                            {{ $overtime->earned_hours }} hrs
+                        </td>
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="5" class="text-center p-4 text-gray-500">No overtime requests found.</td>
+                    </tr>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
+
 </div>
 @endsection
-
-<style scoped>
-.fc-event {
-    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
-}
-.fc-event:hover {
-    transform: scale(1.07);
-    box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.3);
-}
-
-#leaveModal.show {
-    display: flex;
-}
-#leaveModal .show {
-    opacity: 1;
-    transform: scale(1);
-}
-</style>
-
-<script>
-function closeModal() {
-    const modal = document.getElementById('leaveModal');
-    modal.classList.remove('show');
-    setTimeout(() => modal.classList.add('hidden'), 300);
-}
-</script>
