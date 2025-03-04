@@ -42,21 +42,22 @@
         <h1 class="text-5xl font-bold text-primary leading-tight">
             DILG Compensatory <br> Time Off. & Leave Management System
         </h1>
-        <p class="text-gray-600 text-lg mt-4">
+        <p class="text-gray-600 text-lg mt-4 text-justify">
             A seamless and secure platform for managing leave requests and tracking employee records within the Department of the Interior and Local Government.
         </p>
         <div class="mt-6">
-            <div class="relative group">
-                <p class="px-6 py-3 bg-primary flex justify-center items-center text-white text-lg rounded-lg shadow-lg transform hover:scale-105 transition duration-300">
-                    Get Started
-                </p>
-                <div class="absolute top-full left-1/2 transform -translate-x-1/2 mt-2 space-x-2 opacity-0 group-hover:opacity-100 transition duration-300 flex">
-                    <a href="/cto_login" class="px-4 py-2 bg-blue-500 text-white text-sm rounded-lg shadow-md transition hover:bg-blue-600">Go to CTO</a>
-                    <a href="/lms_login" class="px-4 py-2 bg-green-500 text-white text-sm rounded-lg shadow-md transition hover:bg-green-600">Go to LMS</a>
+            @guest
+                <div class="relative group">
+                    <p class="px-6 py-3 bg-primary flex justify-center items-center text-white text-lg rounded-lg shadow-lg transform hover:scale-105 transition duration-300">
+                        Get Started
+                    </p>
+                    <div class="absolute top-full left-1/2 transform -translate-x-1/2 mt-2 space-x-2 opacity-0 group-hover:opacity-100 transition duration-300 flex">
+                        <a href="/cto_login" class="px-4 py-2 bg-blue-500 text-white text-sm rounded-lg shadow-md transition hover:bg-blue-600">Go to CTO</a>
+                        <a href="/lms_login" class="px-4 py-2 bg-green-500 text-white text-sm rounded-lg shadow-md transition hover:bg-green-600">Go to LMS</a>
+                    </div>
                 </div>
-            </div>
-            
-        </div>
+            @endguest
+        </div>        
     </div>
 
     <!-- Right Side -->

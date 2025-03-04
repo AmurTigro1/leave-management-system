@@ -25,37 +25,45 @@ class AuthenticatedSessionController extends Controller
     public function store(LoginRequest $request): RedirectResponse
     {
         $request->authenticate();
-
         $request->session()->regenerate();
-
-        $user = Auth::user();
-        
     
-    if ($user->role === 'supervisor') {
-        return redirect(route('supervisor.dashboard'));
+        $user = Auth::user();
+        $system = $request->input('system', 'cto'); // Default to CTO if not provided
+    
+        // Store system in session
+        session(['system' => $system]);
+    
+        if ($user->role === 'supervisor') {
+            return redirect(route('supervisor.dashboard'));
+        }
+    
+        if ($user->role === 'employee') {
+            // Redirect based on system
+            return redirect(route($system === 'lms' ? 'lms.dashboard' : 'cto.dashboard'));
+        }
+    
+        if ($user->role === 'hr') {
+            return redirect(route('hr.dashboard'));
+        }
+    
+        return redirect()->intended(route('employee.dashboard'));
     }
-
-    if ($user->role === 'employee') {
-        return redirect(route('employee.dashboard'));
-    }
-    if ($user->role === 'hr') {
-        return redirect(route('hr.dashboard'));
-    }
-
-        return redirect()->intended(route('employee.dashboard', absolute: false));
-    }
-
+    
     /**
      * Destroy an authenticated session.
      */
     public function destroy(Request $request): RedirectResponse
     {
+        // Forget the stored system session
+        $request->session()->forget('system');
+    
+        // Logout the user
         Auth::guard('web')->logout();
-
+    
+        // Invalidate and regenerate session
         $request->session()->invalidate();
-
         $request->session()->regenerateToken();
-
+    
         return redirect('/');
-    }
+    }    
 }

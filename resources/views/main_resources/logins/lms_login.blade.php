@@ -119,6 +119,7 @@
                 </label>
             </div>
 
+            <input type="hidden" name="system" value="lms"> 
             <!-- Login Button -->
             <button type="submit"
                 class="w-full bg-blue-700 hover:bg-blue-800 text-white font-bold py-2 px-4 rounded transition duration-200">

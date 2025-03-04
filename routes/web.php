@@ -51,7 +51,9 @@ Route::middleware(['auth', 'hrMiddleware'])->group(function () {
 
 //Employee Route
 Route::middleware(['auth', 'employeeMiddleware'])->group(function () {
-    Route::get('/dashboard', [EmployeeController::class, 'index'])->name('employee.dashboard');
+    Route::get('/lms/dashboard', [EmployeeController::class, 'indexLMS'])->name('lms.dashboard');
+    Route::get('/cto/dashboard', [EmployeeController::class, 'indexCTO'])->name('cto.dashboard');
+
     Route::get('/make-request', [EmployeeController::class, 'makeRequest'])->name('employee.make_request');
     Route::get('/my-requests', [EmployeeController::class, 'showRequests'])->name('employee.leave_request');
     Route::get('/my-requests/edit/{id}', [EmployeeController::class, 'editLeave'])->name('employee.leave_edit');
