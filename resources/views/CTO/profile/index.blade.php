@@ -1,10 +1,7 @@
-@extends('layouts.sidebar-header')
+@extends('CTO.layouts.sidebar-header')
 @section('content')
 <div class="max-w-3xl p-8 bg-white rounded-xl shadow-md">
         <!-- Back Button with Animation -->
-        <a href="{{ route('employee.leave_request') }}" class="text-blue-600 hover:text-blue-800 text-sm flex items-center mb-4 transition-transform duration-300 hover:translate-x-2">
-            &larr; Back to Leave Requests
-        </a>
     <h2 class="text-3xl font-bold text-gray-900 mb-6 border-b pb-2">User Profile</h2>
     
     <!-- Profile Image & Upload -->
@@ -23,12 +20,12 @@
     
     <!-- User Info -->
     <div class="mt-6 space-y-3">
-        <div class="flex justify-between items-center">
+        <div class="flex justify-start items-center">
             <p class="text-lg font-semibold">{{ $user->name }}</p>
-            <a href="{{ route('profile.edit') }}" class="text-blue-500 hover:text-blue-600">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125" />
-                </svg>
+            <a href="/cto-profile-edit" class="text-blue-500 hover:text-blue-600 ml-3">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
+                  </svg>                  
             </a>
         </div>
         <p class="text-gray-600">Role: {{ $user->role ?? 'User' }}</p>
@@ -43,17 +40,11 @@
     
     <!-- Leave Balance -->
     <div class="mt-6 bg-blue-50 rounded-lg shadow-sm">
-        <h3 class="text-lg font-semibold text-blue-700">Leave Balance</h3>
+        <h3 class="text-lg font-semibold text-blue-700">Overtime Balance</h3>
         <div class="flex gap-4 mt-3">
-            <span class="bg-green-500 text-white px-3 py-1 rounded text-sm">Vacation: {{ $vacationBalance }} days</span>
-            <span class="bg-yellow-500 text-white px-3 py-1 rounded text-sm">Sick: {{ $sickBalance }} days</span>
+            <span class="bg-green-500 text-white px-3 py-1 rounded text-sm">Earned Hours:  5 hours</span>
+            <span class="bg-yellow-500 text-white px-3 py-1 rounded text-sm">Remaining Hours:  1 hours</span>
         </div>
-    </div>
-    
-    <!-- Buttons -->
-    <div class="mt-6 flex gap-4">
-        <a href="{{ route('profile.edit') }}" class="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700">Edit Profile</a>
-        <a href="/" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">Request Leave</a>
     </div>
 </div>
 <!-- script -->
@@ -67,11 +58,3 @@
     };
 </script>
 @endsection
-{{-- <div class="mt-4 p-4 bg-blue-50 rounded-lg shadow">
-    <h3 class="text-lg font-semibold text-blue-700">Leave Balance</h3>
-    <div class="flex gap-4 mt-2">
-        <span class="bg-green-500 text-white px-3 py-1 rounded text-sm">{{ $user->leave_balance}} days</span>
-        <span class="bg-yellow-500 text-white px-3 py-1 rounded text-sm">Sick: {{ $user->leave_balance['sick'] ?? 0 }} days</span>
-        <span class="bg-red-500 text-white px-3 py-1 rounded text-sm">Casual: {{ $user->leave_balance['casual'] ?? 0 }} days</span>
-    </div>
-</div> --}}

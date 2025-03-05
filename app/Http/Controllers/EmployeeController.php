@@ -8,6 +8,10 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Requests\ProfileUpdateRequest;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Redirect;
+use Illuminate\View\View;
 
 class EmployeeController extends Controller
 {
@@ -162,11 +166,31 @@ class EmployeeController extends Controller
     public function profile() {
         $user = Auth::user();
     
-        return view('employee.profile', [
+        return view('employee.profile.index', [
             'user' => $user,
             'vacationBalance' => $user->vacation_leave_balance,
             'sickBalance' => $user->sick_leave_balance,
         ]);
+    }
+
+    public function edit(Request $request): View
+    {
+        return view('employee.profile.edit', [
+            'user' => $request->user(),
+        ]);
+    }
+
+    public function update(ProfileUpdateRequest $request): RedirectResponse
+    {
+        $request->user()->fill($request->validated());
+
+        if ($request->user()->isDirty('email')) {
+            $request->user()->email_verified_at = null;
+        }
+
+        $request->user()->save();
+
+        return Redirect::route('employee.profile.edit')->with('status', 'profile-updated');
     }
     
 
