@@ -9,22 +9,30 @@
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/5.11.3/main.min.css">
-    
     <!-- Load Your Compiled JavaScript -->
-    @vite('resources/css/app.css')
     @vite('resources/js/app.js')
-    
+    @vite('resources/css/app.css')
 </head>
-<body class="font-poppins min-h-screen flex flex-col">
-    @include('main_resources.header')
-    <div class="content flex-grow">
-        @yield('content')
-    </div>
+<body class="font-poppins h-screen overflow-hidden">
+    <div x-data="{ sidebarOpen: false }" class="flex h-screen">
+  <!-- Sidebar -->
+  @include('CTO.layouts.sidebar')
 
-    <!-- Footer -->
-    <footer class="py-2 px-4 text-center dark:border-gray-700 bg-transparent text-gray-600">
-        <p>&copy; {{ date('Y') }} DILG - Bohol. All rights reserved.</p>
-    </footer>   
+  <!-- Main Content -->
+  <div class="flex-1 flex flex-col min-h-screen">
+      <!-- Header -->
+      @include('CTO.layouts.header')
+
+      <!-- Page Content (Scrollable Area) -->
+      <main class="flex-1 p-6 overflow-y-auto">
+          @yield('content')
+      </main>
+
+      <!-- Footer (Placed inside the flex container) -->
+      {{-- <footer class="p-6 text-center border-t dark:border-gray-700">
+          <p>&copy; {{ date('Y') }} DILG - Bohol. All rights reserved.</p>
+      </footer> --}}
+  </div>
+</div> 
 </body>
-
 </html>

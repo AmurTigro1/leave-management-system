@@ -12,9 +12,14 @@ use Illuminate\Support\Facades\Auth;
 class EmployeeController extends Controller
 {
 
-    public function index() {
+    public function indexLMS() {
         return view('employee.dashboard');
     }
+
+    public function indexCTO() {
+        return view('CTO.dashboard');
+    }
+
     public function makeRequest()
     {
         $leaves = Leave::where('user_id', Auth::id())->latest()->get();

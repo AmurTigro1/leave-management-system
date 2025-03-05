@@ -18,7 +18,7 @@ return new class extends Migration
             $table->integer('vacation_leave_balance')->default(5);
             $table->integer('sick_leave_balance')->default(5); 
             // $table->string('role')->default('employee'); 
-            $table->enum('role', ['employee', 'hr', 'supervisor'])->default('employee');
+            $table->string('role');
             $table->string('profile_image')->nullable();
             $table->integer('leave_balance')->default(20);
             $table->timestamp('email_verified_at')->nullable();

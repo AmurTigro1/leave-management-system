@@ -4,21 +4,22 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
+use Illuminate\Support\Facades\Auth;
 
-class SupervisorMiddleware
+class RedirectIfNotAuthenticated
 {
     /**
      * Handle an incoming request.
      *
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
-    public function handle(Request $request, Closure $next): Response
+    public function handle(Request $request, Closure $next)
     {
-        if (Auth::check() && Auth::user()->role === 'supervisor') {
-            return $next($request);
+        if (!Auth::check()) {
+            return redirect('/'); // Redirect to home if not authenticated
         }
-        return redirect('/')->with('error', 'Access Denied');
+
+        return $next($request);
     }
 }

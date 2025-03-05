@@ -1,5 +1,5 @@
-@extends('main_resources.index')
-@include('main_resources.header')
+{{-- @extends('main_resources.index') --}}
+@extends('layouts.sidebar-header')
 
 @section('content')
 <!-- Calendar Section -->
