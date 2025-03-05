@@ -66,25 +66,25 @@ class AuthenticatedSessionController extends Controller
         return redirect('/');
     }    
 
-    public function handle(Request $request, Closure $next)
-    {
-        if (!Auth::check()) {
-            return redirect('/');
-        }
+    // public function handle(Request $request, Closure $next)
+    // {
+    //     if (!Auth::check()) {
+    //         return redirect('/');
+    //     }
 
-        $user = Auth::user();
+    //     $user = Auth::user();
         
-        if ($user->role !== 'employee') {
-            return redirect('/');
-        }
+    //     if ($user->role !== 'employee') {
+    //         return redirect('/');
+    //     }
 
-        $system = session('system');
+    //     $system = session('system');
 
-        if (($request->routeIs('lms.dashboard') && $system !== 'lms') ||
-            ($request->routeIs('cto.dashboard') && $system !== 'cto')) {
-            return redirect('/');
-        }
+    //     if (($request->routeIs('lms.dashboard') && $system !== 'lms') ||
+    //         ($request->routeIs('cto.dashboard') && $system !== 'cto')) {
+    //         return redirect('/');
+    //     }
 
-        return $next($request);
-    }
+    //     return $next($request);
+    // }
 }

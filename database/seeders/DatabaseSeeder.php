@@ -21,18 +21,6 @@ class DatabaseSeeder extends Seeder
             'password' => '123456789',
             'role' => 'employee'
         ]);
-        User::factory()->create([
-            'name' => 'Hr',
-            'email' => 'hr@gmail.com',
-            'password' => '123456789',
-            'role' => 'hr'
-        ]);
-        User::factory()->create([
-            'name' => 'Supervisor',
-            'email' => 'supervisor@gmail.com',
-            'password' => '123456789',
-            'role' => 'employee',
-        ]);
 
         User::factory()->create([
             'name' => 'HR',
