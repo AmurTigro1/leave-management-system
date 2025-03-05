@@ -26,28 +26,27 @@ class AuthenticatedSessionController extends Controller
     {
         $request->authenticate();
         $request->session()->regenerate();
-    
+        
         $user = Auth::user();
-        $system = $request->input('system', 'cto'); // Default to CTO if not provided
     
-        // Store system in session
-        session(['system' => $system]);
+        switch ($user->role) {
+            case 'employee':
+                // Store system in session for employees
+                $system = $request->input('system', 'cto'); // Default to CTO
+                session(['system' => $system]);
     
-        if ($user->role === 'supervisor') {
-            return redirect(route('supervisor.dashboard'));
+                return redirect(route($system === 'lms' ? 'lms.dashboard' : 'cto.dashboard'));
+    
+            case 'supervisor':
+                return redirect(route('supervisor.dashboard'));
+    
+            case 'hr':
+                return redirect(route('hr.dashboard'));
+    
+            default:
+                return redirect()->intended(route('employee.dashboard'));
         }
-    
-        if ($user->role === 'employee') {
-            // Redirect based on system
-            return redirect(route($system === 'lms' ? 'lms.dashboard' : 'cto.dashboard'));
-        }
-    
-        if ($user->role === 'hr') {
-            return redirect(route('hr.dashboard'));
-        }
-    
-        return redirect()->intended(route('employee.dashboard'));
-    }
+    }     
     
     /**
      * Destroy an authenticated session.

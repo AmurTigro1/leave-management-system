@@ -14,28 +14,26 @@ class EmployeeMiddleware
      *
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
-    public function handle(Request $request, Closure $next): Response
+    public function handle(Request $request, Closure $next)
     {
-        // Get the current route name
-        $routeName = $request->route()->getName();
-
-        // Determine the system based on the route
-        $currentSystem = str_contains($routeName, 'lms') ? 'lms' : (str_contains($routeName, 'cto') ? 'cto' : null);
-
-        if (!$currentSystem) {
-            return $next($request); // Allow other routes
+        if (!Auth::check()) {
+            return redirect('/');
         }
 
-        // Get the stored system session
-        $storedSystem = session('system');
+        $user = Auth::user();
 
-        // If the user is already logged into a system and tries to access another, redirect them
-        if ($storedSystem && $storedSystem !== $currentSystem) {
-            return redirect()->route($storedSystem . '.dashboard')->with('error', 'You must log out before accessing another system.');
+        // Only employees should proceed
+        if ($user->role !== 'employee') {
+            return redirect('/');
         }
 
-        // Store the system in the session if not already set
-        session(['system' => $currentSystem]);
+        $system = session('system');
+
+        // Prevent employees from accessing the wrong dashboard
+        if (($request->routeIs('lms.dashboard') && $system !== 'lms') ||
+            ($request->routeIs('cto.dashboard') && $system !== 'cto')) {
+            return redirect('/');
+        }
 
         return $next($request);
     }

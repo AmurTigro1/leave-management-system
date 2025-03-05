@@ -18,10 +18,6 @@ Route::get('/lms_login', function (){
     return view('main_resources.logins.lms_login');
 });
 
-// Route::get('/dashboard', function () {
-//     return view('dashboard');
-// })->middleware(['auth', 'verified'])->name('dashboard');
-
 Route::middleware('auth')->group(function () {
     Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -72,20 +68,14 @@ Route::middleware(['auth.redirect', 'employeeMiddleware'])->group(function () {
 
 });
 
+Route::get('/leave-calendar', action: [EmployeeController::class, 'showCalendar'])->name('leave.calendar');
+Route::get('/api/leaves', [EmployeeController::class, 'getLeaves']); 
+
+require __DIR__.'/auth.php';
+
 //Admin Route
 // Route::middleware(['auth', 'SupervisorMiddleware'])->group(function () {
 //     Route::get('/supervisor/dashboard', [AdminController::class, 'index'])->name('supervisor.dashboard');
 //     Route::get('/supervisor/requests', [AdminController::class, 'requests'])->name('supervisor.requests');
 //     Route::post('/supervisor/leave/update/{leave}', [AdminController::class, 'approve'])->name('supervisor.leave.update');
 // });
-
-Route::get('/leave-calendar', action: [EmployeeController::class, 'showCalendar'])->name('leave.calendar');
-Route::get('/api/leaves', [EmployeeController::class, 'getLeaves']); 
-
-// Route::get('/api/leaves', function () {
-//     return response()->json(
-//         Leave::where('status', 'approved') // Only show approved leaves
-//              ->get(['id', 'start_date as start', 'end_date as end', 'reason as title'])
-//     );
-// });
-require __DIR__.'/auth.php';
