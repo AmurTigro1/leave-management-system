@@ -1,7 +1,7 @@
 <header class="py-4 bg-white shadow-md w-full">
     <div class="container mx-auto flex justify-between items-center text-center">
         <!-- Logo -->
-        <a href="/" class="text-blue-600 font-bold text-2xl"></a>
+        <p class="px-4 text-xl text-blue-600 font-semibold">Compensatory Time Off. (CTO)</p>
 
              <!-- Navigation Links -->
              <nav id="menu" class="flex items-center space-x-6">
@@ -53,7 +53,7 @@
                         </li>
                         <li>
                         <li>
-                            <a href="{{ route('employee.profile')}}" class="block w-full text-left px-4 py-2 hover:bg-gray-100 hover:text-blue-500">Profile</a>
+                            <a href="/cto-profile" class="block w-full text-left px-4 py-2 hover:bg-gray-100 hover:text-blue-500">Profile</a>
                         </li>
                         <li>
                             <form action="{{ route('logout') }}" method="POST">

@@ -35,4 +35,18 @@ class OvertimeRequestController extends Controller
     {
         return view('employee.overtime_request_form');
     }
+
+    public function list()
+    {
+        $overtimereq = OvertimeRequest::where('user_id', Auth::id())->latest()->get();
+        return view('CTO.overtime_list', compact('overtimereq'));
+    }
+
+    public function profile() {
+        $user = Auth::user();
+    
+        return view('CTO.profile', [
+            'user' => $user,
+        ]);
+    }
 }
