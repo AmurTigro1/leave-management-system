@@ -1,4 +1,4 @@
-
+{{-- 
 <div 
     :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'"
     class="fixed inset-y-0 left-0 z-30 w-64 bg-white shadow-lg text-gray-600 transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0"
@@ -84,4 +84,54 @@
     </a>
 </nav>
 </div>
-</aside>
+</aside> --}}
+
+<!-- Sidebar -->
+<div 
+    :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'"
+    class="fixed inset-y-0 left-0 z-30 w-64 bg-white shadow-lg text-gray-600 transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0"
+>
+    <aside class="w-64 bg-white h-screen shadow-md fixed flex flex-col">
+        <!-- Sidebar Header -->
+        <div class="flex items-center bg-white justify-between px-4 py-3 border-b border-gray-200">
+            <div class="flex items-center space-x-4">
+                <div class="w-12 h-12 rounded-full overflow-hidden bg-gray-200 flex items-center justify-center">
+                    @if (auth()->user()->profile_image)
+                        <img src="{{ asset('storage/profile_images/' . auth()->user()->profile_image) }}" class="w-full h-full object-cover">
+                    @else
+                        <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"></path>
+                        </svg>
+                    @endif
+                </div>
+                <div>
+                    <p class="text-lg font-semibold text-gray-800 truncate" title="{{ Auth::user()->name }}">Hello, {{ Auth::user()->name }}</p>
+                    <p class="text-sm text-gray-500">Welcome back!</p>
+                </div>
+            </div>
+            <button @click="sidebarOpen = false" class="text-gray-500 hover:text-gray-800 lg:hidden">✕</button>
+        </div>
+
+        <!-- Navigation Links -->
+        <nav class="mt-6 space-y-2 flex-1 overflow-y-auto px-4">
+            @php
+                $navLinks = [
+                    ['route' => 'employee.dashboard', 'label' => 'Dashboard', 'icon' => 'home'],
+                    ['route' => 'employee.make_request', 'label' => 'Make a Request', 'icon' => 'plus-circle'],
+                    ['route' => 'employee.leave_request', 'label' => 'My Request', 'icon' => 'clipboard-list'],
+                    ['route' => 'holiday.calendar', 'label' => 'Holidays', 'icon' => 'calendar'],
+                ];
+            @endphp
+            
+            @foreach ($navLinks as $link)
+                <a href="{{ route($link['route']) }}"
+                   class="flex items-center px-4 py-3 text-sm rounded-lg transition-all duration-200 hover:bg-gradient-to-r hover:from-blue-500 hover:to-blue-600 hover:text-white {{ request()->routeIs($link['route']) ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg' : 'text-gray-600' }}">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <use href="#{{ $link['icon'] }}"></use>
+                    </svg>
+                    {{ $link['label'] }}
+                </a>
+            @endforeach
+        </nav>
+    </aside>
+</div>

@@ -30,9 +30,12 @@
             @foreach ($leaveApplications as $leave)
             <div class="bg-gray-100 p-4 rounded-lg shadow-md text-sm">
                 <div class="flex items-center gap-3 border-b pb-3 mb-3">
-                    <div class="bg-blue-500 text-white w-10 h-10 flex items-center justify-center rounded-full text-lg font-bold">
-                        {{ strtoupper(substr($leave->user->name, 0, 1)) }} <!-- First letter of name -->
+                    <div class="bg-blue-500 text-white w-10 h-10 flex items-center justify-center rounded-full text-lg font-bold overflow-hidden">
+                        <img src="{{ asset('storage/profile_images/' . $leave->user->profile_image) }}" 
+                             alt="User Profile" 
+                             class="w-full h-full object-cover rounded-full">
                     </div>
+                    
                     <div>
                         <p class="text-md font-semibold text-gray-800">{{ $leave->user->name }}</p>
                         <p class="text-xs text-gray-500">{{ $leave->leave_type }} - {{ $leave->days_applied }} Days</p>

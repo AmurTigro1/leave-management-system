@@ -35,19 +35,37 @@ class EmployeeController extends Controller
             'abroad_details' => 'nullable|string', // Text input for Abroad
         ]);
 
+            $user = Auth::user();
+
+            // Calculate number of days applied
+            $startDate = Carbon::parse($request->start_date);
+            $endDate = Carbon::parse($request->end_date);
+            $daysApplied = $startDate->diffInDays($endDate) + 1; // Include start date
+
+            // **Determine which leave balance to check**
+            $availableLeaveBalance = match ($request->leave_type) {
+                'Vacation Leave' => $user->vacation_leave_balance,
+                'Sick Leave' => $user->sick_leave_balance,
+                default => $user->leave_balance, // General leave balance
+            };
+
+            // **Check if there are enough leave credits**
+            if ($daysApplied > $availableLeaveBalance) {
+                return redirect()->back()->withErrors(['end_date' => 'You do not have enough balance for ' . $request->leave_type . '.']);
+            }
         // Initialize an empty array to store selected leave details
-        $leaveDetails = [];
+            $leaveDetails = [];
 
-        // **Vacation Leave / Special Privilege Leave**
-        if ($request->leave_type === 'Vacation Leave' || $request->leave_type === 'Special Privilege Leave') {
-            if ($request->filled('within_philippines')) {
-                $leaveDetails['Within the Philippines'] = $request->within_philippines; // Text input
+            // **Vacation Leave / Special Privilege Leave**
+            if ($request->leave_type === 'Vacation Leave' || $request->leave_type === 'Special Privilege Leave') {
+                if ($request->filled('within_philippines')) {
+                    $leaveDetails['Within the Philippines'] = $request->within_philippines; // Text input
 
+                }
+                if ($request->filled('abroad_details')) {
+                    $leaveDetails['Abroad'] = $request->abroad_details; // Text input
+                }
             }
-            if ($request->filled('abroad_details')) {
-                $leaveDetails['Abroad'] = $request->abroad_details; // Text input
-            }
-        }
 
 
         // **Sick Leave**
@@ -65,7 +83,7 @@ class EmployeeController extends Controller
         if ($request->leave_type === 'Study Leave') {
             if ($request->has('completion_masters')) {
                 $leaveDetails[] = 'Completion of Master\'s Degree';
-            }
+            }   
             if ($request->has('bar_review')) {
                 $leaveDetails[] = 'BAR Review';
             }
@@ -106,7 +124,7 @@ class EmployeeController extends Controller
             'date_filing' => now(),
             'reason' => $request->reason,
         ]);
-
+        $user->save();
         return redirect()->back()->with('success', 'Leave request submitted successfully.');
     }
 
@@ -147,31 +165,73 @@ class EmployeeController extends Controller
     }
     
 
-    public function getLeaves()
+    // public function getLeaves()
+    // {
+    //     $leaves = Leave::with('user')->get();
+    
+    //     return response()->json($leaves->map(function ($leave) {
+    //         $color = match ($leave->status) {
+    //             'approved' => '#28a745', // Green
+    //             'pending' => '#ffc107',  // Yellow
+    //             'rejected' => '#dc3545', // Red
+    //             default => '#6c757d',    // Gray for unknown
+    //         };
+    
+    
+    //         return [
+    //             'title' => $leave->user->name,
+    //             'start' => $leave->start_date,
+    //             'end' => $leave->end_date,
+    //             'status' => $leave->status,
+    //             'totalDays' => $leave->end_date,
+    //             'backgroundColor' => $color,
+    //             'borderColor' => $color,
+    //             'extendedProps' => [
+    //             "profile_image" => $leave->user->profile_image ? asset('storage/profile_images/' . $leave->user->profile_image) : asset('images/default.png')
+    //             ]
+    //         ];
+    //     }));
+    // }
+    // public function getLeaves()
+    // {
+    //     $leaves = Leave::with('user:id,name,profile_image')->get();
+    
+    //     $formattedLeaves = $leaves->map(function ($leave) {
+    //         return [
+    //             "id" => $leave->id,
+    //             "title" => $leave->user->name,
+    //             "start" => $leave->start_date,
+    //             "end" => $leave->end_date,
+    //             "status" => $leave->status,
+    //             "profile_image" => $leave->user->profile_image ? asset('storage/profile_images/' . $leave->user->profile_image) : asset('images/default.png')
+    //         ];
+    //     });
+    
+    //     return response()->json($formattedLeaves);
+    // }
+    public function getLeaves(Request $request)
     {
-        $leaves = Leave::with('user')->get();
+        $month = $request->month ?? date('m'); // Default to current month
+    
+        $leaves = Leave::with('user:id,name,profile_image')
+            ->whereMonth('start_date', $month)
+            ->orderBy('start_date', 'asc')
+            ->get();
     
         return response()->json($leaves->map(function ($leave) {
-            $color = match ($leave->status) {
-                'approved' => '#28a745', // Green
-                'pending' => '#ffc107',  // Yellow
-                'rejected' => '#dc3545', // Red
-                default => '#6c757d',    // Gray for unknown
-            };
-    
             return [
-                'title' => $leave->user->name,
-                'start' => $leave->start_date,
-                'end' => $leave->end_date,
-                'totalDays' => $leave->end_date,
-                'backgroundColor' => $color,
-                'borderColor' => $color,
-                'extendedProps' => [
-                'profile' => asset('storage/' . $leave->user->profile_picture)
-                ]
+                "id" => $leave->id,
+                "title" => $leave->user->name,
+                "start" => \Carbon\Carbon::parse($leave->start_date)->format('F j, Y'), // Format: October 5, 2025
+                "end" => \Carbon\Carbon::parse($leave->end_date)->format('F j, Y'),
+                "status" => ucfirst($leave->status), // Capitalize first letter
+                "duration" => \Carbon\Carbon::parse($leave->start_date)->diffInDays($leave->end_date) + 1,
+                "profile_image" => $leave->user->profile_image ? asset('storage/profile_images/' . $leave->user->profile_image) : asset('images/default.png')
             ];
         }));
     }
+    
+
     
     public function updateProfileImage(Request $request)
     {

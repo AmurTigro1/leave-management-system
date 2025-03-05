@@ -1,7 +1,17 @@
 @extends('layouts.sidebar-header')
     
 @section('content')
-    <div class="max-w-6xl mx-auto p-6rounded-lg">
+    <div class="max-w-6xl mx-auto p-6rounded-lg shadow-lg">
+        <div class="text-center">
+            <div class="justify-center flex">
+                <img src="/img/dilg-main.png" alt="DILG Logo" class="h-[80px] w-[80px] mx-auto lg:mx-0 mb-4">
+            </div>
+            <div>
+                <p>Republic of the Philippines</p>
+                <h1 class="font-bold">DEPARTMENT OF THE INTERIOR AND LOCAL GOVERNMENT</h1>
+                <h1>Rajah Sikatuna Avenue, Dampas, City of Tagbilaran, Bohol</h1>
+            </div>
+        </div>
         <h2 class="text-2xl font-bold mb-4 text-center">Leave Request Form</h2>
     
         <!-- Success Message -->

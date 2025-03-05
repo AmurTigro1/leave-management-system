@@ -51,8 +51,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 // Tooltip for Employee Details
                 let employeeName = info.event.title;
-                let profileImg = info.event.extendedProps.profile;
+                let profileImg = info.event.extendedProps.profile_image; // ✅ Fixed here
                 eventEl.setAttribute('title', `Leave approved for ${employeeName}`);
+
                 eventEl.innerHTML = `
                     <div class="flex items-center gap-2">
                         <img src="${profileImg}" alt="Profile" class="w-6 h-6 rounded-full border-2 border-white shadow-md">
@@ -65,7 +66,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 let employeeName = info.event.title;
                 let startDate = info.event.start ? new Date(info.event.start).toLocaleDateString() : "N/A";
                 let endDate = info.event.end ? new Date(info.event.end).toLocaleDateString() : "N/A";
-                let profilePicture = info.event.extendedProps.profile || "https://i.pinimg.com/474x/6b/cd/37/6bcd37954241e18f9000c5642b06ed66.jpg"; // Default image
+                let profilePicture = info.event.extendedProps.profile_image || "https://i.pinimg.com/474x/6b/cd/37/6bcd37954241e18f9000c5642b06ed66.jpg"; // ✅ Fixed here
             
                 // Calculate leave duration (if both dates exist)
                 let start = info.event.start ? new Date(info.event.start) : null;
