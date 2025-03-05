@@ -58,13 +58,15 @@ Route::middleware(['auth.redirect', 'employeeMiddleware'])->group(function () {
     Route::delete('/my-requests/delete/{id}', [EmployeeController::class, 'deleteLeave'])->name('employee.leave_delete');
     Route::get('/details/{id}', [EmployeeController::class, 'show'])->name('employee.leave_show');
     Route::post('/request-leave', [EmployeeController::class, 'store'])->name('request.leave');
-    Route::get('/profile', [EmployeeController::class, 'profile'])->name('employee.profile');
+    Route::get('/lms-profile', [EmployeeController::class, 'profile'])->name('employee.profile');
     Route::get('/leave/download/{id}', [EmployeeController::class, 'downloadPdf'])->name('leave.downloadPdf');
 
     //CTO
     Route::get('/cto/dashboard', [OvertimeRequestController::class, 'dashboard'])->name('cto.dashboard');
     Route::get('/overtime-request', [OvertimeRequestController::class, 'index'])->name('cto.overtime_request');
+    Route::get('/overtime-list', [OvertimeRequestController::class, 'list'])->name('cto.overtime_list');
     Route::post('/overtime-request/store', [OvertimeRequestController::class, 'store'])->name('overtime_request.store');
+    Route::get('/cto-profile', [OvertimeRequestController::class, 'profile'])->name('cto.profile');
 
 });
 
