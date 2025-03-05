@@ -44,7 +44,7 @@ class AuthenticatedSessionController extends Controller
                 return redirect(route('hr.dashboard'));
     
             default:
-                return redirect()->intended(route('employee.dashboard'));
+                return redirect()->intended(route('lms.dashboard'));
         }
     }     
     

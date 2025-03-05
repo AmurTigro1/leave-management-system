@@ -104,7 +104,7 @@
         <nav class="mt-6 space-y-2 flex-1 overflow-y-auto px-4">
             @php
                 $navLinks = [
-                    ['route' => 'employee.dashboard', 'label' => 'Dashboard', 'icon' => 'home'],
+                    ['route' => 'lms.dashboard', 'label' => 'Dashboard', 'icon' => 'home'],
                     ['route' => 'employee.make_request', 'label' => 'Make a Request', 'icon' => 'plus-circle'],
                     ['route' => 'employee.leave_request', 'label' => 'My Request', 'icon' => 'clipboard-list'],
                     ['route' => 'holiday.calendar', 'label' => 'Holidays', 'icon' => 'calendar'],
