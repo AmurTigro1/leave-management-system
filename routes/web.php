@@ -34,6 +34,9 @@ Route::middleware(['auth', 'SupervisorMiddleware'])->group(function () {
     Route::get('/supervisor/requests', [SupervisorController::class, 'requests'])->name('supervisor.requests');
     Route::post('/supervisor/{leave}/approve', [SupervisorController::class, 'approve'])->name('supervisor.approve');
     Route::post('/supervisor/reject/{leave}', [SupervisorController::class, 'reject'])->name('supervisor.reject');
+    Route::get('/supervisor-profile', [SupervisorController::class, 'profile'])->name('supervisor.profile.index');
+    Route::get('/supervisor-profile-edit', [SupervisorController::class, 'edit'])->name('supervisor.profile.edit');
+    Route::patch('/supervisor-profile', [SupervisorController::class, 'update'])->name('supervisor-profile.update');
     // Route::get('/supervisor/requests', [SupervisorController::class, 'requests'])->name('supervisor.requests');
 });
 

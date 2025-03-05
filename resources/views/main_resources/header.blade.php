@@ -71,7 +71,7 @@
                                 @endif
                             </li>                                                                               
                             <li>
-                                <a href="{{ route('employee.profile') }}" class="block w-full text-left px-4 py-2 hover:bg-gray-100 hover:text-blue-500">Profile</a>
+                                <a href="{{ route('employee.profile.index') }}" class="block w-full text-left px-4 py-2 hover:bg-gray-100 hover:text-blue-500">Profile</a>
                             </li>
                             <li>
                                 <form action="{{ route('logout') }}" method="POST">
