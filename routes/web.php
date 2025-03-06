@@ -11,12 +11,9 @@ Route::get('/', function () {
 });
 
 //Login Route
-Route::get('/cto_login', function (){
-    return view('main_resources.logins.cto_login');
-});
-Route::get('/lms_login', function (){
-    return view('main_resources.logins.lms_login');
-});
+Route::get('/cto_login', [EmployeeController::class, 'loginCTO'])->name('cto.login');
+
+Route::get('/lms_login', [EmployeeController::class, 'loginLMS'])->name('lms.login');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -34,6 +31,9 @@ Route::middleware(['auth', 'SupervisorMiddleware'])->group(function () {
     Route::get('/supervisor/requests', [SupervisorController::class, 'requests'])->name('supervisor.requests');
     Route::post('/supervisor/{leave}/approve', [SupervisorController::class, 'approve'])->name('supervisor.approve');
     Route::post('/supervisor/reject/{leave}', [SupervisorController::class, 'reject'])->name('supervisor.reject');
+    Route::get('/supervisor-profile', [SupervisorController::class, 'profile'])->name('supervisor.profile.index');
+    Route::get('/supervisor-profile-edit', [SupervisorController::class, 'edit'])->name('supervisor.profile.edit');
+    Route::patch('/supervisor-profile', [SupervisorController::class, 'update'])->name('supervisor-profile.update');
     // Route::get('/supervisor/requests', [SupervisorController::class, 'requests'])->name('supervisor.requests');
 });
 
@@ -58,7 +58,9 @@ Route::middleware(['auth.redirect', 'employeeMiddleware'])->group(function () {
     Route::delete('/my-requests/delete/{id}', [EmployeeController::class, 'deleteLeave'])->name('employee.leave_delete');
     Route::get('/details/{id}', [EmployeeController::class, 'show'])->name('employee.leave_show');
     Route::post('/request-leave', [EmployeeController::class, 'store'])->name('request.leave');
-    Route::get('/lms-profile', [EmployeeController::class, 'profile'])->name('employee.profile');
+    Route::get('/lms-profile', [EmployeeController::class, 'profile'])->name('employee.profile.index');
+    Route::get('/lms-profile-edit', [EmployeeController::class, 'edit'])->name('employee.profile.edit');
+    Route::patch('/lms-profile', [EmployeeController::class, 'update'])->name('employee-profile.update');
     Route::get('/leave/download/{id}', [EmployeeController::class, 'downloadPdf'])->name('leave.downloadPdf');
     Route::get('/leaderboard', [EmployeeController::class, 'leaderboard'])->name('employee.leaderboard');
     Route::get('/users/modal', [EmployeeController::class, 'showUsersModal'])->name('users.modal');
@@ -69,8 +71,9 @@ Route::middleware(['auth.redirect', 'employeeMiddleware'])->group(function () {
     Route::get('/overtime-request', [OvertimeRequestController::class, 'index'])->name('cto.overtime_request');
     Route::get('/overtime-list', [OvertimeRequestController::class, 'list'])->name('cto.overtime_list');
     Route::post('/overtime-request/store', [OvertimeRequestController::class, 'store'])->name('overtime_request.store');
-    Route::get('/cto-profile', [OvertimeRequestController::class, 'profile'])->name('cto.profile');
-
+    Route::get('/cto-profile', [OvertimeRequestController::class, 'profile'])->name('cto.profile.index');
+    Route::get('/cto-profile-edit', [OvertimeRequestController::class, 'edit'])->name('cto.profile.edit');
+    Route::patch('/cto-profile', [OvertimeRequestController::class, 'update'])->name('cto-profile.update');
 });
 
 Route::get('/leave-calendar', action: [EmployeeController::class, 'showCalendar'])->name('leave.calendar');

@@ -5,6 +5,10 @@ use App\Models\Leave;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Requests\ProfileUpdateRequest;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Redirect;
+use Illuminate\View\View;
 
 class SupervisorController extends Controller
 {
@@ -102,4 +106,31 @@ class SupervisorController extends Controller
     return redirect()->back()->with('success', 'Leave application rejected by Supervisor.');
     }
 
+    public function profile() {
+        $user = Auth::user();
+    
+        return view('supervisor.profile.index', [
+            'user' => $user,
+        ]);
+    }
+
+    public function edit(Request $request): View
+    {
+        return view('supervisor.profile.edit', [
+            'user' => $request->user(),
+        ]);
+    }
+
+    public function update(ProfileUpdateRequest $request): RedirectResponse
+    {
+        $request->user()->fill($request->validated());
+
+        if ($request->user()->isDirty('email')) {
+            $request->user()->email_verified_at = null;
+        }
+
+        $request->user()->save();
+
+        return Redirect::route('supervisor.profile.edit')->with('status', 'profile-updated');
+    }
 }

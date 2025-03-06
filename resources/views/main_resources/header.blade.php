@@ -1,15 +1,6 @@
 <header class="py-4">
     <div class="container mx-auto flex justify-between items-center text-center mb-2">
-        <!-- Logo -->
-        @php
-            $currentPath = request()->path();
-        @endphp
-
-        @if (!in_array($currentPath, ['cto_login', 'lms_login']))
-            <div class="text-blue-600 font-bold text-2xl">
-                DILG CTO & LMS
-            </div>
-        @endif
+        <div class="text-blue-600 font-bold text-2xl">DILG CTO & LMS</div>
         
         <!-- Navigation Links -->
         <nav id="menu" class="flex items-center space-x-6">
@@ -71,7 +62,7 @@
                                 @endif
                             </li>                                                                               
                             <li>
-                                <a href="{{ route('employee.profile') }}" class="block w-full text-left px-4 py-2 hover:bg-gray-100 hover:text-blue-500">Profile</a>
+                                <a href="{{ route('employee.profile.index') }}" class="block w-full text-left px-4 py-2 hover:bg-gray-100 hover:text-blue-500">Profile</a>
                             </li>
                             <li>
                                 <form action="{{ route('logout') }}" method="POST">
@@ -85,27 +76,25 @@
                     </div>
                 </div>
             @else
-                @if (!in_array($currentPath, ['cto_login', 'lms_login']))
-                    <div class="relative">
-                        <button id="customDropdownBtn" class="px-3 py-2 w-40 rounded-md font-semibold text-lg flex justify-between items-center">
-                            Login
-                            <svg id="dropdownArrow" class="w-4 h-4 ml-2 transition-transform duration-300 transform" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 011.414 1.414l-4 4a1 1 0-1.414z" clip-rule="evenodd"/>
-                            </svg>
-                        </button>
-                        
-                        <div id="customDropdownMenu" class="absolute hidden bg-white rounded-md w-40 shadow-lg z-50">
-                            <ul class="py-2">
-                                <li>
-                                    <a href="/cto_login" class="block px-4 py-2 text-gray-600 hover:bg-gray-100">CTO Login</a>
-                                </li>
-                                <li>
-                                    <a href="/lms_login" class="block px-4 py-2 text-gray-600 hover:bg-gray-100">LMS Login</a>
-                                </li>
-                            </ul>
-                        </div>
+                <div class="relative">
+                    <button id="customDropdownBtn" class="px-3 py-2 w-40 rounded-md font-semibold text-lg flex justify-between items-center">
+                        Login
+                        <svg id="dropdownArrow" class="w-4 h-4 ml-2 transition-transform duration-300 transform" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 011.414 1.414l-4 4a1 1 0-1.414z" clip-rule="evenodd"/>
+                        </svg>
+                    </button>
+                    
+                    <div id="customDropdownMenu" class="absolute hidden bg-white rounded-md w-40 shadow-lg z-50">
+                        <ul class="py-2">
+                            <li>
+                                <a href="{{route('cto.login')}}" class="block px-4 py-2 text-gray-600 hover:bg-gray-100">CTO Login</a>
+                            </li>
+                            <li>
+                                <a href="{{route('lms.login')}}" class="block px-4 py-2 text-gray-600 hover:bg-gray-100">LMS Login</a>
+                            </li>
+                        </ul>
                     </div>
-                @endif
+                </div>
             @endif
         </nav>
     </div>
