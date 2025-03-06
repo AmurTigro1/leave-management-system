@@ -115,25 +115,33 @@
                 dropdownMenu.classList.add("hidden");
             }
         });
-    });
-</script> --}}
 
-<!-- Header -->
-<header class="py-4 bg-white shadow-md w-full">
-    <div class="container mx-auto flex justify-between items-center px-4">
-        {{-- <a href="/" class="text-blue-600 font-bold text-2xl">Logo</a> --}}
-        
-        <nav id="menu" class="hidden md:flex items-center space-x-6">
-            @if (Auth::check() && Auth::user()->role === 'admin')
-                <a href="{{ route('admin.dashboard') }}" class="text-gray-600 font-semibold py-2 rounded-lg hover:text-blue-500">Admin Dashboard</a>
-                <a href="{{ route('admin.requests') }}" class="text-gray-600 font-semibold py-2 rounded-lg hover:text-blue-500">Manage Requests</a>
-            @endif
-        </nav>
+        // Open modal
+        openModalBtn.addEventListener("click", () => {
+            modal.classList.remove("hidden");
+        });
 
         @if (Auth::check())
         <div class="relative">
-            <button id="dropdown-btn" class="flex items-center text-gray-600 font-semibold px-2 py-1 rounded-lg hover:bg-gray-100 focus:outline-none">
-                <div class="w-8 h-8 rounded-full overflow-hidden bg-gray-200 flex items-center justify-center mr-2">
+            <button id="dropdown-btn" class="flex items-center text-gray-700 font-semibold px-4 py-2 rounded-lg bg-white border shadow-sm hover:bg-gray-100 focus:outline-none transition-all">
+                <!-- Leave Balance Display -->
+                <div class="mr-4 flex items-center space-x-4 bg-gray-100 px-4 py-2 rounded-lg shadow-sm">
+                    <div class="text-sm flex items-center space-x-1">
+                        <span class="font-semibold text-gray-600">Sick Leave:</span>
+                        <span class="text-blue-600 font-medium">{{ Auth::user()->sick_leave_balance }} days</span>
+                    </div>
+                    <div class="text-sm flex items-center space-x-1">
+                        <span class="font-semibold text-gray-600">Vacation Leave:</span>
+                        <span class="text-green-600 font-medium">{{ Auth::user()->vacation_leave_balance }} days</span>
+                    </div>
+                    <div class="text-sm flex items-center space-x-1">
+                        <span class="font-semibold text-gray-600">Total Balance:</span>
+                        <span class="text-purple-600 font-medium">{{ Auth::user()->leave_balance }} days</span>
+                    </div>
+                </div>
+            
+                <!-- Profile Image -->
+                <div class="w-10 h-10 rounded-full overflow-hidden bg-gray-200 flex items-center justify-center ml-4 shadow">
                     @if (auth()->user()->profile_image)
                         <img src="{{ asset('storage/profile_images/' . auth()->user()->profile_image) }}" class="w-full h-full object-cover">
                     @else
@@ -142,8 +150,12 @@
                         </svg>
                     @endif
                 </div>
-                {{ Auth::user()->name }}
+            
+                <!-- User Name -->
+                <span class="ml-2 text-gray-700 font-medium">{{ Auth::user()->name }}</span>
             </button>
+            
+            
             
             <div id="dropdown-menu" class="hidden absolute right-0 mt-2 w-48 bg-white shadow-md rounded-lg py-2 z-50">
                 <a href="{{ route('employee.profile') }}" class="block px-4 py-2 text-gray-600 hover:bg-gray-100">Profile</a>
@@ -156,9 +168,14 @@
         @endif
     </div>
 </header>
+        // Close modal
+        closeModalBtn.addEventListener("click", () => {
+            modal.classList.add("hidden");
+        });
 
-<script>
-    document.getElementById('dropdown-btn').addEventListener('click', function() {
-        document.getElementById('dropdown-menu').classList.toggle('hidden');
+        // Close modal when clicking outside
+        window.addEventListener("click", (e) => {
+            if (e.target === modal) modal.classList.add("hidden");
+        });
     });
 </script>
