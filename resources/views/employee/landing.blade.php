@@ -1,5 +1,5 @@
 @extends('main_resources.index')
-
+@extends('main_resources.header')
 @section('content')
 
 <style>

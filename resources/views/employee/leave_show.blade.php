@@ -9,9 +9,15 @@
     <a href="{{ route('employee.leave_request') }}" class="inline-flex items-center text-blue-500 hover:underline transition duration-300">
         &larr; Back to Leave Requests
     </a>
-    <div class="relative w-full h-40 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center text-white text-2xl font-bold shadow-md">
+    {{-- <div class="relative w-full h-40 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center text-white text-2xl font-bold shadow-md">
         Leave Request Details
-    </div>
+    </div> --}}
+        <!-- Download PDF Button -->
+        <div class="text-right">
+            <a href="{{ route('leave.downloadPdf', $leave->id) }}" class="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-5 py-2 rounded-lg shadow-md hover:opacity-90 transition">
+                Download PDF
+            </a>
+        </div>
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-gray-700">
         <div class="bg-gray-50 p-4 rounded-lg shadow">
             <p class="font-semibold text-lg">Leave Type</p>
@@ -81,13 +87,6 @@
     <div class="bg-blue-50 p-6 rounded-lg shadow-md">
         <p class="text-gray-700">If you have any questions or need further assistance regarding your leave request, please contact the HR department.</p>
         <a href="#" class="text-blue-600 font-semibold hover:underline">Contact HR</a>
-    </div>
-    
-    <!-- Download PDF Button -->
-    <div class="text-right">
-        <a href="{{ route('leave.downloadPdf', $leave->id) }}" class="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-5 py-2 rounded-lg shadow-md hover:opacity-90 transition">
-            Download PDF
-        </a>
     </div>
 </div>
 @endsection

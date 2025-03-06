@@ -56,8 +56,8 @@
             }
         }
 </style>
-<a href="/" class="text-blue-600 m-5 font-bold text-xl hover:text-gray-700">
-    <i class="fa fa-arrow-left" aria-hidden="true"></i> Back 
+<a href="{{ URL::previous() }}" class="text-blue-600 m-5 font-bold text-xl hover:text-gray-700">
+    Back 
 </a>
 <div class="flex items-center justify-center mt-[80px]">
     <div class="bg-white shadow-lg rounded-lg px-8 py-6 w-full max-w-md">
