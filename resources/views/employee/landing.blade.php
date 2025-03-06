@@ -36,6 +36,8 @@
 
 <div>
     @include('main_resources.header')
+    <x-notify::notify />
+    @notifyJs
     <div class="mt-12 flex flex-col lg:flex-row items-center px-6 sm:px-10 md:px-16 lg:px-24">
         
         <!-- Left Side -->
@@ -66,5 +68,5 @@
     <div class="bg bg3"></div>
 </div>
 
-
 @endsection
+@notifyCss

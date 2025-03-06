@@ -35,12 +35,17 @@ class AuthenticatedSessionController extends Controller
                 $system = $request->input('system', 'cto'); // Default to CTO
                 session(['system' => $system]);
     
+                notify()->success('Login Successful! Welcome Back.');
                 return redirect(route($system === 'lms' ? 'lms.dashboard' : 'cto.dashboard'));
     
             case 'supervisor':
+
+                notify()->success('Login Successful! Welcome Back.');
                 return redirect(route('supervisor.dashboard'));
     
             case 'hr':
+
+                notify()->success('Login Successful! Welcome Back.');
                 return redirect(route('hr.dashboard'));
     
             default:
@@ -62,7 +67,8 @@ class AuthenticatedSessionController extends Controller
         // Invalidate and regenerate session
         $request->session()->invalidate();
         $request->session()->regenerateToken();
-    
+        
+        notify()->success('Logout Successful!');
         return redirect('/');
     }    
 

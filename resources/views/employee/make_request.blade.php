@@ -1,6 +1,8 @@
 @extends('layouts.sidebar-header')
     
 @section('content')
+<x-notify::notify />
+@notifyJs
     <div class="max-w-6xl mx-auto p-6rounded-lg shadow-lg">
         <div class="text-center">
             <div class="justify-center flex">
@@ -255,3 +257,4 @@ const successMessage = document.getElementById('success-message');
     });
 });
 </script>
+@notifyCss
