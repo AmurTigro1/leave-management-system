@@ -11,12 +11,9 @@ Route::get('/', function () {
 });
 
 //Login Route
-Route::get('/cto_login', function (){
-    return view('main_resources.logins.cto_login');
-});
-Route::get('/lms_login', function (){
-    return view('main_resources.logins.lms_login');
-});
+Route::get('/cto_login', [EmployeeController::class, 'loginCTO'])->name('cto.login');
+
+Route::get('/lms_login', [EmployeeController::class, 'loginLMS'])->name('lms.login');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');

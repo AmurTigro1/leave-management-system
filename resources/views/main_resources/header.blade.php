@@ -87,10 +87,10 @@
                     <div id="customDropdownMenu" class="absolute hidden bg-white rounded-md w-40 shadow-lg z-50">
                         <ul class="py-2">
                             <li>
-                                <a href="/cto_login" class="block px-4 py-2 text-gray-600 hover:bg-gray-100">CTO Login</a>
+                                <a href="{{route('cto.login')}}" class="block px-4 py-2 text-gray-600 hover:bg-gray-100">CTO Login</a>
                             </li>
                             <li>
-                                <a href="/lms_login" class="block px-4 py-2 text-gray-600 hover:bg-gray-100">LMS Login</a>
+                                <a href="{{route('lms.login')}}" class="block px-4 py-2 text-gray-600 hover:bg-gray-100">LMS Login</a>
                             </li>
                         </ul>
                     </div>

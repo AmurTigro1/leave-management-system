@@ -21,7 +21,15 @@ class EmployeeController extends Controller
     }
 
     public function indexCTO() {
-        return view('CTO.dashboard');
+        return view('main_resources.logins.cto_login');
+    }
+
+    public function loginLMS() {
+        return view('main_resources.logins.lms_login');
+    }
+
+    public function loginCTO() {
+        return view('main_resources.logins.lms_login');
     }
 
     public function makeRequest()
