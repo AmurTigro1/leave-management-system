@@ -2,17 +2,10 @@
 @extends('layouts.sidebar-header')
 
 @section('content')
-<!-- Calendar Section -->
-{{-- <section class="max-w-6xl mx-auto p-6 bg-white rounded-xl backdrop-blur-lg relative overflow-hidden">
-    <div class="absolute inset-0  opacity-30"></div>
-    <h2 class="text-2xl font-extrabold text-gray-900 text-center mb-6 relative z-10">Employee Leave Calendar</h2>
-    <div id="leaveCalendar" class="p-6  rounded-xl shadow-inner relative z-10"></div>
-    
-    <!-- Legend -->
-    <div class="mt-4 flex justify-center space-x-4 relative z-10">
-        <div class="flex items-center space-x-2">
-            <span class="w-4 h-4 bg-green-500 rounded-full"></span>
-            <span class="text-gray-600 text-sm">Approved</span>
+    <!-- Top-Right Header -->
+    <div class="absolute top-4 right-4 flex items-center space-x-3 z-50">
+        <div class="fixed top-0 right-0 z-50">
+            <x-notify::notify />
         </div>
         <div class="flex items-center space-x-2">
             <span class="w-4 h-4 bg-yellow-300 rounded-full"></span>
@@ -76,28 +69,28 @@
 document.addEventListener("DOMContentLoaded", function () {
     let currentMonth = new Date().getMonth() + 1; // Default to current month
 
-    function loadLeaves() {
-        let url = `/api/leaves?month=${currentMonth}`;
+            function loadLeaves() {
+                let url = `/api/leaves?month=${currentMonth}`;
 
-        fetch(url)
-            .then(response => response.json())
-            .then(data => {
-                let leaveContainer = document.getElementById("leaveContainer");
-                let monthTitle = document.getElementById("monthTitle");
+                fetch(url)
+                    .then(response => response.json())
+                    .then(data => {
+                        let leaveContainer = document.getElementById("leaveContainer");
+                        let monthTitle = document.getElementById("monthTitle");
 
-                // Convert month number to name
-                let monthNames = [
-                    "January", "February", "March", "April", "May", "June", 
-                    "July", "August", "September", "October", "November", "December"
-                ];
-                monthTitle.textContent = `Leave Requests for ${monthNames[currentMonth - 1]}`;
+                        // Convert month number to name
+                        let monthNames = [
+                            "January", "February", "March", "April", "May", "June", 
+                            "July", "August", "September", "October", "November", "December"
+                        ];
+                        monthTitle.textContent = `Leave Requests for ${monthNames[currentMonth - 1]}`;
 
-                leaveContainer.innerHTML = ""; // Clear previous data
-                
-                if (data.length === 0) {
-                    leaveContainer.innerHTML = `<p class="text-gray-600">No leave requests found.</p>`;
-                    return;
-                }
+                        leaveContainer.innerHTML = ""; // Clear previous data
+
+                        if (data.length === 0) {
+                            leaveContainer.innerHTML = `<p class="text-gray-600 text-center col-span-full">No leave requests found.</p>`;
+                            return;
+                        }
 
                 data.forEach(leave => {
                     leaveContainer.innerHTML += `
@@ -120,44 +113,44 @@ document.addEventListener("DOMContentLoaded", function () {
             .catch(error => console.error("Error loading leave data:", error));
     }
 
-    document.getElementById("prevMonth").addEventListener("click", function () {
-        currentMonth = currentMonth === 1 ? 12 : currentMonth - 1;
-        loadLeaves();
-    });
+            document.getElementById("prevMonth").addEventListener("click", function () {
+                currentMonth = currentMonth === 1 ? 12 : currentMonth - 1;
+                loadLeaves();
+            });
 
-    document.getElementById("nextMonth").addEventListener("click", function () {
-        currentMonth = currentMonth === 12 ? 1 : currentMonth + 1;
-        loadLeaves();
-    });
+            document.getElementById("nextMonth").addEventListener("click", function () {
+                currentMonth = currentMonth === 12 ? 1 : currentMonth + 1;
+                loadLeaves();
+            });
 
-    loadLeaves(); // Initial load
-});
-
-</script>
+            loadLeaves(); // Initial load
+        });
+    </script>
 @endsection
 
 <style scoped>
-.fc-event {
-    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
-}
-.fc-event:hover {
-    transform: scale(1.07);
-    box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.3);
-}
+    .fc-event {
+        transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+    }
+    .fc-event:hover {
+        transform: scale(1.07);
+        box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.3);
+    }
 
-#leaveModal.show {
-    display: flex;
-}
-#leaveModal .show {
-    opacity: 1;
-    transform: scale(1);
-}
+    #leaveModal.show {
+        display: flex;
+    }
+    #leaveModal .show {
+        opacity: 1;
+        transform: scale(1);
+    }
 </style>
 
 <script>
-function closeModal() {
-    const modal = document.getElementById('leaveModal');
-    modal.classList.remove('show');
-    setTimeout(() => modal.classList.add('hidden'), 300);
-}
+    function closeModal() {
+        const modal = document.getElementById('leaveModal');
+        modal.classList.remove('show');
+        setTimeout(() => modal.classList.add('hidden'), 300);
+    }
 </script>
+@notifyCss

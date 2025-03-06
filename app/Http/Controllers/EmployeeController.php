@@ -172,6 +172,8 @@ class EmployeeController extends Controller
             'reason' => $request->reason,
         ]);
         $user->save();
+
+        notify()->success('Leave request successful!');
         return redirect()->back()->with('success', 'Leave request submitted successfully.');
     }
 
