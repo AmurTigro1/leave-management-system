@@ -1,4 +1,4 @@
-@extends('main_resources.index')
+@extends('layouts.sidebar-header')
 
 @section('content')
 <div class="max-w-6xl mx-auto bg-white p-8 rounded-lg shadow-md">
