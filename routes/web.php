@@ -60,6 +60,9 @@ Route::middleware(['auth.redirect', 'employeeMiddleware'])->group(function () {
     Route::post('/request-leave', [EmployeeController::class, 'store'])->name('request.leave');
     Route::get('/lms-profile', [EmployeeController::class, 'profile'])->name('employee.profile');
     Route::get('/leave/download/{id}', [EmployeeController::class, 'downloadPdf'])->name('leave.downloadPdf');
+    Route::get('/leaderboard', [EmployeeController::class, 'leaderboard'])->name('employee.leaderboard');
+    Route::get('/users/modal', [EmployeeController::class, 'showUsersModal'])->name('users.modal');
+
 
     //CTO
     Route::get('/cto/dashboard', [OvertimeRequestController::class, 'dashboard'])->name('cto.dashboard');

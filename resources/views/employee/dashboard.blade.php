@@ -34,7 +34,31 @@
         <div id="leaveModalContent"></div>
     </div>
 </div> --}}
+
 <div class="max-w-5xl mx-auto bg-white p-6 rounded-lg shadow-md">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"> 
+        <h3 class="text-xl font-semibold text-gray-700 mb-3">🎂 Birthdays this Month</h3>
+
+        @forelse ($birthdays as $employee)
+            <div class="flex items-center bg-white p-4 shadow rounded-lg border">
+                <div class="w-14 h-14 rounded-full overflow-hidden bg-gray-200 mr-4">
+                    @if ($employee->profile_image)
+                        <img src="{{ asset('storage/profile_images/' . $employee->profile_image) }}" class="w-full h-full object-cover">
+                    @else
+                        <svg class="w-14 h-14 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"></path>
+                        </svg>
+                    @endif
+                </div>
+                <div>
+                    <p class="text-lg font-semibold text-gray-700">{{ $employee->name }}</p>
+                    <p class="text-gray-500 text-sm">🎂 {{ \Carbon\Carbon::parse($employee->birthday)->format('F d, Y') }}</p>
+                </div>
+            </div>
+        @empty
+            <p class="text-gray-500">No birthdays this month.</p>
+        @endforelse
+    </div>
     <h2 class="text-2xl font-bold text-gray-700 mb-4">Employee Leave Calendar</h2>
     <div class="flex justify-between items-center bg-blue-100 p-4 rounded-lg shadow-md">
         <button id="prevMonth" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600">◀ Prev</button>
@@ -81,7 +105,7 @@ document.addEventListener("DOMContentLoaded", function () {
                             <img src="${leave.profile_image}" class="w-12 h-12 rounded-full border-2 border-gray-300" alt="Profile">
                             <div>
                                 <p class="font-semibold text-gray-900">${leave.title}</p>
-                                <p class="text-sm text-gray-600">Duration: ${leave.duration} days</p>
+                                <p class="text-xs text-gray-600">Duration: <span class="text-green-500"> ${leave.duration} day(s)</span></p>
                                 <p class="text-xs text-gray-500">From: ${leave.start} <br> To: ${leave.end}</p>
                                 <span class="text-sm px-4 rounded-md ${
                                     leave.status === 'Approved' ? 'bg-green-500 text-white' :

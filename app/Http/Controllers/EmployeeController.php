@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 use App\Models\Holiday;
 use App\Models\Leave;
+use App\Models\User;
 use PDF;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\Request;
@@ -12,10 +13,39 @@ use Illuminate\Support\Facades\Auth;
 class EmployeeController extends Controller
 {
 
-    public function indexLMS() {
-        return view('employee.dashboard');
+    public function indexLMS(Request $request)
+    {
+        // Get current month (or from request)
+        $month = $request->query('month', Carbon::now()->month);
+    
+        // Fetch employees whose birthday falls in the selected month
+        $birthdays = User::whereMonth('birthday', $month)->get();
+    
+        // Fetch leave requests (assuming a 'leaves' table exists)
+        $leaveRequests = Leave::whereMonth('start_date', $month)->get();
+    
+        return view('employee.dashboard', compact('birthdays', 'leaveRequests', 'month'));
     }
-
+    public function leaderboard()
+    {
+        $employees = User::withCount(['leaves' => function ($query) {
+            $query->where('status', 'approved')
+                  ->whereDate('created_at', '>=', now()->subDays(30)); // Last 30 days
+        }])
+        ->orderBy('leaves_count', 'asc') // Employees with LEAST leaves come first
+        ->take(5) // Show top 5 employees
+        ->get();
+    
+        return view('employee.leaderboard', compact('employees'));
+    }
+    public function showUsersModal()
+    {
+        $users = User::all();
+        return view('employee.partials.users-modal', compact('users'));
+    }
+        
+    
+    
     public function indexCTO() {
         return view('CTO.dashboard');
     }
@@ -227,7 +257,7 @@ class EmployeeController extends Controller
             return [
                 "id" => $leave->id,
                 "title" => $leave->user->name,
-                "start" => \Carbon\Carbon::parse($leave->start_date)->format('F j, Y'), // Format: October 5, 2025
+                "start" => \Carbon\Carbon::parse($leave->start_date)->format('F j, Y'),
                 "end" => \Carbon\Carbon::parse($leave->end_date)->format('F j, Y'),
                 "status" => ucfirst($leave->status), // Capitalize first letter
                 "duration" => \Carbon\Carbon::parse($leave->start_date)->diffInDays($leave->end_date) + 1,

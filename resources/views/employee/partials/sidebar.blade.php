@@ -105,6 +105,7 @@
             @php
                 $navLinks = [
                     ['route' => 'lms.dashboard', 'label' => 'Dashboard', 'icon' => 'home'],
+                    ['route' => 'employee.leaderboard', 'label' => 'Leaderboard', 'icon' => 'leaderboard'],
                     ['route' => 'employee.make_request', 'label' => 'Make a Request', 'icon' => 'plus-circle'],
                     ['route' => 'employee.leave_request', 'label' => 'My Request', 'icon' => 'clipboard-list'],
                     ['route' => 'holiday.calendar', 'label' => 'Holidays', 'icon' => 'calendar'],

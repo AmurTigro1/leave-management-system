@@ -17,15 +17,12 @@
             </ul>
         </div>
     @endif
-<!-- Leave Request List -->
-<h3 class="text-2xl font-bold mt-6 text-gray-800">Your Leave Requests</h3>
-
-<!-- Showing X out of Y -->
-<p class="text-gray-600 text-sm mt-2">
-    Showing {{ $leaves->firstItem() }} to {{ $leaves->lastItem() }} of {{ $leaves->total() }} leave requests
-</p>
 
 <div class="bg-white shadow-md rounded-lg overflow-hidden p-6">
+    <!-- Leave Request List -->
+<h3 class="text-2xl font-bold text-gray-800">Your Leave Requests</h3>
+
+
     <table class="w-full border-collapse">
         <thead>
             <tr class="text-gray-600 text-sm bg-gray-100 border-b">
