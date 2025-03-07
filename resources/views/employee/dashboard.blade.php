@@ -7,14 +7,14 @@
         <div class="fixed top-0 right-0 z-50">
             <x-notify::notify />
         </div>
-        <div class="flex items-center space-x-2">
+        {{-- <div class="flex items-center space-x-2">
             <span class="w-4 h-4 bg-yellow-300 rounded-full"></span>
             <span class="text-gray-600 text-sm">Pending</span>
         </div>
         <div class="flex items-center space-x-2">
             <span class="w-4 h-4 bg-red-500 rounded-full"></span>
             <span class="text-gray-600 text-sm">Rejected</span>
-        </div>
+        </div> --}}
     </div>
 </section>
 

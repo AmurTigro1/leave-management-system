@@ -124,53 +124,6 @@
             modal.classList.remove("hidden");
         });
 
-        @if (Auth::check())
-        <div class="relative">
-            <button id="dropdown-btn" class="flex items-center text-gray-700 font-semibold px-4 py-2 rounded-lg bg-white border shadow-sm hover:bg-gray-100 focus:outline-none transition-all">
-                <!-- Leave Balance Display -->
-                <div class="mr-4 flex items-center space-x-4 bg-gray-100 px-4 py-2 rounded-lg shadow-sm">
-                    <div class="text-sm flex items-center space-x-1">
-                        <span class="font-semibold text-gray-600">Sick Leave:</span>
-                        <span class="text-blue-600 font-medium">{{ Auth::user()->sick_leave_balance }} days</span>
-                    </div>
-                    <div class="text-sm flex items-center space-x-1">
-                        <span class="font-semibold text-gray-600">Vacation Leave:</span>
-                        <span class="text-green-600 font-medium">{{ Auth::user()->vacation_leave_balance }} days</span>
-                    </div>
-                    <div class="text-sm flex items-center space-x-1">
-                        <span class="font-semibold text-gray-600">Total Balance:</span>
-                        <span class="text-purple-600 font-medium">{{ Auth::user()->leave_balance }} days</span>
-                    </div>
-                </div>
-            
-                <!-- Profile Image -->
-                <div class="w-10 h-10 rounded-full overflow-hidden bg-gray-200 flex items-center justify-center ml-4 shadow">
-                    @if (auth()->user()->profile_image)
-                        <img src="{{ asset('storage/profile_images/' . auth()->user()->profile_image) }}" class="w-full h-full object-cover">
-                    @else
-                        <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"></path>
-                        </svg>
-                    @endif
-                </div>
-            
-                <!-- User Name -->
-                <span class="ml-2 text-gray-700 font-medium">{{ Auth::user()->name }}</span>
-            </button>
-            
-            
-            
-            <div id="dropdown-menu" class="hidden absolute right-0 mt-2 w-48 bg-white shadow-md rounded-lg py-2 z-50">
-                <a href="{{ route('employee.profile') }}" class="block px-4 py-2 text-gray-600 hover:bg-gray-100">Profile</a>
-                <form method="POST" action="{{ route('logout') }}">
-                    @csrf
-                    <button type="submit" class="w-full text-left px-4 py-2 text-gray-600 hover:bg-gray-100">Logout</button>
-                </form>
-            </div>
-        </div>
-        @endif
-    </div>
-</header>
         // Close modal
         closeModalBtn.addEventListener("click", () => {
             modal.classList.add("hidden");
