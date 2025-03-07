@@ -61,7 +61,7 @@ Route::middleware(['auth.redirect', 'employeeMiddleware'])->group(function () {
     Route::get('/lms-profile', [EmployeeController::class, 'profile'])->name('employee.profile.index');
     Route::get('/lms-profile-edit', [EmployeeController::class, 'edit'])->name('employee.profile.edit');
     Route::patch('/lms-profile', [EmployeeController::class, 'update'])->name('employee-profile.update');
-    Route::get('/leave/download/{id}', [EmployeeController::class, 'downloadPdf'])->name('leave.downloadPdf');
+    Route::get('/leave/view/{id}', [EmployeeController::class, 'viewPdf'])->name('leave.viewPdf');
     Route::get('/leaderboard', [EmployeeController::class, 'leaderboard'])->name('employee.leaderboard');
     Route::get('/users/modal', [EmployeeController::class, 'showUsersModal'])->name('users.modal');
 

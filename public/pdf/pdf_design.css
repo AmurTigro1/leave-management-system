@@ -1,0 +1,306 @@
+    * {
+        font-family: Arial, Helvetica, sans-serif;
+    }
+    .text-header {
+        margin-top: -15px;
+
+    }
+    .uppertext {
+        font-size: 10px;
+        font-weight: bold;
+        margin-top: -15px;
+        padding-bottom: 10px;
+    }
+    .uppertext2 {
+        font-size: 10px;
+        font-weight: bold;
+        margin-top: -50px;
+        text-align: right;
+        margin-right: 60px;
+    }
+    .uppertext3 {
+        font-size: 10px;
+        font-weight: bold;
+        margin-left: 550px;
+        text-align: center;
+        border: 1px solid rgb(174, 174, 174);
+        padding: 5px;
+        width: 130px;
+    }
+    .header-text {
+        font-size: 12px;
+        margin-top: -100px;
+        text-align: center;
+    }
+    .header-image {
+        margin-top: -15px;
+        margin-left: 50px;
+    }
+    .republic {
+        margin-top: -5px;
+    }
+    .dilg-title {
+        margin-top: -5px;
+        font-size: 11px;
+        font-weight: bold;
+    }
+    .region {
+        margin-top: -5px;
+    }
+    .last-header {
+        font-size: 15px;
+        font-weight: bold;
+        text-align: center;
+        margin-top: -5px;
+        margin-bottom: 5px;
+    }
+    .head-body {
+        border: 1px solid black;
+        font-size: 12px;
+        border-bottom: none;
+    }
+    .first {
+        margin-top: 0px;
+    }
+    .second {
+        margin-top: -26px;
+        margin-left: 200px;
+    }
+    .third {
+        margin-top: -30px;
+        margin-left: 400px;
+    }
+    .fourth {
+        margin-top: -30px;
+        margin-left: 550px;
+    }
+    .input-first {
+        margin-top: -5px;
+        margin-left: 5px;
+    }
+    .input-second {
+        margin-top: -30px;
+        margin-left: 200px;
+    }
+    .input-third {
+        margin-top: -30px;
+        margin-left: 400px;
+    }
+    .input-fourth {
+        margin-top: -30px;
+        margin-left: 553px;
+    }
+    .head-middle-body {
+        margin-top: -12px;
+        border: 1px solid black;
+        font-size: 12px;
+        border-bottom: none;
+        padding-bottom: 5px;
+    }
+    .first2 {
+        margin-top: 7px;
+    }
+    .second2 {
+        margin-top: -26px;
+        margin-left: 200px;
+    }
+    .third2 {
+        margin-top: -26px;
+        margin-left: 400px;
+    }
+    .underline {
+        text-decoration: underline;
+    }
+    .middle-body {
+        border: 1px solid black;
+        border-top: 2px solid black;
+        margin-top: -11px;
+    }
+    .first3 {
+        text-align: center;
+        padding: 1;
+        margin: 0;
+        font-weight: bold;
+        font-size: 13px;
+    }
+    .middle-part {
+        font-size: 12px;
+        width: 55%;
+        border: 1px solid black;
+    }
+    .checkbox {
+        border: 2px solid black;
+        margin-left: 5px;
+        margin-right: 8px;
+    }
+    .leave-info {
+        margin-top: 2px;
+        font-size: 12px;
+    }
+    .info {
+        font-size: 11px;
+    }
+    .info2 {
+        margin-top: -7px;
+        font-size: 11px;
+    }
+    .info-1 {
+        font-size: 9px;
+    }
+    .info-2 {
+        font-size: 8px;
+    }
+    .info-3 {
+        font-size: 7px;
+    }
+    .info3 {
+        margin-top: -5px;
+        font-size: 11px;
+    }
+    .other-option {
+        margin-top: 20px;
+        margin-left: 5px;
+    }
+    .other-opt {
+        margin-top: 0px;
+        margin-left: 5px;
+    }
+    .middle-part2 {
+        font-size: 12px;
+        margin-top: -351px;
+        margin-left: 388px;
+        width: 313px;
+        border: 1px solid black;
+    }
+    .leave-info2 {
+        margin-top: 2px;
+        padding-left: 3px;
+        font-size: 12px;
+    }
+    .right-side {
+        font-style: italic;
+        font-size: 11px;
+        margin-left: 5px;
+    }
+    .info-new {
+        font-size: 9px;
+        padding-left: 25px;
+    }
+    .right-side2 {
+        font-style: italic;
+        margin-top: 26px;
+        font-size: 11px;
+        margin-left: 5px;
+    }
+    .bottom-part {
+        font-size: 12px;
+        width: 55%;
+        border: 1px solid black;
+    }
+    .fill-in {
+        margin-top: 0px;
+        margin-left: 25px;
+    }
+    .fill-in-2 {
+        margin-top: 0px;
+        margin-left: 25px;
+        padding-bottom: 5px;
+    }
+    .inclusive {
+        margin-top: -10px;
+        margin-left: 25px;
+    }
+    .sign {
+        margin-top: -15px;
+        text-align: center;
+    }
+    .fill-in2 {
+        margin-left: 50px;
+    }
+    .bottom-part2 {
+        border: 2px solid black;
+    }
+    .last-part {
+        font-size: 12px;
+        width: 55%;
+        border: 1px solid black;
+    }
+    .last-part-info {
+        margin-top: -10px;
+        margin-left: 15px;
+    }
+    .last-table {
+        width: 310px;
+        margin-left: 38px;
+        padding-top: 15px;
+    }
+    .row {
+        margin-top: -14px;
+        border: 1px solid black;
+        padding: 5px;
+    }
+    .row-first {
+        margin-top: -14px;
+        border: 1px solid black;
+        padding: 5px;
+        padding-bottom: 19px;
+    }
+    .column2 {
+        margin-left: 120px;
+        margin-top: -150px;
+    }
+    .column3 {
+        margin-left: 215px;
+        margin-top: -150px;
+    }
+    .row1 {
+        margin-top: -14px;
+        border: 1px solid black;
+        padding: 5px;
+
+    }
+    .last-sign {
+        margin-top: 0px;
+        margin-left: 40px;
+    }
+    .text-last {
+        margin-top: -13px;
+        text-align: center;
+    }
+    .last-part3 {
+        font-size: 12px;
+        margin-top: -351px;
+        margin-left: 388px;
+        width: 313px;
+        border: 1px solid black;
+    }
+    .last-line {
+        margin-left: 27px;
+    }
+    .last-sign2 {
+        margin-top: 24px;
+        margin-left: 40px;
+    }
+    .final-part {
+        font-size: 12px;
+        border: 1px solid black;
+    }
+    .final-disapproval {
+        margin-top: -26px;
+        margin-left: 390px;
+    }
+    .final-list {
+        margin-top: 0px;
+        margin-left: 3px;
+    }
+    .list01 {
+        margin-top: -10px;
+    }
+    .final-list2 {
+        margin-top: -50px;
+        margin-left: 410px;
+    }
+    .final-sign {
+        margin-top: 25px;
+        margin-left: 200px;
+    }

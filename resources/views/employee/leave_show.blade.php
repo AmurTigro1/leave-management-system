@@ -14,8 +14,8 @@
     </div> --}}
         <!-- Download PDF Button -->
         <div class="text-right">
-            <a href="{{ route('leave.downloadPdf', $leave->id) }}" class="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-5 py-2 rounded-lg shadow-md hover:opacity-90 transition">
-                Download PDF
+            <a href="{{ route('leave.viewPdf', $leave->id) }}" target="_blank" class="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-5 py-2 rounded-lg shadow-md hover:opacity-90 transition">
+                View & Download PDF
             </a>
         </div>
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-gray-700">

@@ -326,14 +326,15 @@ class EmployeeController extends Controller
         return back()->with('success', 'Profile image updated successfully!');
     }
 
-        public function downloadPdf($id)
+    public function viewPdf($id)
     {
         $leave = Leave::findOrFail($id);
         
         $pdf = PDF::loadView('pdf.leave_details', compact('leave'));
         
-        return $pdf->download('leave_request_' . $leave->id . '.pdf');
+        return $pdf->stream('leave_request_' . $leave->id . '.pdf');
     }
+    
 
     public function holiday() {
         $holidays = Holiday::orderBy('date')->get()->map(function ($holiday) {

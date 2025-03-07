@@ -24,15 +24,15 @@ class DatabaseSeeder extends Seeder
 
         User::factory()->create([
             'name' => 'HR',
-            'email' => 'hr@example.com',
-            'password' => 'password',
+            'email' => 'hr@gmail.com',
+            'password' => '123456789',
             'role' => 'hr',
         ]);
 
         User::factory()->create([
             'name' => 'Supervisor',
-            'email' => 'supervisor@example.com',
-            'password' => 'password',
+            'email' => 'supervisor@gmail.com',
+            'password' => '123456789',
             'role' => 'supervisor',
         ]);
         

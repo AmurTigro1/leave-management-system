@@ -70,8 +70,8 @@
 </header>
 
 <!-- Logout Confirmation Modal -->
-<div id="logoutModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden z-50 px-4 max-sm:m-10">
-    <div class="bg-white rounded-lg shadow-lg p-6 w-[90%] max-w-[450px] relative z-50">
+<div id="logoutModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden px-4 max-sm:m-10 z-50">
+    <div class="bg-white rounded-lg shadow-lg p-6 w-[90%] max-w-[450px]">
         <div class="flex justify-center">
             <img src="/img/dilg-main.png" alt="DILG Logo" class="h-[70px] w-[70px] sm:h-[80px] sm:w-[80px] mb-4">
         </div>
