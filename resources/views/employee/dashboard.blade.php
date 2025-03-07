@@ -26,7 +26,7 @@
         </button>
         <div id="leaveModalContent"></div>
     </div>
-</div> --}}
+</div>
 
 <div class="max-w-5xl mx-auto bg-white p-6 rounded-lg shadow-md">
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"> 

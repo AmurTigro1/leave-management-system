@@ -47,6 +47,16 @@
                     Dashboard
                 </a>
 
+                <a href="{{ route('employee.leaderboard')}}" 
+                    class="m-3 flex items-center text-white px-4 py-3 text-sm rounded-lg transition-all duration-200 
+                        hover:bg-gradient-to-r hover:from-blue-500 hover:to-blue-600 hover:text-white 
+                        {{ request()->routeIs('employee.leaderboard') ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg' : 'text-gray-600 ' }}">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                    </svg>
+                    Leaderboard
+                </a>
+
                 <a href="{{ route('employee.make_request') }}" class="m-3 flex items-center px-4 py-3 rounded-lg transition-all duration-200 
                         hover:bg-blue-600 {{ request()->routeIs('employee.make_request') ? 'bg-blue-600 shadow-lg' : 'text-gray-300' }}">
                     <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -77,7 +87,7 @@
     </div>
 </div>
 
-<!-- Sidebar -->
+{{-- <!-- Sidebar -->
 <div 
     :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'"
     class="fixed inset-y-0 left-0 z-30 w-64 bg-white shadow-lg text-gray-600 transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0"
@@ -170,7 +180,7 @@
             </a>  
         </nav>
     </aside>
-</div>
+</div> --}}
 <style>
     [x-cloak] { display: none !important; }
 </style>

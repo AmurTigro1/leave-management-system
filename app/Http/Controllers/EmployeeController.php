@@ -49,7 +49,6 @@ class EmployeeController extends Controller
     }
         
     
-    
     public function indexCTO() {
         return view('main_resources.logins.cto_login');
     }
