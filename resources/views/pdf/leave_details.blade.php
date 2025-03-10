@@ -318,20 +318,40 @@
                         <tbody>
                             <tr>
                                 <td>Total Earned</td>
-                                <td>{{ $leave->user->vacation_leave_balance}}</td>
-                                <td>{{ $leave->user->sick_leave_balance}}</td>
+                                <td>{{ $leave->user->vacation_leave_balance }}</td>
+                                <td>{{ $leave->user->sick_leave_balance }}</td>
                             </tr>
                             <tr>
                                 <td>Less this application</td>
-                                <td></td>
-                                <td></td>
+                                @if($leave->leave_type == 'Vacation Leave')
+                                    <td>{{ $leave->days_applied }}</td>
+                                @else
+                                    <td>0</td>
+                                @endif
+                                @if($leave->leave_type == 'Sick Leave')
+                                    <td>{{ $leave->days_applied }}</td>
+                                @else
+                                    <td>0</td>
+                                @endif
                             </tr>
                             <tr>
                                 <td>Balance</td>
-                                <td></td>
-                                <td></td>
+                                <td>
+                                    @if($leave->leave_type == 'Vacation Leave')
+                                        {{ $leave->user->vacation_leave_balance - $leave->days_applied }}
+                                    @else
+                                        {{ $leave->user->vacation_leave_balance }}
+                                    @endif
+                                </td>
+                                <td>
+                                    @if($leave->leave_type == 'Sick Leave')
+                                        {{ $leave->user->sick_leave_balance - $leave->days_applied }}
+                                    @else
+                                        {{ $leave->user->sick_leave_balance }}
+                                    @endif
+                                </td>
                             </tr>
-                        </tbody>
+                        </tbody>                        
                     </table>
                 </div>                
                 <p class="last-sign">________<span class="underline">{{ $hr->name ?? 'No Supervisor Found' }}</span>________</p>
@@ -339,11 +359,55 @@
             </div>
             <div class="last-part3">
                 <p class="leave-info2">7.B RECOMMENDATION</p>
-                <p class="info2"><span class="checkbox">___</span>For Approval</p>
-                <p class="info2"><span class="checkbox">___</span>For disapproval due to<span class="info-1">________________________</span></p>
+                <p class="disapproval-reason">
+                    <span class="commutation-checkbox">
+                        @if($leave->hr_status == 'approved') 
+                            <img src="{{ public_path('img/check.jpg') }}" width="18" height="10">
+                        @endif
+                    </span>For Approval
+                </p>
+                @if($leave->hr_status == 'rejected') 
+                    <p class="info2">
+                        <span class="commutation-checkbox">
+                            
+                                <img src="{{ public_path('img/check.jpg') }}" width="18" height="10">
+                            
+                        </span>For disapproval due to 
+                        <span class="underline">{{ Str::limit($leave->disapproval_reason, 23, '-') }}</span>
+                    </p>
+                
+                    @php
+                        $remainingReason = Str::substr($leave->disapproval_reason, 23);
+                    @endphp
+                    
+                    <p class="last-line">
+                        <span class="underline">{{ Str::limit($remainingReason, 46, '-') }}</span>
+                    </p>
+                    @php
+                        $remainingReason = Str::substr($remainingReason, 46);
+                    @endphp
+                    <p class="last-line">
+                        <span class="underline">{{ Str::limit($remainingReason, 46, '-') }}</span>
+                    </p>
+                    @php
+                        $remainingReason = Str::substr($remainingReason, 46);
+                    @endphp
+                    
+                    <p class="last-line">
+                        <span class="underline">{{ Str::limit($remainingReason, 46, '...') }}</span>
+                    </p>   
+                @else
+                <p class="info2">
+                    <span class="commutation-checkbox">
+                        @if($leave->hr_status == 'rejected') 
+                            <img src="{{ public_path('img/check.jpg') }}" width="18" height="10">
+                        @endif
+                    </span>For disapproval due to ____________________
+                </p>
                 <p class="last-line">____________________________________</p>
                 <p class="last-line">____________________________________</p>
                 <p class="last-line">____________________________________</p>
+                @endif             
                 <p class="last-sign2">________<span class="underline">{{ $hr->name ?? 'No Supervisor Found' }}</span>________</p>
                 <p class="text-last">Authorized Officer</p>
             </div>
