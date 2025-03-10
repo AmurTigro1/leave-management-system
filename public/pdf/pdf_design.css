@@ -147,6 +147,10 @@
     .info-1 {
         font-size: 9px;
     }
+    .additional-detail {
+        font-size: 9px;
+        margin-right: 2px;
+    }
     .info-2 {
         font-size: 8px;
     }
@@ -167,7 +171,7 @@
     }
     .middle-part2 {
         font-size: 12px;
-        margin-top: -351px;
+        margin-top: -390px;
         margin-left: 388px;
         width: 313px;
         border: 1px solid black;
@@ -195,6 +199,7 @@
     .bottom-part {
         font-size: 12px;
         width: 55%;
+        padding-bottom: 1px;
         border: 1px solid black;
     }
     .fill-in {
@@ -303,4 +308,37 @@
     .final-sign {
         margin-top: 25px;
         margin-left: 200px;
+    }
+    .commutation-part {
+        margin-top: 2px;
+        padding-left: 3px;
+        font-size: 12px;
+    }
+    .commutation-checkbox {
+        display: inline-block;
+        width: 18px;
+        height: 10px;
+        border: 2px solid black;
+        margin-left: 5px;
+        margin-right: 8px;
+    }
+    .leave-type {
+        display: inline-block;
+        width: 18px;
+        height: 10px;
+        border: 2px solid black;
+        margin-left: 5px;
+        margin-right: 4px;
+    }
+    .study-leave {
+        display: inline-block;
+        width: 18px;
+        height: 10px;
+        border: 2px solid black;
+        margin-left: 5px;
+        margin-right: 4px;
+    }
+    .info2-study {
+        margin-top: -9px;
+        font-size: 11px;
     }
