@@ -57,80 +57,55 @@
                 <p class="info"><span class="leave-type">
                     @if($leave->leave_type == 'Vacation Leave') 
                         <img src="{{ public_path('img/check.jpg') }}" width="18" height="10"> 
-                    @else
-                        ___
                     @endif</span>Vacation Leave <span class="additional-detail"> (Sec. 51, Rule XVI, Omnibus Rules Implementing E.O. No. 292)</span></p>
                 <p class="info2"><span class="leave-type">
                     @if($leave->leave_type == 'Mandatory Leave') 
                         <img src="{{ public_path('img/check.jpg') }}" width="18" height="10"> 
-                    @else
-                        ___
                     @endif</span>Mandatory/Forced Leave <span class="info-3"> (Sec. 51, Rule XVI, Omnibus Rules Implementing E.O. No. 292)</span></p>
                 <p class="info2"><span class="leave-type">
                     @if($leave->leave_type == 'Sick Leave') 
                         <img src="{{ public_path('img/check.jpg') }}" width="18" height="10">
-                    @else
-                        ___ 
+                  
                     @endif</span>Sick Leave <span class="additional-detail"> (Sec. 43, Rule XVI, Omnibus Rules Implementing E.O. No. 292)</span></p>
                 <p class="info2"><span class="leave-type">
                     @if($leave->leave_type == 'Maternity Leave') 
-                        <img src="{{ public_path('img/check.jpg') }}" width="18" height="10">
-                    @else
-                        ___ 
+                        <img src="{{ public_path('img/check.jpg') }}" width="18" height="10"> 
                     @endif</span>Maternity Leave<span class="additional-detail"> (R.A No. 11210/IRR Issued by CSC, DOLE and SSS)</span></p>
                 <p class="info2"><span class="leave-type">
                     @if($leave->leave_type == 'Paternity Leave') 
-                        <img src="{{ public_path('img/check.jpg') }}" width="18" height="10">
-                    @else
-                        ___ 
+                        <img src="{{ public_path('img/check.jpg') }}" width="18" height="10"> 
                     @endif</span>Paternity Leave<span class="additional-detail"> (R.A 8187/CSC MC No. 71, s. 1998, as amended)</span></p>
                 <p class="info3"><span class="leave-type">
                     @if($leave->leave_type == 'Special Privilege Leave') 
-                        <img src="{{ public_path('img/check.jpg') }}" width="18" height="10">
-                    @else
-                        ___ 
+                        <img src="{{ public_path('img/check.jpg') }}" width="18" height="10"> 
                     @endif</span>Special Privilege Leave<span class="info-3"> (Sec. 21, Rule XVI, Omnibus Rules Implementing E.O. No. 292)</span></p>
                 <p class="info2"><span class="leave-type">
                     @if($leave->leave_type == '') 
                         <img src="{{ public_path('img/check.jpg') }}" width="18" height="10"> 
-                    @else
-                        ___
                     @endif</span>Solo Parent Leave<span class="additional-detail"> (R.A No. 8972/CSC MC No. 8, s. 2004)</span></p>
                 <p class="info2"><span class="leave-type">
                     @if($leave->leave_type == 'Study Leave') 
-                        <img src="{{ public_path('img/check.jpg') }}" width="18" height="10">
-                    @else
-                        ___ 
+                        <img src="{{ public_path('img/check.jpg') }}" width="18" height="10"> 
                     @endif</span>Study Leave<span class="additional-detail"> (Sec. 68, Rule XVL, Omnibus Rules Implementing E.O. No. 292)</span></p>
                 <p class="info2"><span class="leave-type">
                     @if($leave->leave_type == '10-Day VAWC Leave') 
-                        <img src="{{ public_path('img/check.jpg') }}" width="18" height="10">
-                    @else
-                        ___ 
+                        <img src="{{ public_path('img/check.jpg') }}" width="18" height="10"> 
                     @endif</span>10-Day VAWC Leave<span class="additional-detail"> (R.A No. 9262/CSC MC No. 15, s. 2005)</span></p>
                 <p class="info2"><span class="leave-type">
                     @if($leave->leave_type == 'Rehabilitation Privilege') 
-                        <img src="{{ public_path('img/check.jpg') }}" width="18" height="10">
-                    @else
-                        ___ 
+                        <img src="{{ public_path('img/check.jpg') }}" width="18" height="10"> 
                     @endif</span>Rehabilitation Privilege<span class="info-2"> (Sec. 55, Rule XVL, Omnibus Rules Implementing E.O. No. 292)</span></p>
                 <p class="info2"><span class="leave-type">
                     @if($leave->leave_type == 'Special Leave Benefits for Women Leave') 
-                        <img src="{{ public_path('img/check.jpg') }}" width="18" height="10">
-                    @else
-                        ___ 
+                        <img src="{{ public_path('img/check.jpg') }}" width="18" height="10"> 
                     @endif</span>Special Leave Benefits for Women<span class="additional-detail"> (R.A No. 9710/CSC MC No. 25, s. 2010)</span></p>
                 <p class="info2"><span class="leave-type">
                     @if($leave->leave_type == 'Special Emergency Leave') 
-                        <img src="{{ public_path('img/check.jpg') }}" width="18" height="10">
-                    @else
-                        ___ 
+                        <img src="{{ public_path('img/check.jpg') }}" width="18" height="10"> 
                     @endif</span>Special Emergency (Calamity) Leave<span class="additional-detail"> (CSC MC No. 2, s. 2012, as amended)</span></p>
                 <p class="info2"><span class="leave-type">
                     @if($leave->leave_type == 'Adoption Leave ') 
                         <img src="{{ public_path('img/check.jpg') }}" width="18" height="10"> 
-                    @else
-                        ___
                     @endif</span>Adoption Leave<span class="additional-detail"> (R.A No. 8552)</span></p>
                 <p class="other-option">Others:</p>
                 <p class="other-opt">
@@ -162,8 +137,6 @@
                     <span class="leave-type">
                         @if($key == "Within the Philippines")
                             <img src="{{ public_path('img/check.jpg') }}" width="18" height="10"> 
-                        @else
-                            ___
                         @endif
                     </span>
                     Within the Philippines:
@@ -181,8 +154,6 @@
                 <p class="info2"><span class="leave-type">
                     @if($key == "Abroad")
                         <img src="{{ public_path('img/check.jpg') }}" width="18" height="10"> 
-                    @else
-                        ___
                     @endif
                     </span>Abroad (Specify):<span class="info-1">
                     @if($key == "Abroad")
@@ -199,8 +170,6 @@
                 <p class="info2"><span class="leave-type">
                     @if($key == "In Hospital")
                         <img src="{{ public_path('img/check.jpg') }}" width="18" height="10"> 
-                    @else
-                        ___
                     @endif
                     </span>In Hospital (Specify Illness):<span class="info-1">
                     @if($key == "In Hospital")
@@ -215,8 +184,6 @@
                 <p class="info2"><span class="leave-type">
                     @if($key == "Out Patient")
                         <img src="{{ public_path('img/check.jpg') }}" width="18" height="10"> 
-                    @else
-                        ___
                     @endif
                     </span>Out Patient (Specify Illness):<span class="info-1">
                     @if($key == "Out Patient")
@@ -238,8 +205,6 @@
                     <span class="study-leave">
                         @if($leave->leave_type == "Study Leave" && is_array($details) && in_array("Completion of Master's Degree", $details))
                             <img src="{{ public_path('img/check.jpg') }}" width="18" height="10"> 
-                        @else
-                            ___
                         @endif
                     </span> Completion of Master's Degree
                 </p>
@@ -248,8 +213,6 @@
                     <span class="study-leave">
                         @if($leave->leave_type == "Study Leave" && is_array($details) && in_array("BAR Review", $details))
                             <img src="{{ public_path('img/check.jpg') }}" width="18" height="10"> 
-                        @else
-                            ___
                         @endif
                     </span> BAR/Board Examination Review
                 </p>
@@ -258,8 +221,6 @@
                     <span class="study-leave">
                         @if($leave->leave_type == "Other Purposes" && is_array($details) && in_array("Monetization of Leave Credits", $details))
                             <img src="{{ public_path('img/check.jpg') }}" width="18" height="10"> 
-                        @else
-                            ___
                         @endif
                     </span> Monetization of Leave Credits
                 </p>
@@ -268,8 +229,6 @@
                     <span class="study-leave">
                         @if($leave->leave_type == "Other Purposes" && is_array($details) && in_array("Terminal Leave", $details))
                             <img src="{{ public_path('img/check.jpg') }}" width="18" height="10"> 
-                        @else
-                            ___
                         @endif
                     </span> Terminal Leave
                 </p>
