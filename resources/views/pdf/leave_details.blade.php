@@ -276,7 +276,7 @@
             </div>
             <div class="bottom-part">
                 <p class="leave-info2">6.C NUMBER OF WORKING DAYS APPLIED FOR</p>
-                <p class="fill-in"><span class="underline">{{ $leave->days_applied}} Working days</span></p>
+                <p class="fill-in">_______<span class="underline">{{ $leave->days_applied}} Working days</span>_______</p>
                 <p class="inclusive">INCLUSIVE DATES</p>
                 <p class="fill-in-2"><span class="underline">{{ \Carbon\Carbon::parse($leave->start_date)->format('F d, Y') }} - {{ \Carbon\Carbon::parse($leave->end_date)->format('F d, Y') }}</span></p>
             </div>
@@ -305,28 +305,36 @@
             </div>
             <div class="last-part">
                 <p class="leave-info2">7.A CERTIFICATION OF LEAVE CREDITS</p>
-                <p class="last-part-info">As of ________________________</p>
+                <p class="last-part-info">As of ________<span class="underline">{{ \Carbon\Carbon::parse($leave->date_filing)->format('F d, Y') }}</span>________</p>
                 <div class="last-table">
-                    <div class="column">
-                        <p class="row-first"></p>
-                        <p class="row">Total Eearned</p>
-                        <p class="row">Less this application</p>
-                        <p class="row">Balance</p>
-                    </div>
-                    <div class="column2">
-                        <p class="row1">Vacation Leave</p>
-                        <p class="row-first"></p>
-                        <p class="row-first"></p>
-                        <p class="row-first"></p>
-                    </div>
-                    <div class="column3">
-                        <p class="row1">Sick Leave</p>
-                        <p class="row-first"></p>
-                        <p class="row-first"></p>
-                        <p class="row-first"></p>
-                    </div>
-                </div>
-                <p class="last-sign">______________________________________________</p>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th>Vacation Leave</th>
+                                <th>Sick Leave</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Total Earned</td>
+                                <td>{{ $leave->user->vacation_leave_balance}}</td>
+                                <td>{{ $leave->user->sick_leave_balance}}</td>
+                            </tr>
+                            <tr>
+                                <td>Less this application</td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>Balance</td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>                
+                <p class="last-sign">________<span class="underline">{{ $hr->name ?? 'No Supervisor Found' }}</span>________</p>
                 <p class="text-last">HRMO</p>
             </div>
             <div class="last-part3">
@@ -336,15 +344,15 @@
                 <p class="last-line">____________________________________</p>
                 <p class="last-line">____________________________________</p>
                 <p class="last-line">____________________________________</p>
-                <p class="last-sign2">__________________________________</p>
+                <p class="last-sign2">________<span class="underline">{{ $hr->name ?? 'No Supervisor Found' }}</span>________</p>
                 <p class="text-last">Authorized Officer</p>
             </div>
             <div class="final-part">
                 <p class="leave-info2">7.C APPROVED FOR</p>
                 <p class="final-disapproval">7.D DISAPPROVED DUE TO:</p>
                 <div class="final-list">
-                    <p class="list01">_________ days with pay</p>
-                    <p class="list01">_________ days without pay</p>
+                    <p class="list01">____<span class="underline">{{ $leave->approved_days_with_pay}}</span>____ days with pay</p>
+                    <p class="list01">____<span class="underline">{{ $leave->approved_days_without_pay}}</span>____ days without pay</p>
                     <p class="list01">_________ others (specify)</p>
                 </div>
                 <div class="final-list2">
@@ -352,8 +360,8 @@
                     <p class="list01">______________________________</p>
                     <p class="list01">______________________________</p>
                 </div>
-                <p class="final-sign">______________________________________________</p>
-                <p class="text-last">(Authorized Official)</p>
+                <p class="final-sign">____________<span class="underline">{{ $supervisor->name ?? 'No Supervisor Found' }}</span>____________</p>
+                <p class="text-last">(Authorized Official)</p> 
             </div>
         </div>
     </div>

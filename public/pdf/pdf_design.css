@@ -239,34 +239,11 @@
         margin-left: 38px;
         padding-top: 15px;
     }
-    .row {
-        margin-top: -14px;
-        border: 1px solid black;
-        padding: 5px;
-    }
-    .row-first {
-        margin-top: -14px;
-        border: 1px solid black;
-        padding: 5px;
-        padding-bottom: 19px;
-    }
-    .column2 {
-        margin-left: 120px;
-        margin-top: -150px;
-    }
-    .column3 {
-        margin-left: 215px;
-        margin-top: -150px;
-    }
-    .row1 {
-        margin-top: -14px;
-        border: 1px solid black;
-        padding: 5px;
-
-    }
     .last-sign {
         margin-top: 0px;
-        margin-left: 40px;
+        text-transform: uppercase;
+        font-weight: bold;
+        text-align: center;
     }
     .text-last {
         margin-top: -13px;
@@ -284,7 +261,9 @@
     }
     .last-sign2 {
         margin-top: 24px;
-        margin-left: 40px;
+        text-transform: uppercase;
+        font-weight: bold;
+        text-align: center;
     }
     .final-part {
         font-size: 12px;
@@ -307,7 +286,9 @@
     }
     .final-sign {
         margin-top: 25px;
-        margin-left: 200px;
+        text-transform: uppercase;
+        font-weight: bold;
+        text-align: center;
     }
     .commutation-part {
         margin-top: 2px;
@@ -342,3 +323,28 @@
         margin-top: -9px;
         font-size: 11px;
     }
+    .last-table {
+        width: 400px;
+        margin: 20px auto;
+        padding-top: 15px;
+    }
+    
+    table {
+        width: 70%;
+        margin-top: -25px;
+        margin-left: 50px;
+        font-size: 10px;
+        border-collapse: collapse;
+    }
+    
+    th, td {
+        padding: 5px;
+        text-align: start;
+        border: 1px solid black;
+    }
+    
+    th {
+        background-color: #f2f2f2;
+        font-weight: bold;
+    }
+    

@@ -329,8 +329,11 @@ class EmployeeController extends Controller
     public function viewPdf($id)
     {
         $leave = Leave::findOrFail($id);
+
+        $supervisor = User::where('role', 'supervisor')->first();
+        $hr = User::where('role', 'hr')->first();
         
-        $pdf = PDF::loadView('pdf.leave_details', compact('leave'));
+        $pdf = PDF::loadView('pdf.leave_details', compact('leave', 'supervisor', 'hr'));
         
         return $pdf->stream('leave_request_' . $leave->id . '.pdf');
     }
