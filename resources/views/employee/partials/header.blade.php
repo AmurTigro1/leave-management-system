@@ -1,60 +1,97 @@
 <header class="py-4 bg-white shadow-md w-full">
-    <div class="container mx-auto flex justify-between items-center text-center">
+    <div class="container mx-auto max-w-7xl px-4 flex justify-between items-center">
         <!-- Logo -->
-        <p class="px-4 text-xl text-blue-600 font-semibold">Leave Management System (LMS)</p>
+        <p class="text-xl text-blue-600 font-semibold">Leave Management System (LMS)</p>
 
-             <!-- Navigation Links -->
-             <nav id="menu" class="flex items-center space-x-6">
-                @if (Auth::check())
-                    @if (Auth::user()->role === 'admin')
-                        <!-- Admin Links -->
-                        <a href="{{ route('admin.dashboard') }}" class="hidden md:block text-gray-600 font-semibold py-2 rounded-lg hover:text-blue-500">
-                            Admin Dashboard
-                        </a>
-                        <a href="{{ route('admin.requests') }}" class="hidden md:block text-gray-600 font-semibold py-2 rounded-lg hover:text-blue-500">
-                            Manage Requests
-                        </a>
-                    @endif
+        <!-- Navigation Links -->
+        <nav class="flex items-center space-x-6">
+            @if (Auth::check())
+                @if (Auth::user()->role === 'admin')
+                    <a href="{{ route('admin.dashboard') }}" class="hidden md:block text-gray-600 font-semibold hover:text-blue-500">
+                        Admin Dashboard
+                    </a>
+                    <a href="{{ route('admin.requests') }}" class="hidden md:block text-gray-600 font-semibold hover:text-blue-500">
+                        Manage Requests
+                    </a>
                 @endif
+            @endif
+
             @if (Auth::check())
             <!-- Dropdown Menu -->
             <div class="relative">
-                <button id="dropdown-btn" class="flex items-center text-gray-600 font-semibold px-2 py-1 rounded-lg hover:bg-gray-100 focus:outline-none">
-                    <div class="w-8 h-8 rounded-full overflow-hidden bg-gray-200 flex items-center justify-center mr-2">
-                        @if (auth()->user()->profile_image)
-                            <img src="{{ auth()->user()->profile_image ? asset('storage/profile_images/' . auth()->user()->profile_image) : asset('default-avatar.png') }}" class="w-full h-full object-cover">
-                        @else
-                            <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"></path>
-                            </svg>
-                        @endif
+                <button id="dropdown-btn" class="flex items-center justify-between w-full bg-white px-4 rounded-lg shadow-md border border-gray-300 hover:bg-gray-50 transition-all duration-200 ease-in-out">
+                    <!-- Leave Balance Section -->
+                    <div class="flex items-center justify-between bg-white p-2 rounded-lg shadow-sm border border-gray-100">
+                        <!-- Leave Balances -->
+                        <div class="flex flex-row text-gray-600 space-x-6">
+                            <!-- Sick Leave -->
+                            <div class="flex items-center ">
+                                <span class="font-medium text-sm">Sick Leave:</span>
+                                <span class="font-semibold text-gray-800 text-sm bg-gray-50 px-2 py-1 rounded-md">
+                                    {{ Auth::user()->sick_leave_balance }}
+                                </span>
+                            </div>
+                    
+                            <!-- Vacation Leave -->
+                            <div class="flex items-center ">
+                                <span class="font-medium text-sm">Vacation Leave:</span>
+                                <span class="font-semibold text-gray-800 text-sm bg-gray-50 px-2 py-1 rounded-md">
+                                    {{ Auth::user()->vacation_leave_balance }}
+                                </span>
+                            </div>
+                    
+                            <!-- Total Leave -->
+                            <div class="flex items-center ">
+                                <span class="font-medium text-sm">Total Leave:</span>
+                                <span class="font-semibold text-gray-800 text-sm bg-gray-50 px-2 py-1 rounded-md">
+                                    {{ Auth::user()->leave_balance }}
+                                </span>
+                            </div>
+                        </div>
+                    
+                        <!-- Profile Section -->
+                        <div class="flex items-center space-x-4">
+                            <!-- Profile Image -->
+                            <div class="w-10 h-10 rounded-full overflow-hidden bg-gray-100 flex items-center justify-center border-2 border-gray-200 hover:border-blue-300 transition-all duration-300">
+                                @if (auth()->user()->profile_image)
+                                    <img src="{{ asset('storage/profile_images/' . auth()->user()->profile_image) }}" class="w-full h-full object-cover">
+                                @else
+                                    <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"></path>
+                                    </svg>
+                                @endif
+                            </div>
+                    
+                            <!-- Username -->
+                            <span class="text-gray-700 font-semibold text-sm hover:text-blue-600 transition-colors duration-300">
+                                {{ Auth::user()->name }}
+                            </span>
+                        </div>
                     </div>
-                    {{ Auth::user()->name }}
-                    <svg class="w-4 h-4 ml-1" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Dropdown Icon -->
+                    <svg class="w-4 h-4 text-gray-500 ml-2" fill="currentColor" viewBox="0 0 20 20">
                         <path fill-rule="evenodd" d="M5.292 7.292a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 011.414 1.414l-4 4a1 1 0-1.414z" clip-rule="evenodd"></path>
                     </svg>
                 </button>
-                <!-- Dropdown Content -->
-                <div id="dropdown-menu" class="absolute hidden bg-white shadow-md rounded-lg mt-2 w-40 z-50">
-                    <ul class="py-2 text-gray-600">
-                        <!-- Mobile View: List Your Boarding House -->
+                
+                <!-- Dropdown Menu -->
+                <div id="dropdown-menu" class="absolute hidden bg-white shadow-lg rounded-lg mt-2 w-44 right-0 z-50 border border-gray-200">
+                    <ul class="py-2 text-gray-700 text-sm">
                         <li class="block md:hidden">
-                            <a href="" class="block px-4 py-2 hover:bg-gray-100 hover:text-blue-500">
-                                My requests
-                            </a>
+                            <a href="" class="block px-4 py-2 hover:bg-blue-100 hover:text-blue-600 transition">My Requests</a>
                         </li>
                         <li>
-                        <li>
-                            <a href="/lms-profile" class="block w-full text-left px-4 py-2 hover:bg-gray-100 hover:text-blue-500">Profile</a>
+                            <a href="/lms-profile" class="block px-4 py-2 hover:bg-blue-100 hover:text-blue-600 transition">Profile</a>
                         </li>
                         <li>
-                            <button id="openModal" class="block w-full text-left px-4 py-2 hover:bg-gray-100 hover:text-blue-500">
+                            <button id="openModal" class="block w-full text-left px-4 py-2 hover:bg-red-100 hover:text-red-600 transition">
                                 Logout
                             </button>
                         </li>
                     </ul>
                 </div>
             </div>
+            
             @else
             <div class="flex items-center space-x-4">
                 <a href="{{ route('login') }}" class="text-gray-600 hover:text-blue-600 font-semibold text-lg">
@@ -68,6 +105,7 @@
         </nav>
     </div>
 </header>
+
 
 <!-- Logout Confirmation Modal -->
 <div id="logoutModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden px-4 max-sm:m-10 z-50">

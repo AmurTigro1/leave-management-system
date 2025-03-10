@@ -17,19 +17,36 @@ use Illuminate\View\View;
 class EmployeeController extends Controller
 {
 
-    public function indexLMS(Request $request)
-    {
-        // Get current month (or from request)
-        $month = $request->query('month', Carbon::now()->month);
+    // public function indexLMS(Request $request)
+    // {
+    //     // Get current month (or from request)
+    //     $month = $request->query('month', Carbon::now()->month);
+    
+    //     // Fetch employees whose birthday falls in the selected month
+    //     $birthdays = User::whereMonth('birthday', $month)->get();
+    
+    //     // Fetch leave requests (assuming a 'leaves' table exists)
+    //     $leaveRequests = Leave::whereMonth('start_date', $month)->get();
+    
+    //     return view('employee.dashboard', compact('birthdays', 'leaveRequests', 'month'));
+    // }
+    public function indexLMS(Request $request) {
+        $month = $request->query('month', now()->month);
     
         // Fetch employees whose birthday falls in the selected month
         $birthdays = User::whereMonth('birthday', $month)->get();
     
-        // Fetch leave requests (assuming a 'leaves' table exists)
-        $leaveRequests = Leave::whereMonth('start_date', $month)->get();
+        // Get employees who are on approved leave this month (with user relationship)
+        $teamLeaves = Leave::whereMonth('start_date', $month)
+                            ->where('status', 'approved')
+                            ->with('user') // Ensures the user object is available
+                            ->get();
     
-        return view('employee.dashboard', compact('birthdays', 'leaveRequests', 'month'));
+        return view('employee.dashboard', compact('teamLeaves', 'birthdays', 'month'));
     }
+    
+    
+    
     public function leaderboard()
     {
         $employees = User::withCount(['leaves' => function ($query) {
