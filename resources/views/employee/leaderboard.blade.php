@@ -37,11 +37,11 @@
                 </div>
           
                 @if ($employee->leaves_count == 0)
-                    <span class="px-2 py-1 bg-green-100 text-green-800 text-xs font-semibold rounded-lg">Perfect Attendance 🎯</span>
+                    <span class="px-2 py-1 bg-green-500 text-white text-xs font-semibold rounded-lg">Perfect Attendance 🎯</span>
                 @elseif ($employee->leaves_count <= 2)
-                    <span class="px-2 py-1 bg-blue-100 text-blue-800 text-xs font-semibold rounded-lg">Excellent 🎖️</span>
+                    <span class="px-2 py-1 bg-blue-500 text-white text-xs font-semibold rounded-lg">Excellent 🎖️</span>
                 @else
-                    <span class="px-2 py-1 bg-gray-100 text-gray-600 text-xs font-semibold rounded-lg">Good Effort 👍</span>
+                    <span class="px-2 py-1 bg-gray-500 text-white text-xs font-semibold rounded-lg">Good Effort 👍</span>
                 @endif
             </div>
         </div>
@@ -62,12 +62,13 @@
 
 <!-- Modal -->
 <div id="modal" class="fixed inset-0 bg-gray-900 bg-opacity-50 hidden flex justify-center items-center">
-    <div class="bg-white max-w-lg mx-auto p-6 rounded-lg shadow-lg">
+    <div class="bg-white max-w-lg mx-auto p-6 rounded-lg shadow-lg max-h-[80vh] overflow-y-auto">
         <div id="modal-content">
             <!-- Dynamic content from HTMX will be loaded here -->
         </div>
     </div>
 </div>
+
 
 
 

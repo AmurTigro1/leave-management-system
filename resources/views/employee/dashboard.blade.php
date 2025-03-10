@@ -7,63 +7,97 @@
         <div class="fixed top-0 right-0 z-50">
             <x-notify::notify />
         </div>
-        {{-- <div class="flex items-center space-x-2">
-            <span class="w-4 h-4 bg-yellow-300 rounded-full"></span>
-            <span class="text-gray-600 text-sm">Pending</span>
-        </div>
-        <div class="flex items-center space-x-2">
-            <span class="w-4 h-4 bg-red-500 rounded-full"></span>
-            <span class="text-gray-600 text-sm">Rejected</span>
-        </div> --}}
     </div>
 </section>
 
-<!-- Employee Leave Modal -->
-<div id="leaveModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden transition-opacity duration-300">
-    <div class="bg-white p-6 rounded-lg shadow-lg w-96">
-        <button onclick="document.getElementById('leaveModal').classList.add('hidden')" class="absolute top-2 right-2 text-gray-500 hover:text-gray-700 text-xl">
-            ✖
-        </button>
-        <div id="leaveModalContent"></div>
-    </div>
-</div>
 
-<div class="max-w-5xl mx-auto bg-white p-6 rounded-lg shadow-md">
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"> 
-        <h3 class="text-xl font-semibold text-gray-700 mb-3">🎂 Birthdays this Month</h3>
+<div class="w-full px-4">
+    <h3 class="text-2xl sm:text-3xl md:text-4xl font-bold text-center text-gray-900 drop-shadow-lg animate-bounce">🎉 Happy Birthday! 🎉</h3>
 
-        @forelse ($birthdays as $employee)
-            <div class="flex items-center bg-white p-4 shadow rounded-lg border">
-                <div class="w-14 h-14 rounded-full overflow-hidden bg-gray-200 mr-4">
-                    @if ($employee->profile_image)
-                        <img src="{{ asset('storage/profile_images/' . $employee->profile_image) }}" class="w-full h-full object-cover">
-                    @else
-                        <svg class="w-14 h-14 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"></path>
-                        </svg>
-                    @endif
-                </div>
-                <div>
-                    <p class="text-lg font-semibold text-gray-700">{{ $employee->name }}</p>
-                    <p class="text-gray-500 text-sm">🎂 {{ \Carbon\Carbon::parse($employee->birthday)->format('F d, Y') }}</p>
-                </div>
+    <!-- Carousel Container -->
+    <div x-data="{ currentIndex: 0, totalSlides: {{ ceil($birthdays->count() / 4) }} }" class="relative w-full max-w-screen-lg mx-auto overflow-hidden mt-6">
+        <div class="flex transition-transform duration-700" :style="'transform: translateX(-' + (currentIndex * 100) + '%)'">
+            @foreach ($birthdays->chunk(4) as $chunk)
+            <div class="w-full flex flex-wrap justify-center gap-4 shrink-0">
+                @foreach ($chunk as $employee)
+                    <div class="w-full sm:w-[200px] bg-white shadow-lg rounded-xl p-4 flex flex-col items-center border border-gray-200 transition-transform duration-500 hover:-translate-y-2">
+                        <div class="w-16 sm:w-20 h-16 sm:h-20 rounded-full overflow-hidden bg-gray-300 shadow-md ring-4 ring-blue-400">
+                            @if ($employee->profile_image)
+                                <img src="{{ asset('storage/profile_images/' . $employee->profile_image) }}" class="w-full h-full object-cover">
+                            @else
+                                <svg class="w-full h-full text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79 4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"></path>
+                                </svg>
+                            @endif
+                        </div>
+                        <div class="mt-3 text-center">
+                            <p class="text-sm sm:text-md font-semibold">{{ $employee->name }}</p>
+                            <p class="text-xs text-gray-600">🎂 {{ \Carbon\Carbon::parse($employee->birthday)->format('F d, Y') }}</p>
+                        </div>
+                    </div>
+                @endforeach
             </div>
-        @empty
-            <p class="text-gray-500">No birthdays this month.</p>
-        @endforelse
-    </div>
-    <h2 class="text-2xl font-bold text-gray-700 mb-4">Employee Leave Calendar</h2>
-    <div class="flex justify-between items-center bg-blue-100 p-4 rounded-lg shadow-md">
-        <button id="prevMonth" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600">◀ Prev</button>
-        <h2 id="monthTitle" class="text-lg font-semibold text-gray-800"></h2>
-        <button id="nextMonth" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600">Next ▶</button>
-    </div>
-        
-    
-    <div id="leaveContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
-        <!-- Leaves will be dynamically inserted here -->
+            @endforeach
+        </div>
+
+        <!-- Pagination Dots -->
+        <div class="absolute bottom-2 left-1/2 transform -translate-x-1/2 flex space-x-2">
+            <template x-for="(dot, index) in totalSlides">
+                <div @click="currentIndex = index" class="w-3 h-3 rounded-full cursor-pointer transition-all" :class="index === currentIndex ? 'bg-blue-500 scale-110' : 'bg-gray-300'"></div>
+            </template>
+        </div>
+
+        <!-- Navigation Controls -->
+        <button @click="currentIndex = (currentIndex - 1 + totalSlides) % totalSlides" class="absolute left-2 top-1/2 -translate-y-1/2 p-3 rounded-full bg-white shadow-md hover:scale-110">
+            &larr;
+        </button>
+        <button @click="currentIndex = (currentIndex + 1) % totalSlides" class="absolute right-2 top-1/2 -translate-y-1/2 p-3 rounded-full bg-white shadow-md hover:scale-110">
+            &rarr;
+        </button>
     </div>
 </div>
+
+<!-- Leave Section -->
+<div class="flex justify-between items-center p-4 rounded-lg mt-10 border border-gray-500">
+    <button id="prevMonth" class="text-gray-600 px-4 py-2 rounded-lg">&larr;</button>
+    <h2 id="monthTitle" class="text-md text-gray-500"></h2>
+    <button id="nextMonth" class="text-gray-600 px-4 py-2 rounded-lg">&rarr;</button>
+</div>
+
+<div id="leaveContainer" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-4 px-4"></div>
+
+<!-- Leave List -->
+<div class="mt-6 p-6 rounded-lg shadow-md w-full">
+    <h2 class="text-lg sm:text-xl font-semibold text-gray-700 mb-3">Team Members on Leave</h2>
+    
+    @if($teamLeaves->isEmpty())
+        <p class="text-gray-600">No team members are on leave this month.</p>
+    @else
+        <ul>
+            @foreach($teamLeaves as $leave)
+                <li class="flex items-center space-x-4 bg-white p-4 rounded-lg shadow-md">
+                    <div class="w-12 h-12 rounded-full overflow-hidden bg-gray-200">
+                        @if($leave->user && $leave->user->profile_image)
+                            <img src="{{ asset('storage/profile_images/' . $leave->user->profile_image) }}" class="w-full h-full object-cover">
+                        @else
+                            <svg class="w-full h-full text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                    d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79 4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z">
+                                </path>
+                            </svg>
+                        @endif
+                    </div>
+                    <div>
+                        <p class="text-sm font-semibold">{{ $leave->user->name }}</p>
+                        <p class="text-xs text-gray-600">On leave from {{ date('M d', strtotime($leave->start_date)) }} to {{ date('M d', strtotime($leave->end_date)) }}</p>
+                    </div>
+                </li>
+            @endforeach
+        </ul>
+    @endif
+</div>
+
+
 
 <script>
 document.addEventListener("DOMContentLoaded", function () {
@@ -94,20 +128,26 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 data.forEach(leave => {
                     leaveContainer.innerHTML += `
-                        <div class="bg-white p-4 rounded-lg shadow-md flex items-center space-x-4 mb-4">
-                            <img src="${leave.profile_image}" class="w-12 h-12 rounded-full border-2 border-gray-300" alt="Profile">
-                            <div>
-                                <p class="font-semibold text-gray-900">${leave.title}</p>
-                                <p class="text-xs text-gray-600">Duration: <span class="text-green-500"> ${leave.duration} day(s)</span></p>
-                                <p class="text-xs text-gray-500">From: ${leave.start} <br> To: ${leave.end}</p>
-                                <span class="text-sm px-4 rounded-md ${
-                                    leave.status === 'Approved' ? 'bg-green-500 text-white' :
-                                    leave.status === 'Pending' ? 'bg-yellow-500 text-white' :
-                                    'bg-red-500 text-white'
-                                }">${leave.status}</span>
-                            </div>
-                        </div>
-                    `;
+                    <div class="bg-white p-4 rounded-lg shadow-md flex items-center space-x-4 mb-4 border border-gray-200">
+    <div class="w-12 h-12 rounded-full overflow-hidden border-2 border-gray-300 bg-gray-100">
+        <img src="${leave.profile_image}" class="w-full h-full object-cover" alt="Profile">
+    </div>
+    
+    <div class="flex-1">
+        <p class="font-semibold text-gray-900 text-sm sm:text-md">${leave.title}</p>
+        <p class="text-xs text-gray-600">Duration: <span class="text-green-500">${leave.duration} day(s)</span></p>
+        <p class="text-xs text-gray-500">From: ${leave.start} <br> To: ${leave.end}</p>
+
+        <!-- Status Badge -->
+        <span class="text-sm px-4 rounded-md ${
+         leave.status === 'Approved' ? 'bg-green-500 text-white' :
+         leave.status === 'Pending' ? 'bg-yellow-500 text-white' :
+         'bg-red-500 text-white'
+         }">${leave.status}</span>
+            </span>
+        </div>
+    </div>
+                  `;
                 });
             })
             .catch(error => console.error("Error loading leave data:", error));
@@ -127,6 +167,38 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     </script>
 @endsection
+
+<style>
+    @keyframes glow {
+        0% { opacity: 0.4; transform: scale(1); }
+        50% { opacity: 1; transform: scale(1.1); }
+        100% { opacity: 0.4; transform: scale(1); }
+    }
+
+    .animate-glow {
+        animation: glow 2s infinite;
+    }
+
+             @keyframes float {
+                 0% { transform: translateY(0); }
+                 50% { transform: translateY(-8px); }
+                 100% { transform: translateY(0); }
+             }
+         
+             @keyframes confetti {
+                 0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+                 100% { transform: translateY(50px) rotate(360deg); opacity: 0; }
+             }
+         
+             .animate-float {
+                 animation: float 3s ease-in-out infinite;
+             }
+         
+             .animate-confetti {
+                 animation: confetti 1.5s linear infinite;
+             }
+         
+</style>
 
 <style scoped>
     .fc-event {

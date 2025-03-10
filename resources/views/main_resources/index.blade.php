@@ -17,7 +17,7 @@
     @vite('resources/js/app.js')
     
 </head>
-<body class="font-poppins min-h-screen flex flex-col">
+<body class="font-sans antialiased bg-white min-h-screen flex flex-col">
     {{-- @include('main_resources.header') --}}
     <div class="content flex-grow">
         @yield('content')
