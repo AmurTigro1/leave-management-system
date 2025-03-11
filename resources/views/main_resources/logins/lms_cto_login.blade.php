@@ -56,7 +56,7 @@
             }
         }
 </style>
-<a href="{{ URL::previous() }}  " class="text-blue-600 ml-2 font-bold text-xl hover:text-gray-700">
+<a href="/" class="text-blue-600 ml-2 font-bold text-xl hover:text-gray-700">
     Back 
 </a>
 <div class="flex items-center justify-center mt-[80px]">
@@ -64,13 +64,13 @@
         <div class="text-center">
             <img class="mx-auto mb-3 w-16" src="/img/dilg-main.png" alt="DILG Logo">
             <a href="/" class="font-bold text-2xl">Department of the Interior and Local Government</a>
-            <div class="flex justify-center items-center text-blue-600 font-bold mt-4 text-lg font-bold">
+            {{-- <div class="flex justify-center items-center text-blue-600 font-bold mt-4 text-lg font-bold">
                 <p class="mr-3"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 9V5.25A2.25 2.25 0 0 1 10.5 3h6a2.25 2.25 0 0 1 2.25 2.25v13.5A2.25 2.25 0 0 1 16.5 21h-6a2.25 2.25 0 0 1-2.25-2.25V15M12 9l3 3m0 0-3 3m3-3H2.25" />
                   </svg>
                   
                 <p>Leave Management System</p>
-            </div>
+            </div> --}}
         </div>
 
         <form method="POST" action="{{ route('login') }}" class="mt-6">
@@ -111,12 +111,22 @@
             </div>
 
             <!-- Remember Me -->
-            <div class="mb-4 flex items-center">
-                <input class="form-check-input mr-2" type="checkbox" name="remember" id="remember"
-                    {{ old('remember') ? 'checked' : '' }}>
-                <label class="text-gray-700 text-sm" for="remember">
-                    {{ __('Remember Me') }}
-                </label>
+            <div class="mb-4 flex items-center justify-between">
+                <div>
+                    <input class="form-check-input mr-2" type="checkbox" name="remember" id="remember"
+                        {{ old('remember') ? 'checked' : '' }}>
+                    <label class="text-gray-700 text-sm" for="remember">
+                        {{ __('Remember Me') }}
+                    </label>
+                </div>
+
+                <div>
+                    @if (Route::has('password.request'))
+                        <a class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" href="{{ route('password.request') }}">
+                            {{ __('Forgot your password?') }}
+                        </a>
+                    @endif
+                </div>
             </div>
 
             <input type="hidden" name="system" value="lms"> 

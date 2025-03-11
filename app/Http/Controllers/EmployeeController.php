@@ -47,18 +47,9 @@ class EmployeeController extends Controller
         $users = User::all();
         return view('employee.partials.users-modal', compact('users'));
     }
-        
-    
-    public function indexCTO() {
-        return view('main_resources.logins.cto_login');
-    }
 
-    public function loginLMS() {
-        return view('main_resources.logins.lms_login');
-    }
-
-    public function loginCTO() {
-        return view('main_resources.logins.cto_login');
+    public function loginLmsCto() {
+        return view('main_resources.logins.lms_cto_login');
     }
 
     public function makeRequest()
@@ -173,7 +164,7 @@ class EmployeeController extends Controller
         $user->save();
 
         notify()->success('Leave request successful!');
-        return redirect()->back()->with('success', 'Leave request submitted successfully.');
+        return redirect()->back();
     }
 
     public function showRequests() {

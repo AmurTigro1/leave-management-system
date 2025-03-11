@@ -1,58 +1,190 @@
 @extends('CTO.layouts.sidebar-header')
 
 @section('content')
-<div class="max-w-4xl mx-auto bg-white p-6 shadow-md border">
+<div class="w-full bg-white p-6">
     <div class="text-center">
-        <div class="justify-center flex">
+        {{-- <div class="justify-center flex">
             <img src="/img/dilg-main.png" alt="DILG Logo" class="h-[80px] w-[80px] mx-auto lg:mx-0 mb-4">
         </div>
         <div>
             <p>Republic of the Philippines</p>
             <h1 class="font-bold">DEPARTMENT OF THE INTERIOR AND LOCAL GOVERNMENT</h1>
             <h1>Rajah Sikatuna Avenue, Dampas, City of Tagbilaran, Bohol</h1>
-        </div>
-    </div>    
-    <form action="{{ route('overtime_request.store') }}" method="POST" class="mt-4">
-        @csrf
-        
-        <!-- Employee Information -->
-        <div class="grid grid-cols-2 gap-4">
-            <div>
-                <label class="font-semibold">Position:</label>
-                <input type="text" name="position" class="w-full border p-2" required>
+        </div> --}}
+        <div class="w-full max-w-full mx-auto bg-white p-8 shadow-md border">
+
+            <div class="text-center">
+                <h2 class="font-bold text-lg">Select Overtime Dates</h2>
             </div>
-            <div>
-                <label class="font-semibold">Office/Division:</label>
-                <input type="text" name="office_division" class="w-full border p-2" required>
+
+            <div x-data="calendar()" class="mt-4 select-none p-4 rounded-lg shadow-lg border"
+            style="background-image: url('/img/Background.png'); background-size: cover; background-position: center;">
+                       <div class="flex justify-between items-center mb-2">
+                    <button @click="prevMonth()" class="px-3 py-1 bg-gray-300 text-gray-700 rounded">&lt;</button>
+                    <span x-text="monthNames[month] + ' ' + year" class="text-lg font-bold"></span>
+                    <button @click="nextMonth()" class="px-3 py-1 bg-gray-300 text-gray-700 rounded">&gt;</button>
+                </div>
+
+                <div class="grid grid-cols-7 text-center font-bold mb-2 border text-white">
+                    <span>Sun</span> <span>Mon</span> <span>Tue</span> <span>Wed</span>
+                    <span>Thu</span> <span>Fri</span> <span>Sat</span>
+                </div>
+
+                <div class="grid grid-cols-7 text-center border text-white font-bold">
+                    <template x-for="blankDay in blankDays">
+                        <div class="py-2"></div>
+                    </template>
+                    <template x-for="day in daysInMonth" :key="day">
+                        <div 
+                            @mousedown="!isPastDate(day) && startSelection(day)"
+                            @mouseover="!isPastDate(day) && dragSelection(day)"
+                            @mouseup="endSelection()"
+                            class="cursor-pointer rounded transition duration-200 ease-in-out border p-16 bg-black bg-opacity-40 relative"
+                            :class="{
+                                'bg-gray-300 text-gray-500 cursor-not-allowed': isPastDate(day), 
+                                'bg-red-600': selectedDays.includes(day) && !isPastDate(day), 
+                                'hover:bg-gray-300 hover:bg-opacity-40': !selectedDays.includes(day) && !isPastDate(day)
+                            }">
+                            
+                            <!-- Number positioned in the top-right corner -->
+                            <span class="absolute top-1 right-2 text-xl font-bold">
+                                <span x-text="day"></span>
+                            </span>
+                    
+                        </div>
+                    </template>                                    
+                </div>
+
+                <div class="mt-4 text-center">
+                    <p class="text-white" x-show="selectedDays.length">Selected Dates: <span x-text="selectedDates"></span></p>
+
+                    <!-- Apply for OT Request Button (Only visible when dates are selected) -->
+                    <div class="mt-2 space-x-2">
+                        @include('CTO.modals.request', ['otModal' => $overtimereq])
+                        <button onclick="openRequestModal()" id="openModal" x-show="selectedDays.length" class="px-4 py-2 bg-blue-500 text-white rounded">
+                            Apply for OT Request
+                        </button>
+
+                        <!-- Cancel Selection Button -->
+                        <button 
+                            x-show="selectedDays.length" 
+                            @click="cancelSelection()" 
+                            class="px-4 py-2 bg-red-500 text-white rounded">
+                            Cancel Selection
+                        </button>
+                    </div>
+                </div>
+
             </div>
         </div>
-        
-        <!-- Overtime Details -->
-        <div class="mt-4 border-t pt-4">
-            <h3 class="font-semibold">Overtime Details</h3>
-            <div class="grid grid-cols-2 gap-4">
-                <div>
-                    <label class="font-semibold">Date Filed:</label>
-                    <input type="date" name="date_filed" class="w-full border p-2" required>
-                </div>
-                <div>
-                    <label class="font-semibold">Working Hours Applied:</label>
-                    <input type="number" name="working_hours_applied" class="w-full border p-2" required>
-                </div>
-                <div>
-                    <label class="font-semibold">Inclusive Dates:</label>
-                    <input type="date" name="inclusive_date_start" class="w-full border p-2" required>
-                </div>
-                <div>
-                    <input type="date" name="inclusive_date_end" class="w-full border p-2" required>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Submit Button -->
-        <div class="mt-6 text-center">
-            <button type="submit" class="bg-blue-500 text-white px-4 py-2">Submit Request</button>
-        </div>
-    </form>
+    </div>
 </div>
+
+<script>
+document.addEventListener('alpine:init', () => {
+    Alpine.data('calendar', () => ({
+        monthNames: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
+        year: new Date().getFullYear(),
+        month: new Date().getMonth(),
+        today: new Date().getDate(),
+        currentYear: new Date().getFullYear(),
+        currentMonth: new Date().getMonth(),
+        daysInMonth: [],
+        blankDays: [],
+        selectedDays: [],
+        isDragging: false,
+        isRemoving: false,
+        firstSelectedDate: null,
+        lastSelectedDate: null,
+
+        init() {
+            this.calculateDays();
+        },
+
+        calculateDays() {
+            let firstDayOfMonth = new Date(this.year, this.month).getDay();
+            let daysInMonth = new Date(this.year, this.month + 1, 0).getDate();
+
+            this.blankDays = Array(firstDayOfMonth).fill(null);
+            this.daysInMonth = Array.from({ length: daysInMonth }, (_, i) => i + 1);
+        },
+
+        isPastDate(day) {
+            return (this.year < this.currentYear) || 
+                   (this.year === this.currentYear && this.month < this.currentMonth) || 
+                   (this.year === this.currentYear && this.month === this.currentMonth && day < this.today);
+        },
+
+        prevMonth() {
+            this.month = (this.month === 0) ? 11 : this.month - 1;
+            if (this.month === 11) this.year--;
+            this.calculateDays();
+        },
+
+        nextMonth() {
+            this.month = (this.month === 11) ? 0 : this.month + 1;
+            if (this.month === 0) this.year++;
+            this.calculateDays();
+        },
+
+        startSelection(day) {
+            if (this.isPastDate(day)) return;
+
+            this.isDragging = true;
+
+            if (this.selectedDays.includes(day)) {
+                this.isRemoving = true;
+                this.selectedDays = this.selectedDays.filter(d => d !== day);
+            } else {
+                this.isRemoving = false;
+                this.selectedDays.push(day);
+            }
+            this.updateInclusiveDates();
+        },
+
+        dragSelection(day) {
+            if (!this.isDragging || this.isPastDate(day)) return;
+
+            if (this.isRemoving) {
+                this.selectedDays = this.selectedDays.filter(d => d !== day);
+            } else {
+                if (!this.selectedDays.includes(day)) {
+                    this.selectedDays.push(day);
+                    this.selectedDays.sort((a, b) => a - b);
+                }
+            }
+            this.updateInclusiveDates();
+        },
+
+        endSelection() {
+            this.isDragging = false;
+            this.isRemoving = false;
+        },
+
+        updateInclusiveDates() {
+            if (this.selectedDays.length > 0) {
+                let first = Math.min(...this.selectedDays);
+                let last = Math.max(...this.selectedDays);
+
+                this.firstSelectedDate = `${this.year}-${String(this.month + 1).padStart(2, '0')}-${String(first).padStart(2, '0')}`;
+                this.lastSelectedDate = `${this.year}-${String(this.month + 1).padStart(2, '0')}-${String(last).padStart(2, '0')}`;
+            } else {
+                this.firstSelectedDate = null;
+                this.lastSelectedDate = null;
+            }
+        },
+
+        get selectedDates() {
+            return this.selectedDays.map(day => `${this.monthNames[this.month]} ${day}`).join(", ");
+        },
+
+        cancelSelection() {
+            this.selectedDays = [];
+            this.updateInclusiveDates();
+        }
+    }));
+});
+
+</script>
+
 @endsection

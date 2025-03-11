@@ -11,9 +11,7 @@ Route::get('/', function () {
 });
 
 //Login Route
-Route::get('/cto_login', [EmployeeController::class, 'loginCTO'])->name('cto.login');
-
-Route::get('/lms_login', [EmployeeController::class, 'loginLMS'])->name('lms.login');
+Route::get('/lms-cto/login', [EmployeeController::class, 'loginLmsCto'])->name('lms_cto.login');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -48,7 +46,7 @@ Route::middleware(['auth', 'hrMiddleware'])->group(function () {
 
 //Employee Route
 Route::middleware(['auth.redirect', 'employeeMiddleware'])->group(function () {
-    Route::get('/lms/dashboard', [EmployeeController::class, 'indexLMS'])->name('lms.dashboard');
+    Route::get('/lms-cto/dashboard', [EmployeeController::class, 'indexLMS'])->name('lms_cto.dashboard');
 
     //LMS
     Route::get('/make-request', [EmployeeController::class, 'makeRequest'])->name('employee.make_request');
@@ -70,6 +68,7 @@ Route::middleware(['auth.redirect', 'employeeMiddleware'])->group(function () {
     Route::get('/cto/dashboard', [OvertimeRequestController::class, 'dashboard'])->name('cto.dashboard');
     Route::get('/overtime-request', [OvertimeRequestController::class, 'index'])->name('cto.overtime_request');
     Route::get('/overtime-list', [OvertimeRequestController::class, 'list'])->name('cto.overtime_list');
+    Route::post('/overtime/store', [OvertimeRequestController::class, 'store'])->name('overtime.store');
     Route::post('/overtime-request/store', [OvertimeRequestController::class, 'store'])->name('overtime_request.store');
     Route::get('/cto-profile', [OvertimeRequestController::class, 'profile'])->name('cto.profile.index');
     Route::get('/cto-profile-edit', [OvertimeRequestController::class, 'edit'])->name('cto.profile.edit');

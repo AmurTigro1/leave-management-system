@@ -14,7 +14,7 @@ class OvertimeRequestController extends Controller
 {
     public function index()
     {
-        $overtimereq = OvertimeRequest::where('user_id', Auth::id())->latest()->get();
+        $overtimereq = OvertimeRequest::where('user_id', Auth::id())->latest()->first();
         return view('CTO.overtime_request', compact('overtimereq'));
     }
 
@@ -38,6 +38,25 @@ class OvertimeRequestController extends Controller
     public function create()
     {
         return view('employee.overtime_request_form');
+    }
+
+    public function store(Request $request)
+    {
+        $request->validate([
+            'start_date' => 'required|date',
+            'end_date' => 'required|date|after_or_equal:start_date',
+            'working_hours_applied' => 'required|integer|min:1',
+        ]);
+
+        OvertimeRequest::create([
+            'user_id' => auth()->id(),
+            'date_filed' => now(),
+            'working_hours_applied' => $request->working_hours_applied,
+            'inclusive_date_start' => $request->start_date,
+            'inclusive_date_end' => $request->end_date,
+        ]);
+
+        return '<div class="bg-green-500 text-white p-4 rounded">Overtime request submitted successfully.</div>';
     }
 
     public function list()

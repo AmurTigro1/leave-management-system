@@ -31,25 +31,21 @@ class AuthenticatedSessionController extends Controller
     
         switch ($user->role) {
             case 'employee':
-                // Store system in session for employees
-                $system = $request->input('system', 'cto'); // Default to CTO
-                session(['system' => $system]);
-    
-                notify()->success('Login Successful! Welcome Back.');
-                return redirect(route($system === 'lms' ? 'lms.dashboard' : 'cto.dashboard'));
+                emotify('success', 'Login Successful! Welcome Back.');
+                return redirect(route('lms_cto.dashboard'));
     
             case 'supervisor':
 
-                notify()->success('Login Successful! Welcome Back.');
+                emotify('success', 'Login Successful! Welcome Back.');
                 return redirect(route('supervisor.dashboard'));
     
             case 'hr':
 
-                notify()->success('Login Successful! Welcome Back.');
+                emotify('success', 'Login Successful! Welcome Back.');
                 return redirect(route('hr.dashboard'));
     
             default:
-                return redirect()->intended(route('lms.dashboard'));
+                return redirect()->intended(route('lms_cto.dashboard'));
         }
     }     
     
@@ -71,26 +67,4 @@ class AuthenticatedSessionController extends Controller
         notify()->success('Logout Successful!');
         return redirect('/');
     }    
-
-    // public function handle(Request $request, Closure $next)
-    // {
-    //     if (!Auth::check()) {
-    //         return redirect('/');
-    //     }
-
-    //     $user = Auth::user();
-        
-    //     if ($user->role !== 'employee') {
-    //         return redirect('/');
-    //     }
-
-    //     $system = session('system');
-
-    //     if (($request->routeIs('lms.dashboard') && $system !== 'lms') ||
-    //         ($request->routeIs('cto.dashboard') && $system !== 'cto')) {
-    //         return redirect('/');
-    //     }
-
-    //     return $next($request);
-    // }
 }
