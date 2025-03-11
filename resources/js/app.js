@@ -101,4 +101,4 @@ function closeModal() {
     modal.classList.add("hidden");
     modal.classList.remove("opacity-100", "scale-100");
 }
-Alpine.start();
+    Alpine.start();
