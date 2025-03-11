@@ -1,4 +1,4 @@
-<header class="py-4 bg-white shadow-md w-full">
+<header class="py-3 bg-white shadow-md w-full">
     <div class="container mx-auto max-w-7xl px-4 flex justify-between items-center">
         <!-- Logo -->
         <p class="text-xl text-blue-600 font-semibold">LMS and CTO System</p>
