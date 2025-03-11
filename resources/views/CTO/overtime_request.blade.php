@@ -1,6 +1,8 @@
 @extends('layouts.sidebar-header')
 
 @section('content')
+<x-notify::notify />
+
 <div class="w-full bg-white p-6">
     <div class="text-center">
         <div class="w-full max-w-full mx-auto bg-white p-8 shadow-md border">
@@ -17,18 +19,19 @@
             </div>
 
             <div x-data="calendar()" class="mt-4 select-none p-4 rounded-lg shadow-lg border"
-            style="background-image: url('/img/Background.png'); background-size: cover; background-position: center;">
-                       <div class="flex justify-between items-center mb-2">
-                    <button @click="prevMonth()" class="px-3 py-1 bg-gray-300 text-gray-700 rounded">&lt;</button>
+                style="background-image: url('/img/Background.png'); background-size: cover; background-position: center;">
+                <!-- Calendar UI -->
+                <div class="flex justify-between items-center mb-2">
+                    <button @click="prevMonth()" class="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300">&lt;</button>
                     <span x-text="monthNames[month] + ' ' + year" class="text-lg font-bold"></span>
-                    <button @click="nextMonth()" class="px-3 py-1 bg-gray-300 text-gray-700 rounded">&gt;</button>
+                    <button @click="nextMonth()" class="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300">&gt;</button>
                 </div>
-
-                <div class="grid grid-cols-7 text-center font-bold mb-2 border text-white">
+            
+                <div class="grid grid-cols-7 text-center font-bold mb-2 border text-white text-xl">
                     <span>Sun</span> <span>Mon</span> <span>Tue</span> <span>Wed</span>
                     <span>Thu</span> <span>Fri</span> <span>Sat</span>
                 </div>
-
+            
                 <div class="grid grid-cols-7 text-center border text-white font-bold">
                     <template x-for="blankDay in blankDays">
                         <div class="py-2"></div>
@@ -49,21 +52,25 @@
                             <span class="absolute top-1 right-2 text-xl font-bold">
                                 <span x-text="day"></span>
                             </span>
-                    
                         </div>
                     </template>                                    
                 </div>
-
+            
                 <div class="mt-4 text-center">
                     <p class="text-white" x-show="selectedDays.length">Selected Dates: <span x-text="selectedDates"></span></p>
-
+            
                     <!-- Apply for OT Request Button (Only visible when dates are selected) -->
                     <div class="mt-2 space-x-2">
                         @include('CTO.modals.request', ['otModal' => $overtimereq])
-                        <button onclick="openRequestModal()" id="openModal" x-show="selectedDays.length" class="px-4 py-2 bg-blue-500 text-white rounded">
+                        <button 
+                            onclick="openRequestModal()" 
+                            id="openModal" 
+                            x-show="selectedDays.length" 
+                            class="px-4 py-2 bg-blue-500 text-white rounded"
+                            @click="setModalDates()"> <!-- Add this line to pass dates to the modal -->
                             Apply for OT Request
                         </button>
-
+            
                         <!-- Cancel Selection Button -->
                         <button 
                             x-show="selectedDays.length" 
@@ -73,7 +80,6 @@
                         </button>
                     </div>
                 </div>
-
             </div>
         </div>
     </div>
@@ -82,7 +88,10 @@
 <script>
 document.addEventListener('alpine:init', () => {
     Alpine.data('calendar', () => ({
-        monthNames: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
+        monthNames: [
+            "January", "February", "March", "April", "May", "June",
+            "July", "August", "September", "October", "November", "December"
+        ],
         year: new Date().getFullYear(),
         month: new Date().getMonth(),
         today: new Date().getDate(),
@@ -109,19 +118,21 @@ document.addEventListener('alpine:init', () => {
         },
 
         isPastDate(day) {
-            return (this.year < this.currentYear) || 
-                   (this.year === this.currentYear && this.month < this.currentMonth) || 
-                   (this.year === this.currentYear && this.month === this.currentMonth && day < this.today);
+            return (
+                this.year < this.currentYear ||
+                (this.year === this.currentYear && this.month < this.currentMonth) ||
+                (this.year === this.currentYear && this.month === this.currentMonth && day < this.today)
+            );
         },
 
         prevMonth() {
-            this.month = (this.month === 0) ? 11 : this.month - 1;
+            this.month = this.month === 0 ? 11 : this.month - 1;
             if (this.month === 11) this.year--;
             this.calculateDays();
         },
 
         nextMonth() {
-            this.month = (this.month === 11) ? 0 : this.month + 1;
+            this.month = this.month === 11 ? 0 : this.month + 1;
             if (this.month === 0) this.year++;
             this.calculateDays();
         },
@@ -136,6 +147,10 @@ document.addEventListener('alpine:init', () => {
                 this.selectedDays = this.selectedDays.filter(d => d !== day);
             } else {
                 this.isRemoving = false;
+                if (this.selectedDays.length >= 5) {
+                    alert("You can only select up to 5 consecutive days for CTO.");
+                    return;
+                }
                 this.selectedDays.push(day);
             }
             this.updateInclusiveDates();
@@ -148,6 +163,10 @@ document.addEventListener('alpine:init', () => {
                 this.selectedDays = this.selectedDays.filter(d => d !== day);
             } else {
                 if (!this.selectedDays.includes(day)) {
+                    if (this.selectedDays.length >= 5) {
+                        // Do not show an alert here; just block the selection
+                        return;
+                    }
                     this.selectedDays.push(day);
                     this.selectedDays.sort((a, b) => a - b);
                 }
@@ -158,6 +177,26 @@ document.addEventListener('alpine:init', () => {
         endSelection() {
             this.isDragging = false;
             this.isRemoving = false;
+            this.validateConsecutiveDays();
+        },
+
+        validateConsecutiveDays() {
+            if (this.selectedDays.length > 0) {
+                const sortedDays = [...this.selectedDays].sort((a, b) => a - b);
+                let consecutiveCount = 1;
+                for (let i = 1; i < sortedDays.length; i++) {
+                    if (sortedDays[i] === sortedDays[i - 1] + 1) {
+                        consecutiveCount++;
+                        if (consecutiveCount > 5) {
+                            alert("You can only select up to 5 consecutive days for CTO.");
+                            this.cancelSelection();
+                            return;
+                        }
+                    } else {
+                        consecutiveCount = 1;
+                    }
+                }
+            }
         },
 
         updateInclusiveDates() {
@@ -177,13 +216,23 @@ document.addEventListener('alpine:init', () => {
             return this.selectedDays.map(day => `${this.monthNames[this.month]} ${day}`).join(", ");
         },
 
+        setModalDates() {
+            // Set the selected dates in the modal's input fields
+            const modal = document.getElementById('requestModal');
+            if (modal) {
+                modal.querySelector('input[name="inclusive_date_start"]').value = this.firstSelectedDate;
+                modal.querySelector('input[name="inclusive_date_end"]').value = this.lastSelectedDate;
+            }
+        },
+
         cancelSelection() {
             this.selectedDays = [];
             this.updateInclusiveDates();
         }
     }));
 });
-
 </script>
 
 @endsection
+{{-- @notifyJs --}}
+@notifyCss

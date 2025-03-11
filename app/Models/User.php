@@ -23,13 +23,17 @@ class User extends Authenticatable
         'birthday',
         'password',
         'role', 
+        'vacation_leave_balance',
+        'sick_leave_balance',
         'leave_balance',
+        'overtime_balance',
         'profile_image',
     ];
-
+    
     public function leaves() {
         return $this->hasMany(Leave::class);
     }
+
     public function overtimeRequests()
     {
         return $this->hasMany(OvertimeRequest::class);
