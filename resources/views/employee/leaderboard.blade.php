@@ -23,7 +23,7 @@
                 <img src="{{ $employee->profile_image ? asset('storage/profile_images/' . $employee->profile_image) : 'https://cdn-icons-png.freepik.com/256/12533/12533276.png?ga=GA1.1.1609491871.1738904251&semt=ais_hybrid' }}" 
                      class="w-12 h-12 rounded-full" alt="{{ $employee->name }}">
                 <div>
-                    <p class="font-semibold">{{ $employee->name }}</p>
+                    <p class="font-semibold">{{ $employee->first_name }} {{ $employee->last_name }}</p>
                     <p class="text-gray-500 text-sm">{{ $employee->leaves_count }} Absences</p>
                 </div>
             </div>
@@ -31,19 +31,35 @@
             <!-- Replace Dummy Images with Meaningful Info -->
             <div class="text-right">
                 <div class="flex space-x-2 text-xs text-gray-500 mb-4">
-                    <span>Sick: {{ $employee->leaves->where('type', 'sick')->count() }}</span> |
-                    <span>Vacation: {{ $employee->leaves->where('type', 'vacation')->count() }}</span> |
-                    <span>Emergency: {{ $employee->leaves->where('type', 'emergency')->count() }}</span>
+                    <span>Sick: {{ $employee->leaves->where('type', 'sick')->sum(fn($leave) => \Carbon\Carbon::parse($leave->start_date)->diffInDays(\Carbon\Carbon::parse($leave->end_date)) + 1) }}</span> |
+                    <span>Vacation: {{ $employee->leaves->where('type', 'vacation')->sum(fn($leave) => \Carbon\Carbon::parse($leave->start_date)->diffInDays(\Carbon\Carbon::parse($leave->end_date)) + 1) }}</span> |
+                    <span>Emergency: {{ $employee->leaves->where('type', 'emergency')->sum(fn($leave) => \Carbon\Carbon::parse($leave->start_date)->diffInDays(\Carbon\Carbon::parse($leave->end_date)) + 1) }}</span>
                 </div>
-          
-                @if ($employee->leaves_count == 0)
+            
+                <p class="text-xs text-gray-600">Total Absences: {{ $employee->absent_days }} days</p>
+            
+                @if ($employee->absent_days == 0)
                     <span class="px-2 py-1 bg-green-500 text-white text-xs font-semibold rounded-lg">Perfect Attendance 🎯</span>
-                @elseif ($employee->leaves_count <= 2)
+                @elseif ($employee->absent_days <= 2)
                     <span class="px-2 py-1 bg-blue-500 text-white text-xs font-semibold rounded-lg">Excellent 🎖️</span>
                 @else
                     <span class="px-2 py-1 bg-gray-500 text-white text-xs font-semibold rounded-lg">Good Effort 👍</span>
                 @endif
+                <div class="text-xs text-gray-700">
+                    <p><strong>Absence Debug:</strong></p>
+                    <ul>
+                        @foreach($employee->leaves as $leave)
+                            <li>From {{ $leave->start_date }} to {{ $leave->end_date }} = 
+                                {{ \Carbon\Carbon::parse($leave->start_date)->diffInDays(\Carbon\Carbon::parse($leave->end_date)) + 1 }} days
+                            </li>
+                        @endforeach
+                    </ul>
+                </div>
+                
             </div>
+            
+            
+            
         </div>
         
         @endforeach

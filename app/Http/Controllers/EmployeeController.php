@@ -16,20 +16,6 @@ use Illuminate\View\View;
 
 class EmployeeController extends Controller
 {
-
-    // public function indexLMS(Request $request)
-    // {
-    //     // Get current month (or from request)
-    //     $month = $request->query('month', Carbon::now()->month);
-    
-    //     // Fetch employees whose birthday falls in the selected month
-    //     $birthdays = User::whereMonth('birthday', $month)->get();
-    
-    //     // Fetch leave requests (assuming a 'leaves' table exists)
-    //     $leaveRequests = Leave::whereMonth('start_date', $month)->get();
-    
-    //     return view('employee.dashboard', compact('birthdays', 'leaveRequests', 'month'));
-    // }
     public function indexLMS(Request $request) {
         $month = $request->query('month', now()->month);
     
@@ -49,16 +35,28 @@ class EmployeeController extends Controller
     
     public function leaderboard()
     {
-        $employees = User::withCount(['leaves' => function ($query) {
+        $employees = User::with(['leaves' => function ($query) {
             $query->where('status', 'approved')
-                  ->whereDate('created_at', '>=', now()->subDays(30)); // Last 30 days
+                  ->whereDate('start_date', '>=', now()->subDays(30)) // Only consider last 30 days
+                  ->whereDate('end_date', '<=', now()); // Ensure leave has ended
         }])
-        ->orderBy('leaves_count', 'asc') // Employees with LEAST leaves come first
-        ->take(5) // Show top 5 employees
         ->get();
+    
+        // Calculate total absences for each employee
+        foreach ($employees as $employee) {
+            $employee->absent_days = $employee->leaves->sum(function ($leave) {
+                return \Carbon\Carbon::parse($leave->start_date)->diffInDays(\Carbon\Carbon::parse($leave->end_date)) + 1;
+            });
+        }
+    
+        // Sort employees by least absences and take top 5
+        $employees = $employees->sortBy('absent_days')->take(5);
     
         return view('employee.leaderboard', compact('employees'));
     }
+    
+    
+    
     public function showUsersModal()
     {
         $users = User::all();
@@ -85,8 +83,8 @@ class EmployeeController extends Controller
             'days_applied' => 'required|integer|min:1',
             'commutation' => 'required|boolean',
             'position' => 'required|string',
-            'leave_details' => 'nullable|array', // Validate checkboxes as an array
-            'abroad_details' => 'nullable|string', // Text input for Abroad
+            'leave_details' => 'nullable|array', 
+            'abroad_details' => 'nullable|string', 
         ]);
 
             $user = Auth::user();
@@ -289,7 +287,7 @@ class EmployeeController extends Controller
     {
         $month = $request->month ?? date('m'); // Default to current month
     
-        $leaves = Leave::with('user:id,name,profile_image')
+        $leaves = Leave::with('user:id,name,first_name,last_name,profile_image')
             ->whereMonth('start_date', $month)
             ->orderBy('start_date', 'asc')
             ->get();
@@ -297,7 +295,8 @@ class EmployeeController extends Controller
         return response()->json($leaves->map(function ($leave) {
             return [
                 "id" => $leave->id,
-                "title" => $leave->user->name,
+                "first_name" => $leave->user->first_name,
+                "last_name" => $leave->user->last_name,
                 "start" => \Carbon\Carbon::parse($leave->start_date)->format('F j, Y'),
                 "end" => \Carbon\Carbon::parse($leave->end_date)->format('F j, Y'),
                 "status" => ucfirst($leave->status), // Capitalize first letter

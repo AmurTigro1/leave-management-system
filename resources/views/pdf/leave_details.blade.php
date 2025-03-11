@@ -40,9 +40,9 @@
                 <p class="third">(First)</p>
                 <p class="fourth">(Middle)</p>
                 <p class="input-first">{{ $leave->department }}</p>
-                <p class="input-second">Salera</p>
-                <p class="input-third">{{ $leave->user->name}}</p>
-                <p class="input-fourth">Sab</p>
+                <p class="input-second">{{ $leave->user->last_name}}</p>
+                <p class="input-third">{{ $leave->user->first_name}}</p>
+                <p class="input-fourth">{{ $leave->user->middle_name}}</p>
             </div>
             <div class="head-middle-body">
                 <p class="first2">3. DATE OF FILING: <span class="underline">{{ \Carbon\Carbon::parse($leave->date_filing)->format('F d, Y') }}</span></p>
@@ -80,7 +80,7 @@
                         <img src="{{ public_path('img/check.jpg') }}" width="18" height="10"> 
                     @endif</span>Special Privilege Leave<span class="info-3"> (Sec. 21, Rule XVI, Omnibus Rules Implementing E.O. No. 292)</span></p>
                 <p class="info2"><span class="leave-type">
-                    @if($leave->leave_type == '') 
+                    @if($leave->leave_type == 'Solo Parent Leave') 
                         <img src="{{ public_path('img/check.jpg') }}" width="18" height="10"> 
                     @endif</span>Solo Parent Leave<span class="additional-detail"> (R.A No. 8972/CSC MC No. 8, s. 2004)</span></p>
                 <p class="info2"><span class="leave-type">

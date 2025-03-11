@@ -40,6 +40,7 @@
                     <option value="Maternity Leave" {{ $leave->leave_type == 'Maternity Leave' ? 'selected' : '' }}>Maternity Leave (R.A. No. 11210/IRR issued by CSC, DOLE and SSS)</option>
                     <option value="Paternity Leave" {{ $leave->leave_type == 'Paternity Leave' ? 'selected' : '' }}>Paternity Leave (R.A. 8187/CSC MC No. 71, s. 1998, as amended)</option>
                     <option value="Special Privilege Leave" {{ $leave->leave_type == 'Special Privilege Leave' ? 'selected' : '' }}>Special Privilege Leave (Sec. 21, Rule XVI, Omnibus Rules Implementing E.O. No. 292)</option>
+                    <option value="Solo Parent Leave" {{ $leave->leave_type == 'Solo Parent Leave' ? 'selected' : '' }}>Solo Parent Leave (R.A No. 8972/CSC MC No. 8, s. 2004)</option>
                     <option value="Study Leave" {{ $leave->leave_type == 'Study Leave' ? 'selected' : '' }}>Study Leave (Sec. 68, Rule XVL, Omnibus Rules Implementing E.O. No. 292)</option>
                     <option value="10-Day VAWC Leave" {{ $leave->leave_type == '10-Day VAWC Leave' ? 'selected' : '' }}>10-Day VAWC Leave (R.A. No. 9262/CSC MC No. 15, s. 2005)</option>
                     <option value="Rehabilitation Privilege" {{ $leave->leave_type == 'Rehabilitation Privilege' ? 'selected' : '' }}>Rehabilitation Privilege (Sec. 55, Rule XVL, Omnibus Rules Implementing E.O. No. 292)</option>
