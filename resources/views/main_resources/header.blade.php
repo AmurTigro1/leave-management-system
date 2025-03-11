@@ -51,10 +51,8 @@
                                 </a>
                             </li>
                             <li>
-                                @if (session('system') === 'lms')
-                                    <a href="{{ route('lms.dashboard') }}" class="block w-full text-left px-4 py-2 hover:bg-gray-100 hover:text-blue-500">Dashboard</a>
-                                @elseif (session('system') === 'cto')
-                                    <a href="{{ route('cto.dashboard') }}" class="block w-full text-left px-4 py-2 hover:bg-gray-100 hover:text-blue-500">Dashboard</a>
+                                @if (Auth::user()->role === 'employee')
+                                    <a href="{{ route('lms_cto.dashboard') }}" class="block w-full text-left px-4 py-2 hover:bg-gray-100 hover:text-blue-500">Dashboard</a>
                                 @elseif (Auth::user()->role === 'hr')
                                     <a href="{{ route('hr.dashboard') }}" class="block w-full text-left px-4 py-2 hover:bg-gray-100 hover:text-blue-500">Dashboard</a>
                                 @elseif (Auth::user()->role === 'supervisor')

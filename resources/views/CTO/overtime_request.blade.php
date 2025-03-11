@@ -1,18 +1,17 @@
-@extends('CTO.layouts.sidebar-header')
+@extends('layouts.sidebar-header')
 
 @section('content')
 <div class="w-full bg-white p-6">
     <div class="text-center">
-        {{-- <div class="justify-center flex">
-            <img src="/img/dilg-main.png" alt="DILG Logo" class="h-[80px] w-[80px] mx-auto lg:mx-0 mb-4">
-        </div>
-        <div>
-            <p>Republic of the Philippines</p>
-            <h1 class="font-bold">DEPARTMENT OF THE INTERIOR AND LOCAL GOVERNMENT</h1>
-            <h1>Rajah Sikatuna Avenue, Dampas, City of Tagbilaran, Bohol</h1>
-        </div> --}}
         <div class="w-full max-w-full mx-auto bg-white p-8 shadow-md border">
-
+            {{-- <div class="justify-center flex">
+                <img src="/img/dilg-main.png" alt="DILG Logo" class="h-[80px] w-[80px] mx-auto lg:mx-0 mb-4">
+            </div> --}}
+            <div>
+                <p>Republic of the Philippines</p>
+                <h1 class="font-bold">DEPARTMENT OF THE INTERIOR AND LOCAL GOVERNMENT</h1>
+                <h1>Rajah Sikatuna Avenue, Dampas, City of Tagbilaran, Bohol</h1>
+            </div>
             <div class="text-center">
                 <h2 class="font-bold text-lg">Select Overtime Dates</h2>
             </div>

@@ -1,7 +1,7 @@
 <header class="py-4 bg-white shadow-md w-full">
     <div class="container mx-auto max-w-7xl px-4 flex justify-between items-center">
         <!-- Logo -->
-        <p class="text-xl text-blue-600 font-semibold">Leave Management System (LMS)</p>
+        <p class="text-xl text-blue-600 font-semibold">LMS and CTO System</p>
 
         <!-- Navigation Links -->
         <nav class="flex items-center space-x-6">
@@ -15,15 +15,8 @@
                     </a>
                 @endif
             @endif
-
-            @if (Auth::check())
-            <!-- Dropdown Menu -->
-            <div class="relative">
-                <button id="dropdown-btn" class="flex items-center justify-between w-full bg-white px-4 rounded-lg shadow-md border border-gray-300 hover:bg-gray-50 transition-all duration-200 ease-in-out">
-                    <!-- Leave Balance Section -->
-                    <div class="flex items-center justify-between bg-white p-2 rounded-lg shadow-sm border border-gray-100">
-                        <!-- Leave Balances -->
-                        <div class="flex flex-row text-gray-600 space-x-6">
+                        <!-- Balances -->
+                        <div class="flex flex-row text-gray-600 space-x-2">
                             <!-- Sick Leave -->
                             <div class="flex items-center ">
                                 <span class="font-medium text-sm">Sick Leave:</span>
@@ -47,8 +40,20 @@
                                     {{ Auth::user()->leave_balance }}
                                 </span>
                             </div>
+
+                            <!-- Total COCs -->
+                            <div class="flex items-center ">
+                                <span class="font-medium text-sm">Total COCs:</span>
+                                <span class="font-semibold text-gray-800 text-sm bg-gray-50 px-2 py-1 rounded-md">
+                                    {{ Auth::user()->overtime_balance }}
+                                </span>
+                            </div>
                         </div>
-                    
+            @if (Auth::check())
+            <!-- Dropdown Menu -->
+            <div class="relative">
+                <button id="dropdown-btn" class="flex items-center justify-between w-full bg-white px-4 rounded-lg shadow-md border border-gray-300 transition-all duration-200 ease-in-out">
+                    <div class="flex items-center justify-between bg-white p-2 rounded-lg">
                         <!-- Profile Section -->
                         <div class="flex items-center space-x-4">
                             <!-- Profile Image -->
