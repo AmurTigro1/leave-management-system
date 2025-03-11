@@ -47,6 +47,7 @@
                         <option value="Maternity Leave">Maternity Leave (R.A. No. 11210/IRR issued by CSC, DOLE and SSS)</option>
                         <option value="Paternity Leave">Paternity Leave (R.A. 8187/CSC MC No. 71, s. 1998, as amended)</option>
                         <option value="Special Privilege Leave">Special Privilege Leave (Sec. 21, Rule XVI, Omnibus Rules Implementing E.O. No. 292)</option>
+                        <option value="Solo Parent Leave">Solo Parent Leave (R.A No. 8972/CSC MC No. 8, s. 2004)</option>
                         <option value="Study Leave">Study Leave (Sec. 68, Rule XVL, Omnibus Rules Implementing E.O. No. 292)</option>
                         <option value="10-Day VAWC Leave">10-Day VAWC Leave (R.A. No. 9262/CSC MC No. 15, s. 2005)</option>
                         <option value="Rehabilitation Privilege">Rehabilitation Privilege (Sec. 55, Rule XVL, Omnibus Rules Implementing E.O. No. 292)</option>

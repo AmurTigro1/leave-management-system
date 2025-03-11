@@ -13,7 +13,10 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
+            $table->string('name')->nullable();
+            $table->string('first_name');
+            $table->string('middle_name');
+            $table->string('last_name');
             $table->string('email')->unique();
             $table->integer('vacation_leave_balance')->default(5);
             $table->integer('sick_leave_balance')->default(5); 
