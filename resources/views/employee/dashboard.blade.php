@@ -13,7 +13,12 @@
 
 <div class="w-full px-4">
     <h3 class="text-2xl sm:text-3xl md:text-4xl font-bold text-center text-gray-900 drop-shadow-lg animate-bounce">🎉 Happy Birthday! 🎉</h3>
-
+    @if ($birthdays->isEmpty())
+    <p class="text-gray-500 text-center text-sm md:text-base italic">
+        No team members have birthdays this month.
+    </p>
+    
+    @else
     <!-- Carousel Container -->
     <div x-data="{ currentIndex: 0, totalSlides: {{ ceil($birthdays->count() / 4) }} }" class="relative w-full max-w-screen-lg mx-auto overflow-hidden mt-6">
         <div class="flex transition-transform duration-700" :style="'transform: translateX(-' + (currentIndex * 100) + '%)'">
@@ -31,12 +36,13 @@
                             @endif
                         </div>
                         <div class="mt-3 text-center">
-                            <p class="text-sm sm:text-md font-semibold">{{ $employee->name }}</p>
+                            <p class="text-sm sm:text-md font-semibold">{{ $employee->first_name }} {{$employee->last_name}}</p>
                             <p class="text-xs text-gray-600">🎂 {{ \Carbon\Carbon::parse($employee->birthday)->format('F d, Y') }}</p>
                         </div>
                     </div>
                 @endforeach
             </div>
+            
             @endforeach
         </div>
 
@@ -56,7 +62,7 @@
         </button>
     </div>
 </div>
-
+@endif
 <!-- Leave Section -->
 <div class="flex justify-between items-center p-4 rounded-lg mt-10 border border-gray-500">
     <button id="prevMonth" class="text-gray-600 px-4 py-2 rounded-lg">&larr;</button>
@@ -88,7 +94,7 @@
                         @endif
                     </div>
                     <div>
-                        <p class="text-sm font-semibold">{{ $leave->user->name }}</p>
+                        <p class="text-sm font-semibold">{{ $leave->user->first_name }}</p>
                         <p class="text-xs text-gray-600">On leave from {{ date('M d', strtotime($leave->start_date)) }} to {{ date('M d', strtotime($leave->end_date)) }}</p>
                     </div>
                 </li>
@@ -134,7 +140,7 @@ document.addEventListener("DOMContentLoaded", function () {
     </div>
     
     <div class="flex-1">
-        <p class="font-semibold text-gray-900 text-sm sm:text-md">${leave.title}</p>
+        <p class="font-semibold text-gray-900 text-sm sm:text-md">${leave.first_name} ${leave.last_name}</p>
         <p class="text-xs text-gray-600">Duration: <span class="text-green-500">${leave.duration} day(s)</span></p>
         <p class="text-xs text-gray-500">From: ${leave.start} <br> To: ${leave.end}</p>
 
