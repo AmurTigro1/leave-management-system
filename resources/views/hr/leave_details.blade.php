@@ -1,9 +1,9 @@
-@extends('layouts.sidebar-header')
+@extends('layouts.hr.sidebar-header')
 
 @section('content')
 <div class="bg-white shadow-lg rounded-lg p-6 space-y-6">
     <!-- Back Button with Animation -->
-    <a href="{{ route('employee.leave_request') }}" class="inline-flex items-center text-blue-500 hover:underline transition duration-300">
+    <a href="{{ route('hr.leave_requests') }}" class="inline-flex items-center text-blue-500 hover:underline transition duration-300">
         &larr; Back to Leave Requests
     </a>
         <!-- Download PDF Button -->
@@ -57,31 +57,14 @@
             <span class="px-3 py-1 text-white rounded-full {{ $leave->status == 'approved' ? 'bg-green-500' : ($leave->status == 'rejected' ? 'bg-red-500' : 'bg-yellow-500') }}">
                 {{ ucfirst($leave->status) }}
             </span>
-        </div>
-        
-        @if($leave->status === 'rejected')
-            <div class="bg-red-100 p-4 rounded-lg shadow">
-                <p class="font-semibold text-lg text-red-700">Disapproval Reason</p>
-                <p class="text-red-600">{{ $leave->disapproval_reason }}</p>
-            </div>
-        @endif
-        
-        <div class="bg-gray-50 p-4 rounded-lg shadow">
-            <p class="font-semibold text-lg">Approved Days with Pay</p>
-            <p class="text-gray-900">{{ $leave->approved_days_with_pay }}</p>
-        </div>
-        
-        <div class="bg-gray-50 p-4 rounded-lg shadow">
-            <p class="font-semibold text-lg">Approved Days without Pay</p>
-            <p class="text-gray-900">{{ $leave->approved_days_without_pay }}</p>
-        </div>
+        </div>     
     </div>
 
     <!-- Additional Information -->
-    <div class="bg-blue-50 p-6 rounded-lg shadow-md">
+    {{-- <div class="bg-blue-50 p-6 rounded-lg shadow-md">
         <p class="text-gray-700">If you have any questions or need further assistance regarding your leave request, please contact the HR department.</p>
         <a href="#" class="text-blue-600 font-semibold hover:underline">Contact HR</a>
-    </div>
+    </div> --}}
 </div>
 @endsection
 

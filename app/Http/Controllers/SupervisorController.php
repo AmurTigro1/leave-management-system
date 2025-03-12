@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 use App\Models\Leave;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -14,12 +15,17 @@ class SupervisorController extends Controller
 {
 
     public function index() {
-        $totalLeaves = Leave::count();
-        $approvedLeaves = Leave::where('status', 'approved')->count();
-        $pendingLeaves = Leave::where('status', 'pending')->count();
-        $rejectedLeaves = Leave::where('status', 'rejected')->count();
-    
-        return view('supervisor.dashboard', compact('totalLeaves', 'approvedLeaves', 'pendingLeaves', 'rejectedLeaves'));
+        $employees = User::paginate(10);
+        $totalUsers = User::count();
+        $approvedLeaves = Leave::where('supervisor_status', 'approved')->count();
+        $pendingLeaves = Leave::where('status', 'waiting_for_supervisor')->count();
+        $rejectedLeaves = Leave::where('supervisor_status', 'rejected')->count();
+        $leaveStats = [
+            'Pending' => $pendingLeaves,
+            'Approved' => $approvedLeaves,
+            'Rejected' => $rejectedLeaves,
+        ];
+        return view('supervisor.dashboard', compact('totalUsers', 'approvedLeaves', 'pendingLeaves', 'rejectedLeaves', 'leaveStats', 'employees'));
     }
     
     public function requests()

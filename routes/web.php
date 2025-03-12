@@ -1,4 +1,5 @@
 <?php
+use App\Http\Controllers\HrController;
 use App\Http\Controllers\LeaveApplicationController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\ProfileController;
@@ -19,8 +20,8 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     Route::post('/profile/update-image', [EmployeeController::class, 'updateProfileImage'])->name('profile.update-image');
     Route::get('/holidays', [EmployeeController::class, 'holiday'])->name('holiday.calendar');
-    Route::get('/leave', [LeaveApplicationController::class, 'index'])->name('leave.index');
-    Route::post('/leave', [LeaveApplicationController::class, 'store'])->name('leave.store');
+    // Route::get('/leave', [HrController::class, 'index'])->name('leave.index');
+    // Route::post('/leave', [HrController::class, 'store'])->name('leave.store');
 });
 
 //Supervisor Routes
@@ -37,10 +38,12 @@ Route::middleware(['auth', 'SupervisorMiddleware'])->group(function () {
 
 //HR Officer Route
 Route::middleware(['auth', 'hrMiddleware'])->group(function () {
-    Route::get('/hr-dashboard', [LeaveApplicationController::class, 'hrDashboard'])->name('hr.dashboard');
-    Route::get('/hr/leave-certification/{leaveId}', [LeaveApplicationController::class, 'showLeaveCertification'])->name('hr.leave_certification');
-    Route::post('/leave/{leave}/review', [LeaveApplicationController::class, 'review'])->name('leave.review');
-    Route::get('/leave-report/{id}', [LeaveApplicationController::class, 'generateLeaveReport'])->name('leave.report');
+    Route::get('/hr/dashboard', [HrController::class, 'index'])->name('hr.dashboard');
+    Route::get('/hr/requests', [HrController::class, 'requests'])->name('hr.leave_requests');
+    Route::get('/leave/details/{id}', [HrController::class, 'show'])->name('hr.leave_details');
+    Route::get('/hr/leave-certification/{leaveId}', [HrController::class, 'showLeaveCertification'])->name('hr.leave_certification');
+    Route::post('/leave/{leave}/review', [HrController::class, 'review'])->name('leave.review');
+    Route::get('/leave-report/{id}', [HrController::class, 'generateLeaveReport'])->name('leave.report');
 
 });
 
