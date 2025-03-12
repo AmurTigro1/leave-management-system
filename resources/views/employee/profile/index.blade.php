@@ -135,7 +135,7 @@
     const leaveGraph = new Chart(ctx, {
         type: 'bar',
         data: {
-            labels: ['Vacation', 'Sick', 'Overtime', 'Leave Available'],
+            labels: ['Vacation', 'Sick', 'Overtime Available', 'Leave Available'],
             datasets: [{
                 label: 'Days',
                 data: [{{ $vacationBalance }}, {{ $sickBalance }}, {{ $user->overtime_balance }}, {{ $user->leave_balance }}],

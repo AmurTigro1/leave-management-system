@@ -80,7 +80,7 @@
 
     <!-- Additional Information -->
     <div class="bg-blue-50 p-6 rounded-lg shadow-md">
-        <p class="text-gray-700">If you have any questions or need further assistance regarding your leave request, please contact the HR department.</p>
+        <p class="text-gray-700">If you have any questions or need further assistance regarding your overtime request, please contact the HR department.</p>
         <a href="#" class="text-blue-600 font-semibold hover:underline">Contact HR</a>
     </div>
 </div>
