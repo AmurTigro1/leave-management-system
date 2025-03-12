@@ -39,7 +39,7 @@
                 <p class="second">2. NAME    (LAST)</p>
                 <p class="third">(First)</p>
                 <p class="fourth">(Middle)</p>
-                <p class="input-first">{{ $leave->department }}</p>
+                <p class="input-first">{{ $leave->user->department }}</p>
                 <p class="input-second">{{ $leave->user->last_name}}</p>
                 <p class="input-third">{{ $leave->user->first_name}}</p>
                 <p class="input-fourth">{{ $leave->user->middle_name}}</p>

@@ -30,7 +30,7 @@
                 <th class="p-3 text-left">Inclusive Date End</th>
                 <th class="p-3 text-left">Status</th>
                 <th class="p-3 text-left">Earned Hours</th>
-                <th class="p-3 text-left">Action</th>
+                <th class="p-3 text-center">Action</th>
             </tr>
         </thead>
         <tbody>
@@ -68,7 +68,7 @@
                            class="px-4 py-2 text-xs font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition">
                             View
                         </a>
-                        {{-- <a href="{{ route('cto.overtime_edit', $overtime->id) }}" 
+                        <a href="{{ route('cto.overtime_edit', $overtime->id) }}" 
                            class="px-4 py-2 text-xs font-medium text-white bg-green-600 rounded-lg hover:bg-green-700 transition">
                             Edit
                         </a>
@@ -80,7 +80,7 @@
                                     class="px-4 py-2 text-xs font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 transition">
                                 Delete
                             </button>
-                        </form> --}}
+                        </form>
                     </td>
                 </tr>
             @endforeach
@@ -98,7 +98,7 @@
     </div>
 </div>
 
-{{-- <script>
+<script>
    
     function deleteOvertime(id) {
         if (confirm("Are you sure you want to delete this overtime request?")) {
@@ -130,5 +130,5 @@
     }
 
 
-</script> --}}
+</script>
 @endsection

@@ -59,7 +59,7 @@
                     
                             <!-- Username -->
                             <span class="text-gray-700 font-semibold text-sm hover:text-blue-600 transition-colors duration-300">
-                                {{ Auth::user()->first_name }}
+                                {{ Auth::user()->name }}
                             </span>
                         </div>
                     </div>

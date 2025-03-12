@@ -16,11 +16,13 @@ class DatabaseSeeder extends Seeder
         // User::factory(10)->create();
 
         User::factory()->create([
-            'name' => 'Employee',
-            'first_name' => 'Employee fname',
-            'middle_name' => 'Employee mname',
-            'last_name' => 'Employee lname',
-            'email' => 'employee@gmail.com',
+            'name' => 'Lucy',
+            'first_name' => 'Lucyna',
+            'middle_name' => 'David',
+            'last_name' => 'Kushinada',
+            'department' => 'DILG BOHOL',
+            'birthday' => '2002-03-11',
+            'email' => 'lucy@gmail.com',
             'password' => 'password',
             'role' => 'employee'
         ]);
@@ -30,6 +32,8 @@ class DatabaseSeeder extends Seeder
             'first_name' => 'HR fname',
             'middle_name' => 'HR mname',
             'last_name' => 'HR lname',
+            'department' => 'DILG BOHOL',
+            'birthday' => '2002-04-12',
             'email' => 'hr@gmail.com',
             'password' => 'password',
             'role' => 'hr',
@@ -40,6 +44,8 @@ class DatabaseSeeder extends Seeder
             'first_name' => 'Supervisor fname',
             'middle_name' => 'Supervisor mname',
             'last_name' => 'Supervisor lname',
+            'department' => 'DILG BOHOL',
+            'birthday' => '2002-02-15',
             'email' => 'supervisor@gmail.com',
             'password' => 'password',
             'role' => 'supervisor',

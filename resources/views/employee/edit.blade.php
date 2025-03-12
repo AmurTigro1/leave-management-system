@@ -55,10 +55,7 @@
                 <p class="text-red-500 text-sm">{{ $message }}</p>
                 @enderror
             </div>
-            <div class="mb-4">
-                <label class="block">Office/Department:</label>
-                <input type="text" name="department" class="w-full border px-3 py-2 rounded" required value="{{$leave->department}}">
-            </div>
+
             <div class="mb-4">
                 <label class="block font-medium">Salary File</label>
                 <input type="text" name="salary_file" class="w-full border p-2 rounded" required value="{{$leave->salary_file}}">
@@ -117,19 +114,19 @@
             </div>
             <div class="">
                 <label class="block mt-2">Days Applied:</label>
-                <input type="number" name="days_applied" class="w-full border p-2 rounded" min="1" required value="{{$leave->days_applied}}">
-        
-                <label class="block mt-2">Commutation:</label>
+                <input type="number" name="days_applied" class="w-full border p-2 rounded" min="1" required value="{{$leave->days_applied}}"> 
+            </div>
+            <div class="mt-2 mb-2">
+                <label class="block text-sm font-medium">Reason (Optional)</label>
+                {{-- <input type="text" name="reason" class="mt-1 w-full p-2 border rounded"> --}}
+                <textarea name="reason" id="reason" cols="15" rows="5" class="mt-1 w-full p-2 border rounded" placeholder="Enter reason">{{ old('reason', $leave->reason) }}</textarea>
+            </div>
+            <div>
+                 <label class="block mt-2">Commutation:</label>
                 <select name="commutation" class="w-full border p-2 rounded">
                     <option value="1" {{ old('commutation', $leave->commutation ?? '') == '1' ? 'selected' : '' }}>Yes</option>
                     <option value="0" {{ old('commutation', $leave->commutation ?? '') == '0' ? 'selected' : '' }}>No</option>
                 </select>
-                
-            </div>
-            <div>
-                <label class="block text-sm font-medium">Reason (Optional)</label>
-                {{-- <input type="text" name="reason" class="mt-1 w-full p-2 border rounded"> --}}
-                <textarea name="reason" id="reason" cols="15" rows="5" class="mt-1 w-full p-2 border rounded" placeholder="Enter reason">{{ old('reason', $leave->reason) }}</textarea>
             </div>
         </div>
         

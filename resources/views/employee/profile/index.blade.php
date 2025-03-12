@@ -40,7 +40,7 @@
     <div class="ml-[25px] py-2">
         <div class="mt-3 space-y-3">
             <div class="flex justify-between items-center">
-                <p class="text-lg font-semibold">{{ $user->first_name }} {{ $user->middle_name }} {{ $user->last_name }}</p>
+                <p class="text-lg font-semibold">{{ $user->first_name }} {{ strtoupper(substr($user->middle_name, 0, 1)) }}. {{ $user->last_name }}</p>
                 <div class="relative mr-[15px]">
                     <!-- Checkbox Toggle -->
                     <input type="checkbox" id="dropdown-profile" class="peer hidden">
@@ -83,18 +83,12 @@
                         <path stroke-linecap="round" stroke-linejoin="round" d="m5.25 4.5 7.5 7.5-7.5 7.5m6-15 7.5 7.5-7.5 7.5" />
                       </svg>                      
                 </span> 
-                @if($leaves->isNotEmpty())
-                    @foreach($leaves as $leave)
-                        <div class="flex justify-start items-center">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4 mr-1">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 21h16.5M4.5 3h15M5.25 3v18m13.5-18v18M9 6.75h1.5m-1.5 3h1.5m-1.5 3h1.5m3-6H15m-1.5 3H15m-1.5 3H15M9 21v-3.375c0-.621.504-1.125 1.125-1.125h3.75c.621 0 1.125.504 1.125 1.125V21" />
-                              </svg>                              
-                            <p> {{ $leave->department ?? 'Not Assigned' }}</p>
-                        </div>
-                    @endforeach
-                @else
-                    <p>Not Assigned</p>
-                @endif
+                <div class="flex justify-start items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4 mr-1">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 21h16.5M4.5 3h15M5.25 3v18m13.5-18v18M9 6.75h1.5m-1.5 3h1.5m-1.5 3h1.5m3-6H15m-1.5 3H15m-1.5 3H15M9 21v-3.375c0-.621.504-1.125 1.125-1.125h3.75c.621 0 1.125.504 1.125 1.125V21" />
+                    </svg>
+                    <p>{{ $user->department ?? 'Not Assigned' }}</p>
+                </div>
                 <span class="px-3 mt-1">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-3">
                         <path stroke-linecap="round" stroke-linejoin="round" d="m5.25 4.5 7.5 7.5-7.5 7.5m6-15 7.5 7.5-7.5 7.5" />
@@ -146,7 +140,7 @@
     const leaveGraph = new Chart(ctx, {
         type: 'bar',
         data: {
-            labels: ['Vacation', 'Sick', 'Overtime', 'Leave Available'],
+            labels: ['Vacation', 'Sick', 'Overtime Available', 'Leave Available'],
             datasets: [{
                 label: 'Days',
                 data: [{{ $vacationBalance }}, {{ $sickBalance }}, {{ $user->overtime_balance }}, {{ $user->leave_balance }}],

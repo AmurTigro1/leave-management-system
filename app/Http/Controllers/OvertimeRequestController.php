@@ -113,4 +113,39 @@ class OvertimeRequestController extends Controller
 
         return Redirect::route('cto.profile.edit')->with('status', 'profile-updated');
     }
+
+    public function editOvertime($id) {
+        $overtime = OvertimeRequest::findOrFail($id);
+        return view('CTO.edit', compact('id', 'overtime'));
+    }
+
+    public function updateOvertime(Request $request, $id)
+    {
+        // Validate the form input
+        $request->validate([
+            'position' => 'nullable|string|max:255',
+            'office_division' => 'required|string',
+            'inclusive_date_start' => 'required|date',
+            'inclusive_date_end' => 'required|date|after_or_equal:inclusive_date_start',
+            'working_hours_applied' => 'required|integer|min:1',
+        ]);
+    
+        $overtime = OvertimeRequest::findOrFail($id);
+    
+        // Update overtime details
+        $overtime->update([
+            'position' => $request->position,
+            'office_division' => $request->office_division,
+            'inclusive_date_start' => $request->inclusive_date_start,
+            'inclusive_date_end' => $request->inclusive_date_end,
+            'working_hours_applied' => $request->working_hours_applied,
+        ]);
+    
+        return redirect()->back()->with('success', 'Overtime request updated successfully.');
+    }
+
+    public function deleteOvertime($id) {
+        OvertimeRequest::findOrFail($id)->delete();
+        return redirect()->back()->with('success', 'Overtime request deleted successfully.');
+    }
 }

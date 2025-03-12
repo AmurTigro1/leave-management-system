@@ -61,15 +61,11 @@
                     <p class="text-red-500 text-sm">{{ $message }}</p>
                     @enderror
                 </div>
-                <div class="mb-4">
-                    <label class="block">Office/Department:</label>
-                    <input type="text" name="department" class="w-full border px-3 py-2 rounded" required placeholder="Enter Office or Departmet">
-                </div>
+               
                 <div class="mb-4">
                     <label class="block font-medium">Salary File</label>
                     <input type="text" name="salary_file" class="w-full border p-2 rounded" required placeholder="Enter Salary File">
                 </div>
-
 
                 <div>
                     <label class="block text-sm font-medium">Start of time-off</label>
@@ -82,7 +78,6 @@
                         <label for="one_day_leave" class="text-sm">One-day leave</label>
                     </div>
                 </div>
-            
                 
                 <div>
                     <label class="block text-sm font-medium">End of time-off</label>
@@ -121,17 +116,18 @@
                     <p class="text-red-500 text-sm">{{ $message }}</p>
                     @enderror
                 </div>
-                <div class="">
-                    <label class="block mt-2">Days Applied:</label>
-                    <input type="number" name="days_applied" class="w-full border p-2 rounded" min="1" required placeholder="Enter Days Applied">
-            
+                <div>
                     <label class="block mt-2">Commutation:</label>
                     <select name="commutation" class="w-full border p-2 rounded">
                         <option value="1">Yes</option>
                         <option value="0">No</option>
                     </select>
                 </div>
-                <div>
+                <div class="">
+                    <label class="block mt-2">Days Applied:</label>
+                    <input type="number" name="days_applied" class="w-full border p-2 rounded" min="1" required placeholder="Enter Days Applied">
+                </div>
+                <div class="mt-2">
                     <label class="block text-sm font-medium">Reason (Optional)</label>
                     {{-- <input type="text" name="reason" class="mt-1 w-full p-2 border rounded"> --}}
                     <textarea name="reason" id="reason" cols="15" rows="5" class="mt-1 w-full p-2 border rounded" placeholder="Enter Reason"></textarea>
@@ -187,7 +183,7 @@
         <textarea name="others_details" id="others_details" cols="30" rows="10" class="mt-1 w-full p-2 border rounded" placeholder="Enter leave details"></textarea>
         
     </div>  
-    <button type="submit" class="mt-4 bg-blue-500 text-white px-4 py-2 rounded">Request Leave</button>
+    <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">Request Leave</button>
     </form>
  </div>
 
