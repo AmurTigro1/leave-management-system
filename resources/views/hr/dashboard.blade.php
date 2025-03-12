@@ -1,27 +1,29 @@
-@extends('layouts.admin.sidebar-header')
+@extends('layouts.hr.sidebar-header')
 
 @section('content')
-<div class="container mx-auto p-6">
-    <h2 class="text-2xl font-bold mb-4">Leave Management Dashboard</h2>
+<div class="max-w-7xl mx-auto p-6 space-y-6">
+    <h2 class="text-3xl font-bold text-gray-800">HR Dashboard</h2>
 
+    <!-- Stats Overview -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         <div class="bg-white p-6 rounded-lg shadow-md text-center">
             <h3 class="text-xl font-semibold text-gray-700">Total Employees</h3>
-            <p class="text-4xl font-bold text-blue-600">{{ $totalUsers}}</p>
+            <p class="text-4xl font-bold text-blue-600">{{ $totalEmployees }}</p>
         </div>
         <div class="bg-yellow-100 p-6 rounded-lg shadow-md text-center">
             <h3 class="text-xl font-semibold text-gray-700">Pending Leaves</h3>
-            <p class="text-4xl font-bold text-yellow-600">{{ $pendingLeaves}}</p>
+            <p class="text-4xl font-bold text-yellow-600">{{ $leaveStats['Pending'] }}</p>
         </div>
         <div class="bg-green-100 p-6 rounded-lg shadow-md text-center">
             <h3 class="text-xl font-semibold text-gray-700">Approved Leaves</h3>
-            <p class="text-4xl font-bold text-green-600">{{ $approvedLeaves}}</p>
+            <p class="text-4xl font-bold text-green-600">{{ $leaveStats['Approved'] }}</p>
         </div>
         <div class="bg-red-100 p-6 rounded-lg shadow-md text-center">
             <h3 class="text-xl font-semibold text-gray-700">Rejected Leaves</h3>
-            <p class="text-4xl font-bold text-red-600">{{ $rejectedLeaves}}</p>
+            <p class="text-4xl font-bold text-red-600">{{ $leaveStats['Rejected'] }}</p>
         </div>
     </div>
+
     <!-- Leave Statistics Bar Chart -->
     <div class="bg-white p-6 rounded-lg shadow-md">
         <h3 class="text-xl font-semibold text-gray-700 mb-4">Leave Requests Overview</h3>
@@ -30,8 +32,9 @@
         </div>
     </div>
 
+    <!-- Employee Leave Balances -->
     <div class="p-6 bg-white shadow-md rounded-lg">
-        <ploy class="text-2xl font-semibold text-gray-800 mb-4">Total Employees</ploy>
+        <h3 class="text-2xl font-semibold text-gray-800 mb-4">Employee Leave Balances</h3>
         <div class="overflow-x-auto">
             <table class="min-w-full bg-white border border-gray-200">
                 <thead class="bg-gray-50">
@@ -109,8 +112,9 @@
 
         </div>
     </div>
-
+    
 </div>
+
 <!-- Chart.js Script -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
@@ -141,4 +145,3 @@
     });
 </script>
 @endsection
-

@@ -1,35 +1,65 @@
 <?php
 
 namespace App\Http\Controllers;
-use Carbon\Carbon;
-use Barryvdh\DomPDF\Facade\Pdf;
+use App\Models\User;
 use App\Models\Leave;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-class LeaveApplicationController extends Controller
+
+class HrController extends Controller
 {
-    public function hrDashboard()
+    public function index()
+    {
+        $employees = User::paginate(10); // Paginate with 10 records per page
+        
+        // Get pending leave requests
+        $pendingLeaves = Leave::where('status', 'pending')->get();
+    
+        // Statistics Data
+        $totalEmployees = User::count();
+        $totalPendingLeaves = Leave::where('status', 'pending')->count();
+        $totalApprovedLeaves = Leave::where('status', 'approved')->count();
+        $totalRejectedLeaves = Leave::where('status', 'rejected')->count();
+    
+        // Data for Chart.js
+        $leaveStats = [
+            'Pending' => $totalPendingLeaves,
+            'Approved' => $totalApprovedLeaves,
+            'Rejected' => $totalRejectedLeaves,
+        ];
+    
+        return view('hr.dashboard', compact('employees', 'pendingLeaves', 'totalEmployees', 'leaveStats'));
+    }
+    
+
+    public function requests()
     {
         if (Auth::user()->role !== 'hr') {
             abort(403, 'Unauthorized access.');
         }
     
-        // Fetch pending leave applications, ordered by the oldest request first
         $leaveApplications = Leave::where('status', 'pending')
-                                  ->orderBy('created_at', 'asc') // Oldest first
-                                  ->get();
+                                  ->orderBy('created_at', 'asc') 
+                                  ->paginate(9); 
     
-        return view('hr.review', compact('leaveApplications'));
+        return view('hr.requests', compact('leaveApplications'));
     }
     
-
     
-public function showLeaveCertification($leaveId)
+    public function showLeaveCertification($leaveId)
 {
     $leave = Leave::findOrFail($leaveId);
     $daysRequested = Carbon::parse($leave->start_date)->diffInDays(Carbon::parse($leave->end_date)) + 1;
 
     return view('hr.leave_certification', compact('leave', 'daysRequested'));
+}
+
+public function show($id) {
+    $leave = Leave::findOrFail($id); 
+
+    return view('hr.leave_details', compact('leave'));
 }
 
 // HR officer reviews applications
@@ -59,23 +89,6 @@ public function review(Request $request, Leave $leave)
     return redirect()->back()->with('success', 'Leave application reviewed by HR.');
 }
 
-
-  
-
-    // List applications based on user role
-    public function index()
-    {
-        $user = Auth::user();
-        if ($user->role === 'HR') {
-            $leaveApplications = Leave::where('status', 'Pending')->get();
-        } elseif ($user->role === 'Supervisor') {
-            $leaveApplications = Leave::where('status', 'Approved')->whereNull('supervisor_id')->get();
-        } else {
-            $leaveApplications = Leave::where('user_id', $user->id)->get();
-        }
-
-        return view('leave.index', compact('leaveApplications'));
-    }
 
     public function generateLeaveReport($leaveId)
 {
