@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('first_name');
             $table->string('middle_name');
             $table->string('last_name');
+            $table->string('department');
             $table->string('email')->unique();
             $table->integer('vacation_leave_balance')->default(5);
             $table->integer('sick_leave_balance')->default(5); 

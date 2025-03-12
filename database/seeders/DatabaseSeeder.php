@@ -20,6 +20,7 @@ class DatabaseSeeder extends Seeder
             'first_name' => 'Employee fname',
             'middle_name' => 'Employee mname',
             'last_name' => 'Employee lname',
+            'department' => 'DILG BOHOL',
             'email' => 'employee@gmail.com',
             'password' => 'password',
             'role' => 'employee'
@@ -30,6 +31,7 @@ class DatabaseSeeder extends Seeder
             'first_name' => 'HR fname',
             'middle_name' => 'HR mname',
             'last_name' => 'HR lname',
+            'department' => 'DILG BOHOL',
             'email' => 'hr@gmail.com',
             'password' => 'password',
             'role' => 'hr',
@@ -40,6 +42,7 @@ class DatabaseSeeder extends Seeder
             'first_name' => 'Supervisor fname',
             'middle_name' => 'Supervisor mname',
             'last_name' => 'Supervisor lname',
+            'department' => 'DILG BOHOL',
             'email' => 'supervisor@gmail.com',
             'password' => 'password',
             'role' => 'supervisor',

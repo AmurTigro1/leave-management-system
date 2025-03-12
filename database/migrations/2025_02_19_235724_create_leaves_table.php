@@ -17,7 +17,6 @@ return new class extends Migration
             $table->date('start_date');
             $table->date('end_date');
             $table->string('salary_file');
-            $table->string('department');
             $table->date('date_filing');
             $table->integer('days_applied');
             $table->boolean('commutation')->default(false);

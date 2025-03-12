@@ -81,7 +81,6 @@ class EmployeeController extends Controller
             'leave_type' => 'required|string',
             'start_date' => 'required|date',
             'end_date' => 'required|date|after_or_equal:start_date',
-            'department' => 'required|string',
             'reason' => 'nullable|string',
             'days_applied' => 'required|integer|min:1',
             'commutation' => 'required|boolean',
@@ -171,7 +170,6 @@ class EmployeeController extends Controller
             'leave_details' => json_encode($leaveDetails), // Store all selected details as JSON
             'start_date' => $request->start_date,
             'end_date' => $request->end_date,
-            'department' => $request->department,
             'position' => $request->position,
             'salary_file' => $request->salary_file,
             'days_applied' => $request->days_applied,
@@ -213,11 +211,9 @@ class EmployeeController extends Controller
     
     public function profile() {
         $user = Auth::user();
-        $leaves = Leave::where('user_id', $user->id)->get();
     
         return view('employee.profile.index', [
             'user' => $user,
-            'leaves' => $leaves,
             'vacationBalance' => $user->vacation_leave_balance,
             'sickBalance' => $user->sick_leave_balance,
         ]);
@@ -372,7 +368,6 @@ class EmployeeController extends Controller
         // Validate the form input
         $request->validate([
             'leave_type' => 'required|string|max:255',
-            'department' => 'required|string|max:255',
             'salary_file' => 'required|string|max:255',
             'start_date' => 'required|date',
             'end_date' => 'required|date|after_or_equal:start_date',
@@ -440,7 +435,6 @@ class EmployeeController extends Controller
         // Update leave details
         $leave->update([
             'leave_type' => $request->leave_type,
-            'department' => $request->department,
             'salary_file' => $request->salary_file,
             'start_date' => $request->start_date,
             'end_date' => $request->end_date,
