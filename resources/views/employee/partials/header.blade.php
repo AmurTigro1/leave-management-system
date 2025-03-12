@@ -1,4 +1,4 @@
-<header class="py-3 bg-white shadow-md w-full">
+<header class="py-3 bg-white shadow-md w-full z-[900]">
     <div class="container mx-auto max-w-7xl px-4 flex justify-between items-center">
         <!-- Logo -->
         <p class="text-xl text-blue-600 font-semibold">LMS and CTO System</p>
@@ -103,7 +103,7 @@
 
 
 <!-- Logout Confirmation Modal -->
-<div id="logoutModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden px-4 max-sm:m-10 z-50">
+<div id="logoutModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden px-4 max-sm:m-10 z-[9999]">
     <div class="bg-white rounded-lg shadow-lg p-6 w-[90%] max-w-[450px]">
         <div class="flex justify-center">
             <img src="/img/dilg-main.png" alt="DILG Logo" class="h-[70px] w-[70px] sm:h-[80px] sm:w-[80px] mb-4">

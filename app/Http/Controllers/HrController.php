@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 use App\Models\User;
 use App\Models\Leave;
+use App\Models\OvertimeRequest;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -22,6 +23,9 @@ class HrController extends Controller
         $totalPendingLeaves = Leave::where('status', 'pending')->count();
         $totalApprovedLeaves = Leave::where('status', 'approved')->count();
         $totalRejectedLeaves = Leave::where('status', 'rejected')->count();
+        $totalApprovedOvertime = OvertimeRequest::where('status', 'approved')->count();
+        $totalPendingOvertime = OvertimeRequest::where('status', 'pending')->count();
+        $totalRejectedOvertime = OvertimeRequest::where('status', 'rejected')->count();
     
         // Data for Chart.js
         $leaveStats = [
@@ -29,8 +33,14 @@ class HrController extends Controller
             'Approved' => $totalApprovedLeaves,
             'Rejected' => $totalRejectedLeaves,
         ];
+
+        $cocStats = [
+            'Pending' => $totalPendingOvertime,
+            'Approved' => $totalApprovedOvertime,
+            'Rejected' => $totalRejectedOvertime,
+        ];
     
-        return view('hr.dashboard', compact('employees', 'pendingLeaves', 'totalEmployees', 'leaveStats'));
+        return view('hr.dashboard', compact('employees', 'pendingLeaves', 'totalEmployees', 'leaveStats', 'cocStats'));
     }
     
 

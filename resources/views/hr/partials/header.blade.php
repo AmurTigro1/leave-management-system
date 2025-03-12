@@ -1,7 +1,7 @@
-<header class="py-3 bg-white shadow-md w-full">
+<header class="py-3 bg-white shadow-md w-full z-[900]">
     <div class="container mx-auto max-w-7xl px-4 flex justify-between items-center">
         <!-- Logo -->
-        <p class="text-xl text-blue-600 font-semibold">LMS and CTO System</p>
+        <p class="text-xl text-blue-600 font-semibold"></p>
 
         <!-- Navigation Links -->
         <nav class="flex items-center space-x-6">
@@ -10,7 +10,7 @@
             <div class="relative">
                 <button id="dropdown-btn" class="flex items-center justify-between w-full bg-white px-4 rounded-lg shadow-md border border-gray-300 transition-all duration-200 ease-in-out">
                     <div class="flex items-center justify-between bg-white p-2 rounded-lg">
-                        <!-- Profile Section -->
+                        <!-- Profile Section -->    
                         <div class="flex items-center space-x-4">
                             <!-- Profile Image -->
                             <div class="w-10 h-10 rounded-full overflow-hidden bg-gray-100 flex items-center justify-center border-2 border-gray-200 hover:border-blue-300 transition-all duration-300">
@@ -69,7 +69,7 @@
 
 
 <!-- Logout Confirmation Modal -->
-<div id="logoutModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden px-4 max-sm:m-10 z-50">
+<div id="logoutModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden px-4 max-sm:m-10 z-[9999]">
     <div class="bg-white rounded-lg shadow-lg p-6 w-[90%] max-w-[450px]">
         <div class="flex justify-center">
             <img src="/img/dilg-main.png" alt="DILG Logo" class="h-[70px] w-[70px] sm:h-[80px] sm:w-[80px] mb-4">

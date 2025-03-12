@@ -6,7 +6,7 @@
         } 
     }" 
     x-init="updateSidebar(); window.addEventListener('resize', () => updateSidebar())"
-    class="min-h-screen flex">
+    class="min-h-screen flex z-[1000]">
     <!-- Sidebar -->
     <div 
         :class="isSidebarOpen ? 'w-64' : 'w-0 opacity-0'" 
