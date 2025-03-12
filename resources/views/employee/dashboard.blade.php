@@ -36,7 +36,7 @@
                             @endif
                         </div>
                         <div class="mt-3 text-center">
-                            <p class="text-sm sm:text-md font-semibold">{{ $employee->first_name }} {{$employee->last_name}}</p>
+                            <p class="text-sm sm:text-md font-semibold">{{ $employee->first_name }} {{ strtoupper(substr($employee->middle_name, 0, 1)) }}. {{$employee->last_name}}</p>
                             <p class="text-xs text-gray-600">🎂 {{ \Carbon\Carbon::parse($employee->birthday)->format('F d, Y') }}</p>
                         </div>
                     </div>

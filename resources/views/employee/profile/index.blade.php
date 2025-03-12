@@ -40,7 +40,7 @@
     <div class="ml-[25px] py-2">
         <div class="mt-3 space-y-3">
             <div class="flex justify-between items-center">
-                <p class="text-lg font-semibold">{{ $user->name }}</p>
+                <p class="text-lg font-semibold">{{ $user->first_name }} {{ strtoupper(substr($user->middle_name, 0, 1)) }}. {{ $user->last_name }}</p>
                 <div class="relative mr-[15px]">
                     <!-- Checkbox Toggle -->
                     <input type="checkbox" id="dropdown-profile" class="peer hidden">
