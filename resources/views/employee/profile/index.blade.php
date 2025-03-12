@@ -4,29 +4,40 @@
         <!-- Back Button with Animation -->
         <div class="bg-[url('/public/img/office-image.jpg')] bg-cover bg-center p-[100px] rounded">
             <h1 class="text-center text-white font-bold text-[30px] bg-black/50 p-4 rounded">Leave Management System & Compensatory Time Off</h1>
-        </div>        
-    
-   <!-- Profile Image & Upload -->
-        <div class="relative group ml-6 mt-[-100px]">
+        </div>      
+          
+    <!-- Profile Image & Upload -->
+    <div class="relative w-32 h-32 ml-6 mt-[-100px]">
+        <!-- Image Wrapper (Group for Hover) -->
+        <div class="relative group w-full h-full">
             <!-- Profile Image -->
             <img id="profile-preview"
                 src="{{ auth()->user()->profile_image ? asset('storage/profile_images/' . auth()->user()->profile_image) : asset('default-avatar.png') }}"
-                class="w-32 h-32 rounded-full object-cover border-4 border-gray-200">
-            
-            <!-- Hover Overlay -->
-            <div class="absolute inset-0 w-[11%] bg-black bg-opacity-40 rounded-full opacity-0 group-hover:opacity-100 flex flex-col justify-center items-center transition-opacity duration-300">
-                <form action="{{ route('profile.update-image') }}" method="POST" enctype="multipart/form-data" class="text-center">
-                    @csrf
-                    <label for="profile_image" class="text-white text-[14px] font-medium cursor-pointer mb-2">Change Image</label>
-                    <input type="file" name="profile_image" id="profile_image" class="hidden" onchange="this.form.submit();">
-                    <button type="submit" class="bg-blue-500 text-white px-4 py-1 text-[13px] mt-6 rounded-lg hover:bg-blue-600">Update</button>
-                </form>
-            </div>
+                class="w-full h-full rounded-full object-cover border-4 border-gray-300 shadow-md cursor-pointer">
+
+            <!-- Hover Overlay (Only on Image Hover) -->
+            <label for="profile_image" 
+                class="absolute inset-0 bg-black bg-opacity-50 rounded-full opacity-0 group-hover:opacity-100 flex justify-center items-center transition-opacity duration-300 cursor-pointer pointer-events-none">
+                <span class="text-white text-sm font-medium pointer-events-auto">Change Image</span>
+            </label>
         </div>
+
+        <!-- Hidden File Input & Update Button -->
+        <form action="{{ route('profile.update-image') }}" method="POST" enctype="multipart/form-data" class="relative mt-1">
+            @csrf
+            <input type="file" name="profile_image" id="profile_image" class="hidden">
+            
+            <!-- Update Button (Moved Down & Right) -->
+            <button id="update-button" type="submit" 
+                class="absolute top-[-65px] -right-20 bg-green-500 text-white px-4 py-1 text-sm rounded-md hidden hover:bg-green-600 transition z-20 pointer-events-auto">
+                Update
+            </button>
+        </form>
+    </div>
 
     
     <!-- User Info -->
-    <div class="ml-[25px] py-6">
+    <div class="ml-[25px] py-2">
         <div class="mt-3 space-y-3">
             <div class="flex justify-between items-center">
                 <p class="text-lg font-semibold">{{ $user->name }}</p>
@@ -174,6 +185,25 @@
         };
         reader.readAsDataURL(event.target.files[0]);
     };
+    document.addEventListener("DOMContentLoaded", function() {
+        const fileInput = document.getElementById("profile_image");
+        const updateButton = document.getElementById("update-button");
+        const previewImage = document.getElementById("profile-preview");
+
+        fileInput.addEventListener("change", function(event) {
+            // Show update button when a file is selected
+            updateButton.classList.remove("hidden");
+
+            // Preview the selected image
+            const reader = new FileReader();
+            reader.onload = function() {
+                previewImage.src = reader.result;
+            };
+            if (event.target.files.length > 0) {
+                reader.readAsDataURL(event.target.files[0]);
+            }
+        });
+    });
 </script>
 @endsection
 {{-- <div class="mt-4 p-4 bg-blue-50 rounded-lg shadow">
