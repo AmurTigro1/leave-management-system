@@ -213,13 +213,16 @@ class EmployeeController extends Controller
     
     public function profile() {
         $user = Auth::user();
+        $leaves = Leave::where('user_id', $user->id)->get();
     
         return view('employee.profile.index', [
             'user' => $user,
+            'leaves' => $leaves,
             'vacationBalance' => $user->vacation_leave_balance,
             'sickBalance' => $user->sick_leave_balance,
         ]);
     }
+    
 
     public function edit(Request $request): View
     {

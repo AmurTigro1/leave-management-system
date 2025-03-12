@@ -71,7 +71,6 @@ Route::middleware(['auth.redirect', 'employeeMiddleware'])->group(function () {
     Route::get('/cto/dashboard', [OvertimeRequestController::class, 'dashboard'])->name('cto.dashboard');
     Route::get('/overtime-request', [OvertimeRequestController::class, 'index'])->name('cto.overtime_request');
     Route::get('/overtime-list', [OvertimeRequestController::class, 'list'])->name('cto.overtime_list');
-    Route::post('/overtime/store', [OvertimeRequestController::class, 'store'])->name('overtime.store');
     Route::post('/overtime-request/store', [OvertimeRequestController::class, 'store'])->name('overtime_request.store');
     Route::get('/cto-profile', [OvertimeRequestController::class, 'profile'])->name('cto.profile.index');
     Route::get('/cto-profile-edit', [OvertimeRequestController::class, 'edit'])->name('cto.profile.edit');
