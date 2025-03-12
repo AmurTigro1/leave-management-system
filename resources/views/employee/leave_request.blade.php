@@ -20,7 +20,7 @@
 
 <div class="bg-white shadow-md rounded-lg overflow-hidden p-6">
     <!-- Leave Request List -->
-<h3 class="text-2xl font-bold text-gray-800">Your Leave Requests</h3>
+<h3 class="text-2xl font-bold mb-3 text-gray-800">Your Leave Requests</h3>
 
 
     <table class="w-full border-collapse">

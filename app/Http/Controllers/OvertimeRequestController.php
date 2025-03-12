@@ -9,6 +9,8 @@ use App\Http\Requests\ProfileUpdateRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
+use App\Models\User;
+use PDF;
 
 class OvertimeRequestController extends Controller
 {
@@ -62,8 +64,26 @@ class OvertimeRequestController extends Controller
 
     public function list()
     {
-        $overtimereq = OvertimeRequest::where('user_id', Auth::id())->latest()->get();
+        $overtimereq = OvertimeRequest::where('user_id', Auth::id())->latest()->paginate(10);
         return view('CTO.overtime_list', compact('overtimereq'));
+    }
+
+    public function show($id) {
+        $overtime = OvertimeRequest::findOrFail($id); // Fetch the leave request by ID
+    
+        return view('CTO.overtime_show', compact('overtime'));
+    }
+
+    public function viewPdf($id)
+    {
+        $overtime = OvertimeRequest::findOrFail($id);
+
+        $supervisor = User::where('role', 'supervisor')->first();
+        $hr = User::where('role', 'hr')->first();
+        
+        $pdf = PDF::loadView('pdf.overtime_details', compact('overtime', 'supervisor', 'hr'));
+        
+        return $pdf->stream('overtime_request_' . $overtime->id . '.pdf');
     }
 
     public function profile() {
