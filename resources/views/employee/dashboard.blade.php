@@ -10,7 +10,7 @@
     </div>
 </section>
 
-
+<div class="w-full px-4 py-8 space-y-8">
 <div class="w-full px-4">
     <h3 class="text-2xl sm:text-3xl md:text-4xl font-bold text-center text-gray-900 drop-shadow-lg animate-bounce">🎉 Happy Birthday! 🎉</h3>
     @if ($birthdays->isEmpty())
@@ -26,7 +26,7 @@
             <div class="w-full flex flex-wrap justify-center gap-4 shrink-0">
                 @foreach ($chunk as $employee)
                     <div class="w-full sm:w-[200px] bg-white shadow-lg rounded-xl p-4 flex flex-col items-center border border-gray-200 transition-transform duration-500 hover:-translate-y-2">
-                        <div class="w-16 sm:w-20 h-16 sm:h-20 rounded-full overflow-hidden bg-gray-300 shadow-md ring-4 ring-blue-400">
+                        <div class="w-16 sm:w-20 h-16 sm:h-20 rounded-full overflow-hidden bg-gray-300 shadow-md ring-4 ring-blue-400 animate-pulse">
                             @if ($employee->profile_image)
                                 <img src="{{ asset('storage/profile_images/' . $employee->profile_image) }}" class="w-full h-full object-cover">
                             @else
@@ -54,53 +54,53 @@
         </div>
 
         <!-- Navigation Controls -->
-        <button @click="currentIndex = (currentIndex - 1 + totalSlides) % totalSlides" class="absolute left-2 top-1/2 -translate-y-1/2 p-3 rounded-full bg-white shadow-md hover:scale-110">
+        <button @click="currentIndex = (currentIndex - 1 + totalSlides) % totalSlides" class="absolute border border-gray-500 left-2 top-1/2 -translate-y-1/2 p-3 rounded-full bg-white shadow-md hover:scale-110">
             &larr;
         </button>
-        <button @click="currentIndex = (currentIndex + 1) % totalSlides" class="absolute right-2 top-1/2 -translate-y-1/2 p-3 rounded-full bg-white shadow-md hover:scale-110">
+        <button @click="currentIndex = (currentIndex + 1) % totalSlides" class="absolute border border-gray-500 right-2 top-1/2 -translate-y-1/2 p-3 rounded-full bg-white shadow-md hover:scale-110">
             &rarr;
         </button>
     </div>
 </div>
 @endif
-<!-- Leave Section -->
-<div class="flex justify-between items-center p-4 rounded-lg mt-10 border border-gray-500">
-    <button id="prevMonth" class="text-gray-600 px-4 py-2 rounded-lg">&larr;</button>
-    <h2 id="monthTitle" class="text-md text-gray-500"></h2>
-    <button id="nextMonth" class="text-gray-600 px-4 py-2 rounded-lg">&rarr;</button>
-</div>
 
-<div id="leaveContainer" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-4 px-4"></div>
+    <!-- Leave Section -->
+    <div class="p-6 bg-gray-100 rounded-xl shadow-lg border border-gray-300">
+        <div class="flex justify-between items-center mb-4">
+            <button id="prevMonth" class="text-gray-700 px-4 py-2 rounded-lg bg-white shadow hover:bg-gray-200">&larr;</button>
+            <h2 id="monthTitle" class="text-lg font-semibold text-gray-700"></h2>
+            <button id="nextMonth" class="text-gray-700 px-4 py-2 rounded-lg bg-white shadow hover:bg-gray-200">&rarr;</button>
+        </div>
+        <div id="leaveContainer" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4"></div>
+    </div>
 
-<!-- Leave List -->
-<div class="mt-6 p-6 rounded-lg shadow-md w-full">
-    <h2 class="text-lg sm:text-xl font-semibold text-gray-700 mb-3">Team Members on Leave</h2>
-    
-    @if($teamLeaves->isEmpty())
-        <p class="text-gray-600">No team members are on leave this month.</p>
-    @else
-        <ul>
-            @foreach($teamLeaves as $leave)
-                <li class="flex items-center space-x-4 bg-white p-4 rounded-lg shadow-md">
-                    <div class="w-12 h-12 rounded-full overflow-hidden bg-gray-200">
-                        @if($leave->user && $leave->user->profile_image)
-                            <img src="{{ asset('storage/profile_images/' . $leave->user->profile_image) }}" class="w-full h-full object-cover">
-                        @else
-                            <svg class="w-full h-full text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                                    d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79 4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z">
-                                </path>
-                            </svg>
-                        @endif
-                    </div>
-                    <div>
-                        <p class="text-sm font-semibold">{{ $leave->user->first_name }}</p>
-                        <p class="text-xs text-gray-600">On leave from {{ date('M d', strtotime($leave->start_date)) }} to {{ date('M d', strtotime($leave->end_date)) }}</p>
-                    </div>
-                </li>
-            @endforeach
-        </ul>
-    @endif
+    <!-- Employees on Leave -->
+    <div class="p-6 bg-white rounded-xl shadow-lg border border-gray-300">
+        <h2 class="text-xl font-semibold text-gray-700 mb-3">Team Members on Leave</h2>
+        @if($teamLeaves->isEmpty())
+            <p class="text-gray-600">No team members are on leave this month.</p>
+        @else
+            <ul class="space-y-4">
+                @foreach($teamLeaves as $leave)
+                    <li class="flex items-center space-x-4 bg-gray-50 p-4 rounded-lg shadow">
+                        <div class="w-12 h-12 rounded-full overflow-hidden bg-gray-200">
+                            @if($leave->user && $leave->user->profile_image)
+                                <img src="{{ asset('storage/profile_images/' . $leave->user->profile_image) }}" class="w-full h-full object-cover">
+                            @else
+                                <svg class="w-full h-full text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79 4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"></path>
+                                </svg>
+                            @endif
+                        </div>
+                        <div>
+                            <p class="text-md font-semibold text-gray-800">{{ $leave->user->first_name }}</p>
+                            <p class="text-sm text-gray-600">On leave from {{ date('M d', strtotime($leave->start_date)) }} to {{ date('M d', strtotime($leave->end_date)) }}</p>
+                        </div>
+                    </li>
+                @endforeach
+            </ul>
+        @endif
+    </div>
 </div>
 
 

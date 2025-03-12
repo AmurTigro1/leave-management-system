@@ -5,40 +5,6 @@
 
         <!-- Navigation Links -->
         <nav class="flex items-center space-x-6">
-                        <!-- Balances -->
-                        <div class="flex flex-row text-gray-600 space-x-2">
-                            <!-- Sick Leave -->
-                            <div class="flex items-center ">
-                                <span class="font-medium text-sm">Sick Leave:</span>
-                                <span class="font-semibold text-gray-800 text-sm bg-gray-50 px-2 py-1 rounded-md">
-                                    {{ Auth::user()->sick_leave_balance }}
-                                </span>
-                            </div>
-                    
-                            <!-- Vacation Leave -->
-                            <div class="flex items-center ">
-                                <span class="font-medium text-sm">Vacation Leave:</span>
-                                <span class="font-semibold text-gray-800 text-sm bg-gray-50 px-2 py-1 rounded-md">
-                                    {{ Auth::user()->vacation_leave_balance }}
-                                </span>
-                            </div>
-                    
-                            <!-- Total Leave -->
-                            <div class="flex items-center ">
-                                <span class="font-medium text-sm">Total Leave:</span>
-                                <span class="font-semibold text-gray-800 text-sm bg-gray-50 px-2 py-1 rounded-md">
-                                    {{ Auth::user()->leave_balance }}
-                                </span>
-                            </div>
-
-                            <!-- Total COCs -->
-                            <div class="flex items-center ">
-                                <span class="font-medium text-sm">Total COCs:</span>
-                                <span class="font-semibold text-gray-800 text-sm bg-gray-50 px-2 py-1 rounded-md">
-                                    {{ Auth::user()->overtime_balance }}
-                                </span>
-                            </div>
-                        </div>
             @if (Auth::check())
             <!-- Dropdown Menu -->
             <div class="relative">

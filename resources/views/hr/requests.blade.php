@@ -1,7 +1,7 @@
-@extends('layouts.sidebar-header')
+@extends('layouts.hr.sidebar-header')
 
 @section('content')
-<div class="max-w-6xl mx-auto bg-white p-8 rounded-lg shadow-md">
+<div class="max-w-6xl mx-auto bg-white p-8 rounded-">
     <h2 class="text-2xl font-bold text-gray-700 mb-6 flex items-center gap-2">
         <i class="lucide lucide-file-text"></i> Review Leave Applications
     </h2>
@@ -35,6 +35,9 @@
                              alt="User Profile" 
                              class="w-full h-full object-cover rounded-full">
                     </div>
+                    <span class="px-2 py-1 text-white text-xs rounded">
+                        {{$leave->date_filing}}
+                    </span>
                     
                     <div>
                         <p class="text-md font-semibold text-gray-800">{{ $leave->user->name }}</p>
@@ -71,15 +74,67 @@
                     <label class="block text-gray-700 font-medium text-xs">Days without Pay:</label>
                     <input type="number" name="approved_days_without_pay" class="w-full border rounded p-2 text-xs focus:ring focus:ring-blue-200">
 
+                    <div class="flex gap-2">
                     <!-- Submit Button -->
                     <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white font-medium py-2 text-xs rounded-lg transition">
                         Submit
                     </button>
+                    <a href="{{ route('hr.leave_details', ['id' => $leave->id]) }}" 
+                        class="px-4 w-full text-center bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 text-xs rounded-lg transition">
+                         View
+                     </a>
+                    </div>
                 </form>
             </div>
             @endforeach
         </div>
     @endif
+        <!-- Pagination -->
+        <div class="mt-4">
+            <p class="text-gray-600 text-sm">
+                Showing {{ $leaveApplications->firstItem() }} to {{ $leaveApplications->lastItem() }} of {{ $leaveApplications->total() }} Leave Applications
+            </p>
+           <div class="mt-4 flex justify-end">
+    @if ($leaveApplications->hasPages())
+        <nav class="flex space-x-2">
+            {{-- Previous Page Link --}}
+            @if ($leaveApplications->onFirstPage())
+                <span class="px-4 py-2 text-gray-400 bg-gray-100 rounded-md cursor-not-allowed">
+                    &larr; Prev
+                </span>
+            @else
+                <a href="{{ $leaveApplications->previousPageUrl() }}" class="px-4 py-2 text-gray-700 bg-white border rounded-md hover:bg-gray-100">
+                    &larr; Prev
+                </a>
+            @endif
+
+            {{-- Page Numbers --}}
+            @foreach ($leaveApplications->getUrlRange(1, $leaveApplications->lastPage()) as $page => $url)
+                @if ($page == $leaveApplications->currentPage())
+                    <span class="px-4 py-2 bg-blue-500 text-white rounded-md">{{ $page }}</span>
+                @else
+                    <a href="{{ $url }}" class="px-4 py-2 text-gray-700 bg-white border rounded-md hover:bg-gray-100">
+                        {{ $page }}
+                    </a>
+                @endif
+            @endforeach
+
+            {{-- Next Page Link --}}
+            @if ($leaveApplications->hasMorePages())
+                <a href="{{ $leaveApplications->nextPageUrl() }}" class="px-4 py-2 text-gray-700 bg-white border rounded-md hover:bg-gray-100">
+                    Next &rarr;
+                </a>
+            @else
+                <span class="px-4 py-2 text-gray-400 bg-gray-100 rounded-md cursor-not-allowed">
+                    Next &rarr;
+                </span>
+            @endif
+        </nav>
+    @endif
+</div>
+
+        </div>
+    
 </div>
 
 <!-- Hide Alerts after a few seconds -->

@@ -29,18 +29,18 @@ class="min-h-screen flex">
 
     <div x-show="isSidebarOpen" x-transition class="flex-1 p-4 space-y-2 text-gray-600 bg-gray-50">
         <!-- Dashboard Link -->
-        <a href="{{ route('supervisor.dashboard')}}" class="hover:bg-gray-200 flex items-center p-2 space-x-2 rounded-md {{ request()->routeIs('supervisor.dashboard') ? 'bg-white shadow-lg' : 'text-gray-500' }}">
+        <a href="{{ route('hr.dashboard') }}" class="hover:bg-gray-200 flex items-center p-2 space-x-2 rounded-md {{ request()->routeIs('hr.dashboard') ? 'bg-white shadow-lg' : 'text-gray-500' }}">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                 <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
             </svg>
             <span>Dashboard</span>
         </a>  
 
-        <a href="{{ route('supervisor.requests')}}" class="hover:bg-gray-200 flex items-center p-2 space-x-2 rounded-md {{ request()->routeIs('supervisor.requests') ? 'bg-white shadow-lg' : 'text-gray-500' }}">
+        <a href="{{ route('hr.leave_requests') }}" class="hover:bg-gray-200 flex items-center p-2 space-x-2 rounded-md {{ request()->routeIs('hr.leave_requests') || request()->routeIs('hr.leave_details') ? 'bg-white shadow-lg' : 'text-gray-500' }}">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 5.25h16.5m-16.5 4.5h16.5m-16.5 4.5h16.5m-16.5 4.5h16.5" />
             </svg>          
-            <span>Manage Request</span>
+            <span>List of Request</span>
         </a>  
 
 <!-- Holidays Link -->
@@ -68,3 +68,4 @@ class="min-h-screen flex">
     </button>
 </div>
 </div>
+

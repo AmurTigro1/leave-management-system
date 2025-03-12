@@ -48,7 +48,7 @@
         <!-- Hidden Checkbox for Toggle -->
         <input type="checkbox" id="dropdown-toggle" class="peer hidden">
         
-        <!-- My Request Dropdown Button -->
+        <!-- Make a Request Dropdown Button -->
         <label for="dropdown-toggle" class="flex items-center p-2 space-x-2 rounded-md w-full text-gray-500 hover:bg-gray-200 focus:bg-white cursor-pointer">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                 <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" />
@@ -61,7 +61,7 @@
         </label>
     
         <!-- Dropdown Menu -->
-        <div class="absolute left-0 top-full hidden peer-checked:flex flex-col w-48 mt-1 bg-white border border-gray-300 rounded-md shadow-lg">
+        <div class="absolute left-0 top-full hidden peer-checked:flex flex-col w-48 mt-1 bg-white border border-gray-300 rounded-md shadow-lg z-20">
             <a href="{{ route('employee.make_request') }}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">
                 Leave Request
             </a>
@@ -69,14 +69,33 @@
                 Overtime Request
             </a>
         </div>
-    </div>    
-
-    <a href="{{ route('employee.leave_request') }}" class="hover:bg-gray-200 flex items-center p-2 space-x-2 rounded-md {{ request()->routeIs('employee.leave_request') ? 'bg-white shadow-lg' : 'text-gray-500' }}">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 5.25h16.5m-16.5 4.5h16.5m-16.5 4.5h16.5m-16.5 4.5h16.5" />
-        </svg>          
-        <span>List of Request </span>
-    </a>   
+    </div>
+    
+    <div class="relative">
+        <!-- Hidden Checkbox for Toggle -->
+        <input type="checkbox" id="dropdown-toggle2" class="peer hidden">
+        
+        <!-- List of Requests Dropdown Button -->
+        <label for="dropdown-toggle2" class="flex items-center p-2 space-x-2 rounded-md w-full text-gray-500 hover:bg-gray-200 focus:bg-white cursor-pointer">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 6.75h12M8.25 12h12m-12 5.25h12M3.75 6.75h.007v.008H3.75V6.75Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0ZM3.75 12h.007v.008H3.75V12Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm-.375 5.25h.007v.008H3.75v-.008Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" />
+              </svg>              
+            <span>List of Requests</span>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-auto" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+            </svg>
+        </label>
+    
+        <!-- Dropdown Menu -->
+        <div class="absolute left-0 top-full hidden peer-checked:flex flex-col w-48 mt-1 bg-white border border-gray-300 rounded-md shadow-lg z-10">
+            <a href="{{ route('employee.leave_request') }}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">
+                Leave List
+            </a>
+            <a href="{{ route('cto.overtime_list') }}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">
+                Overtime List
+            </a>
+        </div>
+    </div>       
 
     <!-- Holidays Link -->
     <a href="{{ route('holiday.calendar') }}" class="hover:bg-gray-200 flex items-center p-2 space-x-2 rounded-md {{ request()->routeIs('holiday.calendar') ? 'bg-white shadow-lg' : 'text-gray-500' }}">
