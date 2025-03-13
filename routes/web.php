@@ -60,7 +60,6 @@ Route::middleware(['auth.redirect', 'employeeMiddleware'])->group(function () {
     Route::get('/details/{id}', [EmployeeController::class, 'show'])->name('employee.leave_show');
     Route::post('/request-leave', [EmployeeController::class, 'store'])->name('request.leave');
     Route::get('/lms-profile', [EmployeeController::class, 'profile'])->name('employee.profile.index');
-    // Route::get('/lms-profile-edit', [EmployeeController::class, 'edit'])->name('employee.profile.edit');
     Route::get('/profile-edit', [EmployeeController::class, 'profile_edit'])->name('employee.profile.partials.update-profile-information-form');
     Route::get('/password-edit', [EmployeeController::class, 'password_edit'])->name('employee.profile.partials.update-password-form');
     Route::patch('/lms-profile/update-profile', [EmployeeController::class, 'updateProfile'])->name('employee-profile.update');
