@@ -29,11 +29,6 @@
       <main class="flex-1 p-6 overflow-y-auto">
           @yield('content')
       </main>
-
-      <!-- Footer (Placed inside the flex container) -->
-      {{-- <footer class="p-6 text-center border-t dark:border-gray-700">
-          <p>&copy; {{ date('Y') }} DILG - Bohol. All rights reserved.</p>
-      </footer> --}}
   </div>
 </div> 
 </body>

@@ -2,29 +2,13 @@
 
 @section('content')
 
-@if(session('success'))
-<div x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 3000)" class="p-4 mb-4 text-green-700 bg-green-100 border border-green-500 rounded">
-    {{ session('success') }}
-</div>
-@endif
-
-@if($errors->any())
-    <div x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 3000)" class="p-4 mb-4 text-red-700 bg-red-100 border border-red-500 rounded">
-        <ul>
-            @foreach($errors->all() as $error)
-                <li>{{ $error }}</li>
-            @endforeach
-        </ul>
-    </div>
-@endif
-
 <div class="bg-white shadow-md rounded-lg overflow-hidden p-6">
     <h3 class="text-2xl font-bold mb-3 text-gray-800">Your Overtime Requests</h3>
     <table class="w-full border-collapse">
         <thead>
             <tr class="text-gray-600 text-sm bg-gray-100 border-b">
                 <th class="p-3 text-left">ID</th>
-                <th class="p-3 text-left">Date Filled</th>
+                <th class="p-3 text-left">Date Filed</th>
                 <th class="p-3 text-left">Working Hours</th>
                 <th class="p-3 text-left">Inclusive Date Start</th>
                 <th class="p-3 text-left">Inclusive Date End</th>

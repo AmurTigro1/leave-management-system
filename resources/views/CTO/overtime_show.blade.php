@@ -1,84 +1,77 @@
 @extends('layouts.sidebar-header')
 
 @section('content')
-<div class="bg-white shadow-lg rounded-lg p-6 space-y-6">
-    <!-- Banner -->
-
-
-    <!-- Back Button with Animation -->
-    <a href="{{ route('cto.overtime_list') }}" class="inline-flex items-center text-blue-500 hover:underline transition duration-300">
+<div class="bg-white shadow-xl rounded-lg p-8 space-y-8 animate-fade-in">
+    <!-- Back Button -->
+    <a href="{{ route('cto.overtime_list') }}" class="inline-flex items-center text-blue-600 font-medium hover:underline transition duration-300">
         &larr; Back to Overtime Requests
     </a>
-    {{-- <div class="relative w-full h-40 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center text-white text-2xl font-bold shadow-md">
-        Leave Request Details
-    </div> --}}
-        <!-- Download PDF Button -->
+
+    <!-- Title -->
+    <h2 class="text-2xl font-bold text-gray-800">Overtime Request Details</h2>
+
+    <!-- PDF Download Button -->
     <div class="text-right">
-        <a href="{{ route('overtime.viewPdf', $overtime->id) }}" target="_blank" class="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-5 py-2 rounded-lg shadow-md hover:opacity-90 transition">
+        <a href="{{ route('overtime.viewPdf', $overtime->id) }}" target="_blank" 
+            class="bg-blue-600 text-white px-6 py-2 rounded-lg shadow-md hover:bg-blue-700 transition">
             View & Download PDF
         </a>
     </div>
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-gray-700">
-        <div class="bg-gray-50 p-4 rounded-lg shadow">
-            <p class="font-semibold text-lg">Date Filed</p>
-                <ul class="list-disc list-inside text-gray-800">
-                    <li><span class="font-medium">{{ \Carbon\Carbon::parse($overtime->date_filed)->format('F d, Y') }}</li>
-                </ul>
+
+    <!-- Details Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-gray-800">
+        <div>
+            <p class="font-semibold text-gray-900">Date Filed</p>
+            <p class="text-gray-700">{{ \Carbon\Carbon::parse($overtime->date_filed)->format('F d, Y') }}</p>
         </div>
-        
-        <div class="bg-gray-50 p-4 rounded-lg shadow">
-            <p class="font-semibold text-lg">Position</p>
-            <p class="text-gray-900">{{ $overtime->position ?? 'No position provided.' }}</p>
+
+        <div>
+            <p class="font-semibold text-gray-900">Position</p>
+            <p class="text-gray-700">{{ $overtime->position ?? 'No position provided.' }}</p>
         </div>
-        
-        <div class="bg-gray-50 p-4 rounded-lg shadow">
-            <p class="font-semibold text-lg">Inclusive Date Start</p>
-            <p class="text-gray-900">{{ \Carbon\Carbon::parse($overtime->inclusive_date_start)->format('F d, Y') }}</p>
+
+        <div>
+            <p class="font-semibold text-gray-900">Inclusive Date Start</p>
+            <p class="text-gray-700">{{ \Carbon\Carbon::parse($overtime->inclusive_date_start)->format('F d, Y') }}</p>
         </div>
-        
-        <div class="bg-gray-50 p-4 rounded-lg shadow">
-            <p class="font-semibold text-lg">Inclusive Date End</p>
-            <p class="text-gray-900">{{ \Carbon\Carbon::parse($overtime->inclusive_date_end)->format('F d, Y') }}</p>
+
+        <div>
+            <p class="font-semibold text-gray-900">Inclusive Date End</p>
+            <p class="text-gray-700">{{ \Carbon\Carbon::parse($overtime->inclusive_date_end)->format('F d, Y') }}</p>
         </div>
-        
-        <div class="bg-gray-50 p-4 rounded-lg shadow">
-            <p class="font-semibold text-lg">Total Days</p>
-            <p class="text-gray-900">{{ \Carbon\Carbon::parse($overtime->inclusive_date_start)->diffInDays(\Carbon\Carbon::parse($overtime->inclusive_date_end)) + 1 }}</p>
+
+        <div>
+            <p class="font-semibold text-gray-900">Total Days</p>
+            <p class="text-gray-700">{{ \Carbon\Carbon::parse($overtime->inclusive_date_start)->diffInDays(\Carbon\Carbon::parse($overtime->inclusive_date_end)) + 1 }}</p>
         </div>
-        
-        <div class="bg-gray-50 p-4 rounded-lg shadow">
-            <p class="font-semibold text-lg">Status</p>
-            <span class="px-3 py-1 text-white rounded-full {{ $overtime->status == 'approved' ? 'bg-green-500' : ($overtime->status == 'rejected' ? 'bg-red-500' : 'bg-yellow-500') }}">
+
+        <div>
+            <p class="font-semibold text-gray-900">Status</p>
+            <span class="px-3 py-1 text-white text-sm font-semibold rounded 
+                {{ $overtime->status == 'approved' ? 'bg-green-500' : ($overtime->status == 'rejected' ? 'bg-red-500' : 'bg-yellow-500') }}">
                 {{ ucfirst($overtime->status) }}
             </span>
         </div>
-        
+
         @if($overtime->status === 'rejected')
-            <div class="bg-red-100 p-4 rounded-lg shadow">
-                <p class="font-semibold text-lg text-red-700">Disapproval Reason</p>
-                <p class="text-red-600">{{ $overtime->disapproval_reason }}</p>
-            </div>
+        <div>
+            <p class="font-semibold text-red-700">Disapproval Reason</p>
+            <p class="text-red-600">{{ $overtime->disapproval_reason }}</p>
+        </div>
         @endif
-        
-        @if($overtime->approved_days == '')
-            <div class="bg-gray-50 p-4 rounded-lg shadow">
-                <p class="font-semibold text-lg">Approved Days</p>
-                <p class="text-gray-900">Currently None</p>
-            </div>
-        @else
-            <div class="bg-gray-50 p-4 rounded-lg shadow">
-                <p class="font-semibold text-lg">Approved Days</p>
-                <p class="text-gray-900">{{ $overtime->approved_days }}</p>
-            </div>
-        @endif
-        
-        <div class="bg-gray-50 p-4 rounded-lg shadow">
-            <p class="font-semibold text-lg">Earned Hours</p>
-            <p class="text-gray-900">{{ $overtime->earned_hours }}</p>
+
+        <div>
+            <p class="font-semibold text-gray-900">Approved Days</p>
+            <p class="text-gray-700">{{ $overtime->approved_days ?: 'Currently None' }}</p>
+        </div>
+
+        <div>
+            <p class="font-semibold text-gray-900">Earned Hours</p>
+            <p class="text-gray-700">{{ $overtime->earned_hours }}</p>
         </div>
     </div>
 
-    <!-- Additional Information -->
+    <!-- Additional Info -->
     <div class="bg-blue-50 p-6 rounded-lg shadow-md">
         <p class="text-gray-700">If you have any questions or need further assistance regarding your overtime request, please contact the HR department.</p>
         <a href="#" class="text-blue-600 font-semibold hover:underline">Contact HR</a>
@@ -86,25 +79,18 @@
 </div>
 @endsection
 
+<!-- Custom CSS -->
+<style>
+    .animate-fade-in {
+        animation: fadeIn 0.8s ease-in-out;
+    }
 
-           <!-- Custom CSS for Animations -->
-            <style>
-                .animate-fade-in {
-                    animation: fadeIn 1s ease-in-out;
-                }
-            
-                @keyframes fadeIn {
-                    from { opacity: 0; }
-                    to { opacity: 1; }
-                }
-            
-                .animate-pulse {
-                    animation: pulse 2s infinite;
-                }
-            
-                @keyframes pulse {
-                    0% { transform: scale(1); }
-                    50% { transform: scale(1.05); }
-                    100% { transform: scale(1); }
-                }
-            </style> 
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+
+    .hover-shadow:hover {
+        box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.15);
+    }
+</style>
