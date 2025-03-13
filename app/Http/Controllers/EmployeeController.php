@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Requests\ProfileUpdateRequest;
+use App\Http\Requests\EmailUpdateRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
@@ -219,26 +220,45 @@ class EmployeeController extends Controller
         ]);
     }
     
-
-    public function edit(Request $request): View
+    public function profile_edit(Request $request): View
     {
-        return view('employee.profile.edit', [
+        return view('employee.profile.partials.update-profile-information-form', [
+            'user' => $request->user(),
+        ]);
+    }
+    public function password_edit(Request $request): View
+    {
+        return view('employee.profile.partials.update-password-form', [
             'user' => $request->user(),
         ]);
     }
 
-    public function update(ProfileUpdateRequest $request): RedirectResponse
+    public function updateProfile(ProfileUpdateRequest $request): RedirectResponse
     {
-        $request->user()->fill($request->validated());
+        $request->user()->update($request->validated());
 
-        if ($request->user()->isDirty('email')) {
-            $request->user()->email_verified_at = null;
+        notify()->success('Profile Updated Successfully!');
+
+        return Redirect::route('employee.profile.partials.update-profile-information-form')->with('status', 'profile-updated');
+    }
+
+
+    public function updateEmail(EmailUpdateRequest $request): RedirectResponse
+    {
+        $user = $request->user();
+        $user->update($request->validated());
+
+        if ($user->isDirty('email')) {
+            $user->email_verified_at = null;
         }
 
-        $request->user()->save();
+        $user->save();
 
-        return Redirect::route('employee.profile.edit')->with('status', 'profile-updated');
+        notify()->success('Email Updated Successfully!');
+
+        return Redirect::route('employee.profile.partials.update-profile-information-form')->with('status', 'email-updated');
     }
+
     
 
     // public function getLeaves()

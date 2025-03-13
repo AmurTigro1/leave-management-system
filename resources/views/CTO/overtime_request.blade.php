@@ -1,8 +1,9 @@
 @extends('layouts.sidebar-header')
 
 @section('content')
-<x-notify::notify />
-
+<div class="fixed top-4 right-4 z-[9999]">
+    <x-notify::notify />
+</div>
 <div class="w-full bg-white p-6">
     <div class="text-center">
         <div class="w-full max-w-full mx-auto bg-white p-8 shadow-md border">

@@ -3,10 +3,8 @@
 
 @section('content')
     <!-- Top-Right Header -->
-    <div class="absolute top-4 right-4 flex items-center space-x-3 z-50">
-        <div class="fixed top-0 right-0 z-50">
-            <x-notify::notify />
-        </div>
+    <div class="fixed top-4 right-4 z-[9999]">
+        <x-notify::notify />
     </div>
 </section>
 
