@@ -19,7 +19,7 @@ class EmployeeController extends Controller
 {
     public function indexLMS(Request $request) {
         $month = $request->query('month', now()->month);
-        $today = now()->toDateString(); // Get today's date
+        $today = now()->toDateString(); 
     
         // Fetch employees whose birthday falls in the selected month
         $birthdays = User::whereMonth('birthday', $month)->get();
@@ -472,5 +472,43 @@ class EmployeeController extends Controller
         Leave::findOrFail($id)->delete();
         return redirect()->back()->with('success', 'Leave request deleted successfully.');
     }
-    
+
+    public function markAsRead()
+    {
+        $user = auth()->user();
+
+        if ($user) {
+            $user->unreadNotifications->markAsRead();
+        }
+
+        return response()->json(['success' => true, 'message' => 'Notifications marked as read.']);
+    }
+
+    public function delete($id)
+    {
+        $user = Auth::user();
+
+        if ($user) {
+            $notification = $user->notifications()->find($id);
+            if ($notification) {
+                $notification->delete();
+                return response()->json(['success' => true, 'message' => 'Notification deleted.']);
+            }
+        }
+
+        return response()->json(['success' => false, 'message' => 'Notification not found.']);
+    }
+
+    // Delete all notifications
+    public function deleteAll()
+    {
+        $user = Auth::user();
+
+        if ($user) {
+            $user->notifications()->delete();
+            return response()->json(['success' => true, 'message' => 'All notifications deleted.']);
+        }
+
+        return response()->json(['success' => false, 'message' => 'No notifications found.']);
+    }
 }

@@ -10,7 +10,8 @@ use App\Http\Requests\ProfileUpdateRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
-
+use Illuminate\Support\Facades\Notification;
+use App\Notifications\LeaveStatusNotification;
 class SupervisorController extends Controller
 {
 
@@ -54,18 +55,17 @@ class SupervisorController extends Controller
         if (!$leave) {
             return redirect()->back()->with('error', 'Leave application not found.');
         }
-
+    
         // Ensure HR has approved it first before Supervisor approval
         if ($leave->hr_status !== 'approved') {
             return redirect()->back()->with('error', 'HR approval is required before supervisor approval.');
         }
-
     
         $user = $leave->user;
-
+    
         // Calculate the total leave days requested
         $daysRequested = Carbon::parse($leave->start_date)->diffInDays(Carbon::parse($leave->end_date)) + 1;
-
+    
         // Deduct leave from the correct balance
         if ($leave->leave_type === 'Vacation Leave') {
             if ($user->vacation_leave_balance >= $daysRequested) {
@@ -82,17 +82,23 @@ class SupervisorController extends Controller
         } else {
             return back()->with('error', 'Invalid leave type.');
         }
-
+    
         // Update leave status
         $leave->update([
             'supervisor_status' => 'approved',
             'status' => 'approved', // Officially approved
             'supervisor_id' => Auth::id(),
         ]);
-
+    
+        // Notify the Employee
+        $user->notify(new LeaveStatusNotification($leave, "Your leave request has been approved by your Supervisor."));
+    
+        // Notify HR
+        $hrUsers = User::where('role', 'HR')->get();
+        Notification::send($hrUsers, new LeaveStatusNotification($leave, "The leave request of {$user->first_name} has been approved by the Supervisor."));
+    
         return back()->with('success', 'Leave approved successfully.');
     }
-
 
 
 

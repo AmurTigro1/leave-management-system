@@ -10,6 +10,7 @@
             <div class="relative">
                 <button id="dropdown-btn" class="flex items-center justify-between w-full bg-white px-4 rounded-lg shadow-md border border-gray-300 transition-all duration-200 ease-in-out">
                     <div class="flex items-center justify-between bg-white p-2 rounded-lg">
+                        
                         <!-- Profile Section -->    
                         <div class="flex items-center space-x-4">
                             <!-- Profile Image -->

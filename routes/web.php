@@ -67,7 +67,9 @@ Route::middleware(['auth.redirect', 'employeeMiddleware'])->group(function () {
     Route::get('/leave/view/{id}', [EmployeeController::class, 'viewPdf'])->name('leave.viewPdf');
     Route::get('/leaderboard', [EmployeeController::class, 'leaderboard'])->name('employee.leaderboard');
     Route::get('/users/modal', [EmployeeController::class, 'showUsersModal'])->name('users.modal');
-
+    Route::post('/notifications/mark-as-read', [EmployeeController::class, 'markAsRead'])->name('notifications.markAsRead');
+    Route::delete('/notifications/delete/{id}', [EmployeeController::class, 'delete'])->name('notifications.delete');
+    Route::delete('/notifications/delete-all', [EmployeeController::class, 'deleteAll'])->name('notifications.deleteAll');
 
     //CTO
     Route::get('/cto/dashboard', [OvertimeRequestController::class, 'dashboard'])->name('cto.dashboard');

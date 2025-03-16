@@ -19,9 +19,9 @@ return new class extends Migration
             $table->string('last_name');
             $table->string('department');
             $table->string('email')->unique();
-            $table->integer('vacation_leave_balance')->default(5);
-            $table->integer('sick_leave_balance')->default(5); 
-            $table->integer('leave_balance')->default(20);
+            $table->decimal('vacation_leave_balance', 8, 2)->default(2.5);
+            $table->decimal('sick_leave_balance', 8, 2)->default(2.5);
+            // $table->decimal('leave_balance', 8, 2)->default(2.5);
             $table->integer('overtime_balance')->default(20);
             $table->string('role')->default('employee'); 
             $table->date('birthday')->nullable();

@@ -2,6 +2,7 @@
 @section('content')
 <div class="w-full p-3 rounded-xl shadow-md">
         <!-- Back Button with Animation -->
+<<<<<<< Updated upstream
         <div class="bg-[url('/public/img/office-image.jpg')] bg-cover bg-center p-[100px] rounded">
             <h1 class="text-center text-white font-bold text-[30px] bg-black/50 p-4 rounded">Leave Management System & Compensatory Time Off</h1>
         </div>      
@@ -10,6 +11,13 @@
     <div class="relative w-32 h-32 ml-6 mt-[-100px]">
         <!-- Image Wrapper (Group for Hover) -->
         <div class="relative group w-full h-full">
+=======
+        <div class="bg-[url('/public/img/office-image.jpg')] bg-cover bg-center bg-no-repeat min-h-[400px] md:min-h-[450px] w-full rounded-lg overflow-hidden">
+        </div>    
+    
+   <!-- Profile Image & Upload -->
+        <div class="relative group ml-6 mt-[-100px]">
+>>>>>>> Stashed changes
             <!-- Profile Image -->
             <img id="profile-preview"
                 src="{{ auth()->user()->profile_image ? asset('storage/profile_images/' . auth()->user()->profile_image) : asset('default-avatar.png') }}"

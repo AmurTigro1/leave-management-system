@@ -34,17 +34,19 @@
                         <img src="{{ asset('storage/profile_images/' . $leave->user->profile_image) }}" 
                              alt="User Profile" 
                              class="w-full h-full object-cover rounded-full">
-                    </div>
-                    <span class="px-2 py-1 text-white text-xs rounded">
-                        {{$leave->date_filing}}
-                    </span>
+                    </div>               
                     
                     <div>
-                        <p class="text-md font-semibold text-gray-800">{{ $leave->user->name }}</p>
+                        <p class="text-md font-semibold text-gray-800">{{ $leave->user->first_name }} {{$leave->user->last_name}}</p>
                         <p class="text-xs text-gray-500">{{ $leave->leave_type }} - {{ $leave->days_applied }} Days</p>
+                        <p class="text-gray-700 text-xs rounded-md">
+                            Date of filing:
+                            {{ \Carbon\Carbon::parse($leave->date_filing)->format('F j, Y') }}
+                        </p>  
                     </div>
+                    
                 </div>
-
+   
                 <p class="text-gray-600 mb-2"><strong>Status:</strong> 
                     <span class="px-2 py-1 text-white text-xs rounded 
                         {{ $leave->status === 'pending' ? 'bg-yellow-500' : ($leave->status === 'approved' ? 'bg-green-500' : 'bg-red-500') }}">
