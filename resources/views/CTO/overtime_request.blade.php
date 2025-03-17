@@ -119,7 +119,11 @@ document.addEventListener('alpine:init', () => {
         },
 
         isPastDate(day) {
+            let date = new Date(this.year, this.month, day);
+            let dayOfWeek = date.getDay(); // 0 = Sunday, 6 = Saturday
+
             return (
+                dayOfWeek === 0 || dayOfWeek === 6 || // Disable weekends
                 this.year < this.currentYear ||
                 (this.year === this.currentYear && this.month < this.currentMonth) ||
                 (this.year === this.currentYear && this.month === this.currentMonth && day < this.today)
@@ -190,7 +194,7 @@ document.addEventListener('alpine:init', () => {
                         consecutiveCount++;
                         if (consecutiveCount > 5) {
                             alert("You can only select up to 5 consecutive days for CTO.");
-                            this.cancelSelection();
+                            this.cancelSelection(); // Ensure cancelSelection is properly triggered
                             return;
                         }
                     } else {
@@ -228,6 +232,8 @@ document.addEventListener('alpine:init', () => {
 
         cancelSelection() {
             this.selectedDays = [];
+            this.isDragging = false; // Ensure dragging is reset
+            this.isRemoving = false; // Reset removing flag
             this.updateInclusiveDates();
         }
     }));

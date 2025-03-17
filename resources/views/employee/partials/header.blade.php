@@ -1,7 +1,6 @@
-<header class="py-3 bg-white shadow-md w-full z-[900]">
-    <div class="container mx-auto max-w-7xl px-4 flex justify-between items-center">
-        <!-- Logo -->
-        <p class="text-xl text-blue-600 font-semibold">LMS and CTO System</p>
+<header class="py-3 bg-gray-50 shadow-md w-full">
+    <div class="container mx-auto max-w-7xl px-4 flex justify-between items-center max-sm:flex-col max-sm:space-y-3">
+        <div class="flex-1"></div> <!-- Spacer to push content to the right -->
 
         <!-- Navigation Links -->
         <nav class="flex items-center space-x-6">
@@ -99,7 +98,6 @@
                     
                             <!-- Username -->
                             <span class="text-gray-700 font-semibold text-sm hover:text-blue-600 transition-colors duration-300">
-                                {{ Auth::user()->first_name }}
                                 {{ Auth::user()->name }}
                             </span>
                         </div>
@@ -109,25 +107,24 @@
                         <path fill-rule="evenodd" d="M5.292 7.292a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 011.414 1.414l-4 4a1 1 0-1.414z" clip-rule="evenodd"></path>
                     </svg>
                 </button>
-                
+
                 <!-- Dropdown Menu -->
                 <div id="dropdown-menu" class="absolute hidden bg-white shadow-lg rounded-lg mt-2 w-44 right-0 z-50 border border-gray-200">
                     <ul class="py-2 text-gray-700 text-sm">
                         <li class="block md:hidden">
-                            <a href="" class="block px-4 py-2 hover:bg-blue-100 hover:text-blue-600 transition">My Requests</a>
+                            <a href="#" class="block px-4 py-2 hover:bg-blue-100 hover:text-blue-600">My Requests</a>
                         </li>
                         <li>
-                            <a href="/lms-profile" class="block px-4 py-2 hover:bg-blue-100 hover:text-blue-600 transition">Profile</a>
+                            <a href="/lms-profile" class="block px-4 py-2 hover:bg-blue-100 hover:text-blue-600">Profile</a>
                         </li>
                         <li>
-                            <button id="openModal" class="block w-full text-left px-4 py-2 hover:bg-red-100 hover:text-red-600 transition">
+                            <button id="openModal" class="block w-full text-left px-4 py-2 hover:bg-red-100 hover:text-red-600">
                                 Logout
                             </button>
                         </li>
                     </ul>
                 </div>
             </div>
-            
             @else
             <div class="flex items-center space-x-4">
                 <a href="{{ route('login') }}" class="text-gray-600 hover:text-blue-600 font-semibold text-lg">
@@ -141,7 +138,6 @@
         </nav>
     </div>
 </header>
-
 
 <!-- Logout Confirmation Modal -->
 <div id="logoutModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden px-4 max-sm:m-10 z-[9999]">
