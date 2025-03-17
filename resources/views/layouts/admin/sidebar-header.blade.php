@@ -16,12 +16,12 @@
 <body class="font-poppins h-screen overflow-hidden">
     <div x-data="{ sidebarOpen: false }" class="flex h-screen">
         <!-- Sidebar -->
-        @include('supervisor.partials.sidebar')
+        @include('admin.partials.sidebar')
 
         <!-- Main Content -->
         <div class="flex-1 flex flex-col h-screen">
             <!-- Header -->
-            @include('supervisor.partials.header')
+            @include('admin.partials.header')
 
             <!-- Page Content (Scrollable Area) -->
             <main class="flex-1 p-6 overflow-y-auto">

@@ -43,6 +43,11 @@ class AuthenticatedSessionController extends Controller
 
                 emotify('success', 'Login Successful! Welcome Back.');
                 return redirect(route('hr.dashboard'));
+
+            case 'admin':
+
+                emotify('success', 'Login Successful! Welcome Back.');
+                return redirect(route('admin.dashboard'));
     
             default:
                 return redirect()->intended(route('lms_cto.dashboard'));

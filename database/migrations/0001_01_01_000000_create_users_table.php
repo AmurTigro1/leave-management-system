@@ -13,11 +13,13 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
+            $table->string('employee_code');
             $table->string('name')->nullable();
             $table->string('first_name');
-            $table->string('middle_name');
+            $table->string('middle_name')->nullable();
             $table->string('last_name');
             $table->string('department');
+            $table->string('position');
             $table->string('email')->unique();
             $table->decimal('vacation_leave_balance', 8, 2)->default(2.5);
             $table->decimal('sick_leave_balance', 8, 2)->default(2.5);
