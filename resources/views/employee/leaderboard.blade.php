@@ -77,7 +77,7 @@
 </div>
 
 <!-- Modal -->
-<div id="modal" class="fixed inset-0 bg-gray-900 bg-opacity-50 hidden flex justify-center items-center">
+<div id="modal" class="fixed inset-0 bg-gray-900 bg-opacity-50 hidden flex justify-center items-center z-[9999]">
     <div class="bg-white max-w-lg mx-auto p-6 rounded-lg shadow-lg max-h-[80vh] overflow-y-auto">
         <div id="modal-content">
             <!-- Dynamic content from HTMX will be loaded here -->
