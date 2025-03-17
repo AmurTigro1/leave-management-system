@@ -34,9 +34,6 @@ class EmployeeController extends Controller
         return view('employee.dashboard', compact('teamLeaves', 'birthdays', 'month'));
     }
     
-    
-    
-    
     public function leaderboard()
     {
         $employees = User::with(['leaves' => function ($query) {

@@ -141,15 +141,15 @@ document.addEventListener("DOMContentLoaded", function () {
         <p class="text-xs text-gray-600">Duration: <span class="text-green-500">${leave.duration} day(s)</span></p>
         <p class="text-xs text-gray-500">From: ${leave.start} <br> To: ${leave.end}</p>
 
-        <!-- Status Badge -->
-        <span class="text-sm px-4 rounded-md ${
-         leave.status === 'Approved' ? 'bg-green-500 text-white' :
-         leave.status === 'Pending' ? 'bg-yellow-500 text-white' :
-         'bg-red-500 text-white'
-         }">${leave.status}</span>
-            </span>
-        </div>
-    </div>
+                            <!-- Status Badge -->
+                            <span class="text-sm px-4 rounded-md ${
+                            leave.status === 'Approved' ? 'bg-green-500 text-white' :
+                            leave.status === 'Pending' ? 'bg-yellow-500 text-white' :
+                            'bg-red-500 text-white'
+                            }">${leave.status}</span>
+                                </span>
+                            </div>
+                    </div>
                   `;
                 });
             })

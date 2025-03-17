@@ -49,7 +49,7 @@
                     </h2>
                 </div>
                 <div class="mr-3">
-                    <a class="text-blue-600" href="/lms-profile"><i class="fa fa-arrow-left" aria-hidden="true"></i> Go back</a>
+                    <a class="text-blue-600" href="{{route('employee.profile.index')}}"><i class="fa fa-arrow-left" aria-hidden="true"></i> Go back</a>
                 </div>
             </div>
         </div>

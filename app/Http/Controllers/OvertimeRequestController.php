@@ -18,7 +18,16 @@ class OvertimeRequestController extends Controller
     {
         $overtimereq = OvertimeRequest::where('user_id', auth()->id())->get();
 
-        return view('CTO.overtime_request', compact('overtimereq'));
+        $appliedDates = OvertimeRequest::where('user_id', auth()->id())
+                    ->get(['inclusive_date_start', 'inclusive_date_end']) // Get both dates
+                    ->map(function ($request) {
+                        return [
+                            'start' => $request->inclusive_date_start,
+                            'end' => $request->inclusive_date_end,
+                        ];
+                    });
+
+        return view('CTO.overtime_request', compact('overtimereq', 'appliedDates'));
     }
 
     public function dashboard()

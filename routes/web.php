@@ -44,7 +44,8 @@ Route::middleware(['auth', 'hrMiddleware'])->group(function () {
     Route::get('/hr/leave-certification/{leaveId}', [HrController::class, 'showLeaveCertification'])->name('hr.leave_certification');
     Route::post('/leave/{leave}/review', [HrController::class, 'review'])->name('leave.review');
     Route::get('/leave-report/{id}', [HrController::class, 'generateLeaveReport'])->name('leave.report');
-
+    Route::get('/hr/overtime-requests', [HrController::class, 'overtimeRequests'])->name('hr.overtime_requests');
+    Route::get('/overtime/details/{id}', [HrController::class, 'showOvertime'])->name('hr.overtime_details');
 });
 
 //Employee Route
