@@ -134,4 +134,84 @@
 }
 .line {
     margin-left: 75px;
+    margin-top: 10px;
+}
+.supervisor {
+    margin-top: 20px;
+    text-transform: uppercase;
+    text-align: center;
+}
+.notes {
+    margin-top: -10px;
+    margin-left: 25px;
+    margin-bottom: 15px;
+}
+.note-info {
+    margin-left: 10px;
+}
+.note-1 {
+    margin-left: 25px;
+}
+.last-part {
+    margin: 21px;
+}
+.note-list {
+    padding-bottom: 10px;
+}
+.bottom-part table {
+    margin-top: 22px;
+    width: 707px;
+    font-size: 12px;
+    border-collapse: collapse;
+}
+.th-1 {
+    width: 25%;
+}
+.bottom-part th, .bottom-part td {
+    padding: 5px;
+    text-align: start;
+    border: 1px solid black;
+}
+
+.bottom-part th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+}
+
+.bottom-part tr:hover {
+    background-color: #f1f1f1;
+}
+.bottom-part td {
+    text-align: center;
+}
+.including {
+    font-size: 10px;
+}
+.rec {
+    margin-top: -50px;
+    text-align: right;
+    margin-right: 170px;
+    font-size: 14px;
+}
+.prep {
+    font-size: 14px;
+    margin-left: 10px;
+}
+.admins {
+    margin-top: -15px;
+    margin-left: 25px;
+    font-size: 11px;
+}
+.admins2 {
+    margin-top: -15px;
+    margin-left: 55px;
+    font-size: 11px;
+}
+.left-sign {
+    margin-left: 50px;
+    margin-top: -20px;
+}
+.right-sign {
+    margin-left: 450px;
+    margin-top: -60px;
 }

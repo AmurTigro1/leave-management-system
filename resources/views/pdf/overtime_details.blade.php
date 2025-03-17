@@ -40,7 +40,7 @@
                     <div class="end">
                         <p class="certified">CERTIFIED BY:</p>
                         <p class="hr">____<span class="underline">{{ $hr->first_name }} {{ strtoupper(substr($hr->middle_name, 0, 1)) }}. {{ $hr->last_name }}</span>____</p>
-                        <p class="official">(Authorized Official/Head Official)</p>
+                        <p class="official">(Authorized Official/Head of Office)</p>
                         <p>Prepared by: _____________________________________</p>
                         <p class="admin">(Designated Admin/Attendance Officer)</p>
                         <p>Date Issued: _____________________________________</p>
@@ -55,9 +55,90 @@
                     <div class="checkbox2"></div><p class="disapproved">Disapproved due to</p> <div class="reason">__________<span class="underline">{{ $overtime->disapproval_reason}}</span>_______ </div>
                     <div class="line">__________________________________</div>
                     <br>
-                    
+                    <p class="supervisor"><span class="underline">{{ $supervisor->first_name }} {{ strtoupper(substr($supervisor->middle_name, 0, 1)) }}. {{ $supervisor->last_name }}</span></p>
+                    <p class="official">(Authorized Official/Head of Office)</p>
+                    <br>
+                    <p class="note-list">Notes:</p>
+                    <p class="notes">1. <span class="note-info">The CTO may be availed of in blocks of four (4) or <span class="note-1">eight (8) hours.</span></span></p>
+                    <p class="notes">2. <span class="note-info">The employee may use the CTO continously up to a <span class="note-1">maximum of five (5) consecutive days per single <span class="note-1">availment, or on staggered basis within the year.</span></span></span></p>
+                    <p class="notes">3. <span class="note-info">The employee must first obtain approval from the head <span class="note-1">of office/authorized official regarding the schedule of <span class="note-1">availment of CTO.</span></span></span></p>
+                    <p class="notes">4. <span class="note-info">Attach supporting document (e.g, Department Order, <span class="note-1">Approved Request for Authority to render Overtime <span class="note-1">Service)</span></span></span></p>
+                    <div class="last-part"></div>
                 </div>
             </div>
+            <div class="bottom-part">
+                <table>
+                    <thead>
+                        <tr>
+                            <th class="th-1">Total No. of Hours of <br>
+                                Earned COCs <br>
+                                <span class="including">(including COCs earned <br>
+                                    in previous month/s)</span></th>
+                            <th>Date of CTO</th>
+                            <th>Used COCs</th>
+                            <th>Remaining COCs</th>
+                            <th>Remarks</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>2</td>
+                            <td>1</td>
+                            <td>1</td>
+                            <td>1</td>
+                            <td>1</td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td>1</td>
+                            <td>1</td>
+                            <td>1</td>
+                            <td>1</td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td>1</td>
+                            <td>1</td>
+                            <td>1</td>
+                            <td>1</td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td>1</td>
+                            <td>1</td>
+                            <td>1</td>
+                            <td>1</td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td>1</td>
+                            <td>1</td>
+                            <td>1</td>
+                            <td>1</td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td>1</td>
+                            <td>1</td>
+                            <td>1</td>
+                            <td>1</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>        
+            <br>
+            <div class="final-part">
+                <p class="prep">Prepared by:</p>
+                <p class="rec">Received by:</p> 
+                <div class="left-sign">
+                    <p>___________________________</p>
+                    <p class="admins">Designated Admin/Attendance Officer</p> 
+                </div>
+                <div class="right-sign">
+                    <p>___________________________</p>
+                    <p class="admins2">Personnel Section/Division</p>
+                </div>
+            </div>    
         </div>
     </div>
 </body>

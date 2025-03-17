@@ -29,9 +29,9 @@ class DatabaseSeeder extends Seeder
 
         User::factory()->create([
             'name' => 'HR',
-            'first_name' => 'HR fname',
-            'middle_name' => 'HR mname',
-            'last_name' => 'HR lname',
+            'first_name' => 'Mylove',
+            'middle_name' => 'Concha',
+            'last_name' => 'Flood',
             'department' => 'DILG BOHOL',
             'birthday' => '2002-04-12',
             'email' => 'hr@gmail.com',
@@ -41,9 +41,9 @@ class DatabaseSeeder extends Seeder
 
         User::factory()->create([
             'name' => 'Supervisor',
-            'first_name' => 'Supervisor fname',
-            'middle_name' => 'Supervisor mname',
-            'last_name' => 'Supervisor lname',
+            'first_name' => 'Jerome',
+            'middle_name' => 'Gazelle',
+            'last_name' => 'Gonzales',
             'department' => 'DILG BOHOL',
             'birthday' => '2002-02-15',
             'email' => 'supervisor@gmail.com',
