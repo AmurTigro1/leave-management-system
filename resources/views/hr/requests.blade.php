@@ -1,23 +1,10 @@
 @extends('layouts.hr.sidebar-header')
 
 @section('content')
-<div class="max-w-6xl mx-auto bg-white p-8 rounded-">
+<div class="max-w-6xl bg-white p-8 rounded-">
     <h2 class="text-2xl font-bold text-gray-700 mb-6 flex items-center gap-2">
         <i class="lucide lucide-file-text"></i> Review Leave Applications
     </h2>
-
-    <!-- Success & Error Messages -->
-    @if(session('success'))
-        <div id="success-alert" class="mb-4 bg-green-100 border-l-4 border-green-500 text-green-700 p-3 rounded-md">
-            <strong>Success!</strong> {{ session('success') }}
-        </div>
-    @endif
-
-    @if(session('error'))
-        <div id="error-alert" class="mb-4 bg-red-100 border-l-4 border-red-500 text-red-700 p-3 rounded-md">
-            <strong>Error!</strong> {{ session('error') }}
-        </div>
-    @endif
 
     <!-- Check if there are any leave applications -->
     @if($leaveApplications->isEmpty())

@@ -59,69 +59,88 @@ class HrController extends Controller
     
     
     public function showLeaveCertification($leaveId)
-{
-    $leave = Leave::findOrFail($leaveId);
-    $daysRequested = Carbon::parse($leave->start_date)->diffInDays(Carbon::parse($leave->end_date)) + 1;
+    {
+        $leave = Leave::findOrFail($leaveId);
+        $daysRequested = Carbon::parse($leave->start_date)->diffInDays(Carbon::parse($leave->end_date)) + 1;
 
-    return view('hr.leave_certification', compact('leave', 'daysRequested'));
-}
+        return view('hr.leave_certification', compact('leave', 'daysRequested'));
+    }
 
-public function show($id) {
-    $leave = Leave::findOrFail($id); 
+    public function show($id) {
+        $leave = Leave::findOrFail($id); 
 
-    return view('hr.leave_details', compact('leave'));
-}
+        return view('hr.leave_details', compact('leave'));
+    }
 
-// HR officer reviews applications
-public function review(Request $request, Leave $leave)
-{
-    $request->validate([
-        'status' => 'required|in:Approved,Rejected', // This ensures correct input
-        'disapproval_reason' => 'nullable|string',
-        'approved_days_with_pay' => 'nullable|integer',
-        'approved_days_without_pay' => 'nullable|integer',
-    ]);
+    // HR officer reviews applications
+    public function review(Request $request, Leave $leave)
+    {
+        $request->validate([
+            'status' => 'required|in:Approved,Rejected', // This ensures correct input
+            'disapproval_reason' => 'nullable|string',
+            'approved_days_with_pay' => 'nullable|integer',
+            'approved_days_without_pay' => 'nullable|integer',
+        ]);
 
-    // Convert status to lowercase for consistency
-    $hr_status = strtolower($request->status); // "Approved" -> "approved", "Rejected" -> "rejected"
-
-
-    // If HR approves, status moves to supervisor review, otherwise, it's rejected.
-    $leave->update([
-        'hr_status' => $hr_status, // Update HR status
-        'status' => $hr_status === 'approved' ? 'waiting_for_supervisor' : 'rejected',
-        'disapproval_reason' => $request->disapproval_reason,
-        'approved_days_with_pay' => $request->approved_days_with_pay,
-        'approved_days_without_pay' => $request->approved_days_without_pay,
-        'hr_officer_id' => Auth::id(),
-    ]);
-
-    return redirect()->back()->with('success', 'Leave application reviewed by HR.');
-}
+        // Convert status to lowercase for consistency
+        $hr_status = strtolower($request->status); // "Approved" -> "approved", "Rejected" -> "rejected"
 
 
-    public function generateLeaveReport($leaveId)
-{
-    $leave = Leave::findOrFail($leaveId);
-    $user = $leave->user;
+        // If HR approves, status moves to supervisor review, otherwise, it's rejected.
+        $leave->update([
+            'hr_status' => $hr_status, // Update HR status
+            'status' => $hr_status === 'approved' ? 'waiting_for_supervisor' : 'rejected',
+            'disapproval_reason' => $request->disapproval_reason,
+            'approved_days_with_pay' => $request->approved_days_with_pay,
+            'approved_days_without_pay' => $request->approved_days_without_pay,
+            'hr_officer_id' => Auth::id(),
+        ]);
 
-    $daysRequested = Carbon::parse($leave->start_date)->diffInDays(Carbon::parse($leave->end_date)) + 1;
-    $vacationBalance = $user->vacation_leave_balance - ($leave->leave_type == 'Vacation Leave' ? $daysRequested : 0);
-    $sickBalance = $user->sick_leave_balance - ($leave->leave_type == 'Sick Leave' ? $daysRequested : 0);
+        return redirect()->back()->with('success', 'Leave application reviewed by HR.');
+    }
 
-    $data = [
-        'user' => $user,
-        'leave' => $leave,
-        'vacationBalance' => $vacationBalance,
-        'sickBalance' => $sickBalance,
-        'daysRequested' => $daysRequested,
-        'date' => now()->format('F d, Y'),
-    ];
 
-    // Load PDF view
-    $pdf = Pdf::loadView('hr.leave_report', $data);
+        public function generateLeaveReport($leaveId)
+    {
+        $leave = Leave::findOrFail($leaveId);
+        $user = $leave->user;
+
+        $daysRequested = Carbon::parse($leave->start_date)->diffInDays(Carbon::parse($leave->end_date)) + 1;
+        $vacationBalance = $user->vacation_leave_balance - ($leave->leave_type == 'Vacation Leave' ? $daysRequested : 0);
+        $sickBalance = $user->sick_leave_balance - ($leave->leave_type == 'Sick Leave' ? $daysRequested : 0);
+
+        $data = [
+            'user' => $user,
+            'leave' => $leave,
+            'vacationBalance' => $vacationBalance,
+            'sickBalance' => $sickBalance,
+            'daysRequested' => $daysRequested,
+            'date' => now()->format('F d, Y'),
+        ];
+
+        // Load PDF view
+        $pdf = Pdf::loadView('hr.leave_report', $data);
+        
+        // Return PDF for download
+        return $pdf->download('leave_certificate.pdf');
+    }
+
+    public function overtimeRequests() {
+
+        if (Auth::user()->role !== 'hr') {
+            abort(403, 'Unauthorized access.');
+        }
     
-    // Return PDF for download
-    return $pdf->download('leave_certificate.pdf');
-}
+        $overtimeRequests = OvertimeRequest::where('status', 'pending')
+                                  ->orderBy('created_at', 'asc') 
+                                  ->paginate(9); 
+    
+        return view('hr.CTO.overtime_requests', compact('overtimeRequests'));
+    }
+
+    public function showOvertime($id) {
+        $overtimeRequests = OvertimeRequest::findOrFail($id); 
+
+        return view('hr.CTO.show_overtime_request', compact('overtimeRequests'));
+    }
 }
