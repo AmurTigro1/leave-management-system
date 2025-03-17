@@ -6,14 +6,13 @@
 
 <div class="w-full p-3 rounded-xl shadow-md">
         <!-- Back Button with Animation -->
-        <div class="bg-[url('/public/img/office-image.jpg')] bg-cover bg-center p-[100px] rounded">
-            <h1 class="text-center text-white font-bold text-[30px] bg-black/50 p-4 rounded">Leave Management System & Compensatory Time Off</h1>
+        <div class="bg-[url('/public/img/office-image.jpg')] bg-cover bg-center bg-no-repeat min-h-[400px] md:min-h-[450px] w-full rounded-lg overflow-hidden">
         </div>      
           
     <!-- Profile Image & Upload -->
     <div class="relative w-32 h-32 ml-6 mt-[-100px]">
         <!-- Image Wrapper (Group for Hover) -->
-        <div class="relative group w-full h-full">
+        <div class="relative group w-full h-full ml-6">
             <!-- Profile Image -->
             <img id="profile-preview"
                 src="{{ auth()->user()->profile_image ? asset('storage/profile_images/' . auth()->user()->profile_image) : asset('default-avatar.png') }}"
@@ -44,9 +43,11 @@
     <div class="ml-[25px] py-2">
         <div class="mt-3 space-y-3">
             <div class="flex justify-between items-center">
-                <h2 class="text-lg font-medium text-gray-900">
-                    {{ __('Profile Information') }}
-                </h2>
+                <div class="ml-[50px]">
+                    <h2 class="text-2xl font-medium text-gray-900">
+                        {{ __('Profile') }}
+                    </h2>
+                </div>
                 <div class="mr-3">
                     <a class="text-blue-600" href="/lms-profile"><i class="fa fa-arrow-left" aria-hidden="true"></i> Go back</a>
                 </div>

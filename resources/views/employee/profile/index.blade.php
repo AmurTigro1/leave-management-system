@@ -2,27 +2,18 @@
 @section('content')
 <div class="w-full p-3 rounded-xl shadow-md">
         <!-- Back Button with Animation -->
-<<<<<<< Updated upstream
-        <div class="bg-[url('/public/img/office-image.jpg')] bg-cover bg-center p-[100px] rounded">
-            <h1 class="text-center text-white font-bold text-[30px] bg-black/50 p-4 rounded">Leave Management System & Compensatory Time Off</h1>
-        </div>      
+        <div class="bg-[url('/public/img/office-image.jpg')] bg-cover bg-center bg-no-repeat min-h-[400px] md:min-h-[450px] w-full rounded-lg overflow-hidden">
+        </div>     
           
     <!-- Profile Image & Upload -->
     <div class="relative w-32 h-32 ml-6 mt-[-100px]">
         <!-- Image Wrapper (Group for Hover) -->
-        <div class="relative group w-full h-full">
-=======
-        <div class="bg-[url('/public/img/office-image.jpg')] bg-cover bg-center bg-no-repeat min-h-[400px] md:min-h-[450px] w-full rounded-lg overflow-hidden">
-        </div>    
-    
-   <!-- Profile Image & Upload -->
-        <div class="relative group ml-6 mt-[-100px]">
->>>>>>> Stashed changes
+        <div class="relative group w-full h-full ml-6">
             <!-- Profile Image -->
-            <img id="profile-preview"
-                src="{{ auth()->user()->profile_image ? asset('storage/profile_images/' . auth()->user()->profile_image) : asset('default-avatar.png') }}"
-                class="w-full h-full rounded-full object-cover border-4 border-gray-300 shadow-md cursor-pointer">
-
+                <img id="profile-preview"
+                    src="{{ auth()->user()->profile_image ? asset('storage/profile_images/' . auth()->user()->profile_image) : asset('img/default-avatar.png') }}"
+                    class="w-full h-full rounded-full object-cover border-4 border-gray-300 shadow-md cursor-pointer">
+          
             <!-- Hover Overlay (Only on Image Hover) -->
             <label for="profile_image" 
                 class="absolute inset-0 bg-black bg-opacity-50 rounded-full opacity-0 group-hover:opacity-100 flex justify-center items-center transition-opacity duration-300 cursor-pointer pointer-events-none">
@@ -37,7 +28,7 @@
             
             <!-- Update Button (Moved Down & Right) -->
             <button id="update-button" type="submit" 
-                class="absolute top-[-65px] -right-20 bg-green-500 text-white px-4 py-1 text-sm rounded-md hidden hover:bg-green-600 transition z-20 pointer-events-auto">
+                class="absolute top-[-80px] ml-[170px] bg-green-500 text-white px-4 py-1 text-sm rounded-md hidden hover:bg-green-600 transition z-20 pointer-events-auto">
                 Update
             </button>
         </form>
@@ -119,7 +110,7 @@
     <h3 class="text-lg font-semibold text-gray-700 mt-4 ml-[25px]">Leave and Overtime Distribution</h3>
     <div class="flex justify-start items-center ml-[25px]">
         <div class="w-[410px] mr-[125px]">
-            <div class="mt-6 bg-blue-50 p-3 rounded-lg w-[270px] shadow-sm">
+            <div class="mt-6 bg-blue-50 p-3 rounded-lg w-[410px] shadow-sm">
                 <h3 class="text-lg font-semibold text-blue-700">Leave Balance</h3>
                 <div class="flex gap-4 mt-3">
                     <span class="bg-green-500 text-white px-3 py-1 rounded text-sm">Vacation: {{ $vacationBalance }} days</span>
@@ -127,9 +118,8 @@
                 </div>
             </div>
             <div class="mt-6 bg-blue-50 p-3 rounded-lg w-[410px] shadow-sm">
-                <h3 class="text-lg font-semibold text-blue-700">Total Leave & Overtime Balance</h3>
+                <h3 class="text-lg font-semibold text-blue-700">Overtime Balance</h3>
                 <div class="flex gap-4 mt-3">
-                    <span class="bg-gray-500 text-white px-3 py-1 rounded text-sm">Leave Available: {{ $user->leave_balance }} days</span>
                     <span class="bg-gray-500 text-white px-3 py-1 rounded text-sm">Overtime Available: {{ $user->overtime_balance }} days</span>
                 </div>
             </div>
@@ -147,12 +137,12 @@
     const leaveGraph = new Chart(ctx, {
         type: 'bar',
         data: {
-            labels: ['Vacation', 'Sick', 'Overtime Available', 'Leave Available'],
+            labels: ['Vacation', 'Sick', 'Overtime Available'],
             datasets: [{
                 label: 'Days',
-                data: [{{ $vacationBalance }}, {{ $sickBalance }}, {{ $user->overtime_balance }}, {{ $user->leave_balance }}],
-                backgroundColor: ['#22c55e', '#eab308', '#6b7280', '#6b7280'],
-                borderColor: ['#16a34a', '#ca8a04', '#4b5563', '#4b5563'],
+                data: [{{ $vacationBalance }}, {{ $sickBalance }}, {{ $user->overtime_balance }},],
+                backgroundColor: ['#22c55e', '#eab308', '#6b7280'],
+                borderColor: ['#16a34a', '#ca8a04', '#4b5563'],
                 borderWidth: 1
             }]
         },
