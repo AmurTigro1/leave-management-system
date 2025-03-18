@@ -20,7 +20,7 @@
         <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
             <div class="flex items-center space-x-4">
                 <span class="text-lg font-bold">{{ $index + 1 }}</span>
-                <img src="{{ $employee->profile_image ? asset('storage/profile_images/' . $employee->profile_image) : 'https://cdn-icons-png.freepik.com/256/12533/12533276.png?ga=GA1.1.1609491871.1738904251&semt=ais_hybrid' }}" 
+                <img src="{{ $employee->profile_image ? asset('storage/profile_images/' . $employee->profile_image) : asset('img/default-avatar.png') }}" 
                      class="w-12 h-12 rounded-full" alt="{{ $employee->name }}">
                 <div>
                     <p class="font-semibold">{{ $employee->first_name }} {{ strtoupper(substr($employee->middle_name, 0, 1)) }}. {{ $employee->last_name }}</p>
@@ -57,7 +57,7 @@
 </div>
 
 <!-- Modal -->
-<div id="modal" class="fixed inset-0 bg-gray-900 bg-opacity-50 hidden flex justify-center items-center">
+<div id="modal" class="fixed inset-0 bg-gray-900 bg-opacity-50 hidden flex justify-center items-center z-[9999]">
     <div class="bg-white max-w-lg mx-auto p-6 rounded-lg shadow-lg max-h-[80vh] overflow-y-auto">
         <div id="modal-content">
             <!-- Dynamic content from HTMX will be loaded here -->

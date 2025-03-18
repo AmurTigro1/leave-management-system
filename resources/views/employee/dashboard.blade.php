@@ -28,9 +28,7 @@
                             @if ($employee->profile_image)
                                 <img src="{{ asset('storage/profile_images/' . $employee->profile_image) }}" class="w-full h-full object-cover">
                             @else
-                                <svg class="w-full h-full text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79 4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"></path>
-                                </svg>
+                                <img src="{{ asset('img/default-avatar.png')}}" alt="default avatar" class="w-full h-full object-cover">
                             @endif
                         </div>
                         <div class="mt-3 text-center">
@@ -85,9 +83,7 @@
                             @if($leave->user && $leave->user->profile_image)
                                 <img src="{{ asset('storage/profile_images/' . $leave->user->profile_image) }}" class="w-full h-full object-cover">
                             @else
-                                <svg class="w-full h-full text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79 4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"></path>
-                                </svg>
+                                <img src="{{ asset('img/default-avatar.png')}}" alt="default avatar" class="w-full h-full object-cover">
                             @endif
                         </div>
                         <div>
@@ -134,7 +130,10 @@ document.addEventListener("DOMContentLoaded", function () {
                     leaveContainer.innerHTML += `
                     <div class="bg-white p-4 rounded-lg shadow-md flex items-center space-x-4 mb-4 border border-gray-200">
     <div class="w-12 h-12 rounded-full overflow-hidden border-2 border-gray-300 bg-gray-100">
-        <img src="${leave.profile_image}" class="w-full h-full object-cover" alt="Profile">
+        <img src="${leave.profile_image}" 
+                 class="w-full h-full object-cover" 
+                 alt="Profile"
+                 onerror="this.onerror=null; this.src='/img/default-avatar.png';">
     </div>
     
     <div class="flex-1">
@@ -142,15 +141,15 @@ document.addEventListener("DOMContentLoaded", function () {
         <p class="text-xs text-gray-600">Duration: <span class="text-green-500">${leave.duration} day(s)</span></p>
         <p class="text-xs text-gray-500">From: ${leave.start} <br> To: ${leave.end}</p>
 
-        <!-- Status Badge -->
-        <span class="text-sm px-4 rounded-md ${
-         leave.status === 'Approved' ? 'bg-green-500 text-white' :
-         leave.status === 'Pending' ? 'bg-yellow-500 text-white' :
-         'bg-red-500 text-white'
-         }">${leave.status}</span>
-            </span>
-        </div>
-    </div>
+                            <!-- Status Badge -->
+                            <span class="text-sm px-4 rounded-md ${
+                            leave.status === 'Approved' ? 'bg-green-500 text-white' :
+                            leave.status === 'Pending' ? 'bg-yellow-500 text-white' :
+                            'bg-red-500 text-white'
+                            }">${leave.status}</span>
+                                </span>
+                            </div>
+                    </div>
                   `;
                 });
             })

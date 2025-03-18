@@ -11,11 +11,18 @@
     <div class="relative w-32 h-32 ml-6 mt-[-100px]">
         <!-- Image Wrapper (Group for Hover) -->
         <div class="relative group w-full h-full">
+=======
+        <div class="bg-[url('/public/img/office-image.jpg')] bg-cover bg-center bg-no-repeat min-h-[400px] md:min-h-[450px] w-full rounded-lg overflow-hidden">
+        </div>    
+    
+   <!-- Profile Image & Upload -->
+        <div class="relative group ml-6 mt-[-100px]">
+>>>>>>> Stashed changes
             <!-- Profile Image -->
-            <img id="profile-preview"
-                src="{{ auth()->user()->profile_image ? asset('storage/profile_images/' . auth()->user()->profile_image) : asset('default-avatar.png') }}"
-                class="w-full h-full rounded-full object-cover border-4 border-gray-300 shadow-md cursor-pointer">
-
+                <img id="profile-preview"
+                    src="{{ auth()->user()->profile_image ? asset('storage/profile_images/' . auth()->user()->profile_image) : asset('img/default-avatar.png') }}"
+                    class="w-full h-full rounded-full object-cover border-4 border-gray-300 shadow-md cursor-pointer">
+          
             <!-- Hover Overlay (Only on Image Hover) -->
             <label for="profile_image" 
                 class="absolute inset-0 bg-black bg-opacity-50 rounded-full opacity-0 group-hover:opacity-100 flex justify-center items-center transition-opacity duration-300 cursor-pointer pointer-events-none">
@@ -30,7 +37,7 @@
             
             <!-- Update Button (Moved Down & Right) -->
             <button id="update-button" type="submit" 
-                class="absolute top-[-65px] -right-20 bg-green-500 text-white px-4 py-1 text-sm rounded-md hidden hover:bg-green-600 transition z-20 pointer-events-auto">
+                class="absolute top-[-80px] ml-[170px] bg-green-500 text-white px-4 py-1 text-sm rounded-md hidden hover:bg-green-600 transition z-20 pointer-events-auto">
                 Update
             </button>
         </form>
@@ -55,14 +62,14 @@
                 
                     <!-- Dropdown Menu -->
                     <div class="absolute right-0 top-full hidden peer-checked:flex flex-col w-[180px] bg-white border border-gray-300 rounded-md shadow-lg">
-                        <a href="/profile-edit" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 flex justify-between items-center">
+                        <a href="{{route('employee.profile.partials.update-profile-information-form')}}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 flex justify-between items-center">
                             <div class="flex">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75" />
                                   </svg> <span class="ml-2">Email & Profile</span>
                             </div>
                         </a>
-                        <a href="/password-edit" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 flex justify-between items-center">
+                        <a href="{{route('employee.profile.partials.update-password-form')}}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 flex justify-between items-center">
                             <div class="flex">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 5.25a3 3 0 0 1 3 3m3 0a6 6 0 0 1-7.029 5.912c-.563-.097-1.159.026-1.563.43L10.5 17.25H8.25v2.25H6v2.25H2.25v-2.818c0-.597.237-1.17.659-1.591l6.499-6.499c.404-.404.527-1 .43-1.563A6 6 0 1 1 21.75 8.25Z" />
@@ -108,66 +115,22 @@
         </div>
     </div>
 </div>
-<div class="bg-white rounded-lg shadow-md p-6">
-    <h3 class="text-2xl font-semibold text-gray-800 mb-6">Leave and Overtime Distribution</h3>
-    
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        <!-- Leave Balance Section -->
-        <div class="bg-gray-50 p-6 rounded-lg">
-            <h3 class="text-xl font-semibold text-gray-700 mb-4">Leave Balance</h3>
-            <div class="space-y-3">
-                <div class="flex justify-between text-sm text-gray-600">
-                    <span>Vacation:</span>
-                    <span>{{ $user->vacation_leave_balance }} day(s)</span>
-                </div>
-                <div class="flex justify-between text-sm text-gray-600">
-                    <span>Sick:</span>
-                    <span>{{ $user->sick_leave_balance }} day(s)</span>
-                </div>
-                <div class="flex justify-between text-sm text-gray-600">
-                    <span>Maternity Leave:</span>
-                    <span>{{ $user->maternity_leave }} day(s)</span>
-                </div>
-                <div class="flex justify-between text-sm text-gray-600">
-                    <span>Paternity Leave:</span>
-                    <span>{{ $user->paternity_leave }} day(s)</span>
-                </div>
-                <div class="flex justify-between text-sm text-gray-600">
-                    <span>Solo Parent Leave:</span>
-                    <span>{{ $user->solo_parent_leave }} day(s)</span>
-                </div>
-                <div class="flex justify-between text-sm text-gray-600">
-                    <span>Study Leave:</span>
-                    <span>{{ $user->study_leave }} day(s)</span>
-                </div>
-                <div class="flex justify-between text-sm text-gray-600">
-                    <span>VAWC Leave:</span>
-                    <span>{{ $user->vawc_leave }} day(s)</span>
-                </div>
-                <div class="flex justify-between text-sm text-gray-600">
-                    <span>Rehabilitation Leave:</span>
-                    <span>{{ $user->rehabilitation_leave }} day(s)</span>
-                </div>
-                <div class="flex justify-between text-sm text-gray-600">
-                    <span>Special Leave Benefit:</span>
-                    <span>{{ $user->special_leave_benefit }} day(s)</span>
-                </div>
-                <div class="flex justify-between text-sm text-gray-600">
-                    <span>Special Emergency Leave:</span>
-                    <span>{{ $user->special_emergency_leave }} day(s)</span>
+<div class="p-2 shadow-md rounded-xl mt-2">
+    <h3 class="text-lg font-semibold text-gray-700 mt-4 ml-[25px]">Leave and Overtime Distribution</h3>
+    <div class="flex justify-start items-center ml-[25px]">
+        <div class="w-[410px] mr-[125px]">
+            <div class="mt-6 bg-blue-50 p-3 rounded-lg w-[270px] shadow-sm">
+                <h3 class="text-lg font-semibold text-blue-700">Leave Balance</h3>
+                <div class="flex gap-4 mt-3">
+                    <span class="bg-green-500 text-white px-3 py-1 rounded text-sm">Vacation: {{ $vacationBalance }} days</span>
+                    <span class="bg-yellow-500 text-white px-3 py-1 rounded text-sm">Sick: {{ $sickBalance }} days</span>
                 </div>
             </div>
-                    <!-- Total Leave & Overtime Balance Section -->
-        <div class="bg-gray-50 mt-4 rounded-lg">
-            <h3 class="text-xl font-semibold text-gray-700 mb-4">Total Leave & Overtime Balance</h3>
-            <div class="space-y-3">
-                <div class="flex justify-between text-sm text-gray-600">
-                    <span>Leave Available:</span>
-                    <span>{{ $user->leave_balance }} days</span>
-                </div>
-                <div class="flex justify-between text-sm text-gray-600">
-                    <span>Overtime Available:</span>
-                    <span>{{ $user->overtime_balance }} days</span>
+            <div class="mt-6 bg-blue-50 p-3 rounded-lg w-[410px] shadow-sm">
+                <h3 class="text-lg font-semibold text-blue-700">Total Leave & Overtime Balance</h3>
+                <div class="flex gap-4 mt-3">
+                    <span class="bg-gray-500 text-white px-3 py-1 rounded text-sm">Leave Available: {{ $user->leave_balance }} days</span>
+                    <span class="bg-gray-500 text-white px-3 py-1 rounded text-sm">Overtime Available: {{ $user->overtime_balance }} days</span>
                 </div>
             </div>
         </div>
@@ -188,37 +151,12 @@
     const leaveGraph = new Chart(ctx, {
         type: 'bar',
         data: {
-            labels: [
-                'Vacation', 'Sick', 'Maternity', 'Paternity', 'Solo Parent', 
-                'Study', 'VAWC', 'Rehabilitation', 'Special Leave Benefit', 
-                'Special Emergency', 'Overtime Available', 'Leave Available'
-            ],
+            labels: ['Vacation', 'Sick', 'Overtime Available', 'Leave Available'],
             datasets: [{
                 label: 'Days',
-                data: [
-                    {{ $user->vacation_leave_balance }}, 
-                    {{ $user->sick_leave_balance }}, 
-                    {{ $user->maternity_leave }}, 
-                    {{ $user->paternity_leave }}, 
-                    {{ $user->solo_parent_leave }}, 
-                    {{ $user->study_leave }}, 
-                    {{ $user->vawc_leave }}, 
-                    {{ $user->rehabilitation_leave }}, 
-                    {{ $user->special_leave_benefit }}, 
-                    {{ $user->special_emergency_leave }}, 
-                    {{ $user->overtime_balance }}, 
-                    {{ $user->leave_balance }}
-                ],
-                backgroundColor: [
-                    '#22c55e', '#eab308', '#3b82f6', '#a855f7', '#f97316', 
-                    '#14b8a6', '#ef4444', '#8b5cf6', '#64748b', '#f43f5e', 
-                    '#6b7280', '#4b5563'
-                ],
-                borderColor: [
-                    '#16a34a', '#ca8a04', '#2563eb', '#9333ea', '#ea580c', 
-                    '#0d9488', '#dc2626', '#7c3aed', '#475569', '#e11d48', 
-                    '#4b5563', '#374151'
-                ],
+                data: [{{ $vacationBalance }}, {{ $sickBalance }}, {{ $user->overtime_balance }}, {{ $user->leave_balance }}],
+                backgroundColor: ['#22c55e', '#eab308', '#6b7280', '#6b7280'],
+                borderColor: ['#16a34a', '#ca8a04', '#4b5563', '#4b5563'],
                 borderWidth: 1
             }]
         },

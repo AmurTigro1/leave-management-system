@@ -7,7 +7,6 @@
     <table class="w-full border-collapse">
         <thead>
             <tr class="text-gray-600 text-sm bg-gray-100 border-b">
-                <th class="p-3 text-left">ID</th>
                 <th class="p-3 text-left">Date Filed</th>
                 <th class="p-3 text-left">Working Hours</th>
                 <th class="p-3 text-left">Inclusive Date Start</th>
@@ -20,7 +19,6 @@
         <tbody>
             @foreach ($overtimereq as $overtime)
                 <tr class="border-b even:bg-gray-50 hover:bg-gray-100 transition">
-                    <td class="p-3 font-medium text-gray-800">{{ $overtime->id}}</td>
                     <td class="p-3 text-gray-700">{{ \Carbon\Carbon::parse($overtime->date_filed)->format('F d, Y') }}</td>
                     <td class="p-3 text-gray-700">{{ $overtime->working_hours_applied}}</td>
                     <td class="p-3 text-gray-700">{{ \Carbon\Carbon::parse($overtime->inclusive_date_start)->format('F d, Y') }}</td>

@@ -13,9 +13,9 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->alias([
             'employeeMiddleware' => \App\Http\Middleware\EmployeeMiddleware::class,
-            'adminMiddleware' => \App\Http\Middleware\AdminMiddleware::class,
             'SupervisorMiddleware' => \App\Http\Middleware\SupervisorMiddleware::class,
             'hrMiddleware' => \App\Http\Middleware\hrMiddleware::class,
+            'adminMiddleware' => \App\Http\Middleware\AdminMiddleware::class,
             'auth.redirect' => \App\Http\Middleware\RedirectIfNotAuthenticated::class,
         ]);
     })

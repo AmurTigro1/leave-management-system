@@ -36,6 +36,7 @@ class EmployeeController extends Controller
     
     
     
+    
     public function leaderboard()
     {
         $employees = User::with(['leaves' => function ($query) {

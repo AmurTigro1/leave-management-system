@@ -1,4 +1,4 @@
-<header class="py-3 bg-gray-50 shadow-md w-full">
+<header class="py-3 bg-gray-50 shadow-md w-full z-[500]">
     <div class="container mx-auto max-w-7xl px-4 flex justify-between items-center max-sm:flex-col max-sm:space-y-3">
         <div class="flex-1"></div> <!-- Spacer to push content to the right -->
 
