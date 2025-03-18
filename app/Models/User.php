@@ -32,6 +32,8 @@ class User extends Authenticatable
         'leave_balance',
         'overtime_balance',
         'profile_image',
+        'special_leave_taken',
+        'solo_parent_leave_taken',
     ];
     
     public function leaves() {

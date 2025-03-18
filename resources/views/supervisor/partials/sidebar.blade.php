@@ -1,3 +1,6 @@
+@php
+    $pendingRequestsCount = App\Models\Leave::where('status', 'waiting_for_supervisor')->count();
+@endphp
 <!-- Sidebar Component -->
 <div x-data="{ 
     isSidebarOpen: window.innerWidth > 1024, 
@@ -41,6 +44,11 @@ class="min-h-screen flex">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 5.25h16.5m-16.5 4.5h16.5m-16.5 4.5h16.5m-16.5 4.5h16.5" />
             </svg>          
             <span>Manage Request</span>
+            @if($pendingRequestsCount > 0)
+            <span class="bg-red-500 text-white text-xs font-semibold rounded-full px-2 py-1">
+                {{ $pendingRequestsCount }}
+            </span>
+        @endif  
         </a>  
 
 <!-- Holidays Link -->

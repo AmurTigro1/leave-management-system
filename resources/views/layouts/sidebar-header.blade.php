@@ -15,21 +15,20 @@
     @vite('resources/js/app.js')
     @vite('resources/css/app.css')
 </head>
-<body class="font-poppins h-screen overflow-hidden">
-    <div x-data="{ sidebarOpen: false }" class="flex h-screen">
-  <!-- Sidebar -->
-  @include('employee.partials.sidebar')
+<body class="font-poppins h-screen overflow-hidden" x-data="{ sidebarOpen: false }">
+    <div class="flex h-screen">
+        <!-- Sidebar -->
+        @include('employee.partials.sidebar')
 
-  <!-- Main Content -->
-  <div class="flex-1 flex flex-col min-h-screen">
-      <!-- Header -->
-      @include('employee.partials.header')
+        <div class="flex-1 flex flex-col min-h-screen">
+            <!-- Header -->
+            @include('employee.partials.header')
 
-      <!-- Page Content (Scrollable Area) -->
-      <main class="flex-1 p-6 overflow-y-auto">
-          @yield('content')
-      </main>
-  </div>
-</div> 
+            <!-- Page Content (Scrollable Area) -->
+            <main class="flex-1 p-6 overflow-y-auto">
+                @yield('content')
+            </main>
+        </div>
+    </div>
 </body>
 </html>

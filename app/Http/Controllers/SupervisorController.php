@@ -36,70 +36,159 @@ class SupervisorController extends Controller
         }
     
         // Get leave applications waiting for supervisor approval
-        $leaveApplications = Leave::where('status', 'waiting_for_supervisor')->get();
-    
+        $leaveApplications = Leave::where('status', 'waiting_for_supervisor')
+        ->orderBy('created_at', 'desc') 
+        ->paginate(9); 
         return view('supervisor.requests', compact('leaveApplications'));
     }
-    
 
-    // public function requests()
+    // public function approve(Request $request, Leave $leave)
     // {
-    //     $leaves = Leave::with('user')->latest()->get();
-    //     return view('supervisor.show_request', compact('leaves'));
+    //     // Ensure leave exists
+    //     if (!$leave) {
+    //         return redirect()->back()->with('error', 'Leave application not found.');
+    //     }
+    
+    //     // Ensure HR has approved it first before Supervisor approval
+    //     if ($leave->hr_status !== 'approved') {
+    //         return redirect()->back()->with('error', 'HR approval is required before supervisor approval.');
+    //     }
+    //     $leaveRequest = Leave::findOrFail($leave);
+    //   // Check if the request is already approved or rejected
+    // if ($leaveRequest->status !== 'pending') {
+    //     return redirect()->back()->withErrors(['status' => 'This leave request has already been processed.']);
     // }
 
+    // // Get the user associated with the leave request
+    // $user = $leaveRequest->user;
 
-    public function approve(Request $request, Leave $leave)
-    {
-        // Ensure leave exists
-        if (!$leave) {
-            return redirect()->back()->with('error', 'Leave application not found.');
-        }
+    // // Deduct leave credits based on the leave type
+    // switch ($leaveRequest->leave_type) {
+    //     case 'Vacation Leave':
+    //     case 'Sick Leave':
+    //         // Deduct from Vacation Leave first, then Sick Leave
+    //         if ($user->vacation_leave_balance >= $leaveRequest->days_applied) {
+    //             $user->vacation_leave_balance -= $leaveRequest->days_applied;
+    //         } else {
+    //             $remainingDays = $leaveRequest->days_applied - $user->vacation_leave_balance;
+    //             $user->vacation_leave_balance = 0;
+    //             $user->sick_leave_balance -= $remainingDays;
+    //         }
+    //         break;
+    //     case 'Maternity Leave':
+    //         $user->maternity_leave -= $leaveRequest->days_applied;
+    //         break;
+    //     case 'Paternity Leave':
+    //         $user->paternity_leave -= $leaveRequest->days_applied;
+    //         break;
+    //     case 'Solo Parent Leave':
+    //         $user->solo_parent_leave -= $leaveRequest->days_applied;
+    //         break;
+    //     case 'Study Leave':
+    //         $user->study_leave -= $leaveRequest->days_applied;
+    //         break;
+    //     case 'VAWC Leave':
+    //         $user->vawc_leave -= $leaveRequest->days_applied;
+    //         break;
+    //     case 'Rehabilitation Leave':
+    //         $user->rehabilitation_leave -= $leaveRequest->days_applied;
+    //         break;
+    //     case 'Special Leave Benefit':
+    //         $user->special_leave_benefit -= $leaveRequest->days_applied;
+    //         break;
+    //     case 'Special Emergency Leave':
+    //         $user->special_emergency_leave -= $leaveRequest->days_applied;
+    //         break;
+    //     default:
+    //         return redirect()->back()->withErrors(['leave_type' => 'Invalid leave type.']);
+    // }
+
+    // // Update the leave request status to "Approved"
+    // $leaveRequest->status = 'approved';
+    // $leaveRequest->save();
+
+    // // Save the updated user balances
+    // $user->save();
     
-        // Ensure HR has approved it first before Supervisor approval
-        if ($leave->hr_status !== 'approved') {
-            return redirect()->back()->with('error', 'HR approval is required before supervisor approval.');
-        }
+    //     // Notify the Employee
+    //     $user->notify(new LeaveStatusNotification($leave, "Your leave request has been approved by your Supervisor."));
     
-        $user = $leave->user;
+    //     // Notify HR
+    //     $hrUsers = User::where('role', 'HR')->get();
+    //     Notification::send($hrUsers, new LeaveStatusNotification($leave, "The leave request of {$user->first_name} has been approved by the Supervisor."));
+    //     notify()->success('Leave request approved successfully!');
+    //     return back()->with('success', 'Leave approved successfully.');
+    // }
     
-        // Calculate the total leave days requested
-        $daysRequested = Carbon::parse($leave->start_date)->diffInDays(Carbon::parse($leave->end_date)) + 1;
-    
-        // Deduct leave from the correct balance
-        if ($leave->leave_type === 'Vacation Leave') {
-            if ($user->vacation_leave_balance >= $daysRequested) {
-                $user->decrement('vacation_leave_balance', $daysRequested);
-            } else {
-                return back()->with('error', 'Insufficient vacation leave balance.');
-            }
-        } elseif ($leave->leave_type === 'Sick Leave') {
-            if ($user->sick_leave_balance >= $daysRequested) {
-                $user->decrement('sick_leave_balance', $daysRequested);
-            } else {
-                return back()->with('error', 'Insufficient sick leave balance.');
-            }
-        } else {
-            return back()->with('error', 'Invalid leave type.');
-        }
-    
-        // Update leave status
-        $leave->update([
-            'supervisor_status' => 'approved',
-            'status' => 'approved', // Officially approved
-            'supervisor_id' => Auth::id(),
-        ]);
-    
-        // Notify the Employee
-        $user->notify(new LeaveStatusNotification($leave, "Your leave request has been approved by your Supervisor."));
-    
-        // Notify HR
-        $hrUsers = User::where('role', 'HR')->get();
-        Notification::send($hrUsers, new LeaveStatusNotification($leave, "The leave request of {$user->first_name} has been approved by the Supervisor."));
-    
-        return back()->with('success', 'Leave approved successfully.');
+//Supervisor Approve try if mo gana (2)
+public function approve(Request $request, $leave) {
+    // Find the leave request
+    $leaveRequest = Leave::findOrFail($leave);
+
+    // Check if the request is already approved or rejected
+    if ($leaveRequest->supervisor_status !== 'pending') {
+        return redirect()->back()->withErrors(['status' => 'This leave request has already been processed.']);
     }
 
+    // Get the user associated with the leave request
+    $user = $leaveRequest->user;
+
+    // Deduct leave credits based on the leave type
+    switch ($leaveRequest->leave_type) {
+        case 'Vacation Leave':
+        case 'Sick Leave':
+            // Deduct from Vacation Leave first, then Sick Leave
+            if ($user->vacation_leave_balance >= $leaveRequest->days_applied) {
+                $user->vacation_leave_balance -= $leaveRequest->days_applied;
+            } else {
+                $remainingDays = $leaveRequest->days_applied - $user->vacation_leave_balance;
+                $user->vacation_leave_balance = 0;
+                $user->sick_leave_balance -= $remainingDays;
+            }
+            break;
+        case 'Maternity Leave':
+            $user->maternity_leave -= $leaveRequest->days_applied;
+            break;
+        case 'Paternity Leave':
+            $user->paternity_leave -= $leaveRequest->days_applied;
+            break;
+        case 'Solo Parent Leave':
+            $user->solo_parent_leave -= $leaveRequest->days_applied;
+            break;
+        case 'Study Leave':
+            $user->study_leave -= $leaveRequest->days_applied;
+            break;
+        case 'VAWC Leave':
+            $user->vawc_leave -= $leaveRequest->days_applied;
+            break;
+        case 'Rehabilitation Leave':
+            $user->rehabilitation_leave -= $leaveRequest->days_applied;
+            break;
+        case 'Special Leave Benefit':
+            $user->special_leave_benefit -= $leaveRequest->days_applied;
+            break;
+        case 'Special Emergency Leave':
+            $user->special_emergency_leave -= $leaveRequest->days_applied;
+            break;
+        default:
+            return redirect()->back()->withErrors(['leave_type' => 'Invalid leave type.']);
+    }
+
+    // Update the supervisor status to approved
+    $leaveRequest->supervisor_status = 'approved';
+
+    // If HR status is also approved, update the overall status
+    if ($leaveRequest->hr_status === 'approved') {
+        $leaveRequest->status = 'approved';
+    }
+
+    // Save the updated leave request and user balances
+    $leaveRequest->save();
+    $user->save();
+
+    notify()->success('Leave request approved successfully!');
+    return redirect()->back()->with('success', 'Leave request successfully approved');
+}
 
 
     // Supervisor rejects the request

@@ -44,12 +44,12 @@
                                 </button>
                             
                                 <!-- Notification Dropdown -->
-                                <div id="notification-container" class="absolute right-0 bg-white shadow-lg rounded-xl border border-gray-200 p-4 mt-2 w-64 hidden">
+                                <div id="notification-container" class="absolute right-0 bg-white shadow-lg rounded-xl border border-gray-200 p-4 mt-2 w-64 hidden z-10">
                                     <h3 class="text-gray-700 font-semibold mb-2">Notifications</h3>
                             
                                     @forelse(auth()->user()->notifications as $notification)
-                                        <div class="notification-item p-2 rounded mb-2 text-gray-800 flex justify-between items-center" data-id="{{ $notification->id }}">
-                                            <span class="text-xs text-gray-500">{{ $notification->data['message'] ?? 'New Notification' }}</span>
+                                        <div class="notification-item p-2 rounded mb-2 bg-gray-200 flex justify-between items-center" data-id="{{ $notification->id }}">
+                                            <span class="text-xs font-bold">{{ $notification->data['message'] ?? 'New Notification' }}</span>
                                             <button class="delete-notification text-red-500 text-xs px-1" data-id="{{ $notification->id }}">
                                                 ✖
                                             </button>
@@ -231,7 +231,7 @@
         .then(data => {
             if (data.success) {
                 document.querySelectorAll(".notification-item").forEach(item => {
-                    item.classList.remove("bg-gray-100");
+                    item.classList.remove("bg-gray-200");
                     item.classList.add("bg-white");
                 });
 

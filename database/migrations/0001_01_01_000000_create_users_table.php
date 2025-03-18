@@ -19,9 +19,18 @@ return new class extends Migration
             $table->string('last_name');
             $table->string('department');
             $table->string('email')->unique();
-            $table->decimal('vacation_leave_balance', 8, 2)->default(2.5);
-            $table->decimal('sick_leave_balance', 8, 2)->default(2.5);
-            // $table->decimal('leave_balance', 8, 2)->default(2.5);
+            $table->decimal('vacation_leave_balance', 8, 2)->default(2.5); //days
+            $table->decimal('sick_leave_balance', 8, 2)->default(2.5); //days
+            $table->integer('maternity_leave')->default(105); //days
+            $table->integer('paternity_leave')->default(7); //days
+            $table->integer('solo_parent_leave')->default(7); //days
+            $table->integer('study_leave')->default(182); //maximum 6 months
+            $table->integer('vawc_leave')->default(10); //days
+            $table->integer('rehabilitation_leave')->default(182); //maximun 6 months
+            $table->integer('special_leave_benefit')->default(60); //up to 2 months
+            $table->integer('special_emergency_leave')->default(3); //days
+            $table->integer('special_leave_taken')->default(0);
+            $table->integer('solo_parent_leave_taken')->default(0);
             $table->integer('overtime_balance')->default(20);
             $table->string('role')->default('employee'); 
             $table->date('birthday')->nullable();

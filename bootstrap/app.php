@@ -24,5 +24,6 @@ return Application::configure(basePath: dirname(__DIR__))
     })
     ->booting(function (Application $app) {
         $app->make(Schedule::class)->command('holidays:fetch')->monthly();
+        $app->make(Schedule::class)->command('leave:reset-yearly')->yearly();
     })
     ->create();

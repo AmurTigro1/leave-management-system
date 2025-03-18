@@ -2,22 +2,15 @@
 @section('content')
 <div class="w-full p-3 rounded-xl shadow-md">
         <!-- Back Button with Animation -->
-<<<<<<< Updated upstream
-        <div class="bg-[url('/public/img/office-image.jpg')] bg-cover bg-center p-[100px] rounded">
+        {{-- <div class="bg-[url('/public/img/office-image.jpg')] bg-cover bg-center p-[100px] rounded">
             <h1 class="text-center text-white font-bold text-[30px] bg-black/50 p-4 rounded">Leave Management System & Compensatory Time Off</h1>
-        </div>      
-          
+        </div>       --}}
+        <div class="bg-[url('/public/img/office-image.jpg')] bg-cover bg-center bg-no-repeat min-h-[400px] md:min-h-[450px] w-full rounded-lg overflow-hidden">
+        </div> 
     <!-- Profile Image & Upload -->
     <div class="relative w-32 h-32 ml-6 mt-[-100px]">
         <!-- Image Wrapper (Group for Hover) -->
         <div class="relative group w-full h-full">
-=======
-        <div class="bg-[url('/public/img/office-image.jpg')] bg-cover bg-center bg-no-repeat min-h-[400px] md:min-h-[450px] w-full rounded-lg overflow-hidden">
-        </div>    
-    
-   <!-- Profile Image & Upload -->
-        <div class="relative group ml-6 mt-[-100px]">
->>>>>>> Stashed changes
             <!-- Profile Image -->
             <img id="profile-preview"
                 src="{{ auth()->user()->profile_image ? asset('storage/profile_images/' . auth()->user()->profile_image) : asset('default-avatar.png') }}"
@@ -115,30 +108,78 @@
         </div>
     </div>
 </div>
-<div class="p-2 shadow-md rounded-xl mt-2">
-    <h3 class="text-lg font-semibold text-gray-700 mt-4 ml-[25px]">Leave and Overtime Distribution</h3>
-    <div class="flex justify-start items-center ml-[25px]">
-        <div class="w-[410px] mr-[125px]">
-            <div class="mt-6 bg-blue-50 p-3 rounded-lg w-[270px] shadow-sm">
-                <h3 class="text-lg font-semibold text-blue-700">Leave Balance</h3>
-                <div class="flex gap-4 mt-3">
-                    <span class="bg-green-500 text-white px-3 py-1 rounded text-sm">Vacation: {{ $vacationBalance }} days</span>
-                    <span class="bg-yellow-500 text-white px-3 py-1 rounded text-sm">Sick: {{ $sickBalance }} days</span>
+<div class="bg-white rounded-lg shadow-md p-6">
+    <h3 class="text-2xl font-semibold text-gray-800 mb-6">Leave and Overtime Distribution</h3>
+    
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <!-- Leave Balance Section -->
+        <div class="bg-gray-50 p-6 rounded-lg">
+            <h3 class="text-xl font-semibold text-gray-700 mb-4">Leave Balance</h3>
+            <div class="space-y-3">
+                <div class="flex justify-between text-sm text-gray-600">
+                    <span>Vacation:</span>
+                    <span>{{ $user->vacation_leave_balance }} day(s)</span>
+                </div>
+                <div class="flex justify-between text-sm text-gray-600">
+                    <span>Sick:</span>
+                    <span>{{ $user->sick_leave_balance }} day(s)</span>
+                </div>
+                <div class="flex justify-between text-sm text-gray-600">
+                    <span>Maternity Leave:</span>
+                    <span>{{ $user->maternity_leave }} day(s)</span>
+                </div>
+                <div class="flex justify-between text-sm text-gray-600">
+                    <span>Paternity Leave:</span>
+                    <span>{{ $user->paternity_leave }} day(s)</span>
+                </div>
+                <div class="flex justify-between text-sm text-gray-600">
+                    <span>Solo Parent Leave:</span>
+                    <span>{{ $user->solo_parent_leave }} day(s)</span>
+                </div>
+                <div class="flex justify-between text-sm text-gray-600">
+                    <span>Study Leave:</span>
+                    <span>{{ $user->study_leave }} day(s)</span>
+                </div>
+                <div class="flex justify-between text-sm text-gray-600">
+                    <span>VAWC Leave:</span>
+                    <span>{{ $user->vawc_leave }} day(s)</span>
+                </div>
+                <div class="flex justify-between text-sm text-gray-600">
+                    <span>Rehabilitation Leave:</span>
+                    <span>{{ $user->rehabilitation_leave }} day(s)</span>
+                </div>
+                <div class="flex justify-between text-sm text-gray-600">
+                    <span>Special Leave Benefit:</span>
+                    <span>{{ $user->special_leave_benefit }} day(s)</span>
+                </div>
+                <div class="flex justify-between text-sm text-gray-600">
+                    <span>Special Emergency Leave:</span>
+                    <span>{{ $user->special_emergency_leave }} day(s)</span>
                 </div>
             </div>
-            <div class="mt-6 bg-blue-50 p-3 rounded-lg w-[410px] shadow-sm">
-                <h3 class="text-lg font-semibold text-blue-700">Total Leave & Overtime Balance</h3>
-                <div class="flex gap-4 mt-3">
-                    <span class="bg-gray-500 text-white px-3 py-1 rounded text-sm">Leave Available: {{ $user->leave_balance }} days</span>
-                    <span class="bg-gray-500 text-white px-3 py-1 rounded text-sm">Overtime Available: {{ $user->overtime_balance }} days</span>
+                    <!-- Total Leave & Overtime Balance Section -->
+        <div class="bg-gray-50 mt-4 rounded-lg">
+            <h3 class="text-xl font-semibold text-gray-700 mb-4">Total Leave & Overtime Balance</h3>
+            <div class="space-y-3">
+                <div class="flex justify-between text-sm text-gray-600">
+                    <span>Leave Available:</span>
+                    <span>{{ $user->leave_balance }} days</span>
+                </div>
+                <div class="flex justify-between text-sm text-gray-600">
+                    <span>Overtime Available:</span>
+                    <span>{{ $user->overtime_balance }} days</span>
                 </div>
             </div>
-        </div>
-        <!-- Graph Here -->
-        <div class=" rounded-lg shadow-sm w-[600px]">
-            <canvas id="leaveGraph"></canvas>
         </div>
     </div>
+    <!-- Graph Section -->
+    <div class="mt-8">
+        <h3 class="text-xl font-semibold text-gray-700 mb-4 text-center">Leave Distribution Graph</h3>
+        <div class="bg-gray-50 p-6 rounded-lg">
+            <canvas id="leaveGraph" class="w-full h-80 shadow-md"></canvas>
+        </div>
+    </div>
+ </div>
 </div>
 <!-- Include Chart.js -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -147,17 +188,41 @@
     const leaveGraph = new Chart(ctx, {
         type: 'bar',
         data: {
-            labels: ['Vacation', 'Sick', 'Overtime Available', 'Leave Available'],
+            labels: [
+                'Vacation', 'Sick', 'Maternity', 'Paternity', 'Solo Parent', 
+                'Study', 'VAWC', 'Rehabilitation', 'Special Leave Benefit', 
+                'Special Emergency', 'Overtime Available', 'Leave Available'
+            ],
             datasets: [{
                 label: 'Days',
-                data: [{{ $vacationBalance }}, {{ $sickBalance }}, {{ $user->overtime_balance }}, {{ $user->leave_balance }}],
-                backgroundColor: ['#22c55e', '#eab308', '#6b7280', '#6b7280'],
-                borderColor: ['#16a34a', '#ca8a04', '#4b5563', '#4b5563'],
+                data: [
+                    {{ $user->vacation_leave_balance }}, 
+                    {{ $user->sick_leave_balance }}, 
+                    {{ $user->maternity_leave }}, 
+                    {{ $user->paternity_leave }}, 
+                    {{ $user->solo_parent_leave }}, 
+                    {{ $user->study_leave }}, 
+                    {{ $user->vawc_leave }}, 
+                    {{ $user->rehabilitation_leave }}, 
+                    {{ $user->special_leave_benefit }}, 
+                    {{ $user->special_emergency_leave }}, 
+                    {{ $user->overtime_balance }}, 
+                    {{ $user->leave_balance }}
+                ],
+                backgroundColor: [
+                    '#22c55e', '#eab308', '#3b82f6', '#a855f7', '#f97316', 
+                    '#14b8a6', '#ef4444', '#8b5cf6', '#64748b', '#f43f5e', 
+                    '#6b7280', '#4b5563'
+                ],
+                borderColor: [
+                    '#16a34a', '#ca8a04', '#2563eb', '#9333ea', '#ea580c', 
+                    '#0d9488', '#dc2626', '#7c3aed', '#475569', '#e11d48', 
+                    '#4b5563', '#374151'
+                ],
                 borderWidth: 1
             }]
         },
         options: {
-            responsive: true,
             scales: {
                 y: {
                     beginAtZero: true,
@@ -165,12 +230,20 @@
                         display: true,
                         text: 'Days'
                     }
+                },
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Leave Types'
+                    }
                 }
             },
             plugins: {
                 legend: {
-                    display: true,
-                    position: 'top'
+                    display: false
+                },
+                tooltip: {
+                    enabled: true
                 }
             }
         }

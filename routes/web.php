@@ -28,7 +28,7 @@ Route::middleware('auth')->group(function () {
 Route::middleware(['auth', 'SupervisorMiddleware'])->group(function () {
     Route::get('/supervisor/dashboard', [SupervisorController::class, 'index'])->name('supervisor.dashboard');
     Route::get('/supervisor/requests', [SupervisorController::class, 'requests'])->name('supervisor.requests');
-    Route::post('/supervisor/{leave}/approve', [SupervisorController::class, 'approve'])->name('supervisor.approve');
+    Route::post('/supervisor/{leaveId}/approve', [SupervisorController::class, 'approve'])->name('supervisor.approve');
     Route::post('/supervisor/reject/{leave}', [SupervisorController::class, 'reject'])->name('supervisor.reject');
     Route::get('/supervisor-profile', [SupervisorController::class, 'profile'])->name('supervisor.profile.index');
     Route::get('/supervisor-profile-edit', [SupervisorController::class, 'edit'])->name('supervisor.profile.edit');
@@ -39,6 +39,7 @@ Route::middleware(['auth', 'SupervisorMiddleware'])->group(function () {
 //HR Officer Route
 Route::middleware(['auth', 'hrMiddleware'])->group(function () {
     Route::get('/hr/dashboard', [HrController::class, 'index'])->name('hr.dashboard');
+    Route::get('/hr/employees', [HrController::class, 'onLeave'])->name('hr.on_leave');
     Route::get('/hr/requests', [HrController::class, 'requests'])->name('hr.leave_requests');
     Route::get('/leave/details/{id}', [HrController::class, 'show'])->name('hr.leave_details');
     Route::get('/hr/leave-certification/{leaveId}', [HrController::class, 'showLeaveCertification'])->name('hr.leave_certification');

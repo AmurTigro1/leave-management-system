@@ -36,35 +36,44 @@ class EmployeeController extends Controller
     
     
     
-    
     public function leaderboard()
     {
         $employees = User::with(['leaves' => function ($query) {
             $query->where('status', 'approved')
-                  ->whereDate('start_date', '>=', now()->subDays(30)) // Only consider last 30 days
-                  ->whereDate('end_date', '<=', now()); // Ensure leave has ended
-        }])
-        ->get();
+                  ->whereMonth('start_date', now()->month) // Ensure it's within the month
+                  ->whereYear('start_date', now()->year);
+        }])->get();
     
-        // Calculate total absences for each employee
-        foreach ($employees as $employee) {
-            $employee->absent_days = $employee->leaves->sum(function ($leave) {
-                return \Carbon\Carbon::parse($leave->start_date)->diffInDays(\Carbon\Carbon::parse($leave->end_date)) + 1;
+        // Calculate total absences correctly
+        $employees->each(function ($employee) {
+            $employee->total_absences = $employee->leaves->sum(function ($leave) {
+                return \Carbon\Carbon::parse($leave->start_date)
+                        ->diffInDays(\Carbon\Carbon::parse($leave->end_date)) + 1;
             });
-        }
-    
-        // Sort employees by least absences and take top 5
-        $employees = $employees->sortBy('absent_days')->take(5);
-    
+        });
+        $employees = $employees->sortBy('total_absences')->take(5);
         return view('employee.leaderboard', compact('employees'));
     }
     
     
-    
     public function showUsersModal()
     {
-        $users = User::all();
-        return view('employee.partials.users-modal', compact('users'));
+        $employees = User::with(['leaves' => function ($query) {
+            $query->where('status', 'approved')
+                  ->whereMonth('start_date', now()->month) // Ensure it's within the month
+                  ->whereYear('start_date', now()->year);
+        }])->get();
+    
+        // Calculate total absences correctly
+        $employees->each(function ($employee) {
+            $employee->total_absences = $employee->leaves->sum(function ($leave) {
+                return \Carbon\Carbon::parse($leave->start_date)
+                        ->diffInDays(\Carbon\Carbon::parse($leave->end_date)) + 1;
+            });
+        });
+        $employees = $employees->sortBy('total_absences')->take(5);
+
+        return view('employee.partials.users-modal', compact('employees'));
     }
 
     public function loginLmsCto() {
@@ -89,40 +98,46 @@ class EmployeeController extends Controller
             'leave_details' => 'nullable|array', 
             'abroad_details' => 'nullable|string', 
         ]);
-
-            $user = Auth::user();
-
-            // Calculate number of days applied
-            $startDate = Carbon::parse($request->start_date);
-            $endDate = Carbon::parse($request->end_date);
-            $daysApplied = $startDate->diffInDays($endDate) + 1; // Include start date
-
-            // **Determine which leave balance to check**
-            $availableLeaveBalance = match ($request->leave_type) {
-                'Vacation Leave' => $user->vacation_leave_balance,
-                'Sick Leave' => $user->sick_leave_balance,
-                default => $user->leave_balance, // General leave balance
-            };
-
-            // **Check if there are enough leave credits**
-            if ($daysApplied > $availableLeaveBalance) {
-                return redirect()->back()->withErrors(['end_date' => 'You do not have enough balance for ' . $request->leave_type . '.']);
-            }
+    
+        $user = Auth::user();
+    
+        // Calculate number of days applied
+        $startDate = Carbon::parse($request->start_date);
+        $endDate = Carbon::parse($request->end_date);
+        $daysApplied = $startDate->diffInDays($endDate) + 1; // Include start date
+    
+        // **Check if the employee has enough leave credits for the request**
+        $availableLeaveBalance = match ($request->leave_type) {
+            'Vacation Leave', 'Sick Leave' => $user->vacation_leave_balance + $user->sick_leave_balance, // Combine balances
+            'Maternity Leave' => $user->maternity_leave,
+            'Paternity Leave' => $user->paternity_leave,
+            'Solo Parent Leave' => $user->solo_parent_leave,
+            'Study Leave' => $user->study_leave,
+            'VAWC Leave' => $user->vawc_leave,
+            'Rehabilitation Leave' => $user->rehabilitation_leave,
+            'Special Leave Benefit' => $user->special_leave_benefit,
+            'Special Emergency Leave' => $user->special_emergency_leave,
+            default => 0, // Default to 0 if leave type is not recognized
+        };
+    
+        // **Check if there are enough leave credits**
+        if ($daysApplied > $availableLeaveBalance) {
+            return redirect()->back()->withErrors(['end_date' => 'You do not have enough balance for ' . $request->leave_type . '.']);
+        }
+    
         // Initialize an empty array to store selected leave details
-            $leaveDetails = [];
-
-            // **Vacation Leave / Special Privilege Leave**
-            if ($request->leave_type === 'Vacation Leave' || $request->leave_type === 'Special Privilege Leave') {
-                if ($request->filled('within_philippines')) {
-                    $leaveDetails['Within the Philippines'] = $request->within_philippines; // Text input
-
-                }
-                if ($request->filled('abroad_details')) {
-                    $leaveDetails['Abroad'] = $request->abroad_details; // Text input
-                }
+        $leaveDetails = [];
+    
+        // **Vacation Leave / Special Privilege Leave**
+        if ($request->leave_type === 'Vacation Leave' || $request->leave_type === 'Special Privilege Leave') {
+            if ($request->filled('within_philippines')) {
+                $leaveDetails['Within the Philippines'] = $request->within_philippines; // Text input
             }
-
-
+            if ($request->filled('abroad_details')) {
+                $leaveDetails['Abroad'] = $request->abroad_details; // Text input
+            }
+        }
+    
         // **Sick Leave**
         if ($request->leave_type === 'Sick Leave') {
             if ($request->has('in_hospital')) {
@@ -131,9 +146,8 @@ class EmployeeController extends Controller
             if ($request->has('out_patient')) {
                 $leaveDetails['Out Patient'] = $request->input('out_patient_details', 'Yes');
             }
-
         }
-
+    
         // **Study Leave**
         if ($request->leave_type === 'Study Leave') {
             if ($request->has('completion_masters')) {
@@ -143,8 +157,7 @@ class EmployeeController extends Controller
                 $leaveDetails[] = 'BAR Review';
             }
         }
-
-
+    
         // **Other Purposes**
         if ($request->leave_type === 'Other Purposes') {
             if ($request->has('monetization')) {
@@ -154,7 +167,7 @@ class EmployeeController extends Controller
                 $leaveDetails[] = 'Terminal Leave';
             }
         }
-
+    
         // **Others Leave Type**
         if ($request->leave_type === 'Others') {
             if ($request->filled('others_details')) {
@@ -162,9 +175,8 @@ class EmployeeController extends Controller
                 $leaveDetails[] = $request->others_details;
             }
         }
-
-
-        // Store leave request
+    
+        // Store leave request with a default status of "Pending"
         Leave::create([
             'user_id' => auth()->id(),
             'leave_type' => $request->leave_type,
@@ -173,14 +185,14 @@ class EmployeeController extends Controller
             'end_date' => $request->end_date,
             'position' => $request->position,
             'salary_file' => $request->salary_file,
-            'days_applied' => $request->days_applied,
+            'days_applied' => $daysApplied,
             'commutation' => $request->commutation,
             'date_filing' => now(),
             'reason' => $request->reason,
+            'status' => 'pending', // Default status for new requests
         ]);
-        $user->save();
-
-        notify()->success('Leave request successful!');
+    
+        notify()->success('Leave request submitted successfully! It is now pending approval.');
         return redirect()->back();
     }
 
@@ -215,8 +227,6 @@ class EmployeeController extends Controller
     
         return view('employee.profile.index', [
             'user' => $user,
-            'vacationBalance' => $user->vacation_leave_balance,
-            'sickBalance' => $user->sick_leave_balance,
         ]);
     }
     

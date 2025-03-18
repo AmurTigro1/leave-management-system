@@ -1,3 +1,6 @@
+@php
+    $pendingRequestsCount = App\Models\Leave::where('status', 'pending')->count();
+@endphp
 <!-- Sidebar Component -->
 <div x-data="{ 
     isSidebarOpen: window.innerWidth > 1024, 
@@ -33,14 +36,27 @@ class="min-h-screen flex z-[1000]">
                 <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
             </svg>
             <span>Dashboard</span>
-        </a>  
+        </a> 
+
+        <a href="{{ route('hr.on_leave') }}" class="hover:bg-gray-200 flex items-center p-2 space-x-2 rounded-md {{ request()->routeIs('hr.on_leave') ? 'bg-white shadow-lg' : 'text-gray-500' }}">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M10 2a4 4 0 100 8 4 4 0 000-8zm-7 14a7 7 0 0114 0H3z" clip-rule="evenodd" />
+            </svg>
+            <span>Employees</span>
+        </a>
 
         <a href="{{ route('hr.leave_requests') }}" class="hover:bg-gray-200 flex items-center p-2 space-x-2 rounded-md {{ request()->routeIs('hr.leave_requests') || request()->routeIs('hr.leave_details') ? 'bg-white shadow-lg' : 'text-gray-500' }}">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 5.25h16.5m-16.5 4.5h16.5m-16.5 4.5h16.5m-16.5 4.5h16.5" />
             </svg>          
             <span>List of Request</span>
-        </a>  
+            @if($pendingRequestsCount > 0)
+                <span class="bg-red-500 text-white text-xs font-semibold rounded-full px-2 py-1">
+                    {{ $pendingRequestsCount }}
+                </span>
+            @endif
+        </a>
+        
 
 <!-- Holidays Link -->
 <a href="{{ route('holiday.calendar') }}" class="hover:bg-gray-200 flex items-center p-2 space-x-2 rounded-md {{ request()->routeIs('holiday.calendar') ? 'bg-white shadow-lg' : 'text-gray-500' }}">
