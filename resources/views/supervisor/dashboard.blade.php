@@ -1,4 +1,4 @@
-@extends('layouts.admin.sidebar-header')
+@extends('layouts.supervisor.sidebar-header')
 
 @section('content')
 <div class="container mx-auto p-6">

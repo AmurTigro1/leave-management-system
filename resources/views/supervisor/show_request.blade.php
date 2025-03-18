@@ -1,4 +1,4 @@
-@extends('layouts.admin.sidebar-header')
+@extends('layouts.supervisor.sidebar-header')
 
 @section('content')
 <div class="p-12 space-y-6">
