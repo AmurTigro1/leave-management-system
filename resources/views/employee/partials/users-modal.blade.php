@@ -9,16 +9,17 @@
 
     <!-- User List -->
     <ul class="mt-4 space-y-3">
-        @foreach($users as $user)
+        @foreach($employees as $employee)
             <li class="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
                 <!-- Profile Image -->
-                <img src="{{ $user->profile_image ? asset('storage/profile_images/' . $user->profile_image) : 'https://cdn-icons-png.freepik.com/256/12533/12533276.png?ga=GA1.1.1609491871.1738904251&semt=ais_hybrid' }}" alt="Profile" 
+                <img src="{{ $employee->profile_image ? asset('storage/profile_images/' . $employee->profile_image) : 'https://cdn-icons-png.freepik.com/256/12533/12533276.png?ga=GA1.1.1609491871.1738904251&semt=ais_hybrid' }}" alt="Profile" 
                      class="w-12 h-12 rounded-full border border-gray-300 object-cover">
 
                 <!-- User Info -->
                 <div>
-                    <h3 class="text-sm font-semibold text-gray-800">{{ $user->name }}</h3>
-                    <p class="text-xs text-gray-500">{{ $user->email }}</p>
+                    <h3 class="text-sm font-semibold text-gray-800">{{ $employee->name }}</h3>
+                    <p class="text-xs text-gray-500">{{ $employee->email }}</p>
+                    <p class="text-xs text-gray-500">absences: {{ $employee->total_absences }} day(s)</p>
                 </div>
             </li>
         @endforeach

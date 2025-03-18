@@ -24,44 +24,24 @@
                      class="w-12 h-12 rounded-full" alt="{{ $employee->name }}">
                 <div>
                     <p class="font-semibold">{{ $employee->first_name }} {{ strtoupper(substr($employee->middle_name, 0, 1)) }}. {{ $employee->last_name }}</p>
-                    <p class="text-gray-500 text-sm">{{ $employee->leaves_count }} Absences</p>
+                    <p class="text-gray-500 text-sm">{{ $employee->email }}</p>
                 </div>
             </div>
         
             <!-- Replace Dummy Images with Meaningful Info -->
             <div class="text-right">
-                <div class="flex space-x-2 text-xs text-gray-500 mb-4">
-                    <span>Sick: {{ $employee->leaves->where('type', 'sick')->sum(fn($leave) => \Carbon\Carbon::parse($leave->start_date)->diffInDays(\Carbon\Carbon::parse($leave->end_date)) + 1) }}</span> <span>|</span>
-                    <span>Vacation: {{ $employee->leaves->where('type', 'vacation')->sum(fn($leave) => \Carbon\Carbon::parse($leave->start_date)->diffInDays(\Carbon\Carbon::parse($leave->end_date)) + 1) }}</span> <span>|</span>
-                    <span>Emergency: {{ $employee->leaves->where('type', 'emergency')->sum(fn($leave) => \Carbon\Carbon::parse($leave->start_date)->diffInDays(\Carbon\Carbon::parse($leave->end_date)) + 1) }}</span>
-                </div>
-            
-                <p class="text-xs text-gray-600 mb-2">Total Absences: {{ $employee->absent_days }} days</p>
-            
-                @if ($employee->absent_days == 0)
+                @if ($employee->total_absences == 0)
                     <span class="px-2 py-1 bg-green-500 text-white text-xs font-semibold rounded-lg">Perfect Attendance 🎯</span>
-                @elseif ($employee->absent_days <= 2)
+                @elseif ($employee->total_absences <= 2)
                     <span class="px-2 py-1 bg-blue-500 text-white text-xs font-semibold rounded-lg">Excellent 🎖️</span>
                 @else
                     <span class="px-2 py-1 bg-gray-500 text-white text-xs font-semibold rounded-lg">Good Effort 👍</span>
                 @endif
-                <div class="text-xs text-gray-700 mt-2">
-                    <p><strong>Absence Debug:</strong></p>
-                    <ul>
-                        @foreach($employee->leaves as $leave)
-                            <li>From {{ $leave->start_date }} to {{ $leave->end_date }} = 
-                                {{ \Carbon\Carbon::parse($leave->start_date)->diffInDays(\Carbon\Carbon::parse($leave->end_date)) + 1 }} days
-                            </li>
-                        @endforeach
-                    </ul>
+                <div class="text-xs text-gray-700 mt-2">  
+                    total absences: {{ $employee->total_absences }} day(s)
                 </div>
-                
             </div>
-            
-            
-            
         </div>
-        
         @endforeach
     </div>
 
@@ -84,10 +64,6 @@
         </div>
     </div>
 </div>
-
-
-
-
 </div>
 @endsection
 

@@ -3,7 +3,18 @@
 @section('content')
 <div class="">
     <h2 class="text-xl font-bold mb-4">Final Approval for Leave Applications</h2>
+  <!-- Success & Error Messages -->
+  @if(session('success'))
+  <div id="success-alert" class="mb-4 bg-green-100 border-l-4 border-green-500 text-green-700 p-3 rounded-md">
+      <strong>Success!</strong> {{ session('success') }}
+  </div>
+@endif
 
+@if(session('error'))
+  <div id="error-alert" class="mb-4 bg-red-100 border-l-4 border-red-500 text-red-700 p-3 rounded-md">
+      <strong>Error!</strong> {{ session('error') }}
+  </div>
+@endif
 {{-- <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
     @foreach ($leaveApplications as $leave)
     <div class="bg-white shadow-lg rounded-lg p-6 transition-transform transform hover:scale-105 hover:shadow-xl">
@@ -64,3 +75,10 @@
     </div>
 </div>
 @endsection
+
+<script>
+    setTimeout(() => {
+        document.getElementById('success-alert')?.remove();
+        document.getElementById('error-alert')?.remove();
+    }, 4000);
+</script>

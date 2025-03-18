@@ -43,6 +43,22 @@ class HrController extends Controller
         return view('hr.dashboard', compact('employees', 'pendingLeaves', 'totalEmployees', 'leaveStats', 'cocStats'));
     }
     
+        public function onLeave(Request $request) {
+        $month = $request->query('month', now()->month);
+        $today = now()->toDateString(); 
+    
+        // Fetch employees whose birthday falls in the selected month
+        $birthdays = User::whereMonth('birthday', $month)->get();
+    
+        // Get employees who are on approved leave this month (but only if their leave has not yet ended)
+        $teamLeaves = Leave::whereMonth('start_date', $month)
+                            ->where('status', 'approved')
+                            ->where('end_date', '>=', $today) // Ensures leave is still ongoing
+                            ->with('user') // Ensures the user object is available
+                            ->get();
+    
+        return view('hr.on_leave', compact('teamLeaves', 'birthdays', 'month'));
+    }
 
     public function requests()
     {
