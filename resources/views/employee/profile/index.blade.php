@@ -106,7 +106,7 @@
         </div>
     </div>
 </div>
-<div class="bg-white rounded-lg shadow-md p-6">
+<div class="bg-white rounded-lg shadow-md p-6 mt-4">
     <h3 class="text-2xl font-semibold text-gray-800 mb-6">Leave and Overtime Distribution</h3>
     
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -116,43 +116,83 @@
             <div class="space-y-3">
                 <div class="flex justify-between text-sm text-gray-600">
                     <span>Vacation:</span>
-                    <span>{{ $user->vacation_leave_balance }} day(s)</span>
+                    @if($user->vacation_leave_balance)
+                        <span>{{ $user->vacation_leave_balance }} day(s)</span>
+                    @else
+                        <span>0 day(s)</span>
+                    @endif
                 </div>
                 <div class="flex justify-between text-sm text-gray-600">
                     <span>Sick:</span>
-                    <span>{{ $user->sick_leave_balance }} day(s)</span>
+                    @if($user->sick_leave_balance)
+                        <span>{{ $user->sick_leave_balance }} day(s)</span>
+                    @else
+                        <span>0 day(s)</span>
+                    @endif
                 </div>
                 <div class="flex justify-between text-sm text-gray-600">
                     <span>Maternity Leave:</span>
-                    <span>{{ $user->maternity_leave }} day(s)</span>
+                    @if($user->maternity_leave)
+                        <span>{{ $user->maternity_leave }} day(s)</span>
+                    @else
+                        <span>0 day(s)</span>
+                    @endif
                 </div>
                 <div class="flex justify-between text-sm text-gray-600">
                     <span>Paternity Leave:</span>
-                    <span>{{ $user->paternity_leave }} day(s)</span>
+                    @if($user->paternity_leave)
+                        <span>{{ $user->paternity_leave }} day(s)</span>
+                    @else
+                        <span>0 day(s)</span>
+                    @endif
                 </div>
                 <div class="flex justify-between text-sm text-gray-600">
                     <span>Solo Parent Leave:</span>
-                    <span>{{ $user->solo_parent_leave }} day(s)</span>
+                    @if($user->solo_parent_leave)
+                        <span>{{ $user->solo_parent_leave }} day(s)</span>
+                    @else
+                        <span>0 day(s)</span>
+                    @endif
                 </div>
                 <div class="flex justify-between text-sm text-gray-600">
                     <span>Study Leave:</span>
-                    <span>{{ $user->study_leave }} day(s)</span>
+                    @if($user->study_leave)
+                        <span>{{ $user->study_leave }} day(s)</span>
+                    @else
+                        <span>0 day(s)</span>
+                    @endif
                 </div>
                 <div class="flex justify-between text-sm text-gray-600">
                     <span>VAWC Leave:</span>
-                    <span>{{ $user->vawc_leave }} day(s)</span>
-                </div>
+                    @if($user->vawc_leave)
+                        <span>{{ $user->vawc_leave}} day(s)</span>
+                    @else
+                        <span>0 day(s)</span>
+                    @endif
+                </div> 
                 <div class="flex justify-between text-sm text-gray-600">
                     <span>Rehabilitation Leave:</span>
-                    <span>{{ $user->rehabilitation_leave }} day(s)</span>
+                    @if($user->rehabilitation_leave)
+                        <span>{{ $user->rehabilitation_leave }} day(s)</span>
+                    @else
+                        <span>0 day(s)</span>
+                    @endif
                 </div>
                 <div class="flex justify-between text-sm text-gray-600">
                     <span>Special Leave Benefit:</span>
-                    <span>{{ $user->special_leave_benifit }} day(s)</span>
+                    @if($user->special_leave_benefit)
+                        <span>{{ $user->special_leave_benefit }} day(s)</span>
+                    @else
+                        <span>0 day(s)</span>
+                    @endif
                 </div>
                 <div class="flex justify-between text-sm text-gray-600">
                     <span>Special Emergency Leave:</span>
-                    <span>{{ $user->special_emergency_leave }} day(s)</span>
+                    @if($user->special_emergency_leave)
+                        <span>{{ $user->special_emergency_leave }} day(s)</span>
+                    @else
+                        <span>0 day(s)</span>
+                    @endif
                 </div>
             </div>
             <!-- Total Leave & Overtime Balance Section -->
@@ -161,11 +201,19 @@
             <div class="space-y-3">
                 <div class="flex justify-between text-sm text-gray-600">
                     <span>Leave Available:</span>
-                    <span>{{ $user->leave_balance }} days</span>
+                    @if($user->leave_balance)
+                        <span>{{ $user->leave_balance }} day(s)</span>
+                    @else
+                        <span>0 day(s)</span>
+                    @endif
                 </div>
                 <div class="flex justify-between text-sm text-gray-600">
                     <span>Overtime Available:</span>
-                    <span>{{ $user->overtime_balance }} days</span>
+                    @if($user->overtime_balance)
+                        <span>{{ $user->overtime_balance }} hour(s)</span>
+                    @else
+                        <span>0 hour(s)</span>
+                    @endif
                 </div>
             </div>
         </div>

@@ -33,7 +33,7 @@ return new class extends Migration
             $table->integer('special_emergency_leave')->default(3); //days
             $table->integer('special_leave_taken')->default(0);
             $table->integer('solo_parent_leave_taken')->default(0);
-            $table->integer('overtime_balance')->default(20);
+            $table->integer('overtime_balance')->default(0);
             $table->string('role')->default('employee'); 
             $table->date('birthday')->nullable();
             $table->string('profile_image')->nullable();
