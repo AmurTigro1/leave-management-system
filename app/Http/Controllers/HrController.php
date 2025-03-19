@@ -11,10 +11,28 @@ use Illuminate\Support\Facades\Auth;
 
 class HrController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $employees = User::paginate(10); // Paginate with 10 records per page
-        
+        $search = $request->input('search');
+
+        $query = User::query();
+    
+        if ($search) {
+            $query->where('name', 'like', "%{$search}%")
+                  ->orWhere('first_name', 'like', "%{$search}%")
+                  ->orWhere('last_name', 'like', "%{$search}%")
+                  ->orWhere('email', 'like', "%{$search}%")
+                  ->orWhere('position', 'like', "%{$search}%");
+        }
+    
+        $employees = $query->paginate(10)->withQueryString();
+    
+        // If it's an AJAX request, return only the partial view
+        if ($request->ajax()) {
+            return view('hr.partials.employee-list', compact('employees'))->render();
+        }
+    
+    
         // Get pending leave requests
         $pendingLeaves = Leave::where('status', 'pending')->get();
     
@@ -33,15 +51,16 @@ class HrController extends Controller
             'Approved' => $totalApprovedLeaves,
             'Rejected' => $totalRejectedLeaves,
         ];
-
+    
         $cocStats = [
             'Pending' => $totalPendingOvertime,
             'Approved' => $totalApprovedOvertime,
             'Rejected' => $totalRejectedOvertime,
         ];
     
-        return view('hr.dashboard', compact('employees', 'pendingLeaves', 'totalEmployees', 'leaveStats', 'cocStats'));
+        return view('hr.dashboard', compact('employees', 'pendingLeaves', 'totalEmployees', 'leaveStats', 'cocStats', 'search'));
     }
+    
     
         public function onLeave(Request $request) {
         $month = $request->query('month', now()->month);

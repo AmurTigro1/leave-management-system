@@ -32,14 +32,14 @@
                 </div>
 
                 <!-- Close Button (Only in Mobile) -->
-                <button @click="sidebarOpen = false" class="lg:hidden text-gray-300 hover:text-white">
+                {{-- <button @click="sidebarOpen = false" class="lg:hidden text-gray-300 hover:text-white">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                     </svg>
-                </button>
+                </button> --}}
             </div>
 
-    <div x-show="isSidebarOpen" x-transition class="flex-1 p-4 space-y-2 text-gray-600 bg-gray-50">
+    <div x-show="sidebarOpen" x-transition class="flex-1 p-4 space-y-2 text-gray-600 bg-gray-50">
         <!-- Dashboard Link -->
         <a href="{{ route('hr.dashboard') }}" class="hover:bg-gray-200 flex items-center p-2 space-x-2 rounded-md {{ request()->routeIs('hr.dashboard') ? 'bg-white shadow-lg' : 'text-gray-500' }}">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
@@ -92,6 +92,6 @@
     </div>
 </div>
 
-<style>
+{{-- <style>
     [x-cloak] { display: none !important; }
-</style>
+</style> --}}

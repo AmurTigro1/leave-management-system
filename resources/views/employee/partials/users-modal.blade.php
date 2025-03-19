@@ -17,7 +17,7 @@
 
                 <!-- User Info -->
                 <div>
-                    <h3 class="text-sm font-semibold text-gray-800">{{ $employee->name }}</h3>
+                    <h3 class="text-sm font-semibold text-gray-800">{{ $employee->last_name }} {{ $employee->first_name }} </h3>
                     <p class="text-xs text-gray-500">{{ $employee->email }}</p>
                     <p class="text-xs text-gray-500">absences: {{ $employee->total_absences }} day(s)</p>
                 </div>

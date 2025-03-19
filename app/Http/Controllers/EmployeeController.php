@@ -63,8 +63,9 @@ class EmployeeController extends Controller
             $query->where('status', 'approved')
                   ->whereMonth('start_date', now()->month) // Ensure it's within the month
                   ->whereYear('start_date', now()->year);
-        }])->get();
-    
+        }])
+        ->orderBy('last_name', 'asc')  // Sort by last name ascending
+        ->get();
         // Calculate total absences correctly
         $employees->each(function ($employee) {
             $employee->total_absences = $employee->leaves->sum(function ($leave) {
@@ -72,7 +73,7 @@ class EmployeeController extends Controller
                         ->diffInDays(\Carbon\Carbon::parse($leave->end_date)) + 1;
             });
         });
-        $employees = $employees->sortBy('total_absences')->take(5);
+        $employees = $employees->sortBy('total_absences');
 
         return view('employee.partials.users-modal', compact('employees'));
     }
