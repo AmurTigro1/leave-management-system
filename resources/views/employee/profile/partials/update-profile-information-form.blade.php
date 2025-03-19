@@ -55,7 +55,7 @@
         </div>
     </div>
 </div>
-<div class="p-3 rounded-xl mt-2 flex justify-start items-center">
+<div class="p-3 rounded-xl mt-2 flex justify-start items-center animate-fade-in">
     <div class="mr-4">
         <h3 class="text-2xl font-semibold text-gray-700 ml-[25px]">Personal Information</h3>
         <div class="ml-[25px]">
@@ -178,3 +178,14 @@
 </div>
 @endsection
 @notifyCss
+
+<style>
+        .animate-fade-in {
+        animation: fadeIn 0.8s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+</style>

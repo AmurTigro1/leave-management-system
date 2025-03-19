@@ -57,7 +57,7 @@ Route::middleware(['auth', 'adminMiddleware'])->group(function () {
 
 
 //Employee Route
-Route::middleware(['auth.redirect', 'employeeMiddleware'])->group(function () {
+Route::middleware('auth.redirect')->group(function () {
     Route::get('/lms-cto/dashboard', [EmployeeController::class, 'indexLMS'])->name('lms_cto.dashboard');
 
     //LMS
@@ -93,6 +93,10 @@ Route::middleware(['auth.redirect', 'employeeMiddleware'])->group(function () {
     Route::get('/cto-profile', [OvertimeRequestController::class, 'profile'])->name('cto.profile.index');
     Route::get('/cto-profile-edit', [OvertimeRequestController::class, 'edit'])->name('cto.profile.edit');
     Route::patch('/cto-profile', [OvertimeRequestController::class, 'update'])->name('cto-profile.update');
+    Route::get('/cto-limit-warning', function () {
+        notify()->warning('You can only select up to 5 consecutive days for CTO.');
+        return back();
+    });
 });
 
 Route::get('/leave-calendar', action: [EmployeeController::class, 'showCalendar'])->name('leave.calendar');

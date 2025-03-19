@@ -5,7 +5,7 @@
     <x-notify::notify />
 </div>
 @notifyJs
-    <div class="max-w-6xl mx-auto p-6rounded-lg shadow-lg">
+    <div class="max-w-6xl mx-auto p-6rounded-lg shadow-lg animate-fade-in">
         <div class="text-center">
             <div class="justify-center flex">
                 <img src="/img/dilg-main.png" alt="DILG Logo" class="h-[80px] w-[80px] mx-auto lg:mx-0 mb-4">
@@ -257,3 +257,13 @@ const successMessage = document.getElementById('success-message');
 });
 </script>
 @notifyCss
+<style>
+    .animate-fade-in {
+        animation: fadeIn 0.8s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+</style>

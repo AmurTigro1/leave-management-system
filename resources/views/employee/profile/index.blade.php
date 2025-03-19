@@ -1,6 +1,6 @@
 @extends('layouts.sidebar-header')
 @section('content')
-<div class="w-full p-3 rounded-xl shadow-md">
+<div class="w-full p-3 rounded-xl shadow-md animate-fade-in">
         <!-- Back Button with Animation -->
         <div class="bg-[url('/public/img/office-image.jpg')] bg-cover bg-center bg-no-repeat min-h-[400px] md:min-h-[450px] w-full rounded-lg overflow-hidden">
         </div>     
@@ -295,4 +295,44 @@
         }
     });
 </script>
+
+<!-- script -->
+<script>
+    document.getElementById("profile_image").onchange = function(event) {
+        let reader = new FileReader();
+        reader.onload = function() {
+            document.getElementById("profile-preview").src = reader.result;
+        };
+        reader.readAsDataURL(event.target.files[0]);
+    };
+    document.addEventListener("DOMContentLoaded", function() {
+        const fileInput = document.getElementById("profile_image");
+        const updateButton = document.getElementById("update-button");
+        const previewImage = document.getElementById("profile-preview");
+
+        fileInput.addEventListener("change", function(event) {
+            // Show update button when a file is selected
+            updateButton.classList.remove("hidden");
+
+            // Preview the selected image
+            const reader = new FileReader();
+            reader.onload = function() {
+                previewImage.src = reader.result;
+            };
+            if (event.target.files.length > 0) {
+                reader.readAsDataURL(event.target.files[0]);
+            }
+        });
+    });
+</script>
 @endsection
+<style>
+    .animate-fade-in {
+    animation: fadeIn 0.8s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+</style>

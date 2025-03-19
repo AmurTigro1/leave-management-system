@@ -19,6 +19,13 @@ class OvertimeRequest extends Model
         'approved_days',
         'disapproval_reason',
         'earned_hours',
+        'is_weekend',
+        'is_holiday',
+        'distance_km',
+        'continuous_days_count',
+        'week_start_date',
+        'total_weekly_hours',
+        'overtime_rate',
         'hr_officer_id',
         'supervisor_id',
         'supervisor_status',
@@ -80,5 +87,24 @@ class OvertimeRequest extends Model
     public function getFormattedDateFiledAttribute()
     {
         return \Carbon\Carbon::parse($this->date_filed)->format('F d, Y');
+    }
+
+    /**
+     * Scope to filter overtime requests that exceed the weekly 40-hour limit.
+     */
+    public function scopeExceedsWeeklyLimit($query, $userId, $weekStart)
+    {
+        return $query->where('user_id', $userId)
+                     ->where('week_start_date', $weekStart)
+                     ->sum('working_hours_applied') > 40;
+    }
+
+    /**
+     * Scope to check if an employee has worked continuously beyond the allowed days.
+     */
+    public function scopeExceedsContinuousDays($query, $userId)
+    {
+        return $query->where('user_id', $userId)
+                     ->where('continuous_days_count', '>', 5);
     }
 }
