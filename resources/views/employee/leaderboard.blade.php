@@ -2,7 +2,7 @@
 <script src="https://unpkg.com/htmx.org@1.9.4"></script>
 
 @section('content')
-<div class="bg-white rounded-2xl p-6 w-full max-w-3xl mx-auto">
+<div class="bg-white rounded-2xl p-6 w-full max-w-3xl mx-auto animate-fade-in">
     <h2 class="text-2xl font-bold text-center mb-4">🏆 Attendance Leaderboard</h2>
 
     <p class="text-center text-gray-600 mb-4">
@@ -64,6 +64,20 @@
         </div>
     </div>
 </div>
+
+
+
+
 </div>
 @endsection
 
+<style>
+    .animate-fade-in {
+        animation: fadeIn 0.8s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+</style>

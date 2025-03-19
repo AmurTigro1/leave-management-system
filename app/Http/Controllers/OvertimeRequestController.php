@@ -10,6 +10,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
 use App\Models\User;
+use App\Models\Holiday;
 use PDF;
 
 class OvertimeRequestController extends Controller
@@ -26,8 +27,11 @@ class OvertimeRequestController extends Controller
                             'end' => $request->inclusive_date_end,
                         ];
                     });
+        $holidays = Holiday::select('date')->get();
 
-        return view('CTO.overtime_request', compact('overtimereq', 'appliedDates'));
+        // $totalOvertime = $this->calculateOvertime($appliedDates, $holidays);
+        
+        return view('CTO.overtime_request', compact('overtimereq', 'appliedDates', 'holidays'));
     }
 
     public function dashboard()
@@ -54,9 +58,14 @@ class OvertimeRequestController extends Controller
             'office_division' => 'required|string',
             'inclusive_date_start' => 'required|date',
             'inclusive_date_end' => 'required|date|after_or_equal:inclusive_date_start',
-            'working_hours_applied' => 'required|integer|min:1',
+            'working_hours_applied' => 'required|integer|min:4|max:10',
+            'overtime_rate' => 'required|in:1.0,1.5,2.0',
+            'is_driver' => 'nullable|boolean',
+            'distance_km' => 'nullable|required_if:is_driver,1|integer|min:0|max:50',
+            'is_weekend' => 'nullable|boolean',
+            'is_holiday' => 'nullable|boolean',
         ]);
-
+    
         OvertimeRequest::create([
             'user_id' => auth()->id(),
             'date_filed' => now(),
@@ -65,11 +74,39 @@ class OvertimeRequestController extends Controller
             'working_hours_applied' => $request->working_hours_applied,
             'inclusive_date_start' => $request->inclusive_date_start,
             'inclusive_date_end' => $request->inclusive_date_end,
+            'overtime_rate' => $request->overtime_rate,
+            'is_driver' => $request->has('is_driver'),
+            'distance_km' => $request->is_driver ? $request->distance_km : null,
+            'is_weekend' => $request->has('is_weekend'),
+            'is_holiday' => $request->has('is_holiday'),
         ]);
-
+    
         notify()->success('Overtime request submitted successfully!');
         return redirect()->back();
     }
+
+    // function calculateOvertime($selectedDates) {
+    //     $totalOvertime = 0;
+    //     $weekendRate = 1.5;
+    //     $holidayRate = 2.0;
+    //     $minimumWeekendHours = 4;
+    
+    //     foreach ($selectedDates as $date) {
+    //         $dayOfWeek = $date; // 1 (Monday) to 7 (Sunday)
+    //         $isHoliday = in_array($date, $holidays); // Check if the date is a holiday
+    
+    //         if ($isHoliday) {
+    //             $totalOvertime += $minimumWeekendHours * $holidayRate;
+    //         } elseif ($dayOfWeek >= 6) { // Saturday (6) or Sunday (7)
+    //             $totalOvertime += $minimumWeekendHours * $weekendRate;
+    //         } else {
+    //             // Regular weekday overtime calculation
+    //             $totalOvertime += $regularOvertimeHours; // Adjust based on your logic
+    //         }
+    //     }
+    
+    //     return $totalOvertime;
+    // }
 
     public function list()
     {
