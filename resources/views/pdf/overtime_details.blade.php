@@ -82,46 +82,46 @@
                     </thead>
                     <tbody>
                         <tr>
-                            <td>2</td>
-                            <td>1</td>
-                            <td>1</td>
-                            <td>1</td>
-                            <td>1</td>
+                            <td>2 hours</td>
+                            <td>March 19 2025</td>
+                            <td>1 hours</td>
+                            <td>1 hours</td>
+                            <td>Not good</td>
                         </tr>
                         <tr>
-                            <td>2</td>
-                            <td>1</td>
-                            <td>1</td>
-                            <td>1</td>
-                            <td>1</td>
+                            <td><div class="empty"></div></td>
+                            <td><div class="empty"></div></td>
+                            <td><div class="empty"></div></td>
+                            <td><div class="empty"></div></td>
+                            <td><div class="empty"></div></td>
                         </tr>
                         <tr>
-                            <td>2</td>
-                            <td>1</td>
-                            <td>1</td>
-                            <td>1</td>
-                            <td>1</td>
+                            <td><div class="empty"></div></td>
+                            <td><div class="empty"></div></td>
+                            <td><div class="empty"></div></td>
+                            <td><div class="empty"></div></td>
+                            <td><div class="empty"></div></td>
                         </tr>
                         <tr>
-                            <td>2</td>
-                            <td>1</td>
-                            <td>1</td>
-                            <td>1</td>
-                            <td>1</td>
+                            <td><div class="empty"></div></td>
+                            <td><div class="empty"></div></td>
+                            <td><div class="empty"></div></td>
+                            <td><div class="empty"></div></td>
+                            <td><div class="empty"></div></td>
                         </tr>
                         <tr>
-                            <td>2</td>
-                            <td>1</td>
-                            <td>1</td>
-                            <td>1</td>
-                            <td>1</td>
+                            <td><div class="empty"></div></td>
+                            <td><div class="empty"></div></td>
+                            <td><div class="empty"></div></td>
+                            <td><div class="empty"></div></td>
+                            <td><div class="empty"></div></td>
                         </tr>
                         <tr>
-                            <td>2</td>
-                            <td>1</td>
-                            <td>1</td>
-                            <td>1</td>
-                            <td>1</td>
+                            <td><div class="empty"></div></td>
+                            <td><div class="empty"></div></td>
+                            <td><div class="empty"></div></td>
+                            <td><div class="empty"></div></td>
+                            <td><div class="empty"></div></td>
                         </tr>
                     </tbody>
                 </table>
