@@ -1,7 +1,7 @@
-<header class="py-3 bg-white shadow-md w-full z-[900]">
-    <div class="container mx-auto max-w-7xl px-4 flex justify-between items-center">
-        <!-- Logo -->
-        <p class="px-4 text-xl text-blue-600 font-semibold">Employee Dashboard</p>
+<header class="py-3 bg-gray-50 shadow-md w-full">
+    <div class="container mx-auto max-w-7xl px-4 flex sm:flex-row justify-between space-y-3 sm:space-y-0">
+        <!-- Spacer for larger screens -->
+        <div class="mr-52"></div>
 
         <!-- Navigation Links -->
         <nav class="flex items-center space-x-6">

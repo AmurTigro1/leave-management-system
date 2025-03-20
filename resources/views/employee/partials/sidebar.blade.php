@@ -14,7 +14,7 @@
     <!-- Sidebar -->
     <div x-cloak :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'"
         class="fixed inset-y-0 left-0 z-30 w-64 text-white shadow-lg transition-transform duration-300 ease-in-out 
-        lg:translate-x-0 lg:static lg:inset-0">
+        lg:translate-x-0 lg:static lg:inset-0 ">
         <aside class="w-64 bg-gray-50 h-screen shadow-md fixed">
             <!-- Header Section -->
             <div class="flex items-center justify-between px-4 py-4">
