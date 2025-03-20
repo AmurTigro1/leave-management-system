@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+use App\Http\Requests\EmailUpdateRequest;
 use App\Models\Leave;
 use App\Models\User;
 use Carbon\Carbon;
@@ -12,7 +13,9 @@ use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
 use Illuminate\Support\Facades\Notification;
 use App\Notifications\LeaveStatusNotification;
+
 class SupervisorController extends Controller
+
 {
 
     public function index(Request $request)
@@ -158,24 +161,43 @@ public function approve(Request $request, $leave) {
             'user' => $user,
         ]);
     }
-
-    public function edit(Request $request): View
+    
+    public function profile_edit(Request $request): View
     {
-        return view('supervisor.profile.edit', [
+        return view('supervisor.profile.partials.update-profile-information-form', [
+            'user' => $request->user(),
+        ]);
+    }
+    public function password_edit(Request $request): View
+    {
+        return view('supervisor.profile.partials.update-password-form', [
             'user' => $request->user(),
         ]);
     }
 
-    public function update(ProfileUpdateRequest $request): RedirectResponse
+    public function updateProfile(ProfileUpdateRequest $request): RedirectResponse
     {
-        $request->user()->fill($request->validated());
+        $request->user()->update($request->validated());
 
-        if ($request->user()->isDirty('email')) {
-            $request->user()->email_verified_at = null;
+        notify()->success('Profile Updated Successfully!');
+
+        return Redirect::route('supervisor.profile.partials.update-profile-information-form')->with('status', 'profile-updated');
+    }
+
+
+    public function updateEmail(EmailUpdateRequest $request): RedirectResponse
+    {
+        $user = $request->user();
+        $user->update($request->validated());
+
+        if ($user->isDirty('email')) {
+            $user->email_verified_at = null;
         }
 
-        $request->user()->save();
+        $user->save();
 
-        return Redirect::route('supervisor.profile.edit')->with('status', 'profile-updated');
+        notify()->success('Email Updated Successfully!');
+
+        return Redirect::route('supervisor.profile.partials.update-profile-information-form')->with('status', 'email-updated');
     }
 }
