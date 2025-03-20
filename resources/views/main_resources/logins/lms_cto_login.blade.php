@@ -56,6 +56,8 @@
             }
         }
 </style>
+<x-notify::notify />
+    @notifyJs
 <a href="/" class="text-blue-600 ml-2 font-bold text-xl hover:text-gray-700">
     Back 
 </a>
@@ -144,3 +146,4 @@
 <div class="bg bg3"></div>
 
 @endsection
+@notifyCss

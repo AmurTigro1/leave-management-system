@@ -70,6 +70,6 @@ class AuthenticatedSessionController extends Controller
         $request->session()->regenerateToken();
         
         notify()->success('Logout Successful!');
-        return redirect('/');
+        return redirect('/lms-cto/login');
     }    
 }
