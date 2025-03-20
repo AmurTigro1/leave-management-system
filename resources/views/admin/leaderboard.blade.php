@@ -1,4 +1,4 @@
-@extends('layouts.sidebar-header')
+@extends('layouts.admin.sidebar-header')
 <script src="https://unpkg.com/htmx.org@1.9.4"></script>
 
 @section('content')
@@ -21,7 +21,7 @@
             <div class="flex items-center space-x-4">
                 <span class="text-lg font-bold">{{ $index + 1 }}</span>
                 <img src="{{ $employee->profile_image ? asset('storage/profile_images/' . $employee->profile_image) : asset('img/default-avatar.png') }}" 
-                     class="w-12 h-12 rounded-full object-cover" alt="{{ $employee->name }}">
+                class="w-12 h-12 rounded-full object-cover" alt="{{ $employee->name }}">
                 <div>
                     <p class="font-semibold">{{ $employee->first_name }} {{ strtoupper(substr($employee->middle_name, 0, 1)) }}. {{ $employee->last_name }}</p>
                     <p class="text-gray-500 text-sm">{{ $employee->email }}</p>

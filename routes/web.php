@@ -67,11 +67,15 @@ Route::middleware(['auth', 'hrMiddleware'])->group(function () {
 //Admin Assistant Route
 Route::middleware(['auth', 'adminMiddleware'])->group(function () {
     Route::get('/admin/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
+    Route::get('/admin/employees', [AdminController::class, 'onLeave'])->name('admin.on_leave');
+    Route::get('/admin/leaderboard', [AdminController::class, 'leaderboard'])->name('admin.leaderboard');
+    Route::get('admin/requests', [AdminController::class, 'requests'])->name('admin.requests');
     Route::get('/admin-profile', [AdminController::class, 'profile'])->name('admin.profile.index');
     Route::get('/admin/profile-edit', [AdminController::class, 'profile_edit'])->name('admin.profile.partials.update-profile-information-form');
     Route::get('/admin/password-edit', [AdminController::class, 'password_edit'])->name('admin.profile.partials.update-password-form');
     Route::patch('/admin-profile/update-profile', [AdminController::class, 'updateProfile'])->name('admin-profile.update');
     Route::patch('/admin-profile/update-email', [AdminController::class, 'updateEmail'])->name('admin-email.update'); 
+    Route::get('/admin/holidays', [AdminController::class, 'holiday'])->name('admin.holiday.calendar');
 });
 
 
