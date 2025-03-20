@@ -33,8 +33,11 @@ Route::middleware(['auth', 'SupervisorMiddleware'])->group(function () {
     Route::post('/supervisor/{leaveId}/approve', [SupervisorController::class, 'approve'])->name('supervisor.approve');
     Route::post('/supervisor/reject/{leave}', [SupervisorController::class, 'reject'])->name('supervisor.reject');
     Route::get('/supervisor-profile', [SupervisorController::class, 'profile'])->name('supervisor.profile.index');
-    Route::get('/supervisor-profile-edit', [SupervisorController::class, 'edit'])->name('supervisor.profile.edit');
-    Route::patch('/supervisor-profile', [SupervisorController::class, 'update'])->name('supervisor-profile.update');
+    Route::get('/supervisor/profile-edit', [SupervisorController::class, 'profile_edit'])->name('supervisor.profile.partials.update-profile-information-form');
+    Route::get('/supervisor/password-edit', [SupervisorController::class, 'password_edit'])->name('supervisor.profile.partials.update-password-form');
+    Route::patch('/supervisor-profile/update-profile', [SupervisorController::class, 'updateProfile'])->name('supervisor-profile.update');
+    Route::patch('/supervisor-profile/update-email', [SupervisorController::class, 'updateEmail'])->name('supervisor-email.update'); 
+    
     // Route::get('/supervisor/requests', [SupervisorController::class, 'requests'])->name('supervisor.requests');
 });
 
