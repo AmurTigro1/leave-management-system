@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 use App\Models\Holiday;
+use App\Models\OvertimeRequest;
 use App\Models\Leave;
 use App\Models\User;
 use PDF;
@@ -30,12 +31,13 @@ class EmployeeController extends Controller
                             ->where('end_date', '>=', $today) // Ensures leave is still ongoing
                             ->with('user') // Ensures the user object is available
                             ->get();
-    
-        return view('employee.dashboard', compact('teamLeaves', 'birthdays', 'month'));
+        $overtimeRequests = OvertimeRequest::where('status', 'approved')
+                            ->whereMonth('inclusive_date_start', $month)
+                            ->whereYear('inclusive_date_start', now()->year)
+                            ->get();
+
+        return view('employee.dashboard', compact('teamLeaves', 'birthdays', 'month', 'overtimeRequests'));
     }
-    
-    
-    
     
     public function leaderboard()
     {
@@ -271,52 +273,6 @@ class EmployeeController extends Controller
         return Redirect::route('employee.profile.partials.update-profile-information-form')->with('status', 'email-updated');
     }
 
-    
-
-    // public function getLeaves()
-    // {
-    //     $leaves = Leave::with('user')->get();
-    
-    //     return response()->json($leaves->map(function ($leave) {
-    //         $color = match ($leave->status) {
-    //             'approved' => '#28a745', // Green
-    //             'pending' => '#ffc107',  // Yellow
-    //             'rejected' => '#dc3545', // Red
-    //             default => '#6c757d',    // Gray for unknown
-    //         };
-    
-    
-    //         return [
-    //             'title' => $leave->user->name,
-    //             'start' => $leave->start_date,
-    //             'end' => $leave->end_date,
-    //             'status' => $leave->status,
-    //             'totalDays' => $leave->end_date,
-    //             'backgroundColor' => $color,
-    //             'borderColor' => $color,
-    //             'extendedProps' => [
-    //             "profile_image" => $leave->user->profile_image ? asset('storage/profile_images/' . $leave->user->profile_image) : asset('images/default.png')
-    //             ]
-    //         ];
-    //     }));
-    // }
-    // public function getLeaves()
-    // {
-    //     $leaves = Leave::with('user:id,name,profile_image')->get();
-    
-    //     $formattedLeaves = $leaves->map(function ($leave) {
-    //         return [
-    //             "id" => $leave->id,
-    //             "title" => $leave->user->name,
-    //             "start" => $leave->start_date,
-    //             "end" => $leave->end_date,
-    //             "status" => $leave->status,
-    //             "profile_image" => $leave->user->profile_image ? asset('storage/profile_images/' . $leave->user->profile_image) : asset('images/default.png')
-    //         ];
-    //     });
-    
-    //     return response()->json($formattedLeaves);
-    // }
     public function getLeaves(Request $request)
     {
         $month = $request->month ?? date('m'); // Default to current month
@@ -339,8 +295,34 @@ class EmployeeController extends Controller
             ];
         }));
     }
-    
 
+    public function getOvertimes(Request $request)
+    {
+        $month = $request->month ?? date('m'); // Default to current month
+
+        $overtimes = OvertimeRequest::with('user:id,name,first_name,last_name,profile_image')
+            ->whereMonth('inclusive_date_start', $month) // Adjust column name
+            ->orderBy('inclusive_date_start', 'asc')
+            ->get();
+
+        return response()->json($overtimes->map(function ($overtime) {
+            return [
+                "id" => $overtime->id,
+                "first_name" => $overtime->user?->first_name ?? 'Unknown', // Avoid null error
+                "last_name" => $overtime->user?->last_name ?? '',
+                "date" => $overtime->inclusive_date_start === $overtime->inclusive_date_end
+                    ? \Carbon\Carbon::parse($overtime->inclusive_date_start)->format('F j, Y')
+                    : \Carbon\Carbon::parse($overtime->inclusive_date_start)->format('F j, Y') . ' to ' . 
+                    \Carbon\Carbon::parse($overtime->inclusive_date_end)->format('F j, Y'),
+
+                "status" => ucfirst($overtime->status ?? 'Pending'), // Default value
+                "hours" => $overtime->working_hours_applied ?? 0, // Use 'earned_hours' if 'hours' doesn't exist
+                "profile_image" => $overtime->user?->profile_image
+                    ? asset('storage/profile_images/' . $overtime->user->profile_image)
+                    : asset('images/default.png')
+            ];
+        }));
+    }
     
     public function updateProfileImage(Request $request)
     {
