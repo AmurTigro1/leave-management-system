@@ -30,16 +30,16 @@
         </div>
     </div>
     
-    <div class="flex items-center space-x-2 my-5">
+    <div class="flex items-center space-x-2 my-5" x-data="{ search: '' }">
         <input 
             type="text" 
             x-model="search"
-            @input.debounce.500ms="fetchResults()"
+            @input.debounce.500ms="fetchResults(search)"
             placeholder="Search by name, email, or position"
             class="border border-gray-300 rounded-md px-4 py-2 focus:ring-blue-500 focus:border-blue-500 w-full"
         >
         <button 
-            @click="search = ''; fetchResults()"
+            @click="search = ''; fetchResults('')"
             class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition">
             Clear
         </button>
@@ -53,8 +53,8 @@
 </div>
 
 <script>
-    function fetchResults() {
-        fetch(`{{ route('supervisor.dashboard') }}?search=${document.querySelector('[x-model=search]').value}`, {
+    function fetchResults(searchTerm) {
+        fetch(`{{ route('supervisor.dashboard') }}?search=${searchTerm}`, {
             headers: {
                 'X-Requested-With': 'XMLHttpRequest'
             }
