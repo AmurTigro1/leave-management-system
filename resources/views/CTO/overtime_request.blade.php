@@ -25,7 +25,7 @@
                 style="background-image: url('/img/Background.png'); background-size: cover; background-position: center;">
                 
                 <!-- Calendar Header -->
-                <div class="flex justify-center space-x-4 items-center mb-2">
+                <div class="flex justify-between space-x-4 items-center mb-2">
                     <button @click="prevMonth()" 
                         class="px-2 py-1 md:px-3 md:py-1 bg-gray-200 rounded hover:bg-gray-300 text-xs md:text-sm">
                         &lt;
@@ -38,7 +38,7 @@
                 </div>
 
                 <!-- Week Days -->
-                <div class="grid grid-cols-7 text-center font-bold mb-2 text-white text-xs md:text-sm lg:text-base">
+                <div class="grid grid-cols-7 text-center font-bold mb-2 text-white text-lg md:text-md lg:text-xl">
                     <span>Sun</span> <span>Mon</span> <span>Tue</span> <span>Wed</span>
                     <span>Thu</span> <span>Fri</span> <span>Sat</span>
                 </div>
@@ -61,7 +61,7 @@
                                 'bg-green-600': isAppliedDate(day),
                                 'bg-yellow-600': isHoliday(day)
                             }">
-                            <span class="absolute top-1 right-2 text-xs sm:text-sm md:text-base font-bold">
+                            <span class="absolute top-1 right-2 text-md sm:text-md md:text-xl font-bold">
                                 <span x-text="day"></span>
                             </span>
                         </div>
@@ -69,11 +69,10 @@
                 </div>
 
                 <!-- Selected Dates -->
-                <div class="mt-4 text-center">
+                <div class="mt-2 text-center min-h-[100px]">
                     <p class="text-white text-xs md:text-sm" x-show="selectedDays.length">
                         Selected Dates: <span x-text="selectedDates"></span>
                     </p>
-
                     <!-- Buttons Section -->
                     <div class="mt-2 space-x-2 flex flex-wrap justify-center">
                         @include('CTO.modals.request', ['otModal' => $overtimereq])

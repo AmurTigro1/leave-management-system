@@ -120,6 +120,7 @@ Route::middleware('auth.redirect')->group(function () {
 
 Route::get('/leave-calendar', action: [EmployeeController::class, 'showCalendar'])->name('leave.calendar');
 Route::get('/api/leaves', [EmployeeController::class, 'getLeaves']); 
+Route::get('/api/overtimes', [EmployeeController::class, 'getOvertimes']);
 
 require __DIR__.'/auth.php';
 

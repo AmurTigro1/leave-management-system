@@ -1,5 +1,7 @@
 @php
-    $pendingRequestsCount = App\Models\Leave::where('status', 'pending')->count();
+    $pendingLeaveCount = App\Models\Leave::where('status', 'pending')->count();
+    $pendingOvertimeCount = App\Models\OvertimeRequest::where('status', 'pending')->count();
+    $pendingRequestsCount = $pendingLeaveCount + $pendingOvertimeCount;
 @endphp
 <div x-data="{ sidebarOpen: window.innerWidth > 1024 }" 
     x-init="window.addEventListener('resize', () => sidebarOpen = window.innerWidth > 1024)" 
@@ -55,17 +57,37 @@
             Leaderboard
         </a>
 
-        <a href="{{ route('hr.leave_requests') }}" class="hover:bg-gray-200 flex items-center p-2 space-x-2 rounded-md {{ request()->routeIs('hr.leave_requests') || request()->routeIs('hr.leave_details') ? 'bg-white shadow-lg' : 'text-gray-500' }}">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 5.25h16.5m-16.5 4.5h16.5m-16.5 4.5h16.5m-16.5 4.5h16.5" />
-            </svg>          
-            <span>List of Request</span>
-            @if($pendingRequestsCount > 0)
-                <span class="bg-red-500 text-white text-xs font-semibold rounded-full px-2 py-1">
-                    {{ $pendingRequestsCount }}
-                </span>
-            @endif
-        </a>
+        <div class="relative">
+            <!-- Hidden Checkbox for Toggle -->
+            <input type="checkbox" id="dropdown-toggle1" class="peer hidden">
+        
+            <!-- Make a Request Dropdown Button -->
+            <label for="dropdown-toggle1" class="flex items-center p-2 space-x-2 rounded-md w-full text-gray-500 hover:bg-gray-200 focus:bg-white cursor-pointer">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                    <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" />
+                    <path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clip-rule="evenodd" />
+                </svg>
+                <span>List of Request</span>
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-auto" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                </svg>
+                @if($pendingRequestsCount > 0)
+                    <span class="bg-red-500 text-white text-xs font-semibold rounded-full px-2 py-1">
+                        {{ $pendingRequestsCount }}
+                    </span>
+                @endif
+            </label>
+        
+            <!-- Dropdown Menu -->
+            <div class="absolute left-0 top-full hidden peer-checked:flex flex-col w-48 mt-1 bg-white border border-gray-300 rounded-md shadow-lg z-20">
+                <a href="{{ route('hr.leave_requests') }}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">
+                    Leave Requests
+                </a>
+                <a href="{{ route('hr.overtime_requests') }}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">
+                    Overtime Requests
+                </a>
+            </div>
+        </div>
 
         <a href="{{ route('hr.on_leave') }}" class="hover:bg-gray-200 flex items-center p-2 space-x-2 rounded-md {{ request()->routeIs('hr.on_leave') ? 'bg-white shadow-lg' : 'text-gray-500' }}">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
@@ -100,3 +122,37 @@
 {{-- <style>
     [x-cloak] { display: none !important; }
 </style> --}}
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const dropdownToggle1 = document.getElementById('dropdown-toggle1');
+        const dropdownToggle2 = document.getElementById('dropdown-toggle2');
+
+        // Close dropdown 2 when dropdown 1 is opened
+        dropdownToggle1.addEventListener('change', function () {
+            if (this.checked) {
+                dropdownToggle2.checked = false;
+            }
+        });
+
+        // Close dropdown 1 when dropdown 2 is opened
+        dropdownToggle2.addEventListener('change', function () {
+            if (this.checked) {
+                dropdownToggle1.checked = false;
+            }
+        });
+
+        // Close dropdowns when clicking outside
+        document.addEventListener('click', function (event) {
+            const isClickInsideDropdown1 = event.target.closest('.relative') === document.querySelector('#dropdown-toggle1').closest('.relative');
+            const isClickInsideDropdown2 = event.target.closest('.relative') === document.querySelector('#dropdown-toggle2').closest('.relative');
+
+            if (!isClickInsideDropdown1) {
+                dropdownToggle1.checked = false;
+            }
+            if (!isClickInsideDropdown2) {
+                dropdownToggle2.checked = false;
+            }
+        });
+    });
+</script>

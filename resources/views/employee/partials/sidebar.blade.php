@@ -39,7 +39,7 @@
             <!-- Navigation Links -->
             <nav class="mt-6 space-y-2 m-4 text-gray-600">
                 <!-- Dashboard Link -->
-                <a href="{{ route('lms_cto.dashboard') }}" class="hover:bg-gray-200 flex items-center p-2 space-x-2 rounded-md {{ request()->routeIs('lms_cto.dashboard') ? 'bg-white shadow-lg' : 'text-gray-500' }}">
+                <a href="{{ route('lms_cto.dashboard') }}" class="hover:bg-gray-200 flex items-center p-2 space-x-2 rounded-md  {{ request()->routeIs('lms_cto.dashboard') ? 'bg-white shadow-lg' : 'text-gray-500' }}">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                         <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
                     </svg>
@@ -56,10 +56,10 @@
 
                 <div class="relative">
                     <!-- Hidden Checkbox for Toggle -->
-                    <input type="checkbox" id="dropdown-toggle" class="peer hidden">
+                    <input type="checkbox" id="dropdown-toggle1" class="peer hidden">
                     
                     <!-- Make a Request Dropdown Button -->
-                    <label for="dropdown-toggle" class="flex items-center p-2 space-x-2 rounded-md w-full text-gray-500 hover:bg-gray-200 focus:bg-white cursor-pointer">
+                    <label for="dropdown-toggle1" class="flex items-center p-2 space-x-2 rounded-md w-full text-gray-500 hover:bg-gray-200 focus:bg-white cursor-pointer">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                             <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" />
                             <path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clip-rule="evenodd" />
@@ -76,7 +76,7 @@
                             Leave Request
                         </a>
                         <a href="{{ route('cto.overtime_request') }}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">
-                            Overtime Request
+                            CTO Request
                         </a>
                     </div>
                 </div>
@@ -89,7 +89,7 @@
                     <label for="dropdown-toggle2" class="flex items-center p-2 space-x-2 rounded-md w-full text-gray-500 hover:bg-gray-200 focus:bg-white cursor-pointer">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 6.75h12M8.25 12h12m-12 5.25h12M3.75 6.75h.007v.008H3.75V6.75Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0ZM3.75 12h.007v.008H3.75V12Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm-.375 5.25h.007v.008H3.75v-.008Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" />
-                          </svg>              
+                        </svg>              
                         <span>List of Requests</span>
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-auto" viewBox="0 0 20 20" fill="currentColor">
                             <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
@@ -135,3 +135,37 @@
 <style>
     [x-cloak] { display: none !important; }
 </style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const dropdownToggle1 = document.getElementById('dropdown-toggle1');
+        const dropdownToggle2 = document.getElementById('dropdown-toggle2');
+
+        // Close dropdown 2 when dropdown 1 is opened
+        dropdownToggle1.addEventListener('change', function () {
+            if (this.checked) {
+                dropdownToggle2.checked = false;
+            }
+        });
+
+        // Close dropdown 1 when dropdown 2 is opened
+        dropdownToggle2.addEventListener('change', function () {
+            if (this.checked) {
+                dropdownToggle1.checked = false;
+            }
+        });
+
+        // Close dropdowns when clicking outside
+        document.addEventListener('click', function (event) {
+            const isClickInsideDropdown1 = event.target.closest('.relative') === document.querySelector('#dropdown-toggle1').closest('.relative');
+            const isClickInsideDropdown2 = event.target.closest('.relative') === document.querySelector('#dropdown-toggle2').closest('.relative');
+
+            if (!isClickInsideDropdown1) {
+                dropdownToggle1.checked = false;
+            }
+            if (!isClickInsideDropdown2) {
+                dropdownToggle2.checked = false;
+            }
+        });
+    });
+</script>
