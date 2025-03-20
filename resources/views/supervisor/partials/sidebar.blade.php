@@ -39,7 +39,7 @@ class="min-h-screen flex">
             <span>Dashboard</span>
         </a>  
 
-        <a href="{{ route('supervisor.on_leave') }}" class="hover:bg-gray-200 flex items-center p-2 space-x-2 rounded-md {{ request()->routeIs('hr.on_leave') ? 'bg-white shadow-lg' : 'text-gray-500' }}">
+        <a href="{{ route('supervisor.on_leave') }}" class="hover:bg-gray-200 flex items-center p-2 space-x-2 rounded-md {{ request()->routeIs('supervisor.on_leave') ? 'bg-white shadow-lg' : 'text-gray-500' }}">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                 <path fill-rule="evenodd" d="M10 2a4 4 0 100 8 4 4 0 000-8zm-7 14a7 7 0 0114 0H3z" clip-rule="evenodd" />
             </svg>
