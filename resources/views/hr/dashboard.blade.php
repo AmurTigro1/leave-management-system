@@ -2,8 +2,7 @@
 
 @section('content')
 <div class="max-w-7xl mx-auto p-6 space-y-6 animate-fade-in">
-    <div class="container mx-auto px-4 py-6">
-    
+    <div class="container mx-auto px-4">
         <!-- Leave & CTO Requests Summary -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             @foreach([['Leave Requests', $leaveStats], ['CTO Requests', $cocStats]] as [$title, $stats])

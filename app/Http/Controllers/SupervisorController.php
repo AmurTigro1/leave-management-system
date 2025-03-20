@@ -1,10 +1,13 @@
 <?php
 
 namespace App\Http\Controllers;
+
+use App\Models\Holiday;
 use App\Http\Requests\EmailUpdateRequest;
 use App\Models\Leave;
 use App\Models\User;
 use Carbon\Carbon;
+use App\Models\OvertimeRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Requests\ProfileUpdateRequest;
@@ -43,32 +46,25 @@ class SupervisorController extends Controller
         $approvedLeaves = Leave::where('supervisor_status', 'approved')->count();
         $pendingLeaves = Leave::where('status', 'waiting_for_supervisor')->count();
         $rejectedLeaves = Leave::where('supervisor_status', 'rejected')->count();
+        $approvedCto = OvertimeRequest::where('supervisor_status', 'approved')->count();
+        $pendingCto = OvertimeRequest::where('supervisor_status', 'pending')->count();
+        $rejectedCto = OvertimeRequest::where('supervisor_status', 'rejected')->count();
     
         $leaveStats = [
             'Pending' => $pendingLeaves,
             'Approved' => $approvedLeaves,
             'Rejected' => $rejectedLeaves,
         ];
+
+        $cocStats = [
+            'Pending' => $pendingCto,
+            'Approved' => $approvedCto,
+            'Rejected' => $rejectedCto,
+        ];
     
-        return view('supervisor.dashboard', compact('totalUsers', 'approvedLeaves', 'pendingLeaves', 'rejectedLeaves', 'leaveStats', 'employees', 'search'));
+        return view('supervisor.dashboard', compact('totalUsers', 'approvedLeaves', 'pendingLeaves', 'rejectedLeaves', 'leaveStats', 'cocStats' , 'employees', 'search'));
     }
     
-    public function onLeave(Request $request) {
-        $month = $request->query('month', now()->month);
-        $today = now()->toDateString(); 
-    
-        // Fetch employees whose birthday falls in the selected month
-        $birthdays = User::whereMonth('birthday', $month)->get();
-    
-        // Get employees who are on approved leave this month (but only if their leave has not yet ended)
-        $teamLeaves = Leave::whereMonth('start_date', $month)
-                            ->where('status', 'approved')
-                            ->where('end_date', '>=', $today) // Ensures leave is still ongoing
-                            ->with('user') // Ensures the user object is available
-                            ->get();
-    
-        return view('supervisor.on_leave', compact('teamLeaves', 'birthdays', 'month'));
-    }
     
     public function requests()
     {
@@ -78,15 +74,14 @@ class SupervisorController extends Controller
     
         // Get leave applications waiting for supervisor approval
         $leaveApplications = Leave::where('status', 'waiting_for_supervisor')
-        ->orderBy('created_at', 'asc') 
+        ->orderBy('created_at', 'desc') 
         ->paginate(9); 
         return view('supervisor.requests', compact('leaveApplications'));
     }
 
 //Supervisor Approve
-public function approve(Request $request, $leave) 
-{
-    // Retrieve the Leave model using the ID
+public function approve(Request $request, $leave) {
+    // Find the leave request
     $leaveRequest = Leave::findOrFail($leave);
 
     // Check if the request is already approved or rejected
@@ -94,35 +89,20 @@ public function approve(Request $request, $leave)
         return redirect()->back()->withErrors(['status' => 'This leave request has already been processed.']);
     }
 
-    // Get the associated user
+    // Get the user associated with the leave request
     $user = $leaveRequest->user;
 
-    // Deduct leave credits based on leave type
+    // Deduct leave credits based on the leave type
     switch ($leaveRequest->leave_type) {
         case 'Vacation Leave':
         case 'Sick Leave':
-            // Combined logic for Vacation Leave and Sick Leave
-            $totalBalance = $user->vacation_leave_balance + $user->sick_leave_balance;
-            if ($totalBalance >= $leaveRequest->days_applied) {
-                // Deduct from Vacation Leave first
-                if ($user->vacation_leave_balance >= $leaveRequest->days_applied) {
-                    $user->vacation_leave_balance -= $leaveRequest->days_applied;
-                } else {
-                    // Deduct remaining days from Sick Leave
-                    $remainingDays = $leaveRequest->days_applied - $user->vacation_leave_balance;
-                    $user->vacation_leave_balance = 0;
-                    $user->sick_leave_balance -= $remainingDays;
-                }
-            } else {
-                return redirect()->back()->withErrors(['status' => 'Not enough combined Vacation and Sick Leave balance.']);
-            }
-            break;
-        case 'Mandatory Leave':
-            // Mandatory Leave deducts from Vacation Leave only
+            // Deduct from Vacation Leave first, then Sick Leave
             if ($user->vacation_leave_balance >= $leaveRequest->days_applied) {
                 $user->vacation_leave_balance -= $leaveRequest->days_applied;
             } else {
-                return redirect()->back()->withErrors(['status' => 'Not enough Vacation Leave balance for Mandatory Leave.']);
+                $remainingDays = $leaveRequest->days_applied - $user->vacation_leave_balance;
+                $user->vacation_leave_balance = 0;
+                $user->sick_leave_balance -= $remainingDays;
             }
             break;
         case 'Maternity Leave':
@@ -164,9 +144,6 @@ public function approve(Request $request, $leave)
     // Save the updated leave request and user balances
     $leaveRequest->save();
     $user->save();
-
-    // ✅ Send the notification with the correct Leave model
-    $user->notify(new LeaveStatusNotification($leaveRequest, "Your leave request has been approved by your Supervisor."));
 
     notify()->success('Leave request approved successfully!');
     return redirect()->back()->with('success', 'Leave request successfully approved');
@@ -234,5 +211,51 @@ public function approve(Request $request, $leave)
         notify()->success('Email Updated Successfully!');
 
         return Redirect::route('supervisor.profile.partials.update-profile-information-form')->with('status', 'email-updated');
+    }
+
+    public function onLeave(Request $request) {
+        $month = $request->query('month', now()->month);
+        $today = now()->toDateString(); 
+    
+        // Fetch employees whose birthday falls in the selected month
+        $birthdays = User::whereMonth('birthday', $month)->get();
+    
+        // Get employees who are on approved leave this month (but only if their leave has not yet ended)
+        $teamLeaves = Leave::whereMonth('start_date', $month)
+                            ->where('status', 'approved')
+                            ->where('end_date', '>=', $today) // Ensures leave is still ongoing
+                            ->with('user') // Ensures the user object is available
+                            ->get();
+    
+        return view('supervisor.on_leave', compact('teamLeaves', 'birthdays', 'month'));
+    }
+
+    public function leaderboard()
+    {
+        $employees = User::with(['leaves' => function ($query) {
+            $query->where('status', 'approved')
+                  ->whereMonth('start_date', now()->month) // Ensure it's within the month
+                  ->whereYear('start_date', now()->year);
+        }])->get();
+    
+        // Calculate total absences correctly
+        $employees->each(function ($employee) {
+            $employee->total_absences = $employee->leaves->sum(function ($leave) {
+                return \Carbon\Carbon::parse($leave->start_date)
+                        ->diffInDays(\Carbon\Carbon::parse($leave->end_date)) + 1;
+            });
+        });
+        $employees = $employees->sortBy('total_absences')->take(5);
+        return view('supervisor.leaderboard', compact('employees'));
+    }
+
+    public function holiday() {
+        $holidays = Holiday::orderBy('date')->get()->map(function ($holiday) {
+            $holiday->day = Carbon::parse($holiday->date)->format('d'); // Example: 01
+            $holiday->month = Carbon::parse($holiday->date)->format('M'); // Example: Jan
+            $holiday->day_name = Carbon::parse($holiday->date)->format('D'); // Example: Mon
+            return $holiday;
+        });
+        return view('supervisor.holiday-calendar', compact('holidays'));
     }
 }

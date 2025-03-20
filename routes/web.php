@@ -28,6 +28,7 @@ Route::middleware('auth')->group(function () {
 //Supervisor Routes
 Route::middleware(['auth', 'SupervisorMiddleware'])->group(function () {
     Route::get('/supervisor/dashboard', [SupervisorController::class, 'index'])->name('supervisor.dashboard');
+    Route::get('/supervisor/leaderboard', [SupervisorController::class, 'leaderboard'])->name('supervisor.leaderboard');
     Route::get('/supervisor/employees', [SupervisorController::class, 'onLeave'])->name('supervisor.on_leave');
     Route::get('/supervisor/requests', [SupervisorController::class, 'requests'])->name('supervisor.requests');
     Route::post('/supervisor/{leaveId}/approve', [SupervisorController::class, 'approve'])->name('supervisor.approve');
@@ -37,6 +38,7 @@ Route::middleware(['auth', 'SupervisorMiddleware'])->group(function () {
     Route::get('/supervisor/password-edit', [SupervisorController::class, 'password_edit'])->name('supervisor.profile.partials.update-password-form');
     Route::patch('/supervisor-profile/update-profile', [SupervisorController::class, 'updateProfile'])->name('supervisor-profile.update');
     Route::patch('/supervisor-profile/update-email', [SupervisorController::class, 'updateEmail'])->name('supervisor-email.update'); 
+    Route::get('/supervisor/holidays', [SupervisorController::class, 'holiday'])->name('supervisor.holiday.calendar');
     
     // Route::get('/supervisor/requests', [SupervisorController::class, 'requests'])->name('supervisor.requests');
 });

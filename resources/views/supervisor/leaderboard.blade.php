@@ -1,4 +1,4 @@
-@extends('layouts.hr.sidebar-header')
+@extends('layouts.supervisor.sidebar-header')
 <script src="https://unpkg.com/htmx.org@1.9.4"></script>
 
 @section('content')

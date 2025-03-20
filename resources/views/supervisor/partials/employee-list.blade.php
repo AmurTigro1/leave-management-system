@@ -9,6 +9,7 @@
                     <th class="py-3 px-4 border-b border-gray-200 text-left text-sm font-semibold text-gray-700">Vacation Leave</th>
                     <th class="py-3 px-4 border-b border-gray-200 text-left text-sm font-semibold text-gray-700">Sick Leave</th>
                     <th class="py-3 px-4 border-b border-gray-200 text-left text-sm font-semibold text-gray-700">Total Balance</th>
+                    <th class="py-3 px-4 border-b border-gray-200 text-left text-sm font-semibold text-gray-700">Cocs</th>
                 </tr>
             </thead>
             <tbody>
@@ -19,12 +20,25 @@
                             @if ($employee->profile_image)
                                 <img src="{{ asset('storage/profile_images/' . $employee->profile_image) }}" class="w-10 h-10 rounded-full object-cover">
                             @else
-                                <span class="text-sm text-gray-500">No Image</span>
+                                <img src="{{ asset('img/default-avatar.png') }}" alt="" class="w-10 h-10 rounded-full object-cover">
                             @endif
                         </td>
-                        <td class="py-3 px-4 border-b border-gray-200 text-sm text-gray-700">{{ $employee->vacation_leave_balance }} days</td>
-                        <td class="py-3 px-4 border-b border-gray-200 text-sm text-gray-700">{{ $employee->sick_leave_balance }} days</td>
-                        <td class="py-3 px-4 border-b border-gray-200 text-sm text-gray-700">{{ $employee->leave_balance }} days</td>
+                        @if($employee->vacation_leave_balance)
+                            <td class="py-3 px-4 border-b">{{ $employee->vacation_leave_balance }} days</td>
+                        @else
+                            <td class="py-3 px-4 border-b"> 0 days</td>
+                        @endif
+                        @if($employee->sick_leave_balance)
+                            <td class="py-3 px-4 border-b">{{ $employee->sick_leave_balance }} days</td>
+                        @else
+                            <td class="py-3 px-4 border-b"> 0 days</td>
+                        @endif
+                        @if($employee->leave_balance)
+                            <td class="py-3 px-4 border-b">{{ $employee->leave_balance }} days</td>
+                        @else
+                            <td class="py-3 px-4 border-b"> 0 days</td>
+                        @endif
+                        <td class="py-3 px-4 border-b">{{ $employee->overtime_balance }} hours</td>
                     </tr>
                 @endforeach
             </tbody>
