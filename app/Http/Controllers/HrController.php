@@ -8,6 +8,12 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Requests\ProfileUpdateRequest;
+use App\Http\Requests\EmailUpdateRequest;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Redirect;
+use Illuminate\View\View;
+use App\Models\Holiday;
 
 class HrController extends Controller
 {
@@ -177,5 +183,81 @@ class HrController extends Controller
         $overtimeRequests = OvertimeRequest::findOrFail($id); 
 
         return view('hr.CTO.show_overtime_request', compact('overtimeRequests'));
+    }
+
+    public function profile() {
+        $user = Auth::user();
+    
+        return view('hr.profile.index', [
+            'user' => $user,
+        ]);
+    }
+    
+    public function profile_edit(Request $request): View
+    {
+        return view('hr.profile.partials.update-profile-information-form', [
+            'user' => $request->user(),
+        ]);
+    }
+    public function password_edit(Request $request): View
+    {
+        return view('hr.profile.partials.update-password-form', [
+            'user' => $request->user(),
+        ]);
+    }
+
+    public function updateProfile(ProfileUpdateRequest $request): RedirectResponse
+    {
+        $request->user()->update($request->validated());
+
+        notify()->success('Profile Updated Successfully!');
+
+        return Redirect::route('hr.profile.partials.update-profile-information-form')->with('status', 'profile-updated');
+    }
+
+
+    public function updateEmail(EmailUpdateRequest $request): RedirectResponse
+    {
+        $user = $request->user();
+        $user->update($request->validated());
+
+        if ($user->isDirty('email')) {
+            $user->email_verified_at = null;
+        }
+
+        $user->save();
+
+        notify()->success('Email Updated Successfully!');
+
+        return Redirect::route('hr.profile.partials.update-profile-information-form')->with('status', 'email-updated');
+    }
+
+    public function leaderboard()
+    {
+        $employees = User::with(['leaves' => function ($query) {
+            $query->where('status', 'approved')
+                  ->whereMonth('start_date', now()->month) // Ensure it's within the month
+                  ->whereYear('start_date', now()->year);
+        }])->get();
+    
+        // Calculate total absences correctly
+        $employees->each(function ($employee) {
+            $employee->total_absences = $employee->leaves->sum(function ($leave) {
+                return \Carbon\Carbon::parse($leave->start_date)
+                        ->diffInDays(\Carbon\Carbon::parse($leave->end_date)) + 1;
+            });
+        });
+        $employees = $employees->sortBy('total_absences')->take(5);
+        return view('hr.leaderboard', compact('employees'));
+    }
+
+    public function holiday() {
+        $holidays = Holiday::orderBy('date')->get()->map(function ($holiday) {
+            $holiday->day = Carbon::parse($holiday->date)->format('d'); // Example: 01
+            $holiday->month = Carbon::parse($holiday->date)->format('M'); // Example: Jan
+            $holiday->day_name = Carbon::parse($holiday->date)->format('D'); // Example: Mon
+            return $holiday;
+        });
+        return view('hr.holiday-calendar', compact('holidays'));
     }
 }

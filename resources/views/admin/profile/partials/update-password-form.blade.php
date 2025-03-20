@@ -1,4 +1,4 @@
-@extends('layouts.sidebar-header')
+@extends('layouts.admin.sidebar-header')
 @section('content')
 <div class="fixed top-4 right-4 z-[9999]">
     <x-notify::notify />
@@ -49,7 +49,7 @@
                     </h2>
                 </div>
                 <div class="mr-3">
-                    <a class="text-blue-600" href="/lms-profile"><i class="fa fa-arrow-left" aria-hidden="true"></i> Go back</a>
+                    <a class="text-blue-600" href="/admin-profile"><i class="fa fa-arrow-left" aria-hidden="true"></i> Go back</a>
                 </div>
             </div>
         </div>
