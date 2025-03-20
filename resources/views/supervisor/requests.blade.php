@@ -1,7 +1,7 @@
 @extends('layouts.supervisor.sidebar-header')
 
 @section('content')
-<div class="">
+<div class="animate-fade-in">
     <h2 class="text-xl font-bold mb-4">Final Approval for Leave Applications</h2>
   <!-- Success & Error Messages -->
   @if(session('success'))
@@ -88,3 +88,13 @@
         document.getElementById('error-alert')?.remove();
     }, 4000);
 </script>
+<style>
+    .animate-fade-in {
+        animation: fadeIn 0.8s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+</style>

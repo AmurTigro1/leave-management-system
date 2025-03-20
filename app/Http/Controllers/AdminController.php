@@ -13,12 +13,35 @@ use App\Http\Requests\EmailUpdateRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
+use App\Models\Holiday;
 
 class AdminController extends Controller
 {
     public function index()
     {
         return view('admin.dashboard');
+    }
+
+    public function requests() 
+    {
+        return view('admin.requests');
+    }
+
+    public function onLeave(Request $request) {
+        $month = $request->query('month', now()->month);
+        $today = now()->toDateString(); 
+    
+        // Fetch employees whose birthday falls in the selected month
+        $birthdays = User::whereMonth('birthday', $month)->get();
+    
+        // Get employees who are on approved leave this month (but only if their leave has not yet ended)
+        $teamLeaves = Leave::whereMonth('start_date', $month)
+                            ->where('status', 'approved')
+                            ->where('end_date', '>=', $today) // Ensures leave is still ongoing
+                            ->with('user') // Ensures the user object is available
+                            ->get();
+    
+        return view('admin.on_leave', compact('teamLeaves', 'birthdays', 'month'));
     }
 
     public function profile() {
@@ -66,5 +89,34 @@ class AdminController extends Controller
         notify()->success('Email Updated Successfully!');
 
         return Redirect::route('admin.profile.partials.update-profile-information-form')->with('status', 'email-updated');
+    }
+
+    public function leaderboard()
+    {
+        $employees = User::with(['leaves' => function ($query) {
+            $query->where('status', 'approved')
+                  ->whereMonth('start_date', now()->month) // Ensure it's within the month
+                  ->whereYear('start_date', now()->year);
+        }])->get();
+    
+        // Calculate total absences correctly
+        $employees->each(function ($employee) {
+            $employee->total_absences = $employee->leaves->sum(function ($leave) {
+                return \Carbon\Carbon::parse($leave->start_date)
+                        ->diffInDays(\Carbon\Carbon::parse($leave->end_date)) + 1;
+            });
+        });
+        $employees = $employees->sortBy('total_absences')->take(5);
+        return view('admin.leaderboard', compact('employees'));
+    }
+
+    public function holiday() {
+        $holidays = Holiday::orderBy('date')->get()->map(function ($holiday) {
+            $holiday->day = Carbon::parse($holiday->date)->format('d'); // Example: 01
+            $holiday->month = Carbon::parse($holiday->date)->format('M'); // Example: Jan
+            $holiday->day_name = Carbon::parse($holiday->date)->format('D'); // Example: Mon
+            return $holiday;
+        });
+        return view('admin.holiday-calendar', compact('holidays'));
     }
 }

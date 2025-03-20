@@ -1,7 +1,7 @@
 @extends('layouts.supervisor.sidebar-header')
 
 @section('content')
-<div class="container mx-auto p-6">
+<div class="container mx-auto p-6 animate-fade-in">
     <h2 class="text-2xl font-bold mb-4">Application Management</h2>
 
     <div class="container mx-auto px-4">
@@ -137,5 +137,16 @@
         });
     });
 </script>
+
+<style>
+    .animate-fade-in {
+        animation: fadeIn 0.8s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+</style>
 @endsection
 

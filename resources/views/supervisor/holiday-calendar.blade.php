@@ -1,7 +1,7 @@
 @extends('layouts.supervisor.sidebar-header')
 
 @section('content')
-<div class="bg-white p-6 rounded-xl border border-gray-100 shadow-lg mb-6">
+<div class="bg-white p-6 rounded-xl border border-gray-100 shadow-lg mb-6 animate-fade-in">
     <h3 class="text-xl font-semibold text-gray-800 flex items-center mb-4">
         <svg class="w-6 h-6 mr-2 text-blue-500" fill="none" stroke="currentColor" stroke-width="2" 
             viewBox="0 0 24 24">
@@ -23,4 +23,14 @@
         @endforeach
     </div>
 </div>
+<style>
+    .animate-fade-in {
+        animation: fadeIn 0.8s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+</style>
 @endsection

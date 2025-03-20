@@ -1,4 +1,4 @@
-@extends('layouts.supervisor.sidebar-header')
+@extends('layouts.admin.sidebar-header')
 
 @section('content')
     <!-- Top-Right Header -->
@@ -7,56 +7,57 @@
     </div>
 </section>
 
-<div class="w-full px-4 py-8 space-y-8 animate-fade-in ">
-<div class="w-full px-4">
-    <h3 class="text-2xl sm:text-3xl md:text-4xl font-bold text-center text-gray-900 drop-shadow-lg animate-bounce">🎉 Happy Birthday! 🎉</h3>
-    @if ($birthdays->isEmpty())
-    <p class="text-gray-500 text-center text-sm md:text-base italic">
-        No team members have birthdays this month.
-    </p>
-    
-    @else
-    <!-- Carousel Container -->
-    <div x-data="{ currentIndex: 0, totalSlides: {{ ceil($birthdays->count() / 4) }} }" class="relative w-full max-w-screen-lg mx-auto overflow-hidden mt-6">
-        <div class="flex transition-transform duration-700" :style="'transform: translateX(-' + (currentIndex * 100) + '%)'">
-            @foreach ($birthdays->chunk(4) as $chunk)
-            <div class="w-full flex flex-wrap justify-center gap-4 shrink-0">
-                @foreach ($chunk as $employee)
-                    <div class="w-full sm:w-[200px] bg-white shadow-lg rounded-xl p-4 flex flex-col items-center border border-gray-200 transition-transform duration-500 hover:-translate-y-2">
-                        <div class="w-16 sm:w-20 h-16 sm:h-20 rounded-full overflow-hidden bg-gray-300 shadow-md ring-4 ring-blue-400 animate-pulse">
-                            @if ($employee->profile_image)
-                                <img src="{{ asset('storage/profile_images/' . $employee->profile_image) }}" class="w-full h-full object-cover">
-                            @else
-                                <img src="{{ asset('img/default-avatar.png')}}" alt="default avatar" class="w-full h-full object-cover">
-                            @endif
+<div class="w-full px-4 py-8 space-y-8 animate-fade-in">
+    <div class="w-full px-4">
+        <h3 class="text-2xl sm:text-3xl md:text-4xl font-bold text-center text-gray-900 drop-shadow-lg animate-bounce">🎉 Happy Birthday! 🎉</h3>
+        @if ($birthdays->isEmpty())
+        <p class="text-gray-500 text-center text-sm md:text-base italic">
+            No team members have birthdays this month.
+        </p>
+        
+        @else
+        <!-- Carousel Container -->
+        <div x-data="{ currentIndex: 0, totalSlides: {{ ceil($birthdays->count() / 4) }} }" class="relative w-full max-w-screen-lg mx-auto overflow-hidden mt-6">
+            <div class="flex transition-transform duration-700" :style="'transform: translateX(-' + (currentIndex * 100) + '%)'">
+                @foreach ($birthdays->chunk(4) as $chunk)
+                <div class="w-full flex flex-wrap justify-center gap-4 shrink-0">
+                    @foreach ($chunk as $employee)
+                        <div class="w-full sm:w-[200px] bg-white shadow-lg rounded-xl p-4 flex flex-col items-center border border-gray-200 transition-transform duration-500 hover:-translate-y-2">
+                            <div class="w-16 sm:w-20 h-16 sm:h-20 rounded-full overflow-hidden bg-gray-300 shadow-md ring-4 ring-blue-400 animate-pulse">
+                                @if ($employee->profile_image)
+                                    <img src="{{ asset('storage/profile_images/' . $employee->profile_image) }}" class="w-full h-full object-cover">
+                                @else
+                                    <img src="{{ asset('img/default-avatar.png') }}" alt="" class="w-full h-full rounded-full object-cover">
+                                @endif
+                            </div>
+                            <div class="mt-3 text-center">
+                                <p class="text-sm sm:text-md font-semibold">{{ $employee->first_name }} {{ strtoupper(substr($employee->middle_name, 0, 1)) }}. {{$employee->last_name}}</p>
+                                <p class="text-xs text-gray-600">🎂 {{ \Carbon\Carbon::parse($employee->birthday)->format('F d, Y') }}</p>
+                            </div>
                         </div>
-                        <div class="mt-3 text-center">
-                            <p class="text-sm sm:text-md font-semibold">{{ $employee->first_name }} {{ strtoupper(substr($employee->middle_name, 0, 1)) }}. {{$employee->last_name}}</p>
-                            <p class="text-xs text-gray-600">🎂 {{ \Carbon\Carbon::parse($employee->birthday)->format('F d, Y') }}</p>
-                        </div>
-                    </div>
+                    @endforeach
+                </div>
+                
                 @endforeach
             </div>
-            @endforeach
-        </div>
 
-        <!-- Pagination Dots -->
-        <div class="absolute bottom-2 left-1/2 transform -translate-x-1/2 flex space-x-2">
-            <template x-for="(dot, index) in totalSlides">
-                <div @click="currentIndex = index" class="w-3 h-3 rounded-full cursor-pointer transition-all" :class="index === currentIndex ? 'bg-blue-500 scale-110' : 'bg-gray-300'"></div>
-            </template>
-        </div>
+            <!-- Pagination Dots -->
+            <div class="absolute bottom-2 left-1/2 transform -translate-x-1/2 flex space-x-2">
+                <template x-for="(dot, index) in totalSlides">
+                    <div @click="currentIndex = index" class="w-3 h-3 rounded-full cursor-pointer transition-all" :class="index === currentIndex ? 'bg-blue-500 scale-110' : 'bg-gray-300'"></div>
+                </template>
+            </div>
 
-        <!-- Navigation Controls -->
-        <button @click="currentIndex = (currentIndex - 1 + totalSlides) % totalSlides" class="absolute border border-gray-500 left-2 top-1/2 -translate-y-1/2 p-3 rounded-full bg-white shadow-md hover:scale-110">
-            &larr;
-        </button>
-        <button @click="currentIndex = (currentIndex + 1) % totalSlides" class="absolute border border-gray-500 right-2 top-1/2 -translate-y-1/2 p-3 rounded-full bg-white shadow-md hover:scale-110">
-            &rarr;
-        </button>
+            <!-- Navigation Controls -->
+            <button @click="currentIndex = (currentIndex - 1 + totalSlides) % totalSlides" class="absolute border border-gray-500 left-2 top-1/2 -translate-y-1/2 p-3 rounded-full bg-white shadow-md hover:scale-110">
+                &larr;
+            </button>
+            <button @click="currentIndex = (currentIndex + 1) % totalSlides" class="absolute border border-gray-500 right-2 top-1/2 -translate-y-1/2 p-3 rounded-full bg-white shadow-md hover:scale-110">
+                &rarr;
+            </button>
+        </div>
     </div>
-</div>
-@endif
+    @endif
 
     <!-- Leave Section -->
     <div class="p-6 bg-gray-100 rounded-xl shadow-lg border border-gray-300">
@@ -81,9 +82,7 @@
                             @if($leave->user && $leave->user->profile_image)
                                 <img src="{{ asset('storage/profile_images/' . $leave->user->profile_image) }}" class="w-full h-full object-cover">
                             @else
-                                <svg class="w-full h-full text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79 4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"></path>
-                                </svg>
+                                <img src="{{ asset('img/default-avatar.png') }}" alt="" class="w-full h-full rounded-full object-cover">
                             @endif
                         </div>
                         <div>
@@ -169,6 +168,17 @@ document.addEventListener("DOMContentLoaded", function () {
 @endsection
 
 <style>
+    .animate-fade-in {
+        animation: fadeIn 0.8s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+</style>
+
+<style>
     @keyframes glow {
         0% { opacity: 0.4; transform: scale(1); }
         50% { opacity: 1; transform: scale(1.1); }
@@ -215,14 +225,6 @@ document.addEventListener("DOMContentLoaded", function () {
     #leaveModal .show {
         opacity: 1;
         transform: scale(1);
-    }
-    .animate-fade-in {
-        animation: fadeIn 0.8s ease-in-out;
-    }
-
-    @keyframes fadeIn {
-        from { opacity: 0; }
-        to { opacity: 1; }
     }
 </style>
 

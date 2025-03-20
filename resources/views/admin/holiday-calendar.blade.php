@@ -1,4 +1,4 @@
-@extends('layouts.hr.sidebar-header')
+@extends('layouts.admin.sidebar-header')
 
 @section('content')
 <div class="bg-white p-6 rounded-xl border border-gray-100 shadow-lg mb-6 animate-fade-in">
