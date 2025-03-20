@@ -144,11 +144,11 @@
         <p class="text-gray-500 text-center mb-4 text-sm sm:text-md mt-2">
             Select "Logout" below if you are ready to end your current session.
         </p>
-        <div class="mt-4 flex flex-col sm:flex-row justify-center gap-2">
+        <div class="flex justify-center items-center">
             <button id="closeModal" class="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400 w-full sm:w-auto">Cancel</button>
             <form action="{{ route('logout') }}" method="POST" class="w-full sm:w-auto">
                 @csrf
-                <button type="submit" class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 w-full sm:w-auto">Logout</button>
+                <button type="submit" class=" mt-4 ml-3 px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 w-full sm:w-auto">Logout</button>
             </form>
         </div>
     </div>

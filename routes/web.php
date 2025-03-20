@@ -49,11 +49,24 @@ Route::middleware(['auth', 'hrMiddleware'])->group(function () {
     Route::get('/leave-report/{id}', [HrController::class, 'generateLeaveReport'])->name('leave.report');
     Route::get('/hr/overtime-requests', [HrController::class, 'overtimeRequests'])->name('hr.overtime_requests');
     Route::get('/overtime/details/{id}', [HrController::class, 'showOvertime'])->name('hr.overtime_details');
+    Route::get('/hr/leaderboard', [HrController::class, 'leaderboard'])->name('hr.leaderboard');
+    Route::get('/hr-profile', [HrController::class, 'profile'])->name('hr.profile.index');
+    Route::get('/hr/profile-edit', [HrController::class, 'profile_edit'])->name('hr.profile.partials.update-profile-information-form');
+    Route::get('/hr/password-edit', [HrController::class, 'password_edit'])->name('hr.profile.partials.update-password-form');
+    Route::patch('/hr-profile/update-profile', [HrController::class, 'updateProfile'])->name('hr-profile.update');
+    Route::patch('/hr-profile/update-email', [HrController::class, 'updateEmail'])->name('hr-email.update'); 
+    Route::get('/hr/holidays', [HrController::class, 'holiday'])->name('hr.holiday.calendar');
+
 });
 
 //Admin Assistant Route
 Route::middleware(['auth', 'adminMiddleware'])->group(function () {
     Route::get('/admin/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
+    Route::get('/admin-profile', [AdminController::class, 'profile'])->name('admin.profile.index');
+    Route::get('/admin/profile-edit', [AdminController::class, 'profile_edit'])->name('admin.profile.partials.update-profile-information-form');
+    Route::get('/admin/password-edit', [AdminController::class, 'password_edit'])->name('admin.profile.partials.update-password-form');
+    Route::patch('/admin-profile/update-profile', [AdminController::class, 'updateProfile'])->name('admin-profile.update');
+    Route::patch('/admin-profile/update-email', [AdminController::class, 'updateEmail'])->name('admin-email.update'); 
 });
 
 

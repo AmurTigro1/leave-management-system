@@ -1,7 +1,7 @@
 @extends('layouts.hr.sidebar-header')
 
 @section('content')
-<div class="max-w-6xl bg-white p-8 rounded-">
+<div class="max-w-6xl bg-white p-8 rounded animate-fade-in">
     <h2 class="text-2xl font-bold text-gray-700 mb-6 flex items-center gap-2">
         <i class="lucide lucide-file-text"></i> Review Leave Applications
     </h2>
@@ -94,46 +94,44 @@
                 Showing {{ $leaveApplications->firstItem() }} to {{ $leaveApplications->lastItem() }} of {{ $leaveApplications->total() }} Leave Applications
             </p>
            <div class="mt-4 flex justify-end">
-    @if ($leaveApplications->hasPages())
-        <nav class="flex space-x-2">
-            {{-- Previous Page Link --}}
-            @if ($leaveApplications->onFirstPage())
-                <span class="px-4 py-2 text-gray-400 bg-gray-100 rounded-md cursor-not-allowed">
-                    &larr; Prev
-                </span>
-            @else
-                <a href="{{ $leaveApplications->previousPageUrl() }}" class="px-4 py-2 text-gray-700 bg-white border rounded-md hover:bg-gray-100">
-                    &larr; Prev
-                </a>
-            @endif
+                @if ($leaveApplications->hasPages())
+                    <nav class="flex space-x-2">
+                        {{-- Previous Page Link --}}
+                        @if ($leaveApplications->onFirstPage())
+                            <span class="px-4 py-2 text-gray-400 bg-gray-100 rounded-md cursor-not-allowed">
+                                &larr; Prev
+                            </span>
+                        @else
+                            <a href="{{ $leaveApplications->previousPageUrl() }}" class="px-4 py-2 text-gray-700 bg-white border rounded-md hover:bg-gray-100">
+                                &larr; Prev
+                            </a>
+                        @endif
 
-            {{-- Page Numbers --}}
-            @foreach ($leaveApplications->getUrlRange(1, $leaveApplications->lastPage()) as $page => $url)
-                @if ($page == $leaveApplications->currentPage())
-                    <span class="px-4 py-2 bg-blue-500 text-white rounded-md">{{ $page }}</span>
-                @else
-                    <a href="{{ $url }}" class="px-4 py-2 text-gray-700 bg-white border rounded-md hover:bg-gray-100">
-                        {{ $page }}
-                    </a>
+                        {{-- Page Numbers --}}
+                        @foreach ($leaveApplications->getUrlRange(1, $leaveApplications->lastPage()) as $page => $url)
+                            @if ($page == $leaveApplications->currentPage())
+                                <span class="px-4 py-2 bg-blue-500 text-white rounded-md">{{ $page }}</span>
+                            @else
+                                <a href="{{ $url }}" class="px-4 py-2 text-gray-700 bg-white border rounded-md hover:bg-gray-100">
+                                    {{ $page }}
+                                </a>
+                            @endif
+                        @endforeach
+
+                        {{-- Next Page Link --}}
+                        @if ($leaveApplications->hasMorePages())
+                            <a href="{{ $leaveApplications->nextPageUrl() }}" class="px-4 py-2 text-gray-700 bg-white border rounded-md hover:bg-gray-100">
+                                Next &rarr;
+                            </a>
+                        @else
+                            <span class="px-4 py-2 text-gray-400 bg-gray-100 rounded-md cursor-not-allowed">
+                                Next &rarr;
+                            </span>
+                        @endif
+                    </nav>
                 @endif
-            @endforeach
-
-            {{-- Next Page Link --}}
-            @if ($leaveApplications->hasMorePages())
-                <a href="{{ $leaveApplications->nextPageUrl() }}" class="px-4 py-2 text-gray-700 bg-white border rounded-md hover:bg-gray-100">
-                    Next &rarr;
-                </a>
-            @else
-                <span class="px-4 py-2 text-gray-400 bg-gray-100 rounded-md cursor-not-allowed">
-                    Next &rarr;
-                </span>
-            @endif
-        </nav>
-    @endif
-</div>
-
+            </div>
         </div>
-    
 </div>
 
 <!-- Hide Alerts after a few seconds -->
@@ -149,4 +147,16 @@
 <script>
     lucide.createIcons();
 </script>
+
+<style>
+    .animate-fade-in {
+        animation: fadeIn 0.8s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+</style>
+
 @endsection

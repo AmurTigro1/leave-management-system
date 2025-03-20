@@ -1,4 +1,4 @@
-@extends('layouts.sidebar-header')
+@extends('layouts.admin.sidebar-header')
 @section('content')
 <div class="fixed top-4 right-4 z-[9999]">
     <x-notify::notify />
@@ -49,7 +49,7 @@
                     </h2>
                 </div>
                 <div class="mr-3">
-                    <a class="text-blue-600" href="{{route('employee.profile.index')}}"><i class="fa fa-arrow-left" aria-hidden="true"></i> Go back</a>
+                    <a class="text-blue-600" href="{{route('admin.profile.index')}}"><i class="fa fa-arrow-left" aria-hidden="true"></i> Go back</a>
                 </div>
             </div>
         </div>
@@ -65,7 +65,7 @@
                 </p>
             </header>
         
-            <form method="post" action="{{ route('employee-profile.update') }}" class="mt-6 space-y-6">
+            <form method="post" action="{{ route('admin-profile.update') }}" class="mt-6 space-y-6">
                 @csrf
                 @method('patch')
         
@@ -121,7 +121,7 @@
                     @csrf
                 </form>
             
-                <form method="post" action="{{ route('employee-email.update') }}" class="space-y-6">
+                <form method="post" action="{{ route('admin-email.update') }}" class="space-y-6">
                     @csrf
                     @method('patch')
             

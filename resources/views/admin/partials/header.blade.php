@@ -1,7 +1,7 @@
 <header class="py-3 bg-white shadow-md w-full z-[900]">
     <div class="container mx-auto max-w-7xl px-4 flex justify-between items-center">
         <!-- Logo -->
-        <p class="text-xl text-blue-600 font-semibold"></p>
+        <p class="px-4 text-xl text-blue-600 font-semibold">Admin Dashboard</p>
 
         <!-- Navigation Links -->
         <nav class="flex items-center space-x-6">
@@ -39,11 +39,11 @@
                 <!-- Dropdown Menu -->
                 <div id="dropdown-menu" class="absolute hidden bg-white shadow-lg rounded-lg mt-2 w-44 right-0 z-50 border border-gray-200">
                     <ul class="py-2 text-gray-700 text-sm">
-                        <li class="block md:hidden">
+                        {{-- <li class="block md:hidden">
                             <a href="" class="block px-4 py-2 hover:bg-blue-100 hover:text-blue-600 transition">My Requests</a>
-                        </li>
+                        </li> --}}
                         <li>
-                            <a href="/lms-profile" class="block px-4 py-2 hover:bg-blue-100 hover:text-blue-600 transition">Profile</a>
+                            <a href="/admin-profile" class="block px-4 py-2 hover:bg-blue-100 hover:text-blue-600 transition">Profile</a>
                         </li>
                         <li>
                             <button id="openModal" class="block w-full text-left px-4 py-2 hover:bg-red-100 hover:text-red-600 transition">

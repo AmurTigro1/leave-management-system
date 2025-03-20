@@ -28,6 +28,48 @@ class DatabaseSeeder extends Seeder
             'position' => 'Ojt',
             'role' => 'employee'
         ]);
+
+        User::factory()->create([
+            'name' => 'Khanda',
+            'employee_code' => '05201',
+            'first_name' => 'Khanda',
+            'middle_name' => 'David',
+            'last_name' => 'Kushinada',
+            'department' => 'DILG BOHOL',
+            'birthday' => '2002-03-11',
+            'email' => 'admin@gmail.com',
+            'password' => 'password',
+            'position' => 'Ojt',
+            'role' => 'admin'
+        ]);
+
+        User::factory()->create([
+            'name' => 'Mylove',
+            'employee_code' => '05201',
+            'first_name' => 'Mylove',
+            'middle_name' => 'David',
+            'last_name' => 'Kushinada',
+            'department' => 'DILG BOHOL',
+            'birthday' => '2002-03-11',
+            'email' => 'hr@gmail.com',
+            'password' => 'password',
+            'position' => 'Ojt',
+            'role' => 'hr'
+        ]);
+
+        User::factory()->create([
+            'name' => 'Jerome',
+            'employee_code' => '05201',
+            'first_name' => 'Jerome',
+            'middle_name' => 'David',
+            'last_name' => 'Kushinada',
+            'department' => 'DILG BOHOL',
+            'birthday' => '2002-03-11',
+            'email' => 'supervisor@gmail.com',
+            'password' => 'password',
+            'position' => 'Ojt',
+            'role' => 'supervisor'
+        ]);
     
         $employees = [
             [ '1987-11-05' , 'ellelee130613@gmail.com' , 'PARTOSA' ,'employee' , 'LENNOIRE' , '05861', 'LADY LENNOIRE', 'ABAD' , 'LGOO VI'],
