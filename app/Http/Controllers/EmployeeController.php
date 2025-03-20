@@ -110,7 +110,8 @@ class EmployeeController extends Controller
     
         // **Check if the employee has enough leave credits for the request**
         $availableLeaveBalance = match ($request->leave_type) {
-            'Vacation Leave', 'Sick Leave' => $user->vacation_leave_balance + $user->sick_leave_balance, // Combine balances
+            'Vacation Leave', 'Sick Leave' => $user->vacation_leave_balance + $user->sick_leave_balance, // Combine balances for Vacation and Sick Leave
+            'Mandatory Leave' => $user->vacation_leave_balance, // Mandatory Leave uses Vacation Leave balance
             'Maternity Leave' => $user->maternity_leave,
             'Paternity Leave' => $user->paternity_leave,
             'Solo Parent Leave' => $user->solo_parent_leave,
@@ -197,7 +198,6 @@ class EmployeeController extends Controller
         notify()->success('Leave request submitted successfully! It is now pending approval.');
         return redirect()->back();
     }
-
     public function showRequests() {
         $holidays = Holiday::orderBy('date')->get()->map(function ($holiday) {
             $holiday->day = Carbon::parse($holiday->date)->format('d'); // Example: 01
