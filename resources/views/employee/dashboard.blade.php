@@ -60,7 +60,7 @@
 </div>
 @endif
 
-    <!-- Leave Section -->
+    <!-- Leave & Overtime Requests Section -->
     <div class="p-6 bg-gray-100 rounded-xl shadow-lg border border-gray-300">
         <div class="flex justify-between items-center mb-4">
             <button id="prevMonth" class="text-gray-700 px-4 py-2 rounded-lg bg-white shadow hover:bg-gray-200">&larr;</button>
@@ -95,80 +95,162 @@
             </ul>
         @endif
     </div>
+
+    <!-- Employees with Overtime Requests -->
+    <div class="p-6 bg-white rounded-xl shadow-lg border border-gray-300 mt-8">
+        <h2 class="text-xl font-semibold text-gray-700 mb-3">Team Members on Compensatory Leave</h2>
+        @if($overtimeRequests->isEmpty())
+            <p class="text-gray-600">No team members have overtime requests this month.</p>
+        @else
+            <ul class="space-y-4">
+                @foreach($overtimeRequests as $overtime)
+                    <li class="flex items-center space-x-4 bg-gray-50 p-4 rounded-lg shadow">
+                        <div class="w-12 h-12 rounded-full overflow-hidden bg-gray-200">
+                            @if($overtime->user && $overtime->user->profile_image)
+                                <img src="{{ asset('storage/profile_images/' . $overtime->user->profile_image) }}" class="w-full h-full object-cover">
+                            @else
+                                <img src="{{ asset('img/default-avatar.png')}}" alt="default avatar" class="w-full h-full object-cover">
+                            @endif
+                        </div>
+                        <div>
+                            <p class="text-md font-semibold text-gray-800">{{ $overtime->user->first_name }} {{ $overtime->user->last_name }}</p>
+                            <p class="text-sm text-gray-600">CTO starting from {{ \Carbon\Carbon::parse($overtime->inclusive_date_start)->format('M d, Y') }}</p>
+                            <p class="text-sm text-gray-600">Used COCs: {{ $overtime->hours }}</p>
+                        </div>
+                    </li>
+                @endforeach
+            </ul>
+        @endif
+    </div>
 </div>
-
-
 
 <script>
 document.addEventListener("DOMContentLoaded", function () {
     let currentMonth = new Date().getMonth() + 1; // Default to current month
 
-            function loadLeaves() {
-                let url = `/api/leaves?month=${currentMonth}`;
+    function loadRequests() {
+        let leaveUrl = `/api/leaves?month=${currentMonth}`;
+        let overtimeUrl = `/api/overtimes?month=${currentMonth}`;
 
-                fetch(url)
-                    .then(response => response.json())
-                    .then(data => {
-                        let leaveContainer = document.getElementById("leaveContainer");
-                        let monthTitle = document.getElementById("monthTitle");
+        Promise.all([fetch(leaveUrl).then(res => res.json()), fetch(overtimeUrl).then(res => res.json())])
+            .then(([leaves, overtimes]) => {
+                let leaveContainer = document.getElementById("leaveContainer");
+                let monthTitle = document.getElementById("monthTitle");
 
-                        // Convert month number to name
-                        let monthNames = [
-                            "January", "February", "March", "April", "May", "June", 
-                            "July", "August", "September", "October", "November", "December"
-                        ];
-                        monthTitle.textContent = `Leave Requests for ${monthNames[currentMonth - 1]}`;
+                let monthNames = [
+                    "January", "February", "March", "April", "May", "June",
+                    "July", "August", "September", "October", "November", "December"
+                ];
+                monthTitle.textContent = `Requests for ${monthNames[currentMonth - 1]}`;
 
-                        leaveContainer.innerHTML = ""; // Clear previous data
+                leaveContainer.innerHTML = ""; // Clear previous data
 
-                        if (data.length === 0) {
-                            leaveContainer.innerHTML = `<p class="text-gray-600 text-center col-span-full">No leave requests found.</p>`;
-                            return;
-                        }
+                if (leaves.length === 0 && overtimes.length === 0) {
+                    leaveContainer.innerHTML = `<p class="text-gray-600 text-center col-span-full">No requests found.</p>`;
+                    return;
+                }
 
-                data.forEach(leave => {
+                // Display leave requests
+                leaves.forEach(leave => {
                     leaveContainer.innerHTML += `
-                    <div class="bg-white p-4 rounded-lg shadow-md flex items-center space-x-4 mb-4 border border-gray-200">
-    <div class="w-12 h-12 rounded-full overflow-hidden border-2 border-gray-300 bg-gray-100">
-        <img src="${leave.profile_image}" 
-                 class="w-full h-full object-cover" 
-                 alt="Profile"
-                 onerror="this.onerror=null; this.src='/img/default-avatar.png';">
-    </div>
-    
-    <div class="flex-1">
-        <p class="font-semibold text-gray-900 text-sm sm:text-md">${leave.first_name} ${leave.last_name}</p>
-        <p class="text-xs text-gray-600">Duration: <span class="text-green-500">${leave.duration} day(s)</span></p>
-        <p class="text-xs text-gray-500">From: ${leave.start} <br> To: ${leave.end}</p>
-
-                            <!-- Status Badge -->
-                            <span class="text-sm px-4 rounded-md ${
-                            leave.status === 'Approved' ? 'bg-green-500 text-white' :
-                            leave.status === 'Pending' ? 'bg-yellow-500 text-white' :
-                            'bg-red-500 text-white'
-                            }">${leave.status}</span>
-                                </span>
-                            </div>
+                    <div class="bg-white p-6 rounded-xl shadow-lg flex items-center space-x-6 mb-4 border border-gray-200 hover:shadow-xl transition-shadow duration-300">
+                    <!-- Profile Image -->
+                    <div class="w-16 h-16 rounded-full overflow-hidden border-4 border-blue-100 bg-gray-100 flex-shrink-0">
+                        <img src="${leave.profile_image}" 
+                            class="w-full h-full object-cover" 
+                            alt="Profile"
+                            onerror="this.onerror=null; this.src='/img/default-avatar.png';">
                     </div>
-                  `;
+
+                    <!-- Leave Details -->
+                    <div class="flex-1">
+                        <!-- Employee Name -->
+                        <p class="font-bold text-gray-900 text-lg">${leave.first_name} ${leave.last_name}</p>
+
+                        <!-- Leave Duration -->
+                        <div class="mt-2 flex items-center space-x-2">
+                            <span class="text-sm text-gray-600">Leave Duration:</span>
+                            <span class="text-sm font-semibold text-green-600">${leave.duration} day(s)</span>
+                        </div>
+
+                        <!-- Leave Dates -->
+                        <div class="mt-2 text-sm text-gray-600">
+                            <p>From: <span class="font-medium text-gray-700">${leave.start}</span></p>
+                            <p>To: <span class="font-medium text-gray-700">${leave.end}</span></p>
+                        </div>
+
+                        <!-- Status Badge -->
+                        <div class="mt-3">
+                            <span class="inline-block px-4 py-1 text-sm font-semibold rounded-full ${
+                                leave.status === 'Approved' ? 'bg-green-100 text-green-700' :
+                                leave.status === 'Pending' ? 'bg-yellow-100 text-yellow-700' :
+                                'bg-red-100 text-red-700'
+                            }">
+                                ${leave.status}
+                            </span>
+                        </div>
+                    </div>
+                </div>`;
+                });
+
+                // Display overtime requests
+                overtimes.forEach(overtime => {
+                    leaveContainer.innerHTML += `
+                    <div class="bg-white p-6 rounded-xl shadow-lg flex items-center space-x-6 mb-4 border border-gray-200 hover:shadow-xl transition-shadow duration-300">
+                    <!-- Profile Image -->
+                    <div class="w-16 h-16 rounded-full overflow-hidden border-4 border-blue-100 bg-gray-100 flex-shrink-0">
+                        <img src="${overtime.profile_image}" 
+                            class="w-full h-full object-cover" 
+                            alt="Profile"
+                            onerror="this.onerror=null; this.src='/img/default-avatar.png';">
+                    </div>
+
+                    <!-- Overtime Details -->
+                    <div class="flex-1">
+                        <!-- Employee Name -->
+                        <p class="font-bold text-gray-900 text-lg">${overtime.first_name} ${overtime.last_name}</p>
+
+                        <!-- Overtime Hours -->
+                        <div class="mt-2 flex items-center space-x-2">
+                            <span class="text-sm text-gray-600">Used COCs:</span>
+                            <span class="text-sm font-semibold text-blue-600">${overtime.hours} hour(s)</span>
+                        </div>
+
+                        <!-- Overtime Date -->
+                        <div class="mt-2 text-sm text-gray-600">
+                            <p>Date: <span class="font-medium text-gray-700">${overtime.date}</span></p>
+                        </div>
+
+                        <!-- Status Badge -->
+                        <div class="mt-3">
+                            <span class="inline-block px-4 py-1 text-sm font-semibold rounded-full ${
+                                overtime.status === 'Approved' ? 'bg-green-100 text-green-700' :
+                                overtime.status === 'Pending' ? 'bg-yellow-100 text-yellow-700' :
+                                'bg-red-100 text-red-700'
+                            }">
+                                ${overtime.status}
+                            </span>
+                        </div>
+                    </div>
+                </div>`;
                 });
             })
-            .catch(error => console.error("Error loading leave data:", error));
+            .catch(error => console.error("Error loading requests:", error));
     }
 
-            document.getElementById("prevMonth").addEventListener("click", function () {
-                currentMonth = currentMonth === 1 ? 12 : currentMonth - 1;
-                loadLeaves();
-            });
+    document.getElementById("prevMonth").addEventListener("click", function () {
+        currentMonth = currentMonth === 1 ? 12 : currentMonth - 1;
+        loadRequests();
+    });
 
-            document.getElementById("nextMonth").addEventListener("click", function () {
-                currentMonth = currentMonth === 12 ? 1 : currentMonth + 1;
-                loadLeaves();
-            });
+    document.getElementById("nextMonth").addEventListener("click", function () {
+        currentMonth = currentMonth === 12 ? 1 : currentMonth + 1;
+        loadRequests();
+    });
 
-            loadLeaves(); // Initial load
-        });
-    </script>
+    loadRequests(); // Initial load
+});
+</script>
 @endsection
 
 <style>

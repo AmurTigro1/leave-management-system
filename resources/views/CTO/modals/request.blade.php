@@ -1,5 +1,5 @@
 <div id="requestModal" class="{{ $errors->any() ? '' : 'hidden' }} fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center px-4 z-50 overflow-auto" onclick="closeRequestModal(event)">
-    <div class="w-full max-w-2xl mx-4 bg-white shadow-xl rounded-lg p-6 md:p-8 relative max-h-[90vh] overflow-y-auto" onclick="event.stopPropagation()">
+    <div class="w-full max-w-2xl mx-4 bg-white shadow-xl rounded-lg p-4 md:p-4 relative max-h-70vh] overflow-y-auto" onclick="event.stopPropagation()">
         <!-- Modal Header -->
         <div class="text-center border-b pb-4">
             <h3 class="text-2xl font-bold text-gray-900">Overtime Request</h3>
@@ -25,7 +25,7 @@
                 </div>
                 <div class="sm:col-span-2">
                     <label class="block text-sm font-medium text-gray-700 mb-1">Office/Division</label>
-                    <input type="text" name="office_division" value="{{ old('office_division') }}" class="w-full border border-gray-300 p-2 sm:p-3 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" placeholder="Enter your office/division">
+                    <input type="text" name="office_division" value="{{Auth::user()->department}}" class="w-full border border-gray-300 p-2 sm:p-3 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" readonly>
                     @error('office_division')
                         <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                     @enderror
@@ -41,8 +41,8 @@
                         <input type="date" name="date_filed" value="{{ old('date_filed', date('Y-m-d')) }}" class="w-full border border-gray-300 p-2 sm:p-3 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" readonly>
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Working Hours Applied (4-10)</label>
-                        <input type="number" name="working_hours_applied" value="{{ old('working_hours_applied') }}" min="4" max="10" class="w-full border border-gray-300 p-2 sm:p-3 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Working Hours Applied</label>
+                        <input type="number" name="working_hours_applied" value="{{ old('working_hours_applied') }}" min="4" max="{{Auth::user()->overtime_balance || 0}}" class="w-full border border-gray-300 p-2 sm:p-3 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
                         @error('working_hours_applied')
                             <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                         @enderror
@@ -54,7 +54,7 @@
                             <input type="date" name="inclusive_date_end" value="{{ old('inclusive_date_end') }}" class="w-full sm:w-1/2 border border-gray-300 p-2 sm:p-3 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
                         </div>
                     </div>
-                    <!-- Checkbox to show distance field -->
+                    {{-- <!-- Checkbox to show distance field -->
                     <div class="flex items-center space-x-3">
                         <input type="checkbox" name="is_driver" id="is_driver" value="1" {{ old('is_driver') ? 'checked' : '' }} class="w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
                         <label for="is_driver" class="text-sm font-medium text-gray-700">Are you a driver?</label>
@@ -64,33 +64,16 @@
                     <div id="distanceField" class="{{ old('is_driver') ? '' : 'hidden' }} sm:col-span-2">
                         <label class="block text-sm font-medium text-gray-700 mb-1">Distance (Max 50 km)</label>
                         <input type="number" name="distance_km" value="{{ old('distance_km') }}" min="0" max="50" class="w-full border border-gray-300 p-2 sm:p-3 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
-                    </div>
-
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Overtime Rate</label>
-                        <select name="overtime_rate" class="w-full border border-gray-300 p-2 sm:p-3 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
-                            <option value="1.0">Regular (1.0x)</option>
-                            <option value="1.5">Weekend (1.5x)</option>
-                            <option value="2.0">Holiday (2.0x)</option>
-                        </select>
-                    </div>
-                    <div class="flex items-center space-x-3">
-                        <input type="checkbox" name="is_weekend" value="1" class="w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
-                        <label class="text-sm font-medium text-gray-700">Weekend Overtime</label>
-                    </div>
-                    <div class="flex items-center space-x-3">
-                        <input type="checkbox" name="is_holiday" value="1" class="w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
-                        <label class="text-sm font-medium text-gray-700">Holiday Overtime</label>
-                    </div>
+                    </div> --}}
                 </div>
             </div>
 
             <!-- Buttons -->
             <div class="mt-8 flex flex-col sm:flex-row justify-end space-y-4 sm:space-y-0 sm:space-x-4">
-                <button type="button" onclick="closeRequestModal()" class="bg-gray-500 hover:bg-gray-600 px-6 py-2 sm:py-3 text-white rounded-lg transition duration-300">
+                <button type="button" onclick="closeRequestModal()" class="bg-gray-500 hover:bg-gray-600 px-4 py-2 sm:py-2 text-white rounded-lg transition duration-300">
                     Cancel
                 </button>
-                <button type="submit" class="bg-blue-600 hover:bg-blue-700 px-6 py-2 sm:py-3 text-white font-semibold rounded-lg transition duration-300">
+                <button type="submit" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 sm:py-2 text-white font-semibold rounded-lg transition duration-300">
                     Submit Request
                 </button>
             </div>

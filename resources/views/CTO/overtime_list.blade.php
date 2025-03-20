@@ -9,11 +9,10 @@
             <thead>
                 <tr class="text-gray-600 text-sm bg-gray-100 border-b">
                     <th class="p-3 text-left">Date Filed</th>
-                    <th class="p-3 text-left">Working Hours</th>
+                    <th class="p-3 text-left">Working Hours Applied</th>
                     <th class="p-3 text-left">Inclusive Date Start</th>
                     <th class="p-3 text-left">Inclusive Date End</th>
                     <th class="p-3 text-left">Status</th>
-                    <th class="p-3 text-left">Earned Hours</th>
                     <th class="p-3 text-center">Action</th>
                 </tr>
             </thead>
@@ -21,7 +20,7 @@
                 @foreach ($overtimereq as $overtime)
                     <tr class="border-b even:bg-gray-50 hover:bg-gray-100 transition">
                         <td class="p-3 text-gray-700">{{ \Carbon\Carbon::parse($overtime->date_filed)->format('F d, Y') }}</td>
-                        <td class="p-3 text-gray-700">{{ $overtime->working_hours_applied}}</td>
+                        <td class="p-3 text-gray-700">{{ $overtime->working_hours_applied}} hours</td>
                         <td class="p-3 text-gray-700">{{ \Carbon\Carbon::parse($overtime->inclusive_date_start)->format('F d, Y') }}</td>
                         <td class="p-3 text-gray-700">{{ \Carbon\Carbon::parse($overtime->inclusive_date_end)->format('F d, Y') }}</td>
                         <td class="p-3">
@@ -45,7 +44,6 @@
                                 {{ ucfirst($status) }}
                             </span>
                         </td>
-                        <td class="p-3 text-gray-700">{{ $overtime->earned_hours}}</td>
                         <td class="p-3 flex space-x-2 justify-center">
                             <a href="{{ route('cto.overtime_show', ['id' => $overtime->id]) }}" 
                                class="px-4 py-2 text-xs font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition">

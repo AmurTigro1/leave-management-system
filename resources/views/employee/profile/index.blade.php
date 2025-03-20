@@ -107,7 +107,7 @@
     </div>
 </div>
 <div class="bg-white rounded-lg shadow-md p-6 mt-4">
-    <h3 class="text-2xl font-semibold text-gray-800 mb-6">Leave and Overtime Distribution</h3>
+    <h3 class="text-2xl font-semibold text-gray-800 mb-6">Leave and COC Distribution</h3>
     
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
         <!-- Leave Balance Section -->
@@ -197,7 +197,7 @@
             </div>
             <!-- Total Leave & Overtime Balance Section -->
         <div class="bg-gray-50 mt-4 rounded-lg">
-            <h3 class="text-xl font-semibold text-gray-700 mb-4">Total Leave & Overtime Balance</h3>
+            <h3 class="text-xl font-semibold text-gray-700 mb-4">Total Leave & COC Balance</h3>
             <div class="space-y-3">
                 <div class="flex justify-between text-sm text-gray-600">
                     <span>Leave Available:</span>
@@ -208,7 +208,7 @@
                     @endif
                 </div>
                 <div class="flex justify-between text-sm text-gray-600">
-                    <span>Overtime Available:</span>
+                    <span>COC Available:</span>
                     @if($user->overtime_balance)
                         <span>{{ $user->overtime_balance }} hour(s)</span>
                     @else
@@ -237,7 +237,7 @@
             labels: [
                 'Vacation', 'Sick', 'Maternity', 'Paternity', 'Solo Parent', 
                 'Study', 'VAWC', 'Rehabilitation', 'Special Leave Benefit', 
-                'Special Emergency', 'Overtime Available', 'Leave Available'
+                'Special Emergency', 'COC Available', 'Leave Available'
             ],
             datasets: [{
                 label: 'Days',
