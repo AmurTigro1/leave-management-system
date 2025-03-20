@@ -46,7 +46,7 @@
                 </div>
                 
                 <div>
-                    <p class="text-md font-semibold text-gray-800">{{ $leave->user->name }}</p>
+                    <p class="text-md font-semibold text-gray-800">{{ $leave->user->first_name }} {{ $leave->user->last_name }}</p>
                     <p class="text-xs text-gray-500">{{ $leave->leave_type }} - {{ $leave->days_applied }} Days</p>
                 </div>
             </div>

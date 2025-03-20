@@ -5,27 +5,6 @@
 
              <!-- Navigation Links -->
              <nav id="menu" class="flex items-center space-x-6">
-                <div class="relative">
-                    <button id="notificationBtn" class="relative">
-                        <span class="text-gray-600">🔔</span>
-                        @if(auth()->user()->unreadNotifications->count() > 0)
-                            <span class="absolute top-0 right-0 bg-red-500 text-white text-xs px-2 py-1 rounded-full">
-                                {{ auth()->user()->unreadNotifications->count() }}
-                            </span>
-                        @endif
-                    </button>
-                    <div id="notificationsDropdown" class="hidden absolute right-0 mt-2 w-64 bg-white shadow-md rounded-lg overflow-hidden">
-                        <ul>
-                            @foreach(auth()->user()->unreadNotifications as $notification)
-                                <li class="p-3 border-b hover:bg-gray-100 text-sm">
-                                    {{ $notification->data['message'] }}
-                                    <small class="block text-gray-500">{{ $notification->created_at->diffForHumans() }}</small>
-                                </li>
-                            @endforeach
-                        </ul>
-                    </div>
-                </div>
-                
                 <script>
                 document.getElementById("notificationBtn").addEventListener("click", function() {
                     document.getElementById("notificationsDropdown").classList.toggle("hidden");

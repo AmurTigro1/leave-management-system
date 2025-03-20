@@ -71,7 +71,8 @@ class LeaveStatusNotification extends Notification
     public function toArray(object $notifiable): array
     {
         return [
-            //
+            'leave_id' => $this->leave->id,
+            'message' => $this->message,
         ];
     }
 }

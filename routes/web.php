@@ -28,6 +28,7 @@ Route::middleware('auth')->group(function () {
 //Supervisor Routes
 Route::middleware(['auth', 'SupervisorMiddleware'])->group(function () {
     Route::get('/supervisor/dashboard', [SupervisorController::class, 'index'])->name('supervisor.dashboard');
+    Route::get('/supervisor/employees', [SupervisorController::class, 'onLeave'])->name('supervisor.on_leave');
     Route::get('/supervisor/requests', [SupervisorController::class, 'requests'])->name('supervisor.requests');
     Route::post('/supervisor/{leaveId}/approve', [SupervisorController::class, 'approve'])->name('supervisor.approve');
     Route::post('/supervisor/reject/{leave}', [SupervisorController::class, 'reject'])->name('supervisor.reject');

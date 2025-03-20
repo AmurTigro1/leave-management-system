@@ -50,6 +50,22 @@ class SupervisorController extends Controller
         return view('supervisor.dashboard', compact('totalUsers', 'approvedLeaves', 'pendingLeaves', 'rejectedLeaves', 'leaveStats', 'employees', 'search'));
     }
     
+    public function onLeave(Request $request) {
+        $month = $request->query('month', now()->month);
+        $today = now()->toDateString(); 
+    
+        // Fetch employees whose birthday falls in the selected month
+        $birthdays = User::whereMonth('birthday', $month)->get();
+    
+        // Get employees who are on approved leave this month (but only if their leave has not yet ended)
+        $teamLeaves = Leave::whereMonth('start_date', $month)
+                            ->where('status', 'approved')
+                            ->where('end_date', '>=', $today) // Ensures leave is still ongoing
+                            ->with('user') // Ensures the user object is available
+                            ->get();
+    
+        return view('supervisor.on_leave', compact('teamLeaves', 'birthdays', 'month'));
+    }
     
     public function requests()
     {
@@ -59,14 +75,15 @@ class SupervisorController extends Controller
     
         // Get leave applications waiting for supervisor approval
         $leaveApplications = Leave::where('status', 'waiting_for_supervisor')
-        ->orderBy('created_at', 'desc') 
+        ->orderBy('created_at', 'asc') 
         ->paginate(9); 
         return view('supervisor.requests', compact('leaveApplications'));
     }
 
 //Supervisor Approve
-public function approve(Request $request, $leave) {
-    // Find the leave request
+public function approve(Request $request, $leave) 
+{
+    // Retrieve the Leave model using the ID
     $leaveRequest = Leave::findOrFail($leave);
 
     // Check if the request is already approved or rejected
@@ -74,20 +91,35 @@ public function approve(Request $request, $leave) {
         return redirect()->back()->withErrors(['status' => 'This leave request has already been processed.']);
     }
 
-    // Get the user associated with the leave request
+    // Get the associated user
     $user = $leaveRequest->user;
 
-    // Deduct leave credits based on the leave type
+    // Deduct leave credits based on leave type
     switch ($leaveRequest->leave_type) {
         case 'Vacation Leave':
         case 'Sick Leave':
-            // Deduct from Vacation Leave first, then Sick Leave
+            // Combined logic for Vacation Leave and Sick Leave
+            $totalBalance = $user->vacation_leave_balance + $user->sick_leave_balance;
+            if ($totalBalance >= $leaveRequest->days_applied) {
+                // Deduct from Vacation Leave first
+                if ($user->vacation_leave_balance >= $leaveRequest->days_applied) {
+                    $user->vacation_leave_balance -= $leaveRequest->days_applied;
+                } else {
+                    // Deduct remaining days from Sick Leave
+                    $remainingDays = $leaveRequest->days_applied - $user->vacation_leave_balance;
+                    $user->vacation_leave_balance = 0;
+                    $user->sick_leave_balance -= $remainingDays;
+                }
+            } else {
+                return redirect()->back()->withErrors(['status' => 'Not enough combined Vacation and Sick Leave balance.']);
+            }
+            break;
+        case 'Mandatory Leave':
+            // Mandatory Leave deducts from Vacation Leave only
             if ($user->vacation_leave_balance >= $leaveRequest->days_applied) {
                 $user->vacation_leave_balance -= $leaveRequest->days_applied;
             } else {
-                $remainingDays = $leaveRequest->days_applied - $user->vacation_leave_balance;
-                $user->vacation_leave_balance = 0;
-                $user->sick_leave_balance -= $remainingDays;
+                return redirect()->back()->withErrors(['status' => 'Not enough Vacation Leave balance for Mandatory Leave.']);
             }
             break;
         case 'Maternity Leave':
@@ -129,6 +161,9 @@ public function approve(Request $request, $leave) {
     // Save the updated leave request and user balances
     $leaveRequest->save();
     $user->save();
+
+    // ✅ Send the notification with the correct Leave model
+    $user->notify(new LeaveStatusNotification($leaveRequest, "Your leave request has been approved by your Supervisor."));
 
     notify()->success('Leave request approved successfully!');
     return redirect()->back()->with('success', 'Leave request successfully approved');
