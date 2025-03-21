@@ -23,7 +23,12 @@ return Application::configure(basePath: dirname(__DIR__))
         //
     })
     ->booting(function (Application $app) {
-        $app->make(Schedule::class)->command('holidays:fetch')->monthly();
-        $app->make(Schedule::class)->command('leave:reset-yearly')->yearly();
+        $schedule = $app->make(Schedule::class);
+
+        // Schedule multiple commands
+        $schedule->command('holidays:fetch')->monthly();
+        $schedule->command('leave:reset-yearly')->yearly();
+        $schedule->command('leave:update-balance')->everyMinute();
     })
+    
     ->create();
