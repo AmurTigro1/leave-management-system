@@ -22,7 +22,8 @@
                         <th class="p-3 border">Date Filed</th>
                         <th class="p-3 border">Working Hours</th>
                         <th class="p-3 border">Inclusive Dates</th>
-                        <th class="p-3 border">Status</th>
+                        <th class="p-3 border">HR Status</th>
+                        <th class="p-3 border">Supervisor Status</th>
                         <th class="p-3 border text-center">Actions</th>
                     </tr>
                 </thead>
@@ -42,6 +43,14 @@
                         <td class="p-3">{{ $OT->inclusive_date_start }} - {{ $OT->inclusive_date_end }}</td>
                         <td class="p-3">
                             <span class="px-3 py-1 text-xs font-semibold text-white rounded-full
+                                {{ $OT->hr_status === 'pending' ? 'bg-yellow-500' : 
+                                   ($OT->hr_status === 'approved' ? 'bg-green-500' : 
+                                   ($OT->hr_status === 'rejected' ? 'bg-red-500' : 'bg-gray-500')) }}">
+                                {{ ucfirst($OT->hr_status) }}
+                            </span>
+                        </td>
+                        <td class="p-3">
+                            <span class="px-3 py-1 text-xs font-semibold text-white rounded-full
                                 {{ $OT->status === 'pending' ? 'bg-yellow-500' : 
                                    ($OT->status === 'approved' ? 'bg-green-500' : 
                                    ($OT->status === 'rejected' ? 'bg-red-500' : 'bg-gray-500')) }}">
@@ -49,18 +58,25 @@
                             </span>
                         </td>
                         <td class="p-3 flex justify-center gap-2">
-                            <a href="{{ route('hr.overtime_details', ['id' => $OT->id]) }}" 
-                               class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium rounded-md shadow transition">
-                                View
-                            </a>
-                            <form action="" method="POST">
-                                @csrf
-                                <button type="submit" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-xs font-medium rounded-md shadow transition">
-                                    Delete
+                            @if($OT->admin_status === 'approved')
+                                <a href="{{ route('hr.overtime_details', ['id' => $OT->id]) }}" 
+                                    class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium rounded-md shadow transition inline-flex items-center justify-center">
+                                    View
+                                </a>
+                            @else
+                                <button disabled data-tooltip-target="tooltip-default"
+                                    class="px-4 py-2 bg-gray-800 text-white text-xs font-medium rounded-md shadow cursor-not-allowed inline-flex items-center justify-center">
+                                    View
                                 </button>
-                            </form>
-                            {{-- {{ route('overtime.review', $OT->id) }} --}}
+                            @endif
                         </td>
+                        {{-- <form action="" method="POST">
+                            @csrf
+                            <button type="submit" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-xs font-medium rounded-md shadow transition">
+                                Delete
+                            </button>
+                        </form> --}}
+                        {{-- {{ route('overtime.review', $OT->id) }} --}}
                     </tr>
                     @endforeach
                 </tbody>

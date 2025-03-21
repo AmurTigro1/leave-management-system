@@ -119,4 +119,18 @@ class AdminController extends Controller
         });
         return view('admin.holiday-calendar', compact('holidays'));
     }
+
+    public function approveByAdmin($id)
+    {
+        $request = OvertimeRequest::findOrFail($id);
+
+        if ($request->admin_status === 'pending') {
+            $request->update(['admin_status' => 'approved']);
+            notify()->success('CTO approved by admin. Now pending HR review.');
+        } else {
+            notify()->error('This request has already been processed by the admin.');
+        }
+
+        return redirect()->back();
+    }
 }

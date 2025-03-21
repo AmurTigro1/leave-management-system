@@ -315,7 +315,7 @@ class EmployeeController extends Controller
                     : \Carbon\Carbon::parse($overtime->inclusive_date_start)->format('F j, Y') . ' to ' . 
                     \Carbon\Carbon::parse($overtime->inclusive_date_end)->format('F j, Y'),
 
-                "status" => ucfirst($overtime->status ?? 'Pending'), // Default value
+                "admin_status" => ucfirst($overtime->admin_status ?? 'Pending'), // Default value
                 "hours" => $overtime->working_hours_applied ?? 0, // Use 'earned_hours' if 'hours' doesn't exist
                 "profile_image" => $overtime->user?->profile_image
                     ? asset('storage/profile_images/' . $overtime->user->profile_image)

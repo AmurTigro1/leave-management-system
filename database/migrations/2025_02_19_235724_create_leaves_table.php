@@ -31,7 +31,7 @@ return new class extends Migration
             $table->foreignId('supervisor_id')->nullable()->constrained('users')->onDelete('set null');
             $table->enum('supervisor_status', ['pending', 'approved', 'rejected'])->default('pending');
             $table->enum('hr_status', ['pending', 'approved', 'rejected'])->default('pending');
-            $table->enum('status', ['pending', 'approved', 'rejected', 'cancelled', 'waiting_for_supervisor'])->default('pending');
+            $table->enum('status', ['pending', 'approved', 'rejected', 'cancelled', 'Waiting for Supervisor'])->default('pending');
             $table->timestamps();
         });
     }

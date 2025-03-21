@@ -58,7 +58,7 @@ class OvertimeRequestController extends Controller
             'inclusive_date_end' => 'required|date|after_or_equal:inclusive_date_start',
             'working_hours_applied' => 'required|integer|min:4',
         ]);
-    
+
         OvertimeRequest::create([
             'user_id' => auth()->id(),
             'date_filed' => now(),
@@ -67,9 +67,11 @@ class OvertimeRequestController extends Controller
             'working_hours_applied' => $request->working_hours_applied,
             'inclusive_date_start' => $request->inclusive_date_start,
             'inclusive_date_end' => $request->inclusive_date_end,
+            'admin_status' => 'pending', // Goes to admin first
+            'hr_status' => 'pending', // HR reviews only after admin approval
         ]);
 
-        notify()->success('Overtime request submitted successfully!');
+        notify()->success('Overtime request submitted successfully! Pending admin review.');
         return redirect()->back();
     }
 
