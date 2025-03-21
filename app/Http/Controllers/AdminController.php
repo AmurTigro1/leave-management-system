@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Leave;
+use App\Models\OvertimeRequest;
 use App\Models\User;
 use Illuminate\Support\Facades\Storage;
 use Carbon\Carbon;
@@ -17,15 +18,80 @@ use App\Models\Holiday;
 
 class AdminController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        return view('admin.dashboard');
+        $search = $request->input('search');
+
+        $query = User::query();
+    
+        if ($search) {
+            $query->where('name', 'like', "%{$search}%")
+                  ->orWhere('first_name', 'like', "%{$search}%")
+                  ->orWhere('last_name', 'like', "%{$search}%")
+                  ->orWhere('email', 'like', "%{$search}%")
+                  ->orWhere('position', 'like', "%{$search}%");
+        }
+    
+        $employees = $query->paginate(10)->withQueryString();
+    
+        // If it's an AJAX request, return only the partial view
+        if ($request->ajax()) {
+            return view('admin.partials.employee-list', compact('employees'))->render();
+        }
+    
+    
+        // Get pending leave requests
+        $pendingLeaves = Leave::where('status', 'pending')->get();
+    
+        // Statistics Data
+        $totalEmployees = User::count();
+        $totalPendingLeaves = Leave::where('status', 'pending')->count();
+        $totalApprovedLeaves = Leave::where('status', 'approved')->count();
+        $totalRejectedLeaves = Leave::where('status', 'rejected')->count();
+        $totalApprovedOvertime = OvertimeRequest::where('status', 'approved')->count();
+        $totalPendingOvertime = OvertimeRequest::where('status', 'pending')->count();
+        $totalRejectedOvertime = OvertimeRequest::where('status', 'rejected')->count();
+    
+        // Data for Chart.js
+        $leaveStats = [
+            'Pending' => $totalPendingLeaves,
+            'Approved' => $totalApprovedLeaves,
+            'Rejected' => $totalRejectedLeaves,
+        ];
+    
+        $cocStats = [
+            'Pending' => $totalPendingOvertime,
+            'Approved' => $totalApprovedOvertime,
+            'Rejected' => $totalRejectedOvertime,
+        ];
+    
+        return view('admin.dashboard', compact('employees', 'pendingLeaves', 'totalEmployees', 'leaveStats', 'cocStats', 'search'));
     }
 
-    public function requests() 
+    public function requests()
     {
-        return view('admin.requests');
+        if (Auth::user()->role !== 'admin') {
+            abort(403, 'Unauthorized access.');
+        }
+    
+        // Get leave applications waiting for supervisor approval
+        $leaveApplications = Leave::where('status', 'pending')
+        ->orderBy('created_at', 'desc') 
+        ->paginate(9); 
+
+        $ctoApplications = OvertimeRequest::where('status', 'pending')
+        ->orderBy('created_at', 'desc') 
+        ->paginate(9); 
+
+        return view('admin.requests', compact('leaveApplications', 'ctoApplications'));
     }
+
+    public function show($id) {
+        $leave = Leave::findOrFail($id); 
+
+        return view('admin.leave_details', compact('leave'));
+    }
+
 
     public function onLeave(Request $request) {
         $month = $request->query('month', now()->month);
