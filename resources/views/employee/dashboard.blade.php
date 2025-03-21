@@ -224,11 +224,11 @@ document.addEventListener("DOMContentLoaded", function () {
                         <!-- Status Badge -->
                         <div class="mt-3">
                             <span class="inline-block px-4 py-1 text-sm font-semibold rounded-full ${
-                                overtime.admin_status === 'Approved' ? 'bg-green-100 text-green-700' :
                                 overtime.admin_status === 'Pending' ? 'bg-yellow-100 text-yellow-700' :
+                                overtime.admin_status === 'Ready for Review' ? 'bg-green-100 text-green-700' :
                                 'bg-red-100 text-red-700'
                             }">
-                                Admin Approval: ${overtime.admin_status}
+                                ${overtime.admin_status}
                             </span>
                         </div>
                     </div>

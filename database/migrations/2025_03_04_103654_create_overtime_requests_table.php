@@ -27,10 +27,6 @@ return new class extends Migration
 
             $table->enum('cto_type', ['none', 'halfday_morning', 'halfday_afternoon', 'wholeday'])->default('none');
 
-            $table->integer('continuous_days_count')->default(0); // Track consecutive overtime days
-            $table->date('week_start_date')->nullable(); // Weekly tracking
-            $table->integer('total_weekly_hours')->default(0)->check('total_weekly_hours <= 40'); // Weekly max limit
-
             // Approvals & Status
             $table->foreignId('hr_officer_id')->nullable()->constrained('users')->onDelete('set null');
             $table->foreignId('supervisor_id')->nullable()->constrained('users')->onDelete('set null');

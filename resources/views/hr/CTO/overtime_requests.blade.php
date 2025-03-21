@@ -58,7 +58,7 @@
                             </span>
                         </td>
                         <td class="p-3 flex justify-center gap-2">
-                            @if($OT->admin_status === 'approved')
+                            @if($OT->admin_status === 'Ready for Review')
                                 <a href="{{ route('hr.overtime_details', ['id' => $OT->id]) }}" 
                                     class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium rounded-md shadow transition inline-flex items-center justify-center">
                                     View
@@ -66,7 +66,7 @@
                             @else
                                 <button disabled data-tooltip-target="tooltip-default"
                                     class="px-4 py-2 bg-gray-800 text-white text-xs font-medium rounded-md shadow cursor-not-allowed inline-flex items-center justify-center">
-                                    View
+                                    Waiting for Admin Approval
                                 </button>
                             @endif
                         </td>

@@ -260,7 +260,7 @@ class HrController extends Controller
     {
         $request = OvertimeRequest::findOrFail($id);
 
-        if ($request->admin_status !== 'approved') {
+        if ($request->admin_status !== 'Ready for Review') {
             notify()->error('Cannot approve. Admin review is required first.');
             return redirect()->back();
         }
