@@ -1,6 +1,6 @@
 <header class="py-3 bg-gray-50 shadow-md w-full z-[900]">
     <div class="container mx-auto max-w-7xl px-4 flex justify-between items-center max-sm:flex-col max-sm:space-y-3">
-        <p class="px-4 text-xl text-blue-600 font-semibold">HR Dashboard</p>
+        <p class="px-4 text-xl text-blue-600 font-semibold"></p>
 
         <!-- Navigation Links -->
         <nav class="flex items-center space-x-6">

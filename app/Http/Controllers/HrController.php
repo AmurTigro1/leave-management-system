@@ -91,9 +91,7 @@ class HrController extends Controller
             abort(403, 'Unauthorized access.');
         }
     
-        $leaveApplications = Leave::where('status', 'pending')
-                                  ->orderBy('created_at', 'asc') 
-                                  ->paginate(9); 
+        $leaveApplications = Leave::orderBy('created_at', 'desc')->paginate(9);
     
         return view('hr.requests', compact('leaveApplications'));
     }
@@ -126,20 +124,19 @@ class HrController extends Controller
         // Convert status to lowercase for consistency
         $hr_status = strtolower($request->status); // "Approved" -> "approved", "Rejected" -> "rejected"
 
-
         // If HR approves, status moves to supervisor review, otherwise, it's rejected.
         $leave->update([
             'hr_status' => $hr_status, // Update HR status
-            'status' => $hr_status === 'approved' ? 'waiting_for_supervisor' : 'rejected',
+            'status' => $hr_status === 'approved' ? 'Waiting for Supervisor' : 'rejected',
             'disapproval_reason' => $request->disapproval_reason,
             'approved_days_with_pay' => $request->approved_days_with_pay,
             'approved_days_without_pay' => $request->approved_days_without_pay,
             'hr_officer_id' => Auth::id(),
         ]);
 
-        return redirect()->back()->with('success', 'Leave application reviewed by HR.');
+        notify()->success('Leave application reviewed by HR.');
+        return redirect()->back();
     }
-
 
         public function generateLeaveReport($leaveId)
     {
@@ -167,14 +164,12 @@ class HrController extends Controller
     }
 
     public function overtimeRequests() {
-
         if (Auth::user()->role !== 'hr') {
             abort(403, 'Unauthorized access.');
         }
     
-        $overtimeRequests = OvertimeRequest::where('status', 'pending')
-                                  ->orderBy('created_at', 'asc') 
-                                  ->paginate(9); 
+        $overtimeRequests = OvertimeRequest::orderBy('created_at', 'desc')
+                                          ->paginate(9);
     
         return view('hr.CTO.overtime_requests', compact('overtimeRequests'));
     }
@@ -259,5 +254,33 @@ class HrController extends Controller
             return $holiday;
         });
         return view('hr.holiday-calendar', compact('holidays'));
+    }
+
+    public function approve($id, Request $request)
+    {
+        $request = OvertimeRequest::findOrFail($id);
+
+        if ($request->admin_status !== 'approved') {
+            notify()->error('Cannot approve. Admin review is required first.');
+            return redirect()->back();
+        }
+
+        if ($request->hr_status === 'pending') {
+            $request->update(['hr_status' => 'approved']);
+            notify()->success('CTO approved by HR.');
+        } else {
+            notify()->error('This request has already been processed by HR.');
+        }
+
+        return redirect()->back();
+    }
+
+    public function reject($id)
+    {
+        $overtime = OvertimeRequest::findOrFail($id);
+        $overtime->update(['hr_status' => 'rejected']);
+
+        notify()->success('Overtime request rejected successfully.');
+        return redirect()->back();
     }
 }

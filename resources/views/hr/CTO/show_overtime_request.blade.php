@@ -1,7 +1,7 @@
 @extends('layouts.hr.sidebar-header')
 
 @section('content')
-    <div class="rounded-lg shadow-xl rounded m-4 p-8 space-y-8 animate-fade-in">
+    <div class="rounded-lg shadow-xl m-4 p-8 space-y-8 animate-fade-in">
     <!-- Back Button -->
     <a href="{{ route('hr.overtime_requests') }}" class="inline-flex items-center text-blue-600 font-medium hover:underline transition duration-300">
         &larr; Back to Overtime Requests
@@ -96,6 +96,26 @@
         <p class="text-red-600">{{ $overtimeRequests->disapproval_reason }}</p>
     </div>
     @endif
+
+    <!-- Accept and Reject Buttons -->
+    @if($overtimeRequests->status === 'pending')
+        <div class="flex justify-end space-x-4 mt-8">
+            <form action="{{ route('overtime.approve', $overtimeRequests->id) }}" method="POST">
+                @csrf
+                @method('PUT')
+                <button type="submit" class="bg-green-500 text-white px-6 py-2 rounded-lg shadow-md hover:bg-green-600 transition">
+                    Accept
+                </button>
+            </form>
+            <form action="{{ route('overtime.reject', $overtimeRequests->id) }}" method="POST">
+                @csrf
+                @method('PUT')
+                <button type="submit" class="bg-red-500 text-white px-6 py-2 rounded-lg shadow-md hover:bg-red-600 transition">
+                    Reject
+                </button>
+            </form>
+        </div>
+    @endif
 </div>
 @endsection
 
@@ -114,3 +134,4 @@
         box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.15);
     }
 </style>
+@notifyCss

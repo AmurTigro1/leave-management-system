@@ -21,8 +21,6 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     Route::post('/profile/update-image', [EmployeeController::class, 'updateProfileImage'])->name('profile.update-image');
     Route::get('/holidays', [EmployeeController::class, 'holiday'])->name('holiday.calendar');
-    // Route::get('/leave', [HrController::class, 'index'])->name('leave.index');
-    // Route::post('/leave', [HrController::class, 'store'])->name('leave.store');
 });
 
 //Supervisor Routes
@@ -49,19 +47,21 @@ Route::middleware(['auth', 'hrMiddleware'])->group(function () {
     Route::get('/hr/employees', [HrController::class, 'onLeave'])->name('hr.on_leave');
     Route::get('/hr/requests', [HrController::class, 'requests'])->name('hr.leave_requests');
     Route::get('/leave/details/{id}', [HrController::class, 'show'])->name('hr.leave_details');
+    Route::get('/hr/holidays', [HrController::class, 'holiday'])->name('hr.holiday.calendar');
     Route::get('/hr/leave-certification/{leaveId}', [HrController::class, 'showLeaveCertification'])->name('hr.leave_certification');
     Route::post('/leave/{leave}/review', [HrController::class, 'review'])->name('leave.review');
     Route::get('/leave-report/{id}', [HrController::class, 'generateLeaveReport'])->name('leave.report');
-    Route::get('/hr/overtime-requests', [HrController::class, 'overtimeRequests'])->name('hr.overtime_requests');
-    Route::get('/overtime/details/{id}', [HrController::class, 'showOvertime'])->name('hr.overtime_details');
     Route::get('/hr/leaderboard', [HrController::class, 'leaderboard'])->name('hr.leaderboard');
     Route::get('/hr-profile', [HrController::class, 'profile'])->name('hr.profile.index');
     Route::get('/hr/profile-edit', [HrController::class, 'profile_edit'])->name('hr.profile.partials.update-profile-information-form');
     Route::get('/hr/password-edit', [HrController::class, 'password_edit'])->name('hr.profile.partials.update-password-form');
     Route::patch('/hr-profile/update-profile', [HrController::class, 'updateProfile'])->name('hr-profile.update');
     Route::patch('/hr-profile/update-email', [HrController::class, 'updateEmail'])->name('hr-email.update'); 
-    Route::get('/hr/holidays', [HrController::class, 'holiday'])->name('hr.holiday.calendar');
-
+    
+    Route::put('/overtime/{id}/approve', [HrController::class, 'approve'])->name('overtime.approve');
+    Route::put('/overtime/{id}/reject', [HrController::class, 'reject'])->name('overtime.reject');
+    Route::get('/hr/overtime-requests', [HrController::class, 'overtimeRequests'])->name('hr.overtime_requests');
+    Route::get('/overtime/details/{id}', [HrController::class, 'showOvertime'])->name('hr.overtime_details');
 });
 
 //Admin Assistant Route
@@ -89,6 +89,8 @@ Route::middleware('auth.redirect')->group(function () {
     Route::get('/my-requests', [EmployeeController::class, 'showRequests'])->name('employee.leave_request');
     Route::get('/my-requests/edit/{id}', [EmployeeController::class, 'editLeave'])->name('employee.leave_edit');
     Route::put('/my-requests/update/{id}', [EmployeeController::class, 'updateLeave'])->name('employee.leave_update');
+    Route::post('/leaves/{id}/cancel', [EmployeeController::class, 'cancel'])->name('employee.leave_cancel');
+    Route::post('/leaves/{id}/restore', [EmployeeController::class, 'restore'])->name('employee.leave_restore');
     Route::delete('/my-requests/delete/{id}', [EmployeeController::class, 'deleteLeave'])->name('employee.leave_delete');
     Route::get('/details/{id}', [EmployeeController::class, 'show'])->name('employee.leave_show');
     Route::post('/request-leave', [EmployeeController::class, 'store'])->name('request.leave');

@@ -27,6 +27,7 @@ class OvertimeRequest extends Model
         'supervisor_id',
         'supervisor_status',
         'hr_status',
+        'admin_status',
         'status',
     ];
     
