@@ -88,6 +88,8 @@ Route::middleware('auth.redirect')->group(function () {
     Route::get('/my-requests', [EmployeeController::class, 'showRequests'])->name('employee.leave_request');
     Route::get('/my-requests/edit/{id}', [EmployeeController::class, 'editLeave'])->name('employee.leave_edit');
     Route::put('/my-requests/update/{id}', [EmployeeController::class, 'updateLeave'])->name('employee.leave_update');
+    Route::post('/leaves/{id}/cancel', [EmployeeController::class, 'cancel'])->name('employee.leave_cancel');
+    Route::post('/leaves/{id}/restore', [EmployeeController::class, 'restore'])->name('employee.leave_restore');
     Route::delete('/my-requests/delete/{id}', [EmployeeController::class, 'deleteLeave'])->name('employee.leave_delete');
     Route::get('/details/{id}', [EmployeeController::class, 'show'])->name('employee.leave_show');
     Route::post('/request-leave', [EmployeeController::class, 'store'])->name('request.leave');
