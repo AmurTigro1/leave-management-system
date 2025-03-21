@@ -7,8 +7,8 @@
 </a>
 <div class="flex justify-between items-start gap-4 px-4">
     <div class="bg-white shadow-xl rounded-lg p-6 space-y-6 w-full h-[750px]">
-        <h2 class="text-2xl font-bold">Leave Balances</h2>
-        <div class="flex justify-between items-center">
+        <h2 class="text-2xl font-bold">CTO Balances</h2>
+        {{-- <div class="flex justify-between items-center">
             <div class="bg-blue-600 text-white rounded-lg p-2 text-[10px] w-[124px] text-center mr-2">Vacation Leave</div>
             <div class="bg-blue-600 text-white rounded-lg p-2 text-[10px] w-[124px] text-center mr-2">Sick Leave</div>
             <div class="bg-blue-600 text-white rounded-lg p-2 text-[10px] w-[124px] text-center mr-2">Maternity Leave</div>
@@ -118,7 +118,7 @@
        <div class="flex justify-center items-center">
             <a href="#" class="bg-blue-600 text-white py-2 px-4 rounded-lg mr-3">Proceed to HR</a>
             <a href="#" class="bg-orange-600 text-white py-2 px-4 rounded-lg">Reject Request</a>
-       </div>
+       </div> --}}
     </div>
 </div>
 @endsection
@@ -151,7 +151,7 @@
 
 </style> 
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{{-- <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
     document.addEventListener("DOMContentLoaded", function () {
     // Get leave balances from PHP
@@ -233,4 +233,4 @@
 
 </script>
 
-    
+     --}}

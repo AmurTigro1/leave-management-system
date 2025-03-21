@@ -70,7 +70,8 @@ Route::middleware(['auth', 'adminMiddleware'])->group(function () {
     Route::get('/admin/employees', [AdminController::class, 'onLeave'])->name('admin.on_leave');
     Route::get('/admin/leaderboard', [AdminController::class, 'leaderboard'])->name('admin.leaderboard');
     Route::get('admin/requests', [AdminController::class, 'requests'])->name('admin.requests');
-    Route::get('/admin/leave/details/{id}', [AdminController::class, 'show'])->name('admin.leave_details');
+    Route::get('/admin/leave/details/{id}', [AdminController::class, 'showleave'])->name('admin.leave_details');
+    Route::get('/admin/cto/details/{id}', [AdminController::class, 'showcto'])->name('admin.cto_details');
     Route::get('/admin-profile', [AdminController::class, 'profile'])->name('admin.profile.index');
     Route::get('/admin/profile-edit', [AdminController::class, 'profile_edit'])->name('admin.profile.partials.update-profile-information-form');
     Route::get('/admin/password-edit', [AdminController::class, 'password_edit'])->name('admin.profile.partials.update-password-form');

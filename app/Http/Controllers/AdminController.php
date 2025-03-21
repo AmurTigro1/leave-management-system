@@ -86,10 +86,16 @@ class AdminController extends Controller
         return view('admin.requests', compact('leaveApplications', 'ctoApplications'));
     }
 
-    public function show($id) {
+    public function showleave($id) {
         $leave = Leave::findOrFail($id); 
 
         return view('admin.leave_details', compact('leave'));
+    }
+
+    public function showcto($id) {
+        $cto = OvertimeRequest::findOrFail($id); 
+
+        return view('admin.cto_details', compact('cto'));
     }
 
 
