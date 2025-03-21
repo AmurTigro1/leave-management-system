@@ -200,6 +200,45 @@ class EmployeeController extends Controller
         notify()->success('Leave request submitted successfully! It is now pending approval.');
         return redirect()->back();
     }
+
+    public function cancel($id)
+    {
+        $leave = Leave::findOrFail($id);
+
+        // Ensure only the owner can cancel
+        if ($leave->user_id !== Auth::id()) {
+            return redirect()->back()->with('error', 'Unauthorized action.');
+        }
+
+        // Only allow pending leaves to be canceled
+        if ($leave->status !== 'pending') {
+            return redirect()->back()->with('error', 'Only pending leave requests can be canceled.');
+        }
+
+        // Update status to canceled
+        $leave->update(['status' => 'cancelled']);
+
+        return redirect()->back()->with('success', 'Leave request canceled successfully.');
+    }
+
+    public function restore($id)
+    {
+        $leave = Leave::findOrFail($id);
+
+        // Ensure only the owner can restore
+        if ($leave->user_id !== Auth::id()) {
+            return redirect()->back()->with('error', 'Unauthorized action.');
+        }
+
+        // Only allow restoring canceled requests
+        if ($leave->status !== 'cancelled') {
+            return redirect()->back()->with('error', 'Only canceled requests can be restored.');
+        }
+
+        $leave->update(['status' => 'pending']);
+
+        return redirect()->back()->with('success', 'Leave request restored successfully.');
+    }
     public function showRequests() {
         $holidays = Holiday::orderBy('date')->get()->map(function ($holiday) {
             $holiday->day = Carbon::parse($holiday->date)->format('d'); // Example: 01
