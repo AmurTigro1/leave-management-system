@@ -45,12 +45,28 @@
             <p class="text-gray-700">{{ \Carbon\Carbon::parse($overtime->inclusive_date_start)->diffInDays(\Carbon\Carbon::parse($overtime->inclusive_date_end)) + 1 }}</p>
         </div>
 
-        <div>
-            <p class="font-semibold text-gray-900">Status</p>
-            <span class="px-3 py-1 text-white text-sm font-semibold rounded 
-                {{ $overtime->status == 'approved' ? 'bg-green-500' : ($overtime->status == 'rejected' ? 'bg-red-500' : 'bg-yellow-500') }}">
-                {{ ucfirst($overtime->status) }}
-            </span>
+        <div class="grid grid-cols-1 md:grid-cols-3">
+            <div class="">
+                <p class="font-semibold text-gray-900 mb-2">Admin Status</p>
+                <span class="
+                    {{ $overtime->admin_status == 'approved' ? 'inline-block px-4 py-1 text-sm font-semibold rounded-full bg-green-100 text-green-700' : ($overtime->admin_status == 'rejected' ? 'inline-block px-4 py-1 text-sm font-semibold rounded-full bg-red-100 text-red-700' : 'inline-block px-4 py-1 text-sm font-semibold rounded-full bg-yellow-100 text-yellow-700') }}">
+                    {{ ucfirst($overtime->admin_status) }}
+                </span>                
+            </div>
+            <div class="">
+                <p class="font-semibold text-gray-900 mb-2">HR Status</p>
+                <span class="
+                    {{ $overtime->hr_status == 'approved' ? 'inline-block px-4 py-1 text-sm font-semibold rounded-full bg-green-100 text-green-700' : ($overtime->hr_status == 'rejected' ? 'inline-block px-4 py-1 text-sm font-semibold rounded-full bg-red-100 text-red-700' : 'inline-block px-4 py-1 text-sm font-semibold rounded-full bg-yellow-100 text-yellow-700') }}">
+                    {{ ucfirst($overtime->hr_status) }}
+                </span>      
+            </div>
+            <div class="">
+                <p class="font-semibold text-gray-900 mb-2">Supervisor Status</p>
+                <span class="
+                    {{ $overtime->status == 'approved' ? 'inline-block px-4 py-1 text-sm font-semibold rounded-full bg-green-100 text-green-700' : ($overtime->status == 'rejected' ? 'inline-block px-4 py-1 text-sm font-semibold rounded-full bg-red-100 text-red-700' : 'inline-block px-4 py-1 text-sm font-semibold rounded-full bg-yellow-100 text-yellow-700') }}">
+                    {{ ucfirst($overtime->status) }}
+                </span>      
+            </div>
         </div>
 
         @if($overtime->status === 'rejected')

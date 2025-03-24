@@ -66,13 +66,6 @@
         <div class="text-center">
             <img class="mx-auto mb-3 w-16" src="/img/dilg-main.png" alt="DILG Logo">
             <a href="/" class="font-bold text-2xl">Department of the Interior and Local Government</a>
-            {{-- <div class="flex justify-center items-center text-blue-600 font-bold mt-4 text-lg font-bold">
-                <p class="mr-3"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 9V5.25A2.25 2.25 0 0 1 10.5 3h6a2.25 2.25 0 0 1 2.25 2.25v13.5A2.25 2.25 0 0 1 16.5 21h-6a2.25 2.25 0 0 1-2.25-2.25V15M12 9l3 3m0 0-3 3m3-3H2.25" />
-                  </svg>
-                  
-                <p>Leave Management System</p>
-            </div> --}}
         </div>
 
         <form method="POST" action="{{ route('login') }}" class="mt-6">
@@ -82,7 +75,7 @@
             <div class="mb-4">
                 <label for="email" class="block text-gray-700 font-medium mb-2">Email</label>
                 <div class="input-container">
-                    <input id="email" type="email" class="form-control @error('email') is-invalid @enderror"
+                    <input id="email" type="email" class="form-control"
                         placeholder="Enter your email" name="email" value="{{ old('email') }}" required autocomplete="email" autofocus>
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                         stroke="currentColor" class="icon">
@@ -99,7 +92,7 @@
             <div class="mb-4">
                 <label for="password" class="block text-gray-700 font-medium mb-2">Password</label>
                 <div class="input-container">
-                    <input id="password" type="password" class="form-control @error('password') is-invalid @enderror"
+                    <input id="password" type="password" class="form-control"
                         placeholder="Enter your password" name="password" required autocomplete="current-password">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                         stroke="currentColor" class="icon">

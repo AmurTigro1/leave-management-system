@@ -50,6 +50,18 @@ class User extends Authenticatable
         return $this->hasMany(CompensatoryTimeLog::class);
     }
 
+    public function redirectToDashboard()
+    {
+        return match ($this->role) {
+            'employee' => route('lms_cto.dashboard'),
+            'supervisor' => route('supervisor.dashboard'),
+            'hr' => route('hr.dashboard'),
+            'admin' => route('admin.dashboard'),
+            default => route('login'),
+        };
+    }
+
+
     /**
      * The attributes that should be hidden for serialization.
      *

@@ -39,8 +39,8 @@
                             @endif
                         </td>
                         <td class="p-3 text-gray-700">{{ $leave->reason ?? 'No reason provided' }}</td>
-                        <td class="p-3 text-gray-700">{{ $leave->start_date }}</td>
-                        <td class="p-3 text-gray-700">{{ $leave->end_date }}</td>
+                        <td class="p-3 text-gray-700">{{ \Carbon\Carbon::parse($leave->start_date)->format('F d, Y') }}</td>
+                        <td class="p-3 text-gray-700">{{ \Carbon\Carbon::parse($leave->end_date)->format('F d, Y') }}</td>
                         <td class="p-3">
                             @php
                                 $status_classes = [

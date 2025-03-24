@@ -124,6 +124,10 @@ Route::middleware('auth.redirect')->group(function () {
         notify()->warning('You can only select up to 5 consecutive days for CTO.');
         return back();
     });
+    Route::post('/cto/{id}/cancel', [EmployeeController::class, 'cancelCTO'])->name('employee.cto_cancel');
+    Route::post('/cto/{id}/restore', [EmployeeController::class, 'restoreCTO'])->name('employee.cto_restore');
+    Route::get('/submit-dtr', [EmployeeController::class, 'showForm'])->name('employee.submit_dtr');
+    Route::post('/submit-dtr', [EmployeeController::class, 'submitDTR'])->name('employee.submit_dtr.post');
 });
 
 Route::get('/leave-calendar', action: [EmployeeController::class, 'showCalendar'])->name('leave.calendar');

@@ -6,7 +6,6 @@
     <div class="fixed top-4 right-4 z-[9999]">
         <x-notify::notify />
     </div>
-</section>
 
 <div class="w-full px-4 py-8 space-y-8 animate-fade-in">
 <div class="w-full px-4">
