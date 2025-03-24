@@ -98,7 +98,6 @@ class EmployeeController extends Controller
             'reason' => 'nullable|string',
             'days_applied' => 'required|integer|min:1',
             'commutation' => 'required|boolean',
-            'position' => 'required|string',
             'leave_details' => 'nullable|array', 
             'abroad_details' => 'nullable|string', 
         ]);
@@ -188,7 +187,6 @@ class EmployeeController extends Controller
             'leave_details' => json_encode($leaveDetails), // Store all selected details as JSON
             'start_date' => $request->start_date,
             'end_date' => $request->end_date,
-            'position' => $request->position,
             'salary_file' => $request->salary_file,
             'days_applied' => $daysApplied,
             'commutation' => $request->commutation,
@@ -424,7 +422,6 @@ class EmployeeController extends Controller
             'salary_file' => 'required|string|max:255',
             'start_date' => 'required|date',
             'end_date' => 'required|date|after_or_equal:start_date',
-            'position' => 'nullable|string|max:255',
             'days_applied' => 'required|integer|min:1',
             'commutation' => 'required|boolean',
             'reason' => 'nullable|string',
@@ -491,7 +488,6 @@ class EmployeeController extends Controller
             'salary_file' => $request->salary_file,
             'start_date' => $request->start_date,
             'end_date' => $request->end_date,
-            'position' => $request->position,
             'days_applied' => $request->days_applied,
             'commutation' => $request->commutation,
             'reason' => $request->reason,

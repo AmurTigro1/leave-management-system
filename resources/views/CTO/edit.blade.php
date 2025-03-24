@@ -29,14 +29,6 @@
         @csrf
         @method('PUT')
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div class="mb-4">
-                <label class="block">Position:</label>
-                <input type="text" name="position" class="w-full border px-3 py-2 rounded" required value="{{$overtime->position}}">
-            </div>
-            <div class="mb-4">
-                <label class="block font-medium">Office Division</label>
-                <input type="text" name="office_division" class="w-full border p-2 rounded" required value="{{$overtime->office_division}}">
-            </div>
             <div>
                 <label class="block text-sm font-medium">Inclusive Date Start</label>
                 <input type="date" name="inclusive_date_start" id="inclusive_date_start" class="mt-1 w-full p-2 border rounded" required value="{{$overtime->inclusive_date_start}}">

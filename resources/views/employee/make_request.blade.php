@@ -110,14 +110,6 @@
                     }
                 });
                 </script>
-                
-                <div>
-                    <label class="block text-sm font-medium">Position</label>
-                    <input type="text" name="position" class="mt-1 w-full p-2 border rounded" placeholder="Enter Position">
-                    @error('position')
-                    <p class="text-red-500 text-sm">{{ $message }}</p>
-                    @enderror
-                </div>
                 <div>
                     <label class="block mt-2">Commutation:</label>
                     <select name="commutation" class="w-full border p-2 rounded">
@@ -138,32 +130,38 @@
             
         <!-- Vacation Leave & Special Privilege Leave -->
         <div id="vacation_options" class="hidden">
-            <label><input type="checkbox" name="within_philippines" value="1"> Within the Philippines</label>
-            <input type="text" name="within_philippines" class="border rounded p-1">
-            @error('within_philippines')
-            <p class="text-red-500 text-sm">{{ $message }}</p>
-            @enderror
-            <br>
-            <label>
-                <input type="checkbox" name="abroad" value="1"> Abroad
-                <input type="text" name="abroad_details" class="border rounded p-1" placeholder="Specify">
-                @error('abroad_details')
+           <div class="mt-4">
+                <label><input type="checkbox" name="within_philippines" value="1"> Within the Philippines</label>
+                <input type="text" name="within_philippines" class="border rounded p-1">
+                @error('within_philippines')
                 <p class="text-red-500 text-sm">{{ $message }}</p>
                 @enderror
-            </label>
+           </div>
+            <div class="mt-2">
+                <label>
+                    <input type="checkbox" name="abroad" value="1"> Abroad
+                    <input type="text" name="abroad_details" class="border rounded p-1" placeholder="Specify">
+                    @error('abroad_details')
+                    <p class="text-red-500 text-sm">{{ $message }}</p>
+                    @enderror
+                </label>
+            </div>
         </div>
 
 <!-- Sick Leave -->
 <div id="sick_leave_options" class="hidden">
-    <label>
-        <input type="checkbox" name="in_hospital" value="1"> In Hospital:
-        <input type="text" name="in_hospital_details" class="border rounded p-1" placeholder="Specify Illness">
-    </label>
-    <br>
-    <label>
-        <input type="checkbox" name="out_patient" value="1"> Out Patient:
-        <input type="text" name="out_patient_details" class="border rounded p-1" placeholder="Specify Illness">
-    </label>
+   <div class="mt-4">
+        <label>
+            <input type="checkbox" name="in_hospital" value="1"> In Hospital:
+            <input type="text" name="in_hospital_details" class="border rounded p-1" placeholder="Specify Illness">
+        </label>
+   </div>
+    <div class="mt-2">
+        <label>
+            <input type="checkbox" name="out_patient" value="1"> Out Patient:
+            <input type="text" name="out_patient_details" class="border rounded p-1" placeholder="Specify Illness">
+        </label>
+    </div>
 </div>
 
     <!-- Study Leave -->
@@ -185,7 +183,7 @@
         <textarea name="others_details" id="others_details" cols="30" rows="10" class="mt-1 w-full p-2 border rounded" placeholder="Enter leave details"></textarea>
         
     </div>  
-    <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">Request Leave</button>
+    <button type="submit" class="bg-blue-500 text-white px-4 py-2 mt-4 rounded">Request Leave</button>
     </form>
  </div>
 

@@ -27,7 +27,7 @@
 
         <div>
             <p class="font-semibold text-gray-900">Position</p>
-            <p class="text-gray-700">{{ $overtime->position ?? 'No position provided.' }}</p>
+            <p class="text-gray-700">{{ $overtime->user->position ?? 'No position provided.' }}</p>
         </div>
 
         <div>

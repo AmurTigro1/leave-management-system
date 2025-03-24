@@ -21,7 +21,6 @@ return new class extends Migration
             $table->integer('days_applied');
             $table->boolean('commutation')->default(false);
             $table->string('reason')->nullable();
-            $table->string('position')->nullable();
             $table->string('leave_type');
             $table->json('leave_details')->nullable();
             $table->text('disapproval_reason')->nullable();

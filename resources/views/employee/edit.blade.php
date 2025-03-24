@@ -104,14 +104,7 @@
                 }
             });
             </script>
-            
-            <div>
-                <label class="block text-sm font-medium">Position</label>
-                <input type="text" name="position" class="mt-1 w-full p-2 border rounded" value="{{$leave->position}}">
-                @error('position')
-                <p class="text-red-500 text-sm">{{ $message }}</p>
-                @enderror
-            </div>
+        
             <div class="">
                 <label class="block mt-2">Days Applied:</label>
                 <input type="number" name="days_applied" class="w-full border p-2 rounded" min="1" required value="{{$leave->days_applied}}"> 

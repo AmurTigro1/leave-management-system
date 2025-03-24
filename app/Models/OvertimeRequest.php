@@ -11,8 +11,6 @@ class OvertimeRequest extends Model
     protected $fillable = [
         'user_id',
         'date_filed',
-        'position',
-        'office_division',
         'working_hours_applied',
         'inclusive_date_start',
         'inclusive_date_end',

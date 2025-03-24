@@ -15,8 +15,6 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->date('date_filed');
-            $table->string('position');
-            $table->string('office_division');
             $table->integer('working_hours_applied'); 
 
             $table->date('inclusive_date_start')->index();

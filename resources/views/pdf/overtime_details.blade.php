@@ -25,8 +25,8 @@
                     <div class="start">
                         <p>Name </p> <div class="info"><span class="underline">{{ $overtime->user->first_name}} {{ strtoupper(substr($overtime->user->middle_name, 0, 1)) }}. {{ $overtime->user->last_name}}</span>________________________</div>
                         <p>Signature </p> <div class="info2">______________________________________</div>
-                        <p>Position </p> <div class="info3"><span class="underline">{{ $overtime->position}}</span>_________________________</div>
-                        <p>Office/Division </p> </p> <div class="info4"><span class="underline">{{ $overtime->office_division}}</span>__________________________</div>
+                        <p>Position </p> <div class="info3"><span class="underline">{{ $overtime->user->position}}</span>_________________________</div>
+                        <p>Office/Division </p> </p> <div class="info4"><span class="underline">{{ $overtime->user->department}}</span>__________________________</div>
                         <p>Date of Filing </p> <div class="info5"><span class="underline">{{ \Carbon\Carbon::parse($overtime->date_filed)->format('F d, Y') }}</span>_______________________</div>
                         <p>No. of working hours applied for </p> <div class="info6">__________<span class="underline">{{ $overtime->working_hours_applied}}</span>___________</div>
                         <p>Inclusive Date/s </p> <div class="info7"><span class="underline">{{ \Carbon\Carbon::parse($overtime->inclusive_date_start)->format('F d, Y') }} - {{ \Carbon\Carbon::parse($overtime->inclusive_date_end)->format('F d, Y') }}</span>_______</div>

@@ -46,7 +46,7 @@
             </div>
             <div class="head-middle-body">
                 <p class="first2">3. DATE OF FILING: <span class="underline">{{ \Carbon\Carbon::parse($leave->date_filing)->format('F d, Y') }}</span></p>
-                <p class="second2">4. POSITION: <span class="underline">{{ $leave->position}}</span></p>
+                <p class="second2">4. POSITION: <span class="underline">{{ $leave->user->position}}</span></p>
                 <p class="third2">5. SALARY FILE: <span class="underline">{{ $leave->salary_file}}</span></p>
             </div>
             <div class="middle-body">
