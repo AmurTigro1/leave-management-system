@@ -25,51 +25,31 @@ class AuthenticatedSessionController extends Controller
     public function store(LoginRequest $request): RedirectResponse
     {
         $request->authenticate();
-        $request->session()->regenerate();
         
+        // Manually save the session before regenerating it
+        session()->save();
+        $request->session()->regenerate();
+
         $user = Auth::user();
-    
-        switch ($user->role) {
-            case 'employee':
-                emotify('success', 'Login Successful! Welcome Back.');
-                return redirect(route('lms_cto.dashboard'));
-    
-            case 'supervisor':
 
-                emotify('success', 'Login Successful! Welcome Back.');
-                return redirect(route('supervisor.dashboard'));
-    
-            case 'hr':
-
-                emotify('success', 'Login Successful! Welcome Back.');
-                return redirect(route('hr.dashboard'));
-
-            case 'admin':
-
-                emotify('success', 'Login Successful! Welcome Back.');
-                return redirect(route('admin.dashboard'));
-    
-            default:
-                return redirect()->intended(route('lms_cto.dashboard'));
-        }
-    }     
+        notify()->success('Login Successful! Welcome Back.');
+        return redirect($user->redirectToDashboard());
+    }
+  
     
     /**
      * Destroy an authenticated session.
      */
     public function destroy(Request $request): RedirectResponse
     {
-        // Forget the stored system session
         $request->session()->forget('system');
     
-        // Logout the user
         Auth::guard('web')->logout();
     
-        // Invalidate and regenerate session
         $request->session()->invalidate();
         $request->session()->regenerateToken();
         
         notify()->success('Logout Successful!');
-        return redirect('/lms-cto/login');
+        return redirect('/');
     }    
 }
