@@ -112,8 +112,13 @@ class AdminController extends Controller
                             ->where('end_date', '>=', $today) // Ensures leave is still ongoing
                             ->with('user') // Ensures the user object is available
                             ->get();
+
+        $overtimeRequests = OvertimeRequest::where('status', 'approved')
+        ->whereMonth('inclusive_date_start', $month)
+        ->whereYear('inclusive_date_start', now()->year)
+        ->get();
     
-        return view('admin.on_leave', compact('teamLeaves', 'birthdays', 'month'));
+        return view('admin.on_leave', compact('teamLeaves', 'birthdays', 'month', 'overtimeRequests'));
     }
 
     public function profile() {

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 use App\Models\User;
+use App\Models\HRSupervisor;
 use App\Models\Leave;
 use App\Models\OvertimeRequest;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -81,8 +82,12 @@ class HrController extends Controller
                             ->where('end_date', '>=', $today) // Ensures leave is still ongoing
                             ->with('user') // Ensures the user object is available
                             ->get();
+        $overtimeRequests = OvertimeRequest::where('status', 'approved')
+        ->whereMonth('inclusive_date_start', $month)
+        ->whereYear('inclusive_date_start', now()->year)
+        ->get();
     
-        return view('hr.on_leave', compact('teamLeaves', 'birthdays', 'month'));
+        return view('hr.on_leave', compact('teamLeaves', 'birthdays', 'month', 'overtimeRequests'));
     }
 
     public function requests()
@@ -91,9 +96,16 @@ class HrController extends Controller
             abort(403, 'Unauthorized access.');
         }
     
-        $leaveApplications = Leave::orderBy('created_at', 'desc')->paginate(9);
-    
-        return view('hr.requests', compact('leaveApplications'));
+        // Get leave applications waiting for supervisor approval
+        $leaveApplications = Leave::where('status', 'pending')
+        ->orderBy('created_at', 'desc') 
+        ->paginate(9); 
+
+        $ctoApplications = OvertimeRequest::where('status', 'pending')
+        ->orderBy('created_at', 'desc') 
+        ->paginate(9); 
+
+        return view('hr.requests', compact('leaveApplications', 'ctoApplications'));
     }
     
     
@@ -105,10 +117,11 @@ class HrController extends Controller
         return view('hr.leave_certification', compact('leave', 'daysRequested'));
     }
 
-    public function show($id) {
+    public function showleave($id) {
         $leave = Leave::findOrFail($id); 
+        $official = HRSupervisor::find($id);
 
-        return view('hr.leave_details', compact('leave'));
+        return view('hr.leave_details', compact('leave','official'));
     }
 
     // HR officer reviews applications
@@ -161,17 +174,6 @@ class HrController extends Controller
         
         // Return PDF for download
         return $pdf->download('leave_certificate.pdf');
-    }
-
-    public function overtimeRequests() {
-        if (Auth::user()->role !== 'hr') {
-            abort(403, 'Unauthorized access.');
-        }
-    
-        $overtimeRequests = OvertimeRequest::orderBy('created_at', 'desc')
-                                          ->paginate(9);
-    
-        return view('hr.CTO.overtime_requests', compact('overtimeRequests'));
     }
 
     public function showOvertime($id) {

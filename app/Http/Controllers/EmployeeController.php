@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 use App\Models\Holiday;
 use App\Models\OvertimeRequest;
+use App\Models\HRSupervisor;
 use App\Models\Leave;
 use App\Models\User;
 use PDF;
@@ -389,11 +390,12 @@ class EmployeeController extends Controller
     public function viewPdf($id)
     {
         $leave = Leave::findOrFail($id);
+        $official = HRSupervisor::find($id);
 
         $supervisor = User::where('role', 'supervisor')->first();
         $hr = User::where('role', 'hr')->first();
         
-        $pdf = PDF::loadView('pdf.leave_details', compact('leave', 'supervisor', 'hr'));
+        $pdf = PDF::loadView('pdf.leave_details', compact('leave', 'supervisor', 'hr', 'official'));
         
         return $pdf->stream('leave_request_' . $leave->id . '.pdf');
     }

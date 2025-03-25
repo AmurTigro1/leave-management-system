@@ -126,7 +126,7 @@
                     {{-- <input type="text" name="reason" class="mt-1 w-full p-2 border rounded"> --}}
                     <textarea name="reason" id="reason" cols="15" rows="5" class="mt-1 w-full p-2 border rounded" placeholder="Enter Reason"></textarea>
                 </div>
-            </div>
+            </div>      
             
         <!-- Vacation Leave & Special Privilege Leave -->
         <div id="vacation_options" class="hidden">

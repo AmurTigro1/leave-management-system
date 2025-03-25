@@ -5,6 +5,7 @@ use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\SupervisorController;
+use App\Http\Controllers\HRSupervisorController;
 use App\Http\Controllers\OvertimeRequestController;
 use Illuminate\Support\Facades\Route;
 
@@ -22,6 +23,8 @@ Route::middleware('auth')->group(function () {
     Route::post('/profile/update-image', [EmployeeController::class, 'updateProfileImage'])->name('profile.update-image');
     Route::get('/holidays', [EmployeeController::class, 'holiday'])->name('holiday.calendar');
 });
+
+Route::post('/update-officer', [EmployeeController::class, 'updateOfficer'])->name('update.officer');
 
 //Supervisor Routes
 Route::middleware(['auth', 'SupervisorMiddleware'])->group(function () {
@@ -45,8 +48,8 @@ Route::middleware(['auth', 'SupervisorMiddleware'])->group(function () {
 Route::middleware(['auth', 'hrMiddleware'])->group(function () {
     Route::get('/hr/dashboard', [HrController::class, 'index'])->name('hr.dashboard');
     Route::get('/hr/employees', [HrController::class, 'onLeave'])->name('hr.on_leave');
-    Route::get('/hr/requests', [HrController::class, 'requests'])->name('hr.leave_requests');
-    Route::get('/leave/details/{id}', [HrController::class, 'show'])->name('hr.leave_details');
+    Route::get('hr/requests', [HrController::class, 'requests'])->name('hr.requests');
+    Route::get('/hr/leave/details/{id}', [HrController::class, 'showleave'])->name('hr.leave_details');
     Route::get('/hr/holidays', [HrController::class, 'holiday'])->name('hr.holiday.calendar');
     Route::get('/hr/leave-certification/{leaveId}', [HrController::class, 'showLeaveCertification'])->name('hr.leave_certification');
     Route::post('/leave/{leave}/review', [HrController::class, 'review'])->name('leave.review');
@@ -60,8 +63,9 @@ Route::middleware(['auth', 'hrMiddleware'])->group(function () {
     
     Route::put('/overtime/{id}/approve', [HrController::class, 'approve'])->name('overtime.approve');
     Route::put('/overtime/{id}/reject', [HrController::class, 'reject'])->name('overtime.reject');
-    Route::get('/hr/overtime-requests', [HrController::class, 'overtimeRequests'])->name('hr.overtime_requests');
     Route::get('/overtime/details/{id}', [HrController::class, 'showOvertime'])->name('hr.overtime_details');
+
+    Route::put('/hr-supervisor-info/{id}', [HRSupervisorController::class, 'update'])->name('hr-supervisor-info.update');
 });
 
 //Admin Assistant Route
