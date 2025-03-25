@@ -36,7 +36,7 @@
     @endif
     
         <!-- Leave Request Form -->
-        <form method="POST" action="{{ route('request.leave') }}" class=" p-4 rounded-lg">
+        <form method="POST" action="{{ route('request.leave') }}" class=" p-4 rounded-lg" enctype="multipart/form-data">
             @csrf
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
@@ -125,6 +125,11 @@
                     <label class="block text-sm font-medium">Reason (Optional)</label>
                     {{-- <input type="text" name="reason" class="mt-1 w-full p-2 border rounded"> --}}
                     <textarea name="reason" id="reason" cols="15" rows="5" class="mt-1 w-full p-2 border rounded" placeholder="Enter Reason"></textarea>
+                </div>
+
+                <div class="mb-4">
+                    <label class="block text-gray-700 font-bold mb-2">Signature</label>
+                    <input type="file" name="signature" class="w-full border p-2 rounded-lg" accept="image/*,.pdf">
                 </div>
             </div>      
             

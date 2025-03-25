@@ -97,6 +97,7 @@ class EmployeeController extends Controller
             'start_date' => 'required|date',
             'end_date' => 'required|date|after_or_equal:start_date',
             'reason' => 'nullable|string',
+            'signature' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',
             'days_applied' => 'required|integer|min:1',
             'commutation' => 'required|boolean',
             'leave_details' => 'nullable|array', 
@@ -182,10 +183,17 @@ class EmployeeController extends Controller
         }
     
         // Store leave request with a default status of "Pending"
+        $signaturePath = null; // Default to null if no file is uploaded
+
+        if ($request->hasFile('signature')) {
+            $signaturePath = $request->file('signature')->store('signatures', 'public'); // Save file in storage/app/public/signatures
+        }
+
+        // Store leave request with signature file path
         Leave::create([
             'user_id' => auth()->id(),
             'leave_type' => $request->leave_type,
-            'leave_details' => json_encode($leaveDetails), // Store all selected details as JSON
+            'leave_details' => json_encode($leaveDetails), 
             'start_date' => $request->start_date,
             'end_date' => $request->end_date,
             'salary_file' => $request->salary_file,
@@ -193,8 +201,10 @@ class EmployeeController extends Controller
             'commutation' => $request->commutation,
             'date_filing' => now(),
             'reason' => $request->reason,
-            'status' => 'pending', // Default status for new requests
+            'signature' => $signaturePath, // Store file path in DB
+            'status' => 'pending',
         ]);
+
     
         notify()->success('Leave request submitted successfully! It is now pending approval.');
         return redirect()->back();
@@ -427,6 +437,7 @@ class EmployeeController extends Controller
             'days_applied' => 'required|integer|min:1',
             'commutation' => 'required|boolean',
             'reason' => 'nullable|string',
+            'signature' => 'nullable|file|mimes:jpg,png,pdf|max:2048',
             'abroad_details' => 'nullable|string', // Ensure it's validated
         ]);
     
@@ -493,6 +504,7 @@ class EmployeeController extends Controller
             'days_applied' => $request->days_applied,
             'commutation' => $request->commutation,
             'reason' => $request->reason,
+            'signature' => $request->signature,
             'leave_details' => !empty($leaveDetails) ? json_encode($leaveDetails) : null, // Save as JSON
         ]);
     
