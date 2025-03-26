@@ -131,37 +131,105 @@ class HrController extends Controller
     }
 
     // HR officer reviews applications
-    public function review(Request $request, Leave $leave)
+    public function review(Request $request, $leaveId) 
     {
+        $leave = Leave::findOrFail($leaveId);
+        $user = $leave->user;
+    
+        // Validate the request
         $request->validate([
-            'status' => 'required|in:Approved,Rejected', // Ensure correct input
+            'status' => 'required|in:Approved,Rejected',
             'disapproval_reason' => 'nullable|string',
         ]);
-
-        // Convert status to lowercase for consistency
-        $hr_status = strtolower($request->status); // "Approved" -> "approved", "Rejected" -> "rejected"
-
+    
+        // Convert status to lowercase
+        $hr_status = strtolower($request->status);
+    
         // Prepare the update data
         $updateData = [
             'hr_status' => $hr_status,
-            'status' => $hr_status === 'rejected' ? 'rejected' : $leave->status, // Ensure status is updated when rejected
+            'status' => $hr_status === 'rejected' ? 'rejected' : $leave->status,
             'disapproval_reason' => $request->disapproval_reason,
             'hr_officer_id' => auth()->id(),
         ];
-
-        // If HR approves, update supervisor fields
+    
+        // If approved, apply leave deductions
         if ($hr_status === 'approved') {
-            $updateData['supervisor_status'] = 'approved'; // Set supervisor status for review
-            $updateData['supervisor_id'] = auth()->id(); // Assign the supervisor
-            $updateData['status'] = 'approved'; // Ensure overall status is updated to approved
+    
+            // Handle balance deductions
+            $leaveTypeForDeduction = $leave->leave_type === 'Mandatory Leave' ? 'Vacation Leave' : $leave->leave_type;
+    
+            switch ($leaveTypeForDeduction) {
+                case 'Sick Leave':
+                    if ($user->sick_leave_balance >= $leave->days_applied) {
+                        $user->sick_leave_balance -= $leave->days_applied;
+                    } else {
+                        $remainingDays = $leave->days_applied - $user->sick_leave_balance;
+                        $user->sick_leave_balance = 0;
+                        $user->vacation_leave_balance -= $remainingDays;
+                    }
+                    break;
+    
+                case 'Vacation Leave':
+                    if ($user->vacation_leave_balance >= $leave->days_applied) {
+                        $user->vacation_leave_balance -= $leave->days_applied;
+                    } else {
+                        $remainingDays = $leave->days_applied - $user->vacation_leave_balance;
+                        $user->vacation_leave_balance = 0;
+                        $user->sick_leave_balance -= $remainingDays;
+                    }
+                    break;
+    
+                case 'Maternity Leave':
+                    $user->maternity_leave -= $leave->days_applied;
+                    break;
+    
+                case 'Paternity Leave':
+                    $user->paternity_leave -= $leave->days_applied;
+                    break;
+    
+                case 'Solo Parent Leave':
+                    $user->solo_parent_leave -= $leave->days_applied;
+                    break;
+    
+                case 'Study Leave':
+                    $user->study_leave -= $leave->days_applied;
+                    break;
+    
+                case '10-Day VAWC Leave':
+                    $user->vawc_leave -= $leave->days_applied;
+                    break;
+    
+                case 'Rehabilitation Privilege':
+                    $user->rehabilitation_leave -= $leave->days_applied;
+                    break;
+    
+                case 'Special Leave Benefits for Women Leave':
+                    $user->special_leave_benefit -= $leave->days_applied;
+                    break;
+    
+                case 'Special Emergency Leave':
+                    $user->special_emergency_leave -= $leave->days_applied;
+                    break;
+    
+                default:
+                    // No deduction for other leave types
+                    break;
+            }
+    
+            // Update supervisor fields
+            $updateData['supervisor_status'] = 'approved';
+            $updateData['supervisor_id'] = auth()->id();
+            $updateData['status'] = 'approved';
         }
-
-        // Update leave record
+    
+        // Save changes
         $leave->update($updateData);
-
-        notify()->success('Leave application reviewed by HR.');
-        return Redirect::route('hr.requests');
-    }
+        $user->save();
+    
+        notify()->success('Leave application reviewed successfully!');
+        return redirect()->route('hr.requests');
+    }   
 
     
 

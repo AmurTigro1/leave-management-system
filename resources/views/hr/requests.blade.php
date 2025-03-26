@@ -37,11 +37,13 @@
                                             {{ $leave->user->first_name }} {{ strtoupper(substr($leave->user->middle_name, 0, 1)) }}. {{ $leave->user->last_name }}
                                         </h3>
                                         <p class="text-gray-600 text-sm">Leave Type: {{ $leave->leave_type }}</p>
-                                        <p class="text-gray-600 text-sm">Duration: 
+                                        {{-- <p class="text-gray-600 text-sm">Duration: 
                                             <span class="font-semibold">
                                                 {{ \Carbon\Carbon::parse($leave->start_date)->diffInDays(\Carbon\Carbon::parse($leave->end_date)) + 1 }} days
                                             </span>
-                                        </p>
+                                        </p> --}}
+                                <p class="text-gray-600 text-sm">Duration: <span class="font-semibold"> {{$leave->days_applied}} </span></p>
+
                                     </div>
                                 </div>
                                 <div>
