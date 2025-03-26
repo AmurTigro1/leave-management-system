@@ -45,6 +45,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/hr/employees', [HrController::class, 'onLeave'])->name('hr.on_leave');
         Route::get('/hr/requests', [HrController::class, 'requests'])->name('hr.requests');
         Route::get('/leave/details/{id}', [HrController::class, 'showLeave'])->name('hr.leave_details');
+        Route::get('/hr/cto/details/{id}', [HrController::class, 'showcto'])->name('hr.cto_details');
         Route::get('/hr/calendar', [HrController::class, 'calendar'])->name('hr.holiday.calendar');
         Route::get('hr/holidays', [HrController::class, 'holiday'])->name('hr.holidays.index');
         Route::get('hr/holidays/create', [HrController::class, 'create'])->name('hr.holidays.create');

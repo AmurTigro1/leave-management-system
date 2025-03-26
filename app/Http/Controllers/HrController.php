@@ -130,6 +130,12 @@ class HrController extends Controller
         return view('hr.leave_details', compact('leave','official'));
     }
 
+    public function showcto($id) {
+        $cto = OvertimeRequest::findOrFail($id); 
+
+        return view('hr.cto_details', compact('cto'));
+    }
+
     // HR officer reviews applications
     public function review(Request $request, $leaveId) 
     {

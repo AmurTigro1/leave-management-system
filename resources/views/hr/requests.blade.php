@@ -101,7 +101,7 @@
                                     </div>
                                 </div>
                                 <div>
-                                    <a href="{{ route('admin.cto_details', ['id' => $cto->id]) }}" class="text-blue-600">View Request</a>
+                                    <a href="{{ route('hr.cto_details', ['id' => $cto->id]) }}" class="text-blue-600">View Request</a>
                                 </div>
                             </div>
                         </div>
