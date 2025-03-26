@@ -55,13 +55,23 @@ class User extends Authenticatable
     public function redirectToDashboard()
     {
         $user = Auth::user();
-        return match ($user->role) {
+        
+        $dashboardRoute = match ($user->role) {
             'employee' => route('lms_cto.dashboard'),
             'supervisor' => route('supervisor.dashboard'),
             'hr' => route('hr.dashboard'),
             'admin' => route('admin.dashboard'),
             default => route('lms_cto.dashboard'),
         };
+    
+        notify()->success('Login Successful! Welcome Back.');
+    
+        return $dashboardRoute;
+    }    
+
+    public function cocLogs()
+    {
+        return $this->hasMany(CocLog::class);
     }
 
     /**

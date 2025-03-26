@@ -87,16 +87,24 @@
                 </button>                
             </div>
 
-            <form action="{{ route('logout') }}" method="POST" class="w-full sm:w-auto">
+            <form action="{{ route('logout') }}" onsubmit="document.getElementById('loading-screen').classList.remove('hidden'); this.querySelector('button').disabled = true;" method="POST" class="w-full sm:w-auto">
                 @csrf
                 <button type="submit" class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 w-full sm:w-auto">
                     Logout 
                 </button>
             </form>
+            <!-- Loading Screen -->
+            <div id="loading-screen" class="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 hidden">
+                <div class="flex flex-col items-center bg-white p-6 rounded-lg shadow-lg">
+                    <svg class="animate-spin h-10 w-10 text-blue-500 mb-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 12h16m-8-8v16" />
+                    </svg>
+                    <p class="text-gray-700">Logging out...</p>
+                </div>
+            </div> 
         </div>
     </div>
 </div>
-
 
 <script>
     document.addEventListener("DOMContentLoaded", () => {

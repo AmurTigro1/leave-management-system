@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->string('activity_name');
-            $table->date('activity_date');
+            $table->string('activity_date');
             $table->integer('coc_earned');
             $table->string('issuance');
             $table->timestamps();

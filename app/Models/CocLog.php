@@ -7,11 +7,14 @@ use Illuminate\Database\Eloquent\Model;
 class CocLog extends Model
 {
     protected $fillable = [
+        'user_id',
         'activity_name',
         'activity_date',
         'coc_earned',
         'issuance',
     ];
+
+    protected $dates = ['activity_date'];
 
     public function user()
     {

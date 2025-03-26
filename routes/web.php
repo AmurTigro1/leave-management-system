@@ -43,7 +43,7 @@ Route::middleware('auth')->group(function () {
     Route::middleware('hr')->group(function () {
         Route::get('/hr/dashboard', [HrController::class, 'index'])->name('hr.dashboard');
         Route::get('/hr/employees', [HrController::class, 'onLeave'])->name('hr.on_leave');
-        Route::get('/hr/requests', [HrController::class, 'requests'])->name('hr.leave_requests');
+        Route::get('/hr/requests', [HrController::class, 'requests'])->name('hr.requests');
         Route::get('/leave/details/{id}', [HrController::class, 'show'])->name('hr.leave_details');
         Route::get('/hr/holidays', [HrController::class, 'holiday'])->name('hr.holiday.calendar');
         Route::get('/hr/leave-certification/{leaveId}', [HrController::class, 'showLeaveCertification'])->name('hr.leave_certification');
@@ -135,8 +135,12 @@ Route::middleware('auth')->group(function () {
     Route::middleware('role:hr,admin')->group(function () {
         Route::prefix('coc-logs')->group(function () {
             Route::get('/', [CocLogController::class, 'index'])->name('coc_logs');
-            Route::get('/{id}', [CocLogController::class, 'showCocLogs'])->name('coc_logs.show');
-            Route::get('/{id}/pdf', [CocLogController::class, 'generateCocLogsPdf'])->name('coc_logs.pdf');
+            Route::get('/{id}', [CocLogController::class, 'showCocLogs'])->name('coc-logs.show');
+            Route::get('/{id}/pdf', [CocLogController::class, 'generateCocLogsPdf'])->name('coc-logs.pdf');
+            Route::post('/store', [CocLogController::class, 'store'])->name('coc-logs.store');
+            Route::get('/{cocLog}/edit', [CocLogController::class, 'edit'])->name('coc-logs.edit');
+            Route::put('/{cocLog}', [CocLogController::class, 'update'])->name('coc-logs.update');
+            Route::delete('/{cocLog}', [CocLogController::class, 'destroy'])->name('coc-logs.destroy');
         });
     });
 });

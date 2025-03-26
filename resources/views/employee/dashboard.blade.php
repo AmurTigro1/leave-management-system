@@ -6,7 +6,7 @@
     <div class="fixed top-4 right-4 z-[9999]">
         <x-notify::notify />
     </div>
-
+    @notifyJs
 <div class="w-full px-4 py-8 space-y-8 animate-fade-in">
 <div class="w-full px-4">
     <h3 class="text-2xl sm:text-3xl md:text-4xl font-bold text-center text-gray-900 drop-shadow-lg animate-bounce">🎉 Happy Birthday! 🎉</h3>
