@@ -293,4 +293,10 @@ class HrController extends Controller
         notify()->success('Overtime request rejected successfully.');
         return redirect()->back();
     }
+
+    public function cocLogs()
+    {
+        $logs = CompensatoryTimeLog::orderBy('created_at', 'desc')->paginate(10);
+        return view('hr.CTO.coclog', compact('logs'));
+    }
 }

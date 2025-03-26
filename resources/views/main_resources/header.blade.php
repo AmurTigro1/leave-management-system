@@ -40,9 +40,6 @@
                                     <a href="{{ route('admin.dashboard') }}" class="block w-full text-left px-4 py-2 hover:bg-gray-100 hover:text-blue-500">Dashboard</a>
                                 @endif
                             </li>                                                                               
-                            {{-- <li>
-                                <a href="{{ route('employee.profile.index') }}" class="block w-full text-left px-4 py-2 hover:bg-gray-100 hover:text-blue-500">Profile</a>
-                            </li> --}}
                             <li>
                                 <form action="{{ route('logout') }}" method="POST">
                                     @csrf
@@ -56,65 +53,12 @@
                 </div>
             @else
                 <div class="relative">
-                    <button id="customDropdownBtn" class="px-3 py-2 w-40 rounded-md font-semibold text-lg flex justify-between items-center">
+                    <a href="{{ route('login') }}" 
+                        class="block px-4 py-2 rounded-lg bg-white bg-opacity-20 hover:bg-gray-100 font-bold hover:bg-opacity-60 transition">
                         Login
-                        <svg id="dropdownArrow" class="w-4 h-4 ml-2 transition-transform duration-300 transform" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 011.414 1.414l-4 4a1 1 0-1.414z" clip-rule="evenodd"/>
-                        </svg>
-                    </button>
-                    
-                    <div id="customDropdownMenu" class="absolute hidden bg-white rounded-md w-40 shadow-lg z-50">
-                        <ul class="py-2">
-                            <li>
-                                <a href="{{route('lms_cto.login')}}" class="block px-4 py-2 text-gray-600 hover:bg-gray-100">LMS & CTO Login</a>
-                            </li>
-                        </ul>
-                    </div>
+                    </a>
                 </div>
             @endif
         </nav>
     </div>
 </header>
-
-<script>
-    document.addEventListener("DOMContentLoaded", () => {
-        // Profile Dropdown
-        const profileDropdownBtn = document.getElementById("dropdown-btn");
-        const profileDropdownMenu = document.getElementById("dropdown-menu");
-
-        if (profileDropdownBtn) {
-            profileDropdownBtn.addEventListener("click", (e) => {
-                e.stopPropagation();
-                profileDropdownMenu.classList.toggle("hidden");
-            });
-
-            document.addEventListener("click", (e) => {
-                if (!profileDropdownMenu.contains(e.target) && !profileDropdownBtn.contains(e.target)) {
-                    profileDropdownMenu.classList.add("hidden");
-                }
-            });
-        }
-
-        // Login Dropdown
-        const loginDropdownBtn = document.getElementById("customDropdownBtn");
-        const loginDropdownMenu = document.getElementById("customDropdownMenu");
-        const loginDropdownArrow = document.getElementById("dropdownArrow");
-
-        if (loginDropdownBtn) {
-            loginDropdownBtn.addEventListener("mousedown", (e) => {
-                e.stopPropagation();
-                loginDropdownMenu.classList.toggle("hidden");
-                loginDropdownArrow.classList.toggle("rotate-180");
-            });
-
-            document.addEventListener("click", (e) => {
-                if (!loginDropdownMenu.contains(e.target) && !loginDropdownBtn.contains(e.target)) {
-                    loginDropdownMenu.classList.add("hidden");
-                    loginDropdownArrow.classList.remove("rotate-180");
-                }
-            });
-        }
-    });
-</script>
-
-    
