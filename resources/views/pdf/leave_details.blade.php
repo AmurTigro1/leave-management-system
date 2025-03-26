@@ -313,7 +313,7 @@
                         </tbody>                        
                     </table>
                 </div>                
-                <p class="last-sign">________<span class="underline">{{ $hr->first_name }} {{ strtoupper(substr($hr->middle_name, 0, 1)) }}. {{ $hr->last_name }}</span>________</p>
+                <p class="last-sign">________<span class="underline">{{ $official->hr_name}}</span>________</p>
                 <p class="text-last">HRMO</p>
             </div>
             <div class="last-part3">
@@ -367,7 +367,7 @@
                 <p class="last-line">____________________________________</p>
                 <p class="last-line">____________________________________</p>
                 @endif             
-                <p class="last-sign2">________<span class="underline">{{ $hr->first_name }} {{ strtoupper(substr($hr->middle_name, 0, 1)) }}. {{ $hr->last_name }}</span>________</p>
+                <p class="last-sign2">________<span class="underline">{{ $official->hr_name}}</span>________</p>
                 <p class="text-last">Authorized Officer</p>
             </div>
             <div class="final-part">
@@ -383,7 +383,7 @@
                     <p class="list01">______________________________</p>
                     <p class="list01">______________________________</p>
                 </div>
-                <p class="final-sign">____________<span class="underline">{{ $supervisor->first_name }} {{ strtoupper(substr($supervisor->middle_name, 0, 1)) }}. {{ $supervisor->last_name }}</span>____________</p>
+                <p class="final-sign">____________<span class="underline">{{ $official->supervisor_name}}</span>____________</p>
                 <p class="text-last">(Authorized Official)</p> 
             </div>
         </div>

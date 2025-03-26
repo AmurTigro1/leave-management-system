@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use App\Models\Holiday;
 use App\Services\YearlyHolidayService;
 use App\Models\OvertimeRequest;
+use App\Models\HRSupervisor;
 use App\Models\Leave;
 use App\Models\User;
 use PDF;
@@ -90,276 +91,6 @@ class EmployeeController extends Controller
         $leaves = Leave::where('user_id', Auth::id())->latest()->get();
         return view('employee.make_request', compact('leaves'));
     }
-    //Original Store function
-    // public function store(Request $request) {
-    //     $request->validate([
-    //         'leave_type' => 'required|string',
-    //         'start_date' => 'required|date',
-    //         'end_date' => 'required|date|after_or_equal:start_date',
-    //         'reason' => 'nullable|string',
-    //         'days_applied' => 'required|integer|min:1',
-    //         'commutation' => 'required|boolean',
-    //         'leave_details' => 'nullable|array', 
-    //         'abroad_details' => 'nullable|string', 
-    //     ]);
-    
-    //     $user = Auth::user();
-    
-    //     // Calculate number of days applied
-    //     $startDate = Carbon::parse($request->start_date);
-    //     $endDate = Carbon::parse($request->end_date);
-    //     $daysApplied = $startDate->diffInDays($endDate) + 1; // Include start date
-    
-    //     // **Check if the employee has enough leave credits for the request**
-    //     $availableLeaveBalance = match ($request->leave_type) {
-    //         'Vacation Leave', 'Sick Leave' => $user->vacation_leave_balance + $user->sick_leave_balance, // Combine balances for Vacation and Sick Leave
-    //         'Mandatory Leave' => $user->vacation_leave_balance, // Mandatory Leave uses Vacation Leave balance
-    //         'Maternity Leave' => $user->maternity_leave,
-    //         'Paternity Leave' => $user->paternity_leave,
-    //         'Solo Parent Leave' => $user->solo_parent_leave,
-    //         'Study Leave' => $user->study_leave,
-    //         'VAWC Leave' => $user->vawc_leave,
-    //         'Rehabilitation Leave' => $user->rehabilitation_leave,
-    //         'Special Leave Benefit' => $user->special_leave_benefit,
-    //         'Special Emergency Leave' => $user->special_emergency_leave,
-    //         default => 0, // Default to 0 if leave type is not recognized
-    //     };
-    
-    //     // **Check if there are enough leave credits**
-    //     if ($daysApplied > $availableLeaveBalance) {
-    //         return redirect()->back()->withErrors(['end_date' => 'You do not have enough balance for ' . $request->leave_type . '.']);
-    //     }
-    
-    //     // Initialize an empty array to store selected leave details
-    //     $leaveDetails = [];
-    
-    //     // **Vacation Leave / Special Privilege Leave**
-    //     if ($request->leave_type === 'Vacation Leave' || $request->leave_type === 'Special Privilege Leave') {
-    //         if ($request->filled('within_philippines')) {
-    //             $leaveDetails['Within the Philippines'] = $request->within_philippines; // Text input
-    //         }
-    //         if ($request->filled('abroad_details')) {
-    //             $leaveDetails['Abroad'] = $request->abroad_details; // Text input
-    //         }
-    //     }
-    
-    //     // **Sick Leave**
-    //     if ($request->leave_type === 'Sick Leave') {
-    //         if ($request->has('in_hospital')) {
-    //             $leaveDetails['In Hospital'] = $request->input('in_hospital_details', 'Yes'); // Get input value or default 'Yes'
-    //         }
-    //         if ($request->has('out_patient')) {
-    //             $leaveDetails['Out Patient'] = $request->input('out_patient_details', 'Yes');
-    //         }
-    //     }
-    
-    //     // **Study Leave**
-    //     if ($request->leave_type === 'Study Leave') {
-    //         if ($request->has('completion_masters')) {
-    //             $leaveDetails[] = 'Completion of Master\'s Degree';
-    //         }   
-    //         if ($request->has('bar_review')) {
-    //             $leaveDetails[] = 'BAR Review';
-    //         }
-    //     }
-    
-    //     // **Other Purposes**
-    //     if ($request->leave_type === 'Other Purposes') {
-    //         if ($request->has('monetization')) {
-    //             $leaveDetails[] = 'Monetization of Leave Credits';
-    //         }
-    //         if ($request->has('terminal_leave')) {
-    //             $leaveDetails[] = 'Terminal Leave';
-    //         }
-    //     }
-    
-    //     // **Others Leave Type**
-    //     if ($request->leave_type === 'Others') {
-    //         if ($request->filled('others_details')) {
-    //             $leaveDetails[] = 'Other Details';
-    //             $leaveDetails[] = $request->others_details;
-    //         }
-    //     }
-    
-    //     // Store leave request with a default status of "Pending"
-    //     Leave::create([
-    //         'user_id' => auth()->id(),
-    //         'leave_type' => $request->leave_type,
-    //         'leave_details' => json_encode($leaveDetails), // Store all selected details as JSON
-    //         'start_date' => $request->start_date,
-    //         'end_date' => $request->end_date,
-    //         'salary_file' => $request->salary_file,
-    //         'days_applied' => $daysApplied,
-    //         'commutation' => $request->commutation,
-    //         'date_filing' => now(),
-    //         'reason' => $request->reason,
-    //         'status' => 'pending', // Default status for new requests
-    //     ]);
-    
-    //     notify()->success('Leave request submitted successfully! It is now pending approval.');
-    //     return redirect()->back();
-    // }
-
-    //second try
-    // public function store(Request $request, YearlyHolidayService $yearlyHolidayService)  {
-    //             // List of leave types that include weekends and holidays in calculation
-    //     $inclusiveLeaveTypes = [
-    //         'Maternity Leave',
-    //         'Study Leave',
-    //         'Rehabilitation Leave',
-    //         'Special Leave Benefit'
-    //     ];
-    
-    //     $request->validate([
-    //         'leave_type' => 'required|string',
-    //         'start_date' => [
-    //             'required',
-    //             'date',
-    //             function ($attribute, $value, $fail) use ($request, $inclusiveLeaveTypes, $yearlyHolidayService) {
-    //                 $leaveType = $request->leave_type;
-    //                 $startDate = Carbon::parse($value);
-    
-    //                 // Exclude weekends/holidays for non-inclusive leave types
-    //                 if (!in_array($leaveType, $inclusiveLeaveTypes) && 
-    //                     ($startDate->isWeekend() || $yearlyHolidayService->isHoliday($startDate))) {
-    //                     $fail('The start date cannot be a weekend or holiday for this leave type.');
-    //                 }
-    //             }
-    //         ],
-    //         'end_date' => 'required|date|after_or_equal:start_date',
-    //         'reason' => 'nullable|string',
-    //         'days_applied' => 'required|integer|min:1',
-    //         'commutation' => 'required|boolean',
-    //         'leave_details' => 'nullable|array', 
-    //         'abroad_details' => 'nullable|string', 
-    //     ]);
-    
-    //     $user = Auth::user();
-    
-    //     // Calculate number of days applied
-    //     $startDate = Carbon::parse($request->start_date);
-    //     $endDate = Carbon::parse($request->end_date);
-        
-
-    //     if (in_array($request->leave_type, $inclusiveLeaveTypes)) {
-    //         $daysApplied = $startDate->diffInDays($endDate) + 1;
-    //     } else {
-    //         $daysApplied = 0;
-    //         $currentDate = $startDate->copy();
-            
-    //         $holidays = $yearlyHolidayService->getHolidaysBetweenDates($startDate, $endDate);
-            
-    //         while ($currentDate->lte($endDate)) {
-    //             if (!$currentDate->isWeekend() && !in_array($currentDate->format('Y-m-d'), $holidays)) {
-    //                 $daysApplied++;
-    //             }
-    //             $currentDate->addDay();
-    //         }
-        
-    //         // ✅ This should be inside the 'else' block
-    //         if ($daysApplied === 0) {
-    //             $isValidStartDate = !$startDate->isWeekend() && 
-    //                                 !$yearlyHolidayService->isHoliday($startDate);
-                
-    //             if ($isValidStartDate) {
-    //                 $daysApplied = 1;
-    //             } else {
-    //                 return redirect()->back()->withErrors([
-    //                     'start_date' => 'Your selected dates only include weekends/holidays which are not counted for this leave type.'
-    //                 ]);
-    //             }
-    //         }
-    //     }
-        
-    //     // **Check if the employee has enough leave credits for the request**
-    //     $availableLeaveBalance = match ($request->leave_type) {
-    //         'Vacation Leave', 'Sick Leave' => $user->vacation_leave_balance + $user->sick_leave_balance, // Combine balances for Vacation and Sick Leave
-    //         'Mandatory Leave' => $user->vacation_leave_balance, // Mandatory Leave uses Vacation Leave balance
-    //         'Maternity Leave' => $user->maternity_leave,
-    //         'Paternity Leave' => $user->paternity_leave,
-    //         'Solo Parent Leave' => $user->solo_parent_leave,
-    //         'Study Leave' => $user->study_leave,
-    //         'VAWC Leave' => $user->vawc_leave,
-    //         'Rehabilitation Leave' => $user->rehabilitation_leave,
-    //         'Special Leave Benefit' => $user->special_leave_benefit,
-    //         'Special Emergency Leave' => $user->special_emergency_leave,
-    //         default => 0, // Default to 0 if leave type is not recognized
-    //     };
-    
-    //     // **Check if there are enough leave credits**
-    //     if ($daysApplied > $availableLeaveBalance) {
-    //         return redirect()->back()->withErrors(['end_date' => 'You do not have enough balance for ' . $request->leave_type . '.']);
-    //     }
-    
-    //     // Initialize an empty array to store selected leave details
-    //     $leaveDetails = [];
-    
-    //     // **Vacation Leave / Special Privilege Leave**
-    //     if ($request->leave_type === 'Vacation Leave' || $request->leave_type === 'Special Privilege Leave') {
-    //         if ($request->filled('within_philippines')) {
-    //             $leaveDetails['Within the Philippines'] = $request->within_philippines; // Text input
-    //         }
-    //         if ($request->filled('abroad_details')) {
-    //             $leaveDetails['Abroad'] = $request->abroad_details; // Text input
-    //         }
-    //     }
-    
-    //     // **Sick Leave**
-    //     if ($request->leave_type === 'Sick Leave') {
-    //         if ($request->has('in_hospital')) {
-    //             $leaveDetails['In Hospital'] = $request->input('in_hospital_details', 'Yes'); // Get input value or default 'Yes'
-    //         }
-    //         if ($request->has('out_patient')) {
-    //             $leaveDetails['Out Patient'] = $request->input('out_patient_details', 'Yes');
-    //         }
-    //     }
-    
-    //     // **Study Leave**
-    //     if ($request->leave_type === 'Study Leave') {
-    //         if ($request->has('completion_masters')) {
-    //             $leaveDetails[] = 'Completion of Master\'s Degree';
-    //         }   
-    //         if ($request->has('bar_review')) {
-    //             $leaveDetails[] = 'BAR Review';
-    //         }
-    //     }
-    
-    //     // **Other Purposes**
-    //     if ($request->leave_type === 'Other Purposes') {
-    //         if ($request->has('monetization')) {
-    //             $leaveDetails[] = 'Monetization of Leave Credits';
-    //         }
-    //         if ($request->has('terminal_leave')) {
-    //             $leaveDetails[] = 'Terminal Leave';
-    //         }
-    //     }
-    
-    //     // **Others Leave Type**
-    //     if ($request->leave_type === 'Others') {
-    //         if ($request->filled('others_details')) {
-    //             $leaveDetails[] = 'Other Details';
-    //             $leaveDetails[] = $request->others_details;
-    //         }
-    //     }
-    
-    //     // Store leave request with a default status of "Pending"
-    //     Leave::create([
-    //         'user_id' => auth()->id(),
-    //         'leave_type' => $request->leave_type,
-    //         'leave_details' => json_encode($leaveDetails), // Store all selected details as JSON
-    //         'start_date' => $request->start_date,
-    //         'end_date' => $request->end_date,
-    //         'salary_file' => $request->salary_file,
-    //         'days_applied' => $daysApplied,
-    //         'commutation' => $request->commutation,
-    //         'date_filing' => now(),
-    //         'reason' => $request->reason,
-    //         'status' => 'pending', // Default status for new requests
-    //     ]);
-    
-    //     notify()->success('Leave request submitted successfully! It is now pending approval.');
-    //     return redirect()->back();
-    // }
 
     public function store(Request $request, YearlyHolidayService $yearlyHolidayService)  
     {
@@ -387,6 +118,7 @@ class EmployeeController extends Controller
             ],
             'end_date' => 'required|date|after_or_equal:start_date',
             'reason' => 'nullable|string',
+            'signature' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',
             'days_applied' => 'required|integer|min:1',
             'commutation' => 'required|boolean',
             'leave_details' => 'nullable|array', 
@@ -480,10 +212,39 @@ class EmployeeController extends Controller
             }
         }
     
+        // **Study Leave**
+        if ($request->leave_type === 'Study Leave') {
+            if ($request->has('completion_masters')) {
+                $leaveDetails[] = 'Completion of Master\'s Degree';
+            }   
+            if ($request->has('bar_review')) {
+                $leaveDetails[] = 'BAR Review';
+            }
+        }
+    
+        // **Other Purposes**
+        if ($request->leave_type === 'Other Purposes') {
+            if ($request->has('monetization')) {
+                $leaveDetails[] = 'Monetization of Leave Credits';
+            }
+            if ($request->has('terminal_leave')) {
+                $leaveDetails[] = 'Terminal Leave';
+            }
+        }
+    
+        // **Others Leave Type**
+        if ($request->leave_type === 'Others') {
+            if ($request->filled('others_details')) {
+                $leaveDetails[] = 'Other Details';
+                $leaveDetails[] = $request->others_details;
+            }
+        }
+    
+        // Store leave request with a default status of "Pending"
         Leave::create([
             'user_id' => auth()->id(),
             'leave_type' => $request->leave_type,
-            'leave_details' => json_encode($leaveDetails),
+            'leave_details' => json_encode($leaveDetails), // Store all selected details as JSON
             'start_date' => $request->start_date,
             'end_date' => $request->end_date,
             'salary_file' => $request->salary_file,
@@ -491,8 +252,9 @@ class EmployeeController extends Controller
             'commutation' => $request->commutation,
             'date_filing' => now(),
             'reason' => $request->reason,
-            'status' => 'pending',
+            'status' => 'pending', // Default status for new requests
         ]);
+
     
         notify()->success('Leave request submitted successfully! It is now pending approval.');
         return redirect()->back();
@@ -688,11 +450,12 @@ class EmployeeController extends Controller
     public function viewPdf($id)
     {
         $leave = Leave::findOrFail($id);
+        $official = HRSupervisor::find($id);
 
         $supervisor = User::where('role', 'supervisor')->first();
         $hr = User::where('role', 'hr')->first();
         
-        $pdf = PDF::loadView('pdf.leave_details', compact('leave', 'supervisor', 'hr'));
+        $pdf = PDF::loadView('pdf.leave_details', compact('leave', 'supervisor', 'hr', 'official'));
         
         return $pdf->stream('leave_request_' . $leave->id . '.pdf');
     }
@@ -724,6 +487,7 @@ class EmployeeController extends Controller
             'days_applied' => 'required|integer|min:1',
             'commutation' => 'required|boolean',
             'reason' => 'nullable|string',
+            'signature' => 'nullable|file|mimes:jpg,png,pdf|max:2048',
             'abroad_details' => 'nullable|string', // Ensure it's validated
         ]);
     
@@ -790,6 +554,7 @@ class EmployeeController extends Controller
             'days_applied' => $request->days_applied,
             'commutation' => $request->commutation,
             'reason' => $request->reason,
+            'signature' => $request->signature,
             'leave_details' => !empty($leaveDetails) ? json_encode($leaveDetails) : null, // Save as JSON
         ]);
     

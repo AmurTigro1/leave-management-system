@@ -68,9 +68,9 @@
             <a href="/" class="font-bold text-2xl">Department of the Interior and Local Government</a>
         </div>
 
-        <form method="POST" action="{{ route('login') }}" class="mt-6">
+        <form method="POST" action="{{ route('login') }}" class="mt-6" onsubmit="document.getElementById('loading-screen').classList.remove('hidden'); this.querySelector('button').disabled = true;">
             @csrf
-
+        
             <!-- Email Input -->
             <div class="mb-4">
                 <label for="email" class="block text-gray-700 font-medium mb-2">Email</label>
@@ -87,7 +87,7 @@
                 <span class="text-red-500 text-sm">{{ $message }}</span>
                 @enderror
             </div>
-
+        
             <!-- Password Input -->
             <div class="mb-4">
                 <label for="password" class="block text-gray-700 font-medium mb-2">Password</label>
@@ -104,7 +104,7 @@
                 <span class="text-red-500 text-sm">{{ $message }}</span>
                 @enderror
             </div>
-
+        
             <!-- Remember Me -->
             <div class="mb-4 flex items-center justify-between">
                 <div>
@@ -114,7 +114,7 @@
                         {{ __('Remember Me') }}
                     </label>
                 </div>
-
+        
                 <div>
                     @if (Route::has('password.request'))
                         <a class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" href="{{ route('password.request') }}">
@@ -123,14 +123,25 @@
                     @endif
                 </div>
             </div>
-
+        
             <input type="hidden" name="system" value="lms"> 
+        
             <!-- Login Button -->
             <button type="submit"
                 class="w-full bg-blue-700 hover:bg-blue-800 text-white font-bold py-2 px-4 rounded transition duration-200">
                 {{ __('Login') }}
             </button>
         </form>
+        
+        <!-- Loading Screen -->
+        <div id="loading-screen" class="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 hidden">
+            <div class="flex flex-col items-center bg-white p-6 rounded-lg shadow-lg">
+                <svg class="animate-spin h-10 w-10 text-blue-500 mb-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 12h16m-8-8v16" />
+                </svg>
+                <p class="text-gray-700">Logging in...</p>
+            </div>
+        </div>        
     </div>
 </div>
 

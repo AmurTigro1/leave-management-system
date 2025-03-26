@@ -1,6 +1,11 @@
 @extends('layouts.hr.sidebar-header')
 
 @section('content')
+    <!-- Top-Right Header -->
+    <div class="fixed top-4 right-4 z-[9999]">
+        <x-notify::notify />
+    </div>
+    @notifyJs
 <div class="max-w-7xl mx-auto p-6 space-y-6 animate-fade-in">
     <div class="container mx-auto px-4">
         <!-- Leave & CTO Requests Summary -->
@@ -148,3 +153,4 @@
 </style>
 
 @endsection
+@notifyCss

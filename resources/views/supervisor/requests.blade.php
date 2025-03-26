@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="animate-fade-in">
-    <h2 class="text-xl font-bold mb-4">Final Approval for Leave Applications</h2>
+    <h2 class="text-xl font-bold mb-4">Recent Request recommended by HR</h2>
   <!-- Success & Error Messages -->
   @if(session('success'))
   <div id="success-alert" class="mb-4 bg-green-100 border-l-4 border-green-500 text-green-700 p-3 rounded-md">
@@ -71,10 +71,45 @@
                 </p>
                 <p class="text-gray-700 mt-2">Duration: <span class="font-semibold">{{ \Carbon\Carbon::parse($leave->start_date)->diffInDays(\Carbon\Carbon::parse($leave->end_date)) + 1 }} day(s)</span></p>
         
-                <form action="{{ route('supervisor.approve', $leave->id) }}" method="POST">
-                    @csrf
-                    <button type="submit" class="mt-4 bg-green-500 text-white px-4 py-2 rounded hover:scale-105">Approve</button>
-                </form>
+                @if($leave->leave_type == 'Mandatory Leave')
+                    <form action="{{ route('supervisor.reject', $leave->id) }}" method="POST">
+                        @csrf
+                       <div class="flex justify-center items-center">
+                            <button type="button" id="rejectBtn" 
+                                class="bg-orange-600 text-white py-2 px-4 rounded-lg mt-4">
+                                Reject Request
+                            </button>
+                       </div>
+
+                        <div id="disapprovalSection" class="mt-3 hidden h-auto">
+                            <label class="block text-gray-700 font-medium text-xs">Disapproval Reason:</label>
+                            <textarea name="disapproval_reason" id="disapproval_reason" 
+                                class="w-full border rounded p-2 text-xs focus:ring focus:ring-blue-200"></textarea>
+                            
+                            <div class="flex gap-2 mt-2">
+                                <button type="submit" name="status" value="Rejected" id="finalRejectBtn"
+                                    class="bg-red-600 text-white py-2 px-4 rounded-lg">
+                                    Confirm Rejection
+                                </button>
+                                
+                                <button type="button" id="cancelDisapprovalBtn" class="bg-gray-500 text-white py-2 px-4 rounded-lg">
+                                    Cancel
+                                </button>
+                            </div>
+                        </div> 
+                    </form> 
+                    
+                    <script>
+                        document.getElementById('rejectBtn').addEventListener('click', function() {
+                            document.getElementById('disapprovalSection').classList.remove('hidden');
+                        });
+                    
+                        document.getElementById('cancelDisapprovalBtn').addEventListener('click', function() {
+                            document.getElementById('disapprovalSection').classList.add('hidden');
+                            document.getElementById('disapproval_reason').value = ""; // Clear text area
+                        });
+                    </script>
+                @endif
             </div>
             @endforeach
         </div>

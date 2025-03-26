@@ -53,9 +53,15 @@
 
                                 $status = 'pending';
 
-                                if ($leave->hr_status == 'approved' && $leave->supervisor_status == 'pending') {
+                                if ($leave->admin_status == 'approved' && $leave->hr_status == 'pending') {
                                     $status = 'waiting';
-                                } elseif ($leave->hr_status == 'approved' && $leave->hr_status == 'approved') {
+                                } elseif ($leave->admin_status == 'rejected') {
+                                    $status = 'rejected';
+                                } elseif ($leave->hr_status == 'rejected') {
+                                    $status = 'rejected';
+                                } elseif ($leave->supervisor_status == 'rejected') {
+                                    $status = 'rejected';
+                                } elseif ($leave->hr_status == 'approved' && $leave->supervisor_status == 'approved') {
                                     $status = 'approved';
                                 } elseif ($leave->hr_status == 'rejected' || $leave->hr_status == 'rejected') {
                                     $status = 'rejected';

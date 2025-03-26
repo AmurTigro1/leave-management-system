@@ -12,11 +12,12 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->alias([
-            'employeeMiddleware' => \App\Http\Middleware\EmployeeMiddleware::class,
-            'SupervisorMiddleware' => \App\Http\Middleware\SupervisorMiddleware::class,
-            'hrMiddleware' => \App\Http\Middleware\hrMiddleware::class,
-            'adminMiddleware' => \App\Http\Middleware\AdminMiddleware::class,
-            'auth.redirect' => \App\Http\Middleware\RedirectIfNotAuthenticated::class,
+            'employee' => \App\Http\Middleware\EmployeeMiddleware::class,
+            'supervisor' => \App\Http\Middleware\SupervisorMiddleware::class,
+            'hr' => \App\Http\Middleware\hrMiddleware::class,
+            'admin' => \App\Http\Middleware\AdminMiddleware::class,
+            'auth' => \App\Http\Middleware\AuthMiddleware::class,
+            'role' => \App\Http\Middleware\CheckRole::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

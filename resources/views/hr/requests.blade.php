@@ -1,156 +1,117 @@
 @extends('layouts.hr.sidebar-header')
 
 @section('content')
-<div class="max-w-6xl bg-white p-8 rounded animate-fade-in">
-    <h2 class="text-2xl font-bold text-gray-700 mb-6 flex items-center gap-2">
-        <i class="lucide lucide-file-text"></i> Review Leave Applications
-    </h2>
-    @if($errors->any())
-    <div class="alert alert-danger">
-        <ul>
-            @foreach($errors->all() as $error)
-                <li>{{ $error }}</li>
-            @endforeach
-        </ul>
-    </div>
-@endif
-
-@if(session('success'))
-    <div class="alert alert-success">
-        {{ session('success') }}
-    </div>
-@endif
-    <!-- Check if there are any leave applications -->
-    @if($leaveApplications->isEmpty())
-        <div class="text-center py-10 text-gray-500">
-            <i class="lucide lucide-folder-x w-12 h-12 mx-auto"></i>
-            <p class="mt-2 text-lg">No leave applications found.</p>
-        </div>
-    @else
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            @foreach ($leaveApplications as $leave)
-            <div class="bg-gray-100 p-4 rounded-lg shadow-md text-sm">
-                <div class="flex items-center gap-3 border-b pb-3 mb-3">
-                    <div class="bg-blue-500 text-white w-10 h-10 flex items-center justify-center rounded-full text-lg font-bold overflow-hidden">
-                        <img src="{{ asset('storage/profile_images/' . $leave->user->profile_image) }}" 
-                             alt="User Profile" 
-                             class="w-full h-full object-cover rounded-full">
-                    </div>               
-                    
-                    <div>
-                        <p class="text-md font-semibold text-gray-800">{{ $leave->user->first_name }} {{$leave->user->last_name}}</p>
-                        <p class="text-xs text-gray-500">{{ $leave->leave_type }} - {{ $leave->days_applied }} Days</p>
-                        <p class="text-gray-700 text-xs rounded-md">
-                            Date of filing:
-                            {{ \Carbon\Carbon::parse($leave->date_filing)->format('F j, Y') }}
-                        </p>  
-                    </div>
-                    
-                </div>
-   
-                <p class="text-gray-600 mb-2"><strong>Status:</strong> 
-                    <span class="px-2 py-1 text-white text-xs rounded 
-                        {{ $leave->status === 'pending' ? 'bg-yellow-500' : ($leave->status === 'approved' ? 'bg-green-500' : 'bg-red-500') }}">
-                        {{ ucfirst($leave->status) }}
-                    </span>
-                </p>
-
-                <form action="{{ route('leave.review', $leave->id) }}" method="POST" class="space-y-2">
-                    @csrf
-
-                    <!-- Approval Status -->
-                    <label class="block text-gray-700 font-medium text-xs">Approval:</label>
-                    <select name="status" class="w-full border rounded p-2 text-xs focus:ring focus:ring-blue-200" required>
-                        <option value="Approved">Approve</option>
-                        <option value="Rejected">Reject</option>
-                    </select>
-
-                    <!-- Disapproval Reason -->
-                    <label class="block text-gray-700 font-medium text-xs">Disapproval Reason:</label>
-                    <textarea name="disapproval_reason" class="w-full border rounded p-2 text-xs focus:ring focus:ring-blue-200"></textarea>
-
-                    {{-- <!-- Approved Days With Pay -->
-                    <label class="block text-gray-700 font-medium text-xs">Days with Pay:</label>
-                    <input type="number" name="approved_days_with_pay" class="w-full border rounded p-2 text-xs focus:ring focus:ring-blue-200">
-
-                    <!-- Approved Days Without Pay -->
-                    <label class="block text-gray-700 font-medium text-xs">Days without Pay:</label>
-                    <input type="number" name="approved_days_without_pay" class="w-full border rounded p-2 text-xs focus:ring focus:ring-blue-200"> --}}
-
-                    <div class="flex gap-2">
-                    <!-- Submit Button -->
-                    <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white font-medium py-2 text-xs rounded-lg transition">
-                        Submit
-                    </button>
-                    <a href="{{ route('hr.leave_details', ['id' => $leave->id]) }}" 
-                        class="px-4 w-full text-center bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 text-xs rounded-lg transition">
-                         View
-                     </a>
-                    </div>
-                </form>
-            </div>
-            @endforeach
-        </div>
-    @endif
-        <!-- Pagination -->
-        <div class="mt-4">
-            <p class="text-gray-600 text-sm">
-                Showing {{ $leaveApplications->firstItem() }} to {{ $leaveApplications->lastItem() }} of {{ $leaveApplications->total() }} Leave Applications
-            </p>
-           <div class="mt-4 flex justify-end">
-                @if ($leaveApplications->hasPages())
-                    <nav class="flex space-x-2">
-                        {{-- Previous Page Link --}}
-                        @if ($leaveApplications->onFirstPage())
-                            <span class="px-4 py-2 text-gray-400 bg-gray-100 rounded-md cursor-not-allowed">
-                                &larr; Prev
-                            </span>
-                        @else
-                            <a href="{{ $leaveApplications->previousPageUrl() }}" class="px-4 py-2 text-gray-700 bg-white border rounded-md hover:bg-gray-100">
-                                &larr; Prev
-                            </a>
-                        @endif
-
-                        {{-- Page Numbers --}}
-                        @foreach ($leaveApplications->getUrlRange(1, $leaveApplications->lastPage()) as $page => $url)
-                            @if ($page == $leaveApplications->currentPage())
-                                <span class="px-4 py-2 bg-blue-500 text-white rounded-md">{{ $page }}</span>
-                            @else
-                                <a href="{{ $url }}" class="px-4 py-2 text-gray-700 bg-white border rounded-md hover:bg-gray-100">
-                                    {{ $page }}
-                                </a>
-                            @endif
-                        @endforeach
-
-                        {{-- Next Page Link --}}
-                        @if ($leaveApplications->hasMorePages())
-                            <a href="{{ $leaveApplications->nextPageUrl() }}" class="px-4 py-2 text-gray-700 bg-white border rounded-md hover:bg-gray-100">
-                                Next &rarr;
-                            </a>
-                        @else
-                            <span class="px-4 py-2 text-gray-400 bg-gray-100 rounded-md cursor-not-allowed">
-                                Next &rarr;
-                            </span>
-                        @endif
-                    </nav>
-                @endif
-            </div>
-        </div>
+<div class="fixed top-4 right-4 z-[9999]">
+    <x-notify::notify />
 </div>
+<div class="w-full bg-white rounded animate-fade-in flex justify-between items-start p-6">
 
-<!-- Hide Alerts after a few seconds -->
-<script>
-    setTimeout(() => {
-        document.getElementById('success-alert')?.remove();
-        document.getElementById('error-alert')?.remove();
-    }, 4000);
-</script>
+    <!-- Leave Applications Section -->
+    <div class="shadow-lg rounded mr-4 py-2 px-4 w-full">
+        <h2 class="text-2xl font-bold text-gray-700 mb-6 flex items-center gap-2">
+            <i class="lucide lucide-file-text"></i> Review Leave Applications
+        </h2>
 
-<!-- Add Lucide Icons -->
-<script src="https://unpkg.com/lucide@latest"></script>
-<script>
-    lucide.createIcons();
-</script>
+        @if ($leaveApplications->isEmpty())
+            <p class="text-gray-600">No leave applications available.</p>
+        @else
+            @php $leaveFound = false; @endphp
+            <div>
+                @foreach ($leaveApplications as $leave)
+                    @if (($leave->status == 'pending' && $leave->admin_status == 'approved') || 
+                        ($leave->status != 'approved' || $leave->admin_status != 'approved') && 
+                        $leave->hr_status != 'rejected')
+                        @php $leaveFound = true; @endphp
+                        <div class="bg-white shadow-lg rounded-lg p-6 transition-transform transform hover:scale-105 hover:shadow-xl mb-2">
+                            <div class="flex justify-between items-end">
+                                <div class="flex justify-start items-center">
+                                    <div class="flex justify-start items-center mr-3">
+                                        @if ($leave->user->profile_image)
+                                            <img src="{{ asset('storage/profile_images/' . $leave->user->profile_image) }}" class="w-[100px] h-[100px] rounded-full object-cover">
+                                        @else
+                                            <img src="{{ asset('img/default-avatar.png') }}" alt="" class="w-[50px] h-[100px] rounded-full object-cover">
+                                        @endif
+                                    </div>
+                                    <div>
+                                        <h3 class="text-sm font-semibold text-start mb-2 mt-2 text-gray-900 uppercase">
+                                            {{ $leave->user->first_name }} {{ strtoupper(substr($leave->user->middle_name, 0, 1)) }}. {{ $leave->user->last_name }}
+                                        </h3>
+                                        <p class="text-gray-600 text-sm">Leave Type: {{ $leave->leave_type }}</p>
+                                        <p class="text-gray-600 text-sm">Duration: 
+                                            <span class="font-semibold">
+                                                {{ \Carbon\Carbon::parse($leave->start_date)->diffInDays(\Carbon\Carbon::parse($leave->end_date)) + 1 }} days
+                                            </span>
+                                        </p>
+                                    </div>
+                                </div>
+                                <div>
+                                    <a href="{{ route('hr.leave_details', ['id' => $leave->id]) }}" class="text-blue-600">View Request</a>
+                                </div>
+                            </div>
+                            @if($leave->leave_type == 'Mandatory Leave' && $leave->supervisor_status == 'rejected')
+                            <h1 class="font-bold">Supervisor Status: <span class="text-red-500 capitalize">{{ $leave->supervisor_status}}</span></h1>
+                            <p class="text-gray-500">Reason: <span class="text-red-500 capitalize">{{ $leave->disapproval_reason}}</span></p>
+                        @endif
+                        </div>
+                    @endif
+                @endforeach
+            </div>
+            @if (!$leaveFound)
+                <p class="text-gray-600">No leave applications available.</p>
+            @endif
+        @endif
+    </div>
+
+    <!-- CTO Applications Section -->
+    <div class="shadow-lg rounded mr-4 py-2 px-4 w-full">
+        <h2 class="text-2xl font-bold text-gray-700 mb-6 flex items-center gap-2">
+            <i class="lucide lucide-file-text"></i> Review CTO Applications
+        </h2>
+
+        @if ($ctoApplications->isEmpty())
+            <p class="text-gray-600">No CTO applications available.</p>
+        @else
+            @php $ctoFound = false; @endphp
+            <div>
+                @foreach ($ctoApplications as $cto)
+                    @if (($cto->status == 'pending' && $cto->admin_status == 'approved') || ($cto->status != 'approved' || $cto->admin_status != 'approved'))
+                        @php $ctoFound = true; @endphp
+                        <div class="bg-white shadow-lg rounded-lg p-6 transition-transform transform hover:scale-105 hover:shadow-xl mb-2">
+                            <div class="flex justify-between items-end">
+                                <div class="flex justify-start items-center">
+                                    <div class="flex justify-start items-center mr-3">
+                                        @if ($cto->user->profile_image)
+                                            <img src="{{ asset('storage/profile_images/' . $cto->user->profile_image) }}" class="w-[100px] h-[100px] rounded-full object-cover">
+                                        @else
+                                            <img src="{{ asset('img/default-avatar.png') }}" alt="" class="w-[50px] h-[100px] rounded-full object-cover">
+                                        @endif
+                                    </div>
+                                    <div>
+                                        <h3 class="text-sm font-semibold text-start mb-2 mt-2 text-gray-900 uppercase">
+                                            {{ $cto->user->first_name }} {{ strtoupper(substr($cto->user->middle_name, 0, 1)) }}. {{ $cto->user->last_name }}
+                                        </h3>
+                                        <p class="text-gray-600 text-sm">Working Hours Applied: {{ $cto->working_hours_applied }} hours</p>
+                                        <p class="text-gray-600 text-sm">Duration: 
+                                            <span class="font-semibold">
+                                                {{ \Carbon\Carbon::parse($cto->inclusive_date_start)->diffInDays(\Carbon\Carbon::parse($cto->inclusive_date_end)) + 1 }} days
+                                            </span>
+                                        </p>
+                                    </div>
+                                </div>
+                                <div>
+                                    <a href="{{ route('admin.cto_details', ['id' => $cto->id]) }}" class="text-blue-600">View Request</a>
+                                </div>
+                            </div>
+                        </div>
+                    @endif
+                @endforeach
+            </div>
+            @if (!$ctoFound)
+                <p class="text-gray-600">No CTO applications available.</p>
+            @endif
+        @endif
+    </div>
+</div>
 
 <style>
     .animate-fade-in {
@@ -168,3 +129,4 @@
     });
 </script>
 @endsection
+@notifyCss

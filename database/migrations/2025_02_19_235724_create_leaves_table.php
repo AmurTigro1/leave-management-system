@@ -21,13 +21,18 @@ return new class extends Migration
             $table->integer('days_applied');
             $table->boolean('commutation')->default(false);
             $table->string('reason')->nullable();
+            $table->string('signature');
             $table->string('leave_type');
             $table->json('leave_details')->nullable();
-            $table->text('disapproval_reason')->nullable();;
+            $table->text('disapproval_reason')->nullable();
+            $table->integer('approved_days_with_pay')->nullable();
+            $table->integer('approved_days_without_pay')->nullable();
+            $table->foreignId('admin_id')->nullable()->constrained('users')->onDelete('set null');
             $table->foreignId('hr_officer_id')->nullable()->constrained('users')->onDelete('set null');
             $table->timestamp('hr_action_at')->nullable();
             $table->enum('hr_status', ['pending', 'approved', 'rejected'])->default('pending');
-            $table->enum('status', ['pending', 'approved', 'rejected', 'cancelled', 'Waiting for Supervisor'])->default('pending');
+            $table->enum('admin_status', ['pending', 'approved', 'rejected'])->default('pending');
+            $table->enum('status', ['pending', 'approved', 'rejected', 'cancelled'])->default('pending');
             $table->timestamps();
         });
     }

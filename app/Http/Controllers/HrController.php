@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 use App\Models\User;
+use App\Models\HRSupervisor;
 use App\Models\Leave;
 use App\Models\OvertimeRequest;
 use App\Models\YearlyHoliday;
@@ -87,8 +88,12 @@ class HrController extends Controller
                             ->where('end_date', '>=', $today) // Ensures leave is still ongoing
                             ->with('user') // Ensures the user object is available
                             ->get();
+        $overtimeRequests = OvertimeRequest::where('status', 'approved')
+        ->whereMonth('inclusive_date_start', $month)
+        ->whereYear('inclusive_date_start', now()->year)
+        ->get();
     
-        return view('hr.on_leave', compact('teamLeaves', 'birthdays', 'month'));
+        return view('hr.on_leave', compact('teamLeaves', 'birthdays', 'month', 'overtimeRequests'));
     }
 
     public function requests()
@@ -97,9 +102,16 @@ class HrController extends Controller
             abort(403, 'Unauthorized access.');
         }
     
-        $leaveApplications = Leave::orderBy('created_at', 'desc')->paginate(9);
-    
-        return view('hr.requests', compact('leaveApplications'));
+        // Get leave applications waiting for supervisor approval
+        $leaveApplications = Leave::where('admin_status', 'approved')
+        ->orderBy('created_at', 'desc') 
+        ->paginate(9); 
+
+        $ctoApplications = OvertimeRequest::where('admin_status', 'approved')
+        ->orderBy('created_at', 'desc') 
+        ->paginate(9); 
+
+        return view('hr.requests', compact('leaveApplications', 'ctoApplications'));
     }
     
     
@@ -111,79 +123,48 @@ class HrController extends Controller
         return view('hr.leave_certification', compact('leave', 'daysRequested'));
     }
 
-    public function show($id) {
+    public function showleave($id) {
         $leave = Leave::findOrFail($id); 
+        $official = HRSupervisor::find($id);
 
-        return view('hr.leave_details', compact('leave'));
+        return view('hr.leave_details', compact('leave','official'));
     }
 
-    // HR/admin officer approve applications
-    public function review(Request $request, $leave) {
-        $leaveRequest = Leave::findOrFail($leave);
-        $user = $leaveRequest->user;
-    
-        // For Mandatory Leave, deduct from Vacation Leave balance
-        $leaveTypeForDeduction = $leaveRequest->leave_type === 'Mandatory Leave' ? 'Vacation Leave' : $leaveRequest->leave_type;
-    
-        switch ($leaveTypeForDeduction) {
-            case 'Sick Leave':
-                // Deduct from Sick Leave first, then Vacation Leave if needed
-                if ($user->sick_leave_balance >= $leaveRequest->days_applied) {
-                    $user->sick_leave_balance -= $leaveRequest->days_applied;
-                } else {
-                    $remainingDays = $leaveRequest->days_applied - $user->sick_leave_balance;
-                    $user->sick_leave_balance = 0;
-                    $user->vacation_leave_balance -= $remainingDays;
-                }
-                break;
-                
-            case 'Vacation Leave':
-                // Deduct from Vacation Leave first, then Sick Leave if needed
-                if ($user->vacation_leave_balance >= $leaveRequest->days_applied) {
-                    $user->vacation_leave_balance -= $leaveRequest->days_applied;
-                } else {
-                    $remainingDays = $leaveRequest->days_applied - $user->vacation_leave_balance;
-                    $user->vacation_leave_balance = 0;
-                    $user->sick_leave_balance -= $remainingDays;
-                }
-                break;
-                
-            case 'Maternity Leave':
-                $user->maternity_leave -= $leaveRequest->days_applied;
-                break;
-            case 'Paternity Leave':
-                $user->paternity_leave -= $leaveRequest->days_applied;
-                break;
-            case 'Solo Parent Leave':
-                $user->solo_parent_leave -= $leaveRequest->days_applied;
-                break;
-            case 'Study Leave':
-                $user->study_leave -= $leaveRequest->days_applied;
-                break;
-            case '10-Day VAWC Leave':
-                $user->vawc_leave -= $leaveRequest->days_applied;
-                break;
-            case 'Rehabilitation Privilege':
-                $user->rehabilitation_leave -= $leaveRequest->days_applied;
-                break;
-            case 'Special Leave Benefits for Women Leave':
-                $user->special_leave_benefit -= $leaveRequest->days_applied;
-                break;
-            case 'Special Emergency Leave':
-                $user->special_emergency_leave -= $leaveRequest->days_applied;
-                break;
-            default:
-                // For other leave types that don't deduct from any balance
-                break;
+    // HR officer reviews applications
+    public function review(Request $request, Leave $leave)
+    {
+        $request->validate([
+            'status' => 'required|in:Approved,Rejected', // Ensure correct input
+            'disapproval_reason' => 'nullable|string',
+        ]);
+
+        // Convert status to lowercase for consistency
+        $hr_status = strtolower($request->status); // "Approved" -> "approved", "Rejected" -> "rejected"
+
+        // Prepare the update data
+        $updateData = [
+            'hr_status' => $hr_status,
+            'status' => $hr_status === 'rejected' ? 'rejected' : $leave->status, // Ensure status is updated when rejected
+            'disapproval_reason' => $request->disapproval_reason,
+            'hr_officer_id' => auth()->id(),
+        ];
+
+        // If HR approves, update supervisor fields
+        if ($hr_status === 'approved') {
+            $updateData['supervisor_status'] = 'approved'; // Set supervisor status for review
+            $updateData['supervisor_id'] = auth()->id(); // Assign the supervisor
+            $updateData['status'] = 'approved'; // Ensure overall status is updated to approved
         }
-    
-        $leaveRequest->hr_status = 'approved';
-        $leaveRequest->save();
-        $user->save();
-    
-        notify()->success('Leave request approved successfully!');
-        return redirect()->back()->with('success', 'Leave request successfully approved');
+
+        // Update leave record
+        $leave->update($updateData);
+
+        notify()->success('Leave application reviewed by HR.');
+        return Redirect::route('hr.requests');
     }
+
+    
+
         public function generateLeaveReport($leaveId)
     {
         $leave = Leave::findOrFail($leaveId);
@@ -207,17 +188,6 @@ class HrController extends Controller
         
         // Return PDF for download
         return $pdf->download('leave_certificate.pdf');
-    }
-
-    public function overtimeRequests() {
-        if (Auth::user()->role !== 'hr') {
-            abort(403, 'Unauthorized access.');
-        }
-    
-        $overtimeRequests = OvertimeRequest::orderBy('created_at', 'desc')
-                                          ->paginate(9);
-    
-        return view('hr.CTO.overtime_requests', compact('overtimeRequests'));
     }
 
     public function showOvertime($id) {
@@ -330,94 +300,9 @@ class HrController extends Controller
         return redirect()->back();
     }
 
-    public function holiday()
+    public function cocLogs()
     {
-        $holidays = YearlyHoliday::orderBy('date')->get();
-        return view('hr.holidays.index', compact('holidays'));
-    }
-
-    /**
-     * Show the form for creating a new holiday.
-     */
-    public function create()
-    {
-        return view('hr.holidays.create');
-    }
-
-    /**
-     * Store a newly created holiday in storage.
-     */
-    public function store(Request $request)
-    {
-        $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:255',
-            'date' => 'required|date',
-            'type' => 'required|in:regular,special,national',
-            'repeats_annually' => 'sometimes|boolean',
-        ]);
-
-        if ($validator->fails()) {
-            return redirect()->back()
-                ->withErrors($validator)
-                ->withInput();
-        }
-
-        YearlyHoliday::create([
-            'name' => $request->name,
-            'date' => $request->date,
-            'type' => $request->type,
-            'repeats_annually' => $request->filled('repeats_annually')
-        ]);
-
-        return redirect()->route('hr.holidays.index')
-            ->with('success', 'Holiday created successfully.');
-    }
-
-    /**
-     * Show the form for editing the specified holiday.
-     */
-    public function edit(YearlyHoliday $holiday)
-    {
-        return view('hr.holidays.edit', compact('holiday'));
-    }
-
-    /**
-     * Update the specified holiday in storage.
-     */
-    public function update(Request $request, YearlyHoliday $holiday)
-    {
-        $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:255',
-            'date' => 'required|date',
-            'type' => 'required|in:regular,special,national',
-            'repeats_annually' => 'sometimes|boolean',
-        ]);
-
-        if ($validator->fails()) {
-            return redirect()->back()
-                ->withErrors($validator)
-                ->withInput();
-        }
-
-        $holiday->update([
-            'name' => $request->name,
-            'date' => $request->date,
-            'type' => $request->type,
-            'repeats_annually' => $request->boolean('repeats_annually'),
-        ]);
-
-        return redirect()->route('hr.holidays.index')
-            ->with('success', 'Holiday updated successfully.');
-    }
-
-    /**
-     * Remove the specified holiday from storage.
-     */
-    public function destroy(YearlyHoliday $holiday)
-    {
-        $holiday->delete();
-
-        return redirect()->route('hr.holidays.index')
-            ->with('success', 'Holiday deleted successfully.');
+        $logs = CompensatoryTimeLog::orderBy('created_at', 'desc')->paginate(10);
+        return view('hr.CTO.coclog', compact('logs'));
     }
 }
