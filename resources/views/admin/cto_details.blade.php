@@ -5,124 +5,141 @@
 <a href="{{ route('admin.requests') }}" class="inline-flex items-center text-blue-500 hover:underline transition duration-300">
     &larr; Back to Requests
 </a>
+
 <div class="flex justify-between items-start gap-4 px-4">
-    <div class="bg-white shadow-xl rounded-lg p-6 space-y-6 w-full h-[750px]">
-        <h2 class="text-2xl font-bold">CTO Balances</h2>
-        {{-- <div class="flex justify-between items-center">
-            <div class="bg-blue-600 text-white rounded-lg p-2 text-[10px] w-[124px] text-center mr-2">Vacation Leave</div>
-            <div class="bg-blue-600 text-white rounded-lg p-2 text-[10px] w-[124px] text-center mr-2">Sick Leave</div>
-            <div class="bg-blue-600 text-white rounded-lg p-2 text-[10px] w-[124px] text-center mr-2">Maternity Leave</div>
-            <div class="bg-blue-600 text-white rounded-lg p-2 text-[10px] w-[124px] text-center mr-2">Paternity Leave</div>
-            <div class="bg-blue-600 text-white rounded-lg p-2 text-[10px] w-[124px] text-center mr-2">Solo Parent Leave</div>
+    <!-- Left Side: Employee Request Details -->
+    <div class="bg-white shadow-xl rounded-lg p-6 space-y-6 w-[640px] h-auto py-[38px]">
+        <div class="w-[430px]">
+            <h1 class="uppercase text-xl font-semibold">Employee Request Details</h1> 
+            <br>
+            <p class="text-gray-500">Date Filed: {{ \Carbon\Carbon::parse($cto->date_filed)->format('F d, Y') }}</p>
         </div>
-        <div class="flex justify-between items-center">
-            <div class="bg-blue-600 text-white rounded-lg p-2 text-[10px] w-[124px] text-center mr-2">Study Leave</div>
-            <div class="bg-blue-600 text-white rounded-lg p-2 text-[10px] w-[124px] text-center mr-2">VAWC Leave</div>
-            <div class="bg-blue-600 text-white rounded-lg p-2 text-[10px] w-[124px] text-center mr-2">Rehabilitation Leave</div>
-            <div class="bg-blue-600 text-white rounded-lg p-2 text-[10px] w-[124px] text-center mr-2">Special Leave Benefit</div>
-            <div class="bg-blue-600 text-white rounded-lg p-2 text-[10px] w-[124px] text-center mr-2">Special Energency Leave</div>
-        </div>
-        <br>
-        <div class="flex justify-between items-center">
-            <div class="bg-gray-300 text-black rounded-lg p-2 text-[10px] w-[124px] text-center mr-2">{{ $leave->user->vacation_leave_balance}} days</div>
-            <div class="bg-gray-300 text-black rounded-lg p-2 text-[10px] w-[124px] text-center mr-2">{{ $leave->user->sick_leave_balance}} days</div>
-            <div class="bg-gray-300 text-black rounded-lg p-2 text-[10px] w-[124px] text-center mr-2">{{ $leave->user->maternity_leave}} days</div>
-            <div class="bg-gray-300 text-black rounded-lg p-2 text-[10px] w-[124px] text-center mr-2">{{ $leave->user->paternity_leave}} days</div>
-            <div class="bg-gray-300 text-black rounded-lg p-2 text-[10px] w-[124px] text-center mr-2">{{ $leave->user->solo_parent_leave}} days</div>
-        </div>
-        <div class="flex justify-between items-center">
-            <div class="bg-gray-300 text-black rounded-lg p-2 text-[10px] w-[124px] text-center mr-2">{{ $leave->user->study_leave}} days</div>
-            <div class="bg-gray-300 text-black rounded-lg p-2 text-[10px] w-[124px] text-center mr-2">{{ $leave->user->vawc_leave}} days</div>
-            <div class="bg-gray-300 text-black rounded-lg p-2 text-[10px] w-[124px] text-center mr-2">{{ $leave->user->rehabilitation_leave}} days</div>
-            <div class="bg-gray-300 text-black rounded-lg p-2 text-[10px] w-[124px] text-center mr-2">{{ $leave->user->special_leave_benefit}} days</div>
-            <div class="bg-gray-300 text-black rounded-lg p-2 text-[10px] w-[124px] text-center mr-2">{{ $leave->user->special_emergency_leave}} days</div>
-        </div>
-        <h2 class="text-2xl font-bold">Application Request</h2>
-       <div class="flex justify-between items-start gap-4">
-            <div class="w-full text-center">
-                <p class="mb-2">The Employeee requests the application to start and end at the following dates:</p>
-                <div class="p-2 bg-gray-300 text-black rounded-lg mb-2"> {{ \Carbon\Carbon::parse($leave->start_date)->format('F d, Y') }} - {{ \Carbon\Carbon::parse($leave->end_date)->format('F d, Y') }}</div>
-            </div>
-            <div class="w-full text-center">
-                <p class="mb-2">The Application request applied for the number of days to be taken:</p>
-                <div class="p-2 bg-gray-300 text-black rounded-lg">Applied days: {{ $leave->days_applied}}</div>
-            </div>
-       </div>
-        <div class="flex justify-between items-start gap-4">
-           <div class="w-full">
-                <p>Commutations required:</p>
-                <div class="flex justify-between items-start gap-4">
-                    @if($leave->commutation == 1)
-                        <div class="p-2 bg-blue-600 text-white rounded-lg mb-2 w-full text-center">
-                            Yes
-                        </div>
-                    @else
-                        <div class="p-1 border-4 border-blue-300 text-blue-600 font-bold rounded-lg mb-2 w-full text-center">
-                            Yes
-                        </div>
-                    @endif
-                    @if($leave->commutation == 0)
-                        <div class="p-2 bg-blue-600 text-white rounded-lg mb-2 w-full text-center">
-                            No
-                        </div>
-                    @else
-                        <div class="p-1 border-4 border-blue-300 text-blue-600 font-bold rounded-lg mb-2 w-full text-center">
-                            No
-                        </div>
-                    @endif
+
+        <!-- CTO Type Selection -->
+        <div class="flex justify-between items-center gap-4">
+            @foreach(['none' => 'None', 'halfday_morning' => 'Morning', 'halfday_afternoon' => 'Afternoon', 'wholeday' => 'Whole Day'] as $type => $label)
+                <div class="py-2 px-4 rounded-lg border-4 text-sm text-center font-semibold w-[150px] 
+                    {{ $cto->cto_type == $type ? 'border-blue-500 bg-gradient-to-r from-blue-100 to-blue-300' : 'border-gray-400 bg-gradient-to-r from-gray-100 to-gray-300' }}">
+                    {{ $label }}
                 </div>
-           </div>
-            <div class="w-full">
-                <p>Type of Leave requested and details:</p>
-                <div class="p-2 bg-gray-300 text-black rounded-lg mb-2 w-full text-center">{{ $leave->leave_type}}</div>
-            </div>
+            @endforeach
         </div>
+
+        <!-- Working Hours -->
+        @foreach([
+            'Working Hours Applied' => $cto->working_hours_applied, 
+            'Earned Hours' => $cto->earned_hours, 
+            'Overtime Balance' => $cto->user->overtime_balance
+        ] as $label => $value)
+            <p class="font-semibold">{{ $label }}</p>
+            <div class="flex justify-start items-center">
+                <div class="w-[45%] mr-4">
+                    <input type="number" class="border-4 w-full border-gray-400 rounded-lg" placeholder="0" value="{{ $value }}" {{ $label == 'Working Hours Applied' ? 'disabled' : '' }}> 
+                </div>
+                <div class="w-[55%]">
+                    <label>
+                        @if($label == 'Working Hours Applied') 
+                            The number of working hours requested by the employee. 
+                        @elseif($label == 'Earned Hours') 
+                            Total accumulated overtime hours over the past months. 
+                        @else 
+                            The employee's available overtime balance for CTO/COC requests. 
+                        @endif
+                    </label>
+                </div>
+            </div>
+        @endforeach
+
+        <!-- Buttons -->
+        <br>
         <div>
-            <p>Details:</p>
-            <div class="p-2 bg-gray-300 text-black rounded-lg mb-2 w-full">{{ is_string($leave->leave_details) ? implode(', ', json_decode($leave->leave_details, true)) : $leave->leave_details }}</div>
+            <button type="submit" name="admin_status" value="Approved" class="bg-blue-600 text-white py-2 px-4 rounded-lg mr-3">
+                Proceed to HR
+            </button>
+            <button type="button" id="rejectBtn" class="bg-orange-600 text-white py-2 px-4 rounded-lg">
+                Reject Request
+            </button>
         </div>
     </div>
-    <div class="bg-white shadow-xl rounded-lg p-6 space-y-6 w-full h-[750px]">
-        <p class="uppercase text-center text-[10px] font-bold mt-4">Total leave balances left here:</p>
-        <div class="text-blue-600 rounded-lg text-center font-bold text-4xl">
-            {{ 
-                $leave->user->vacation_leave_balance + 
-                $leave->user->sick_leave_balance + 
-                $leave->user->maternity_leave + 
-                $leave->user->paternity_leave + 
-                $leave->user->solo_parent_leave + 
-                $leave->user->study_leave + 
-                $leave->user->vawc_leave + 
-                $leave->user->rehabilitation_leave + 
-                $leave->user->special_leave_benefit + 
-                $leave->user->special_emergency_leave 
-            }} days
-        </div>
-        <div class="flex justify-center items-start gap-2">
-            <div class="p-2 bg-blue-600 text-white rounded-lg mb-2 w-[25%] text-center">
-                Monthly
+
+    <!-- Right Side: Processing Steps and Chart -->
+    <div class="bg-white shadow-xl rounded-lg p-6 space-y-6 w-full h-auto">
+        <p class="text-gray-500">Inclusive Dates: {{ \Carbon\Carbon::parse($cto->inclusive_date_start)->format('F d, Y') }} - {{ \Carbon\Carbon::parse($cto->inclusive_date_end)->format('F d, Y') }}</p>
+
+        <h1 class="text-center font-bold text-2xl bg-gradient-to-r from-blue-500 to-blue-800 bg-clip-text text-transparent">
+            Steps for Processing the Request
+        </h1>
+
+        <div class="flex justify-between items-center gap-2">
+            <!-- Graph -->
+            <div class="w-[40%] h-[500px] flex items-center mr-3 mt-4">
+                <canvas id="myChart"></canvas>
             </div>
-            <div class="p-1 border-4 border-blue-300 text-blue-600 font-bold rounded-lg mb-2 w-[25%] text-center">
-                Annually
-            </div>
+
+            <!-- Steps -->
+            <div class="w-[60%]">
+                @foreach([
+                    'Admin Status' => ['status' => $cto->admin_status, 'color' => 'yellow', 'description' => 'The Admin reviews the request before sending it to HR.'],
+                    'HR Status' => ['status' => $cto->hr_status, 'color' => 'gray', 'description' => 'HR verifies the request and forwards it to the Supervisor.'],
+                    'Supervisor Status' => ['status' => $cto->supervisor_status, 'color' => 'gray', 'description' => 'The Supervisor conducts a final review before approval.']
+                ] as $step => $details)
+                    <div class="mt-2 py-2 px-6 rounded-lg border-4 border-{{ $details['color'] }}-500 text-sm text-center font-semibold bg-gradient-to-r from-{{ $details['color'] }}-100 to-{{ $details['color'] }}-300">
+                        <p class="uppercase text-[15px]">{{ $step }}</p>
+                        <br>
+                        <h1 class="text-2xl">
+                            <span class="capitalize font-bold bg-gradient-to-r from-{{ $details['color'] }}-500 to-{{ $details['color'] }}-800 bg-clip-text text-transparent">
+                                {{ $details['status'] }}
+                            </span>
+                        </h1>
+                        <br>
+                        <p class="text-sm">{{ $details['description'] }}</p>
+                    </div>
+                @endforeach
+            </div>            
         </div>
-       <div class="flex justify-between items-start gap-4 px-4">
-                <!-- Canvas for Pie Chart -->
-            <canvas id="leaveBalanceChart"></canvas>
-        </div>
-        <div class="border-2 border-gray"></div>
-        <h1 class="text-blue-600 font-bold text-center">Request Verification complete? Proceed to HR!</h1>
-        <div class="py-2 px-4">
-            <p class="text-sm text-gray-500">The request has been confirmed and will be transfered to the HR for approval. Make sure to look carefully before proceeding and finalize the verification.</p>
-        </div>
-       <div class="flex justify-center items-center">
-            <a href="#" class="bg-blue-600 text-white py-2 px-4 rounded-lg mr-3">Proceed to HR</a>
-            <a href="#" class="bg-orange-600 text-white py-2 px-4 rounded-lg">Reject Request</a>
-       </div> --}}
     </div>
 </div>
+
 @endsection
 
+<!-- Chart Script -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const ctx = document.getElementById('myChart').getContext('2d');
+
+    // Data for the chart
+    const labels = ["Working Hours", "Earned Hours", "Overtime Balance"];
+    const data = [
+        {{ $cto->working_hours_applied }},
+        {{ $cto->earned_hours }},
+        {{ $cto->user->overtime_balance }}
+    ];
+
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Hours Overview',
+                data: data,
+                backgroundColor: ['#3b82f6', '#f97316', '#10b981'],
+                borderColor: ['#1e40af', '#c2410c', '#065f46'],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: { beginAtZero: true }
+            }
+        }
+    });
+});
+</script>
+
+<!-- Animation -->
 <style>
 .animate-fade-in {
     animation: fadeIn 1s ease-in-out;
@@ -132,105 +149,4 @@
     from { opacity: 0; }
     to { opacity: 1; }
 }
-
-.animate-pulse {
-    animation: pulse 2s infinite;
-}
-
-@keyframes pulse {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.05); }
-    100% { transform: scale(1); }
-}
-#leaveBalanceChart {
-    max-width: 200px;  /* Reduce size */
-    max-height: 200px;
-    display: block;
-    margin: 0 auto;  /* Center the chart */
-}
-
-</style> 
-
-{{-- <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-    // Get leave balances from PHP
-    let leaveBalances = {
-        vacation_leave: {{ $leave->user->vacation_leave_balance }},
-        sick_leave: {{ $leave->user->sick_leave_balance }},
-        maternity_leave: {{ $leave->user->maternity_leave }},
-        paternity_leave: {{ $leave->user->paternity_leave }},
-        solo_parent_leave: {{ $leave->user->solo_parent_leave }},
-        study_leave: {{ $leave->user->study_leave }},
-        vawc_leave: {{ $leave->user->vawc_leave }},
-        rehabilitation_leave: {{ $leave->user->rehabilitation_leave }},
-        special_leave_benefit: {{ $leave->user->special_leave_benefit }},
-        special_emergency_leave: {{ $leave->user->special_emergency_leave }}
-    };
-
-    let appliedDays = {{ $leave->days_applied }};
-    
-    // Calculate total balance and percentage
-    let totalBalance = Object.values(leaveBalances).reduce((a, b) => a + b, 0);
-    let remainingBalance = totalBalance - appliedDays;
-    let remainingPercentage = ((remainingBalance / totalBalance) * 100).toFixed(1); // Fixed to 1 decimal place
-
-    // Chart Data
-    let data = {
-        labels: ["Remaining Balance", "Applied Days"],
-        datasets: [{
-            data: [remainingBalance, appliedDays],
-            backgroundColor: ["#ff3b3b", "#bbbbbb"]
-        }]
-    };
-
-    // Custom plugin to display percentage in center
-    const centerText = {
-        id: "centerText",
-        beforeDraw(chart) {
-            let { width } = chart;
-            let { height } = chart;
-            let ctx = chart.ctx;
-            ctx.restore();
-
-            // Set font properties
-            let fontSize = (height / 100).toFixed(2);
-            ctx.font = `bold ${fontSize * 12}px Arial`;
-            ctx.textBaseline = "middle";
-            ctx.textAlign = "center";
-
-            // Display remaining leave percentage in center
-            let text = `${remainingPercentage}%`;
-            let x = width / 2;
-            let y = height / 2.6;
-
-            ctx.fillStyle = "#333"; // Text color
-            ctx.fillText(text, x, y);
-            ctx.save();
-        }
-    };
-
-    // Get canvas
-    let ctx = document.getElementById("leaveBalanceChart").getContext("2d");
-
-    // Create Doughnut Chart
-    new Chart(ctx, {
-        type: "doughnut",
-        data: data,
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            cutout: "60%", // Adjust to make space for text
-            plugins: {
-                legend: {
-                    position: "bottom"
-                }
-            }
-        },
-        plugins: [centerText] // Register custom plugin
-    });
-});
-
-</script>
-
-     --}}
+</style>

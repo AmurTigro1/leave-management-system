@@ -18,6 +18,16 @@
             <div>
                 @foreach ($leaveApplications as $leave)
                 <div class="bg-white shadow-lg rounded-lg p-6 transition-transform transform hover:scale-105 hover:shadow-xl mb-2">
+                    <div class="flex justify-start items-center gap-4">
+                       <div class="flex items-center">
+                            <p class="mb-1 mr-2 font-bold text-gray-700">Status</p>
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="m5.25 4.5 7.5 7.5-7.5 7.5m6-15 7.5 7.5-7.5 7.5" />
+                            </svg>
+                       </div>
+                          
+                        <span class="bg-yellow-500 text-white py-1 px-3 rounded-full ">{{ $leave->status}}</span>
+                    </div>
                    <div class="flex justify-between items-end">
                         <div class="flex justify-start items-center">
                             <div class="flex justify-start items-center mr-3">
@@ -31,7 +41,7 @@
                                 <h3 class="text-sm font-semibold text-start mb-2 mt-2 text-gray-900 uppercase">{{ $leave->user->first_name }} {{ strtoupper(substr($leave->user->middle_name, 0, 1)) }}. {{ $leave->user->last_name }}</h3>
                                 <p class="text-gray-600 text-sm">Leave Type: {{ $leave->leave_type }}</p>
                                 {{-- <p class="text-gray-600 text-sm">Duration: <span class="font-semibold">{{ \Carbon\Carbon::parse($leave->start_date)->diffInDays(\Carbon\Carbon::parse($leave->end_date)) + 1 }} days</span></p> --}}
-                                <p class="text-gray-600 text-sm">Duration: <span class="font-semibold"> {{$leave->days_applied}} </span></p>
+                                <p class="text-gray-600 text-sm">Duration: <span class="font-semibold"> {{$leave->days_applied}} days</span></p>
                             </div>
                         </div>
                         <div>
@@ -56,6 +66,16 @@
             <div>
                 @foreach ($ctoApplications as $cto)
                 <div class="bg-white shadow-lg rounded-lg p-6 transition-transform transform hover:scale-105 hover:shadow-xl mb-2">
+                    <div class="flex justify-start items-center gap-4">
+                        <div class="flex items-center">
+                             <p class="mb-1 mr-2 font-bold text-gray-700">Status</p>
+                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5">
+                                 <path stroke-linecap="round" stroke-linejoin="round" d="m5.25 4.5 7.5 7.5-7.5 7.5m6-15 7.5 7.5-7.5 7.5" />
+                             </svg>
+                        </div>
+                           
+                         <span class="bg-yellow-500 text-white py-1 px-3 rounded-full ">{{ $cto->status}}</span>
+                     </div>
                    <div class="flex justify-between items-end">
                         <div class="flex justify-start items-center">
                             <div class="flex justify-start items-center mr-3">
