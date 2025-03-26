@@ -81,13 +81,9 @@ class SupervisorController extends Controller
 
 //Supervisor Approve
 public function approve(Request $request, $leave) {
-    // Find the leave request
+ 
     $leaveRequest = Leave::findOrFail($leave);
 
-    // Check if the request is already approved or rejected
-    if ($leaveRequest->supervisor_status !== 'pending') {
-        return redirect()->back()->withErrors(['status' => 'This leave request has already been processed.']);
-    }
 
     // Get the user associated with the leave request
     $user = $leaveRequest->user;
@@ -96,7 +92,7 @@ public function approve(Request $request, $leave) {
     switch ($leaveRequest->leave_type) {
         case 'Vacation Leave':
         case 'Sick Leave':
-            // Deduct from Vacation Leave first, then Sick Leave
+            // I want to deduct the leave credits according to what the user selected leave type
             if ($user->vacation_leave_balance >= $leaveRequest->days_applied) {
                 $user->vacation_leave_balance -= $leaveRequest->days_applied;
             } else {
@@ -134,12 +130,8 @@ public function approve(Request $request, $leave) {
     }
 
     // Update the supervisor status to approved
-    $leaveRequest->supervisor_status = 'approved';
+    $leaveRequest->hr_status = 'approved';
 
-    // If HR status is also approved, update the overall status
-    if ($leaveRequest->hr_status === 'approved') {
-        $leaveRequest->status = 'approved';
-    }
 
     // Save the updated leave request and user balances
     $leaveRequest->save();

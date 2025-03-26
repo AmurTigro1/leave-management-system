@@ -23,12 +23,9 @@ return new class extends Migration
             $table->string('reason')->nullable();
             $table->string('leave_type');
             $table->json('leave_details')->nullable();
-            $table->text('disapproval_reason')->nullable();
-            $table->integer('approved_days_with_pay')->nullable();
-            $table->integer('approved_days_without_pay')->nullable();
+            $table->text('disapproval_reason')->nullable();;
             $table->foreignId('hr_officer_id')->nullable()->constrained('users')->onDelete('set null');
-            $table->foreignId('supervisor_id')->nullable()->constrained('users')->onDelete('set null');
-            $table->enum('supervisor_status', ['pending', 'approved', 'rejected'])->default('pending');
+            $table->timestamp('hr_action_at')->nullable();
             $table->enum('hr_status', ['pending', 'approved', 'rejected'])->default('pending');
             $table->enum('status', ['pending', 'approved', 'rejected', 'cancelled', 'Waiting for Supervisor'])->default('pending');
             $table->timestamps();

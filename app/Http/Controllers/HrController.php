@@ -4,14 +4,20 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use App\Models\Leave;
 use App\Models\OvertimeRequest;
+use App\Models\YearlyHoliday;
+use App\Services\YearlyHolidayService;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Requests\ProfileUpdateRequest;
 use App\Http\Requests\EmailUpdateRequest;
+use App\Services\HolidayService;
+use App\Notifications\LeaveStatusNotification;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\View\View;
 use App\Models\Holiday;
 
@@ -111,33 +117,73 @@ class HrController extends Controller
         return view('hr.leave_details', compact('leave'));
     }
 
-    // HR officer reviews applications
-    public function review(Request $request, Leave $leave)
-    {
-        $request->validate([
-            'status' => 'required|in:Approved,Rejected', // This ensures correct input
-            'disapproval_reason' => 'nullable|string',
-            'approved_days_with_pay' => 'nullable|integer',
-            'approved_days_without_pay' => 'nullable|integer',
-        ]);
-
-        // Convert status to lowercase for consistency
-        $hr_status = strtolower($request->status); // "Approved" -> "approved", "Rejected" -> "rejected"
-
-        // If HR approves, status moves to supervisor review, otherwise, it's rejected.
-        $leave->update([
-            'hr_status' => $hr_status, // Update HR status
-            'status' => $hr_status === 'approved' ? 'Waiting for Supervisor' : 'rejected',
-            'disapproval_reason' => $request->disapproval_reason,
-            'approved_days_with_pay' => $request->approved_days_with_pay,
-            'approved_days_without_pay' => $request->approved_days_without_pay,
-            'hr_officer_id' => Auth::id(),
-        ]);
-
-        notify()->success('Leave application reviewed by HR.');
-        return redirect()->back();
+    // HR/admin officer approve applications
+    public function review(Request $request, $leave) {
+        $leaveRequest = Leave::findOrFail($leave);
+        $user = $leaveRequest->user;
+    
+        // For Mandatory Leave, deduct from Vacation Leave balance
+        $leaveTypeForDeduction = $leaveRequest->leave_type === 'Mandatory Leave' ? 'Vacation Leave' : $leaveRequest->leave_type;
+    
+        switch ($leaveTypeForDeduction) {
+            case 'Sick Leave':
+                // Deduct from Sick Leave first, then Vacation Leave if needed
+                if ($user->sick_leave_balance >= $leaveRequest->days_applied) {
+                    $user->sick_leave_balance -= $leaveRequest->days_applied;
+                } else {
+                    $remainingDays = $leaveRequest->days_applied - $user->sick_leave_balance;
+                    $user->sick_leave_balance = 0;
+                    $user->vacation_leave_balance -= $remainingDays;
+                }
+                break;
+                
+            case 'Vacation Leave':
+                // Deduct from Vacation Leave first, then Sick Leave if needed
+                if ($user->vacation_leave_balance >= $leaveRequest->days_applied) {
+                    $user->vacation_leave_balance -= $leaveRequest->days_applied;
+                } else {
+                    $remainingDays = $leaveRequest->days_applied - $user->vacation_leave_balance;
+                    $user->vacation_leave_balance = 0;
+                    $user->sick_leave_balance -= $remainingDays;
+                }
+                break;
+                
+            case 'Maternity Leave':
+                $user->maternity_leave -= $leaveRequest->days_applied;
+                break;
+            case 'Paternity Leave':
+                $user->paternity_leave -= $leaveRequest->days_applied;
+                break;
+            case 'Solo Parent Leave':
+                $user->solo_parent_leave -= $leaveRequest->days_applied;
+                break;
+            case 'Study Leave':
+                $user->study_leave -= $leaveRequest->days_applied;
+                break;
+            case '10-Day VAWC Leave':
+                $user->vawc_leave -= $leaveRequest->days_applied;
+                break;
+            case 'Rehabilitation Privilege':
+                $user->rehabilitation_leave -= $leaveRequest->days_applied;
+                break;
+            case 'Special Leave Benefits for Women Leave':
+                $user->special_leave_benefit -= $leaveRequest->days_applied;
+                break;
+            case 'Special Emergency Leave':
+                $user->special_emergency_leave -= $leaveRequest->days_applied;
+                break;
+            default:
+                // For other leave types that don't deduct from any balance
+                break;
+        }
+    
+        $leaveRequest->hr_status = 'approved';
+        $leaveRequest->save();
+        $user->save();
+    
+        notify()->success('Leave request approved successfully!');
+        return redirect()->back()->with('success', 'Leave request successfully approved');
     }
-
         public function generateLeaveReport($leaveId)
     {
         $leave = Leave::findOrFail($leaveId);
@@ -246,7 +292,7 @@ class HrController extends Controller
         return view('hr.leaderboard', compact('employees'));
     }
 
-    public function holiday() {
+    public function calendar() {
         $holidays = Holiday::orderBy('date')->get()->map(function ($holiday) {
             $holiday->day = Carbon::parse($holiday->date)->format('d'); // Example: 01
             $holiday->month = Carbon::parse($holiday->date)->format('M'); // Example: Jan
@@ -282,5 +328,96 @@ class HrController extends Controller
 
         notify()->success('Overtime request rejected successfully.');
         return redirect()->back();
+    }
+
+    public function holiday()
+    {
+        $holidays = YearlyHoliday::orderBy('date')->get();
+        return view('hr.holidays.index', compact('holidays'));
+    }
+
+    /**
+     * Show the form for creating a new holiday.
+     */
+    public function create()
+    {
+        return view('hr.holidays.create');
+    }
+
+    /**
+     * Store a newly created holiday in storage.
+     */
+    public function store(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string|max:255',
+            'date' => 'required|date',
+            'type' => 'required|in:regular,special,national',
+            'repeats_annually' => 'sometimes|boolean',
+        ]);
+
+        if ($validator->fails()) {
+            return redirect()->back()
+                ->withErrors($validator)
+                ->withInput();
+        }
+
+        YearlyHoliday::create([
+            'name' => $request->name,
+            'date' => $request->date,
+            'type' => $request->type,
+            'repeats_annually' => $request->filled('repeats_annually')
+        ]);
+
+        return redirect()->route('hr.holidays.index')
+            ->with('success', 'Holiday created successfully.');
+    }
+
+    /**
+     * Show the form for editing the specified holiday.
+     */
+    public function edit(YearlyHoliday $holiday)
+    {
+        return view('hr.holidays.edit', compact('holiday'));
+    }
+
+    /**
+     * Update the specified holiday in storage.
+     */
+    public function update(Request $request, YearlyHoliday $holiday)
+    {
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string|max:255',
+            'date' => 'required|date',
+            'type' => 'required|in:regular,special,national',
+            'repeats_annually' => 'sometimes|boolean',
+        ]);
+
+        if ($validator->fails()) {
+            return redirect()->back()
+                ->withErrors($validator)
+                ->withInput();
+        }
+
+        $holiday->update([
+            'name' => $request->name,
+            'date' => $request->date,
+            'type' => $request->type,
+            'repeats_annually' => $request->boolean('repeats_annually'),
+        ]);
+
+        return redirect()->route('hr.holidays.index')
+            ->with('success', 'Holiday updated successfully.');
+    }
+
+    /**
+     * Remove the specified holiday from storage.
+     */
+    public function destroy(YearlyHoliday $holiday)
+    {
+        $holiday->delete();
+
+        return redirect()->route('hr.holidays.index')
+            ->with('success', 'Holiday deleted successfully.');
     }
 }

@@ -47,7 +47,14 @@ Route::middleware(['auth', 'hrMiddleware'])->group(function () {
     Route::get('/hr/employees', [HrController::class, 'onLeave'])->name('hr.on_leave');
     Route::get('/hr/requests', [HrController::class, 'requests'])->name('hr.leave_requests');
     Route::get('/leave/details/{id}', [HrController::class, 'show'])->name('hr.leave_details');
-    Route::get('/hr/holidays', [HrController::class, 'holiday'])->name('hr.holiday.calendar');
+    Route::get('/hr/calendar', [HrController::class, 'calendar'])->name('hr.holiday.calendar');
+    Route::get('holidays', [HrController::class, 'holiday'])->name('hr.holidays.index');
+    Route::get('holidays/create', [HrController::class, 'create'])->name('hr.holidays.create');
+    Route::post('holidays', [HrController::class, 'store'])->name('hr.holidays.store');
+    Route::get('holidays/{holiday}/edit', [HrController::class, 'edit'])->name('hr.holidays.edit');
+    Route::put('holidays/{holiday}', [HrController::class, 'update'])->name('hr.holidays.update');
+    Route::delete('holidays/{holiday}', [HrController::class, 'destroy'])->name('hr.holidays.destroy');
+
     Route::get('/hr/leave-certification/{leaveId}', [HrController::class, 'showLeaveCertification'])->name('hr.leave_certification');
     Route::post('/leave/{leave}/review', [HrController::class, 'review'])->name('leave.review');
     Route::get('/leave-report/{id}', [HrController::class, 'generateLeaveReport'])->name('leave.report');

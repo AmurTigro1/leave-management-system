@@ -5,17 +5,21 @@
     <h2 class="text-2xl font-bold text-gray-700 mb-6 flex items-center gap-2">
         <i class="lucide lucide-file-text"></i> Review Leave Applications
     </h2>
-    @if(session('success'))
-    <div id="success-alert" class="mb-4 bg-green-100 border-l-4 border-green-500 text-green-700 p-3 rounded-md">
-        <strong>Success!</strong> {{ session('success') }}
+    @if($errors->any())
+    <div class="alert alert-danger">
+        <ul>
+            @foreach($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
     </div>
-  @endif
-  
-  @if(session('error'))
-    <div id="error-alert" class="mb-4 bg-red-100 border-l-4 border-red-500 text-red-700 p-3 rounded-md">
-        <strong>Error!</strong> {{ session('error') }}
+@endif
+
+@if(session('success'))
+    <div class="alert alert-success">
+        {{ session('success') }}
     </div>
-  @endif
+@endif
     <!-- Check if there are any leave applications -->
     @if($leaveApplications->isEmpty())
         <div class="text-center py-10 text-gray-500">
@@ -65,13 +69,13 @@
                     <label class="block text-gray-700 font-medium text-xs">Disapproval Reason:</label>
                     <textarea name="disapproval_reason" class="w-full border rounded p-2 text-xs focus:ring focus:ring-blue-200"></textarea>
 
-                    <!-- Approved Days With Pay -->
+                    {{-- <!-- Approved Days With Pay -->
                     <label class="block text-gray-700 font-medium text-xs">Days with Pay:</label>
                     <input type="number" name="approved_days_with_pay" class="w-full border rounded p-2 text-xs focus:ring focus:ring-blue-200">
 
                     <!-- Approved Days Without Pay -->
                     <label class="block text-gray-700 font-medium text-xs">Days without Pay:</label>
-                    <input type="number" name="approved_days_without_pay" class="w-full border rounded p-2 text-xs focus:ring focus:ring-blue-200">
+                    <input type="number" name="approved_days_without_pay" class="w-full border rounded p-2 text-xs focus:ring focus:ring-blue-200"> --}}
 
                     <div class="flex gap-2">
                     <!-- Submit Button -->
@@ -158,5 +162,9 @@
         to { opacity: 1; }
     }
 </style>
-
+<script>
+    $(document).ajaxError(function(event, jqxhr, settings, thrownError) {
+        console.error("AJAX Error:", jqxhr.responseText);
+    });
+</script>
 @endsection

@@ -12,7 +12,10 @@ class Leave extends Model
     'hr_officer_id',
     'supervisor_id',
     'supervisor_status',
-    'hr_status',  ];
+    'hr_status',
+    'hr_action_at'
+
+];
 
     
     public function user() {

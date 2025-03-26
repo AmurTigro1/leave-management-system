@@ -16,7 +16,7 @@
                     <th class="p-3 text-left">Start Date</th>
                     <th class="p-3 text-left">End Date</th>
                     <th class="p-3 text-left">Status</th>
-                    <th class="p-3 text-left">Total Days</th>
+                    <th class="p-3 text-left">Days Applied</th>
                     <th class="p-3 text-center">Action</th>
                 </tr>
             </thead>
@@ -55,9 +55,9 @@
 
                                 if ($leave->hr_status == 'approved' && $leave->supervisor_status == 'pending') {
                                     $status = 'waiting';
-                                } elseif ($leave->hr_status == 'approved' && $leave->supervisor_status == 'approved') {
+                                } elseif ($leave->hr_status == 'approved' && $leave->hr_status == 'approved') {
                                     $status = 'approved';
-                                } elseif ($leave->hr_status == 'rejected' || $leave->supervisor_status == 'rejected') {
+                                } elseif ($leave->hr_status == 'rejected' || $leave->hr_status == 'rejected') {
                                     $status = 'rejected';
                                 } elseif ($leave->status == 'cancelled' || $leave->supervisor_status == 'cancelled') {
                                     $status = 'cancelled';
@@ -68,7 +68,8 @@
                             </span>
                         </td>
                         <td class="p-3 text-center text-gray-800 overflow-visible">
-                            {{ \Carbon\Carbon::parse($leave->start_date)->diffInDays(\Carbon\Carbon::parse($leave->end_date)) + 1 }}
+                            {{-- {{ \Carbon\Carbon::parse($leave->start_date)->diffInDays(\Carbon\Carbon::parse($leave->end_date)) + 1 }} --}}
+                            {{$leave->days_applied}}
                         </td>
                         <td class="p-3 text-center relative">
                             <!-- Three-dot menu button -->
