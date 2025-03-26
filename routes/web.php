@@ -60,6 +60,8 @@ Route::middleware('auth')->group(function () {
         Route::put('/overtime/{id}/reject', [HrController::class, 'reject'])->name('overtime.reject');
         Route::get('/hr/overtime-requests', [HrController::class, 'overtimeRequests'])->name('hr.overtime_requests');
         Route::get('/overtime/details/{id}', [HrController::class, 'showOvertime'])->name('hr.overtime_details');
+
+        Route::post('/update-officer', [EmployeeController::class, 'updateOfficer'])->name('update.officer');
     });
 
     //Admin Assistant Route
