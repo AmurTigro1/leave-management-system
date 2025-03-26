@@ -6,6 +6,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Auth;
 
 class User extends Authenticatable
 {
@@ -21,6 +22,7 @@ class User extends Authenticatable
         'name',
         'first_name',
         'middle_name',
+        'position',
         'last_name',
         'department',
         'email',
@@ -52,15 +54,15 @@ class User extends Authenticatable
 
     public function redirectToDashboard()
     {
-        return match ($this->role) {
+        $user = Auth::user();
+        return match ($user->role) {
             'employee' => route('lms_cto.dashboard'),
             'supervisor' => route('supervisor.dashboard'),
             'hr' => route('hr.dashboard'),
             'admin' => route('admin.dashboard'),
-            default => route('login'),
+            default => route('lms_cto.dashboard'),
         };
     }
-
 
     /**
      * The attributes that should be hidden for serialization.
