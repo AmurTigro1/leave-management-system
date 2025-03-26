@@ -29,8 +29,10 @@ return new class extends Migration
             $table->integer('approved_days_without_pay')->nullable();
             $table->foreignId('admin_id')->nullable()->constrained('users')->onDelete('set null');
             $table->foreignId('hr_officer_id')->nullable()->constrained('users')->onDelete('set null');
-            $table->timestamp('hr_action_at')->nullable();
+            $table->foreignId('supervisor_id')->nullable()->constrained('users')->onDelete('set null');
+            $table->enum('supervisor_status', ['pending', 'approved', 'rejected'])->default('pending');
             $table->enum('hr_status', ['pending', 'approved', 'rejected'])->default('pending');
+            // $table->enum('status', ['pending', 'approved', 'rejected', 'cancelled', 'Waiting for Supervisor'])->default('pending');
             $table->enum('admin_status', ['pending', 'approved', 'rejected'])->default('pending');
             $table->enum('status', ['pending', 'approved', 'rejected', 'cancelled'])->default('pending');
             $table->timestamps();

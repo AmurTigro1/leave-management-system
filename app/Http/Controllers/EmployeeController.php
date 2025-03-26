@@ -252,6 +252,7 @@ class EmployeeController extends Controller
             'commutation' => $request->commutation,
             'date_filing' => now(),
             'reason' => $request->reason,
+            'signature' => $request->signature,
             'status' => 'pending', // Default status for new requests
         ]);
 
