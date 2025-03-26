@@ -1,8 +1,17 @@
 <!-- Sidebar Component -->
 @php
-    $pendingLeaveCount = App\Models\Leave::where('status', 'pending')->count();
-    $pendingOvertimeCount = App\Models\OvertimeRequest::where('status', 'pending')->count();
-    $pendingRequestsCount = $pendingLeaveCount + $pendingOvertimeCount;
+    $pendingLeaveCount = App\Models\Leave::where('status', 'pending')
+        ->where('admin_status', 'approved')
+        ->count();
+    $rejectedLeaveCount = App\Models\Leave::where('leave_type', 'Mandatory Leave')
+        ->where('supervisor_status', 'rejected')
+        ->where('hr_status', '!=', 'rejected') // Exclude cases where hr_status is also rejected
+        ->count();
+    $pendingOvertimeCount = App\Models\OvertimeRequest::where('status', 'pending')
+        ->where('admin_status', 'approved')
+        ->count();
+
+    $pendingRequestsCount = $pendingLeaveCount + $pendingOvertimeCount + $rejectedLeaveCount;
 @endphp
 
 <div x-data="{ 
@@ -55,10 +64,10 @@ class="min-h-screen flex z-[1000]">
               
             <span>List of Request</span>
             @if($pendingRequestsCount > 0)
-            <span class="bg-red-500 text-white text-xs font-semibold rounded-full px-2 py-1">
-                {{ $pendingRequestsCount }}
-            </span>
-        @endif
+                <span class="bg-red-500 text-white text-xs font-semibold rounded-full px-2 py-1">
+                    {{ $pendingRequestsCount }}
+                </span>
+            @endif
         </a>  
 
         <a href="{{ route('hr.on_leave') }}" class="hover:bg-gray-200 flex items-center p-2 space-x-2 rounded-md {{ request()->routeIs('hr.on_leave') ? 'bg-white shadow-lg' : 'text-gray-500' }}">

@@ -32,7 +32,7 @@ Route::middleware(['auth', 'SupervisorMiddleware'])->group(function () {
     Route::get('/supervisor/leaderboard', [SupervisorController::class, 'leaderboard'])->name('supervisor.leaderboard');
     Route::get('/supervisor/employees', [SupervisorController::class, 'onLeave'])->name('supervisor.on_leave');
     Route::get('/supervisor/requests', [SupervisorController::class, 'requests'])->name('supervisor.requests');
-    Route::post('/supervisor/{leaveId}/approve', [SupervisorController::class, 'approve'])->name('supervisor.approve');
+    // Route::post('/supervisor/{leaveId}/approve', [SupervisorController::class, 'approve'])->name('supervisor.approve');
     Route::post('/supervisor/reject/{leave}', [SupervisorController::class, 'reject'])->name('supervisor.reject');
     Route::get('/supervisor-profile', [SupervisorController::class, 'profile'])->name('supervisor.profile.index');
     Route::get('/supervisor/profile-edit', [SupervisorController::class, 'profile_edit'])->name('supervisor.profile.partials.update-profile-information-form');
@@ -74,6 +74,7 @@ Route::middleware(['auth', 'adminMiddleware'])->group(function () {
     Route::get('/admin/employees', [AdminController::class, 'onLeave'])->name('admin.on_leave');
     Route::get('/admin/leaderboard', [AdminController::class, 'leaderboard'])->name('admin.leaderboard');
     Route::get('admin/requests', [AdminController::class, 'requests'])->name('admin.requests');
+    Route::post('/leave/{leave}/admin-review', [AdminController::class, 'review'])->name('leave.admin-review');
     Route::get('/admin/leave/details/{id}', [AdminController::class, 'showleave'])->name('admin.leave_details');
     Route::get('/admin/cto/details/{id}', [AdminController::class, 'showcto'])->name('admin.cto_details');
     Route::get('/admin-profile', [AdminController::class, 'profile'])->name('admin.profile.index');

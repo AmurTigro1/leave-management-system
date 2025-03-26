@@ -97,11 +97,11 @@ class HrController extends Controller
         }
     
         // Get leave applications waiting for supervisor approval
-        $leaveApplications = Leave::where('status', 'pending')
+        $leaveApplications = Leave::where('admin_status', 'approved')
         ->orderBy('created_at', 'desc') 
         ->paginate(9); 
 
-        $ctoApplications = OvertimeRequest::where('status', 'pending')
+        $ctoApplications = OvertimeRequest::where('admin_status', 'approved')
         ->orderBy('created_at', 'desc') 
         ->paginate(9); 
 
@@ -128,28 +128,36 @@ class HrController extends Controller
     public function review(Request $request, Leave $leave)
     {
         $request->validate([
-            'status' => 'required|in:Approved,Rejected', // This ensures correct input
+            'status' => 'required|in:Approved,Rejected', // Ensure correct input
             'disapproval_reason' => 'nullable|string',
-            'approved_days_with_pay' => 'nullable|integer',
-            'approved_days_without_pay' => 'nullable|integer',
         ]);
 
         // Convert status to lowercase for consistency
         $hr_status = strtolower($request->status); // "Approved" -> "approved", "Rejected" -> "rejected"
 
-        // If HR approves, status moves to supervisor review, otherwise, it's rejected.
-        $leave->update([
-            'hr_status' => $hr_status, // Update HR status
-            'status' => $hr_status === 'approved' ? 'Waiting for Supervisor' : 'rejected',
+        // Prepare the update data
+        $updateData = [
+            'hr_status' => $hr_status,
+            'status' => $hr_status === 'rejected' ? 'rejected' : $leave->status, // Ensure status is updated when rejected
             'disapproval_reason' => $request->disapproval_reason,
-            'approved_days_with_pay' => $request->approved_days_with_pay,
-            'approved_days_without_pay' => $request->approved_days_without_pay,
-            'hr_officer_id' => Auth::id(),
-        ]);
+            'hr_officer_id' => auth()->id(),
+        ];
+
+        // If HR approves, update supervisor fields
+        if ($hr_status === 'approved') {
+            $updateData['supervisor_status'] = 'approved'; // Set supervisor status for review
+            $updateData['supervisor_id'] = auth()->id(); // Assign the supervisor
+            $updateData['status'] = 'approved'; // Ensure overall status is updated to approved
+        }
+
+        // Update leave record
+        $leave->update($updateData);
 
         notify()->success('Leave application reviewed by HR.');
-        return redirect()->back();
+        return Redirect::route('hr.requests');
     }
+
+    
 
         public function generateLeaveReport($leaveId)
     {

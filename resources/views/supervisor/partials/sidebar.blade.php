@@ -1,5 +1,7 @@
 @php
-    $pendingRequestsCount = App\Models\Leave::where('status', 'waiting_for_supervisor')->count();
+    $pendingLeaveCount = App\Models\Leave::where('status', 'approved')->count();
+    $pendingOvertimeCount = App\Models\OvertimeRequest::where('status', 'approved')->count();
+    $pendingRequestsCount = $pendingLeaveCount + $pendingOvertimeCount;
 @endphp
 <!-- Sidebar Component -->
 <div x-data="{ 
@@ -56,7 +58,7 @@ class="min-h-screen flex z-[1000]">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 5.25h16.5m-16.5 4.5h16.5m-16.5 4.5h16.5m-16.5 4.5h16.5" />
             </svg>          
-            <span>Manage Request</span>
+            <span>List of Request</span>
             @if($pendingRequestsCount > 0)
             <span class="bg-red-500 text-white text-xs font-semibold rounded-full px-2 py-1">
                 {{ $pendingRequestsCount }}

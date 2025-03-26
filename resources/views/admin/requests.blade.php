@@ -1,6 +1,9 @@
 @extends('layouts.admin.sidebar-header')
 
 @section('content')
+<div class="fixed top-4 right-4 z-[9999]">
+    <x-notify::notify />
+</div>
 <div class="w-full bg-white rounded animate-fade-in flex justify-between items-start">
 
     <!-- Leave Applications Section -->
@@ -90,3 +93,4 @@
     }
 </style>
 @endsection
+@notifyCss

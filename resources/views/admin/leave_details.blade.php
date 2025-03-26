@@ -6,7 +6,7 @@
     &larr; Back to Requests
 </a>
 <div class="flex justify-between items-start gap-4 px-4">
-    <div class="bg-white shadow-xl rounded-lg p-6 space-y-6 w-full h-[750px]">
+    <div class="bg-white shadow-xl rounded-lg p-6 space-y-6 w-full h-auto py-[25px]">
         <h2 class="text-2xl font-bold">Leave Balances</h2>
         <div class="flex justify-between items-center">
             <div class="bg-blue-600 text-white rounded-lg p-2 text-[10px] w-[124px] text-center mr-2">Vacation Leave</div>
@@ -79,10 +79,17 @@
         </div>
         <div>
             <p>Details:</p>
-            <div class="p-2 bg-gray-300 text-black rounded-lg mb-2 w-full">{{ is_string($leave->leave_details) ? implode(', ', json_decode($leave->leave_details, true)) : $leave->leave_details }}</div>
-        </div>
+            @php
+                $details = $leave->leave_details;
+                $decodedDetails = is_string($details) ? json_decode($details, true) : $details;
+            @endphp
+        
+            <div class="p-2 bg-gray-300 text-black rounded-lg mb-2 w-full">
+                {{ !empty($decodedDetails) ? (is_array($decodedDetails) ? implode(', ', $decodedDetails) : $decodedDetails) : 'None' }}
+            </div>
+        </div>        
     </div>
-    <div class="bg-white shadow-xl rounded-lg p-6 space-y-6 w-full h-[750px]">
+    <div class="bg-white shadow-xl rounded-lg p-6 space-y-6 w-full h-auto">
         <p class="uppercase text-center text-[10px] font-bold mt-4">Total leave balances left here:</p>
         <div class="text-blue-600 rounded-lg text-center font-bold text-4xl">
             {{ 
@@ -116,8 +123,51 @@
             <p class="text-sm text-gray-500">The request has been confirmed and will be transfered to the HR for approval. Make sure to look carefully before proceeding and finalize the verification.</p>
         </div>
        <div class="flex justify-center items-center">
-            <a href="#" class="bg-blue-600 text-white py-2 px-4 rounded-lg mr-3">Proceed to HR</a>
-            <a href="#" class="bg-orange-600 text-white py-2 px-4 rounded-lg">Reject Request</a>
+        <form action="{{ route('leave.admin-review', $leave->id) }}" method="POST" class="space-y-2">
+            @csrf 
+            <div class="flex gap-2">
+                <!-- Approve Button -->
+                <button type="submit" name="admin_status" value="Approved" 
+                    class="bg-blue-600 text-white py-2 px-4 rounded-lg mr-3">
+                    Proceed to HR
+                </button>
+        
+                <!-- Reject Button -->
+                <button type="button" id="rejectBtn" 
+                    class="bg-orange-600 text-white py-2 px-4 rounded-lg">
+                    Reject Request
+                </button>
+            </div>
+        
+            <!-- Hidden Disapproval Reason Field -->
+            <div id="disapprovalSection" class="mt-3 hidden h-auto">
+                <label class="block text-gray-700 font-medium text-xs">Disapproval Reason:</label>
+                <textarea name="disapproval_reason" id="disapproval_reason" 
+                    class="w-full border rounded p-2 text-xs focus:ring focus:ring-blue-200"></textarea>
+                
+                <div class="flex gap-2 mt-2">
+                    <button type="submit" name="admin_status" value="Rejected" id="finalRejectBtn"
+                        class="bg-red-600 text-white py-2 px-4 rounded-lg">
+                        Confirm Rejection
+                    </button>
+                    
+                    <button type="button" id="cancelDisapprovalBtn" class="bg-gray-500 text-white py-2 px-4 rounded-lg">
+                        Cancel
+                    </button>
+                </div>
+            </div>            
+        </form>
+        
+        <script>
+            document.getElementById('rejectBtn').addEventListener('click', function() {
+                document.getElementById('disapprovalSection').classList.remove('hidden');
+            });
+        
+            document.getElementById('cancelDisapprovalBtn').addEventListener('click', function() {
+                document.getElementById('disapprovalSection').classList.add('hidden');
+                document.getElementById('disapproval_reason').value = ""; // Clear text area
+            });
+        </script>
        </div>
     </div>
 </div>

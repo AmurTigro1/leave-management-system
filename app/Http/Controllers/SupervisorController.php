@@ -73,98 +73,112 @@ class SupervisorController extends Controller
         }
     
         // Get leave applications waiting for supervisor approval
-        $leaveApplications = Leave::where('status', 'waiting_for_supervisor')
+        $leaveApplications = Leave::where('status', 'approved')
         ->orderBy('created_at', 'desc') 
         ->paginate(9); 
         return view('supervisor.requests', compact('leaveApplications'));
     }
 
 //Supervisor Approve
-public function approve(Request $request, $leave) {
-    // Find the leave request
-    $leaveRequest = Leave::findOrFail($leave);
+// public function approve(Request $request, $leave) {
+//     // Find the leave request
+//     $leaveRequest = Leave::findOrFail($leave);
 
-    // Check if the request is already approved or rejected
-    if ($leaveRequest->supervisor_status !== 'pending') {
-        return redirect()->back()->withErrors(['status' => 'This leave request has already been processed.']);
-    }
+//     // Check if the request is already approved or rejected
+//     if ($leaveRequest->supervisor_status !== 'pending') {
+//         return redirect()->back()->withErrors(['status' => 'This leave request has already been processed.']);
+//     }
 
-    // Get the user associated with the leave request
-    $user = $leaveRequest->user;
+//     // Get the user associated with the leave request
+//     $user = $leaveRequest->user;
 
-    // Deduct leave credits based on the leave type
-    switch ($leaveRequest->leave_type) {
-        case 'Vacation Leave':
-        case 'Sick Leave':
-            // Deduct from Vacation Leave first, then Sick Leave
-            if ($user->vacation_leave_balance >= $leaveRequest->days_applied) {
-                $user->vacation_leave_balance -= $leaveRequest->days_applied;
-            } else {
-                $remainingDays = $leaveRequest->days_applied - $user->vacation_leave_balance;
-                $user->vacation_leave_balance = 0;
-                $user->sick_leave_balance -= $remainingDays;
-            }
-            break;
-        case 'Maternity Leave':
-            $user->maternity_leave -= $leaveRequest->days_applied;
-            break;
-        case 'Paternity Leave':
-            $user->paternity_leave -= $leaveRequest->days_applied;
-            break;
-        case 'Solo Parent Leave':
-            $user->solo_parent_leave -= $leaveRequest->days_applied;
-            break;
-        case 'Study Leave':
-            $user->study_leave -= $leaveRequest->days_applied;
-            break;
-        case 'VAWC Leave':
-            $user->vawc_leave -= $leaveRequest->days_applied;
-            break;
-        case 'Rehabilitation Leave':
-            $user->rehabilitation_leave -= $leaveRequest->days_applied;
-            break;
-        case 'Special Leave Benefit':
-            $user->special_leave_benefit -= $leaveRequest->days_applied;
-            break;
-        case 'Special Emergency Leave':
-            $user->special_emergency_leave -= $leaveRequest->days_applied;
-            break;
-        default:
-            return redirect()->back()->withErrors(['leave_type' => 'Invalid leave type.']);
-    }
+//     // Deduct leave credits based on the leave type
+//     switch ($leaveRequest->leave_type) {
+//         case 'Vacation Leave':
+//         case 'Sick Leave':
+//             // Deduct from Vacation Leave first, then Sick Leave
+//             if ($user->vacation_leave_balance >= $leaveRequest->days_applied) {
+//                 $user->vacation_leave_balance -= $leaveRequest->days_applied;
+//             } else {
+//                 $remainingDays = $leaveRequest->days_applied - $user->vacation_leave_balance;
+//                 $user->vacation_leave_balance = 0;
+//                 $user->sick_leave_balance -= $remainingDays;
+//             }
+//             break;
+//         case 'Maternity Leave':
+//             $user->maternity_leave -= $leaveRequest->days_applied;
+//             break;
+//         case 'Paternity Leave':
+//             $user->paternity_leave -= $leaveRequest->days_applied;
+//             break;
+//         case 'Solo Parent Leave':
+//             $user->solo_parent_leave -= $leaveRequest->days_applied;
+//             break;
+//         case 'Study Leave':
+//             $user->study_leave -= $leaveRequest->days_applied;
+//             break;
+//         case 'VAWC Leave':
+//             $user->vawc_leave -= $leaveRequest->days_applied;
+//             break;
+//         case 'Rehabilitation Leave':
+//             $user->rehabilitation_leave -= $leaveRequest->days_applied;
+//             break;
+//         case 'Special Leave Benefit':
+//             $user->special_leave_benefit -= $leaveRequest->days_applied;
+//             break;
+//         case 'Special Emergency Leave':
+//             $user->special_emergency_leave -= $leaveRequest->days_applied;
+//             break;
+//         default:
+//             return redirect()->back()->withErrors(['leave_type' => 'Invalid leave type.']);
+//     }
 
-    // Update the supervisor status to approved
-    $leaveRequest->supervisor_status = 'approved';
+//     // Update the supervisor status to approved
+//     $leaveRequest->supervisor_status = 'approved';
 
-    // If HR status is also approved, update the overall status
-    if ($leaveRequest->hr_status === 'approved') {
-        $leaveRequest->status = 'approved';
-    }
+//     // If HR status is also approved, update the overall status
+//     if ($leaveRequest->hr_status === 'approved') {
+//         $leaveRequest->status = 'approved';
+//     }
 
-    // Save the updated leave request and user balances
-    $leaveRequest->save();
-    $user->save();
+//     // Save the updated leave request and user balances
+//     $leaveRequest->save();
+//     $user->save();
 
-    notify()->success('Leave request approved successfully!');
-    return redirect()->back()->with('success', 'Leave request successfully approved');
-}
+//     notify()->success('Leave request approved successfully!');
+//     return redirect()->back()->with('success', 'Leave request successfully approved');
+// }
 
 
     // Supervisor rejects the request
     public function reject(Request $request, Leave $leave)
-    {
+{
+    if (Auth::user()->role !== 'supervisor') {
+        abort(403, 'Unauthorized access.');
+    }
+
     if ($leave->hr_status !== 'approved') {
         return redirect()->back()->with('error', 'Cannot reject: HR approval is required first.');
     }
 
-    $leave->update([
+    $request->validate([
+        'disapproval_reason' => 'nullable|string',
+    ]);
+
+    $leave->fill([
         'supervisor_status' => 'rejected',
+        'disapproval_reason' => $request->disapproval_reason,
         'status' => 'Rejected',
         'supervisor_id' => Auth::id(),
     ]);
 
-    return redirect()->back()->with('success', 'Leave application rejected by Supervisor.');
+    if ($leave->save()) {
+        return redirect()->back()->with('success', 'Leave application rejected by Supervisor.');
     }
+
+    return redirect()->back()->with('error', 'Failed to reject leave application.');
+}
+
 
     public function profile() {
         $user = Auth::user();

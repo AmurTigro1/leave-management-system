@@ -75,16 +75,42 @@ class AdminController extends Controller
         }
     
         // Get leave applications waiting for supervisor approval
-        $leaveApplications = Leave::where('status', 'pending')
+        $leaveApplications = Leave::where('admin_status', 'pending')
         ->orderBy('created_at', 'desc') 
         ->paginate(9); 
 
-        $ctoApplications = OvertimeRequest::where('status', 'pending')
+        $ctoApplications = OvertimeRequest::where('admin_status', 'pending')
         ->orderBy('created_at', 'desc') 
         ->paginate(9); 
 
         return view('admin.requests', compact('leaveApplications', 'ctoApplications'));
     }
+
+    public function review(Request $request, Leave $leave)
+{
+    $request->validate([
+        'admin_status' => 'required|in:Approved,Rejected', // Ensures correct input
+        'disapproval_reason' => 'nullable|string',
+    ]);
+
+    // Convert status to lowercase for consistency
+    $admin_status = strtolower($request->admin_status); // "Approved" -> "approved", "Rejected" -> "rejected"
+
+    // Determine the new status based on admin_status
+    $status = ($admin_status === 'rejected') ? 'rejected' : $leave->status;
+
+    // Update leave record
+    $leave->update([
+        'admin_status' => $admin_status, // Update HR status
+        'status' => $status, // Also update overall status if rejected
+        'disapproval_reason' => $request->disapproval_reason,
+        'admin_id' => Auth::id(),
+    ]);
+
+    notify()->success('Leave application reviewed by Admin.');
+    return Redirect::route('admin.requests');
+}
+
 
     public function showleave($id) {
         $leave = Leave::findOrFail($id); 

@@ -129,7 +129,7 @@
 
                 <div class="mb-4">
                     <label class="block text-gray-700 font-bold mb-2">Signature</label>
-                    <input type="file" name="signature" class="w-full border p-2 rounded-lg" accept="image/*,.pdf">
+                    <input type="file" name="signature" class="w-full border p-2 rounded-lg" accept="image/*,.pdf" required>
                 </div>
             </div>      
             

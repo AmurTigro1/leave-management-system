@@ -1,7 +1,7 @@
 <!-- Sidebar Component -->
 @php
-    $pendingLeaveCount = App\Models\Leave::where('status', 'pending')->count();
-    $pendingOvertimeCount = App\Models\OvertimeRequest::where('status', 'pending')->count();
+    $pendingLeaveCount = App\Models\Leave::where('admin_status', 'pending')->count();
+    $pendingOvertimeCount = App\Models\OvertimeRequest::where('admin_status', 'pending')->count();
     $pendingRequestsCount = $pendingLeaveCount + $pendingOvertimeCount;
 @endphp
 

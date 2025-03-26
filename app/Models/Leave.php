@@ -10,9 +10,12 @@ class Leave extends Model
     'approved_days_with_pay',
     'approved_days_without_pay',
     'hr_officer_id',
+    'hr_status',
+    'admin_id',
+    'admin_status',
     'supervisor_id',
-    'supervisor_status',
-    'hr_status',  ];
+    'supervisor_status', 
+    ];
 
     
     public function user() {
