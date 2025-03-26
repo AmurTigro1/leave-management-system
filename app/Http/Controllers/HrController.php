@@ -340,6 +340,96 @@ class HrController extends Controller
         return view('hr.holiday-calendar', compact('holidays'));
     }
 
+    public function holiday()
+    {
+        $holidays = YearlyHoliday::orderBy('date')->get();
+        return view('hr.holidays.index', compact('holidays'));
+    }
+
+    /**
+     * Show the form for creating a new holiday.
+     */
+    public function create()
+    {
+        return view('hr.holidays.create');
+    }
+
+    /**
+     * Store a newly created holiday in storage.
+     */
+    public function store(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string|max:255',
+            'date' => 'required|date',
+            'type' => 'required|in:regular,special,national',
+            'repeats_annually' => 'sometimes|boolean',
+        ]);
+
+        if ($validator->fails()) {
+            return redirect()->back()
+                ->withErrors($validator)
+                ->withInput();
+        }
+
+        YearlyHoliday::create([
+            'name' => $request->name,
+            'date' => $request->date,
+            'type' => $request->type,
+            'repeats_annually' => $request->boolean('repeats_annually'),
+        ]);
+
+        return redirect()->route('hr.holidays.index')
+            ->with('success', 'Holiday created successfully.');
+    }
+
+    /**
+     * Show the form for editing the specified holiday.
+     */
+    public function edit(YearlyHoliday $holiday)
+    {
+        return view('hr.holidays.edit', compact('holiday'));
+    }
+
+    /**
+     * Update the specified holiday in storage.
+     */
+    public function update(Request $request, YearlyHoliday $holiday)
+    {
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string|max:255',
+            'date' => 'required|date',
+            'type' => 'required|in:regular,special,national',
+            'repeats_annually' => 'sometimes|boolean',
+        ]);
+
+        if ($validator->fails()) {
+            return redirect()->back()
+                ->withErrors($validator)
+                ->withInput();
+        }
+
+        $holiday->update([
+            'name' => $request->name,
+            'date' => $request->date,
+            'type' => $request->type,
+            'repeats_annually' => $request->boolean('repeats_annually'),
+        ]);
+
+        return redirect()->route('hr.holidays.index')
+            ->with('success', 'Holiday updated successfully.');
+    }
+
+    /**
+     * Remove the specified holiday from storage.
+     */
+    public function destroy(YearlyHoliday $holiday)
+    {
+        $holiday->delete();
+
+        return redirect()->route('hr.holidays.index')
+            ->with('success', 'Holiday deleted successfully.');
+    }
     public function approve($id, Request $request)
     {
         $request = OvertimeRequest::findOrFail($id);
