@@ -27,7 +27,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/supervisor/leaderboard', [SupervisorController::class, 'leaderboard'])->name('supervisor.leaderboard');
         Route::get('/supervisor/employees', [SupervisorController::class, 'onLeave'])->name('supervisor.on_leave');
         Route::get('/supervisor/requests', [SupervisorController::class, 'requests'])->name('supervisor.requests');
-        Route::post('/supervisor/{leaveId}/approve', [SupervisorController::class, 'approve'])->name('supervisor.approve');
+        // Route::post('/supervisor/{leaveId}/approve', [SupervisorController::class, 'approve'])->name('supervisor.approve');
         Route::post('/supervisor/reject/{leave}', [SupervisorController::class, 'reject'])->name('supervisor.reject');
         Route::get('/supervisor-profile', [SupervisorController::class, 'profile'])->name('supervisor.profile.index');
         Route::get('/supervisor/profile-edit', [SupervisorController::class, 'profile_edit'])->name('supervisor.profile.partials.update-profile-information-form');
@@ -44,7 +44,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/hr/dashboard', [HrController::class, 'index'])->name('hr.dashboard');
         Route::get('/hr/employees', [HrController::class, 'onLeave'])->name('hr.on_leave');
         Route::get('/hr/requests', [HrController::class, 'requests'])->name('hr.requests');
-        Route::get('/leave/details/{id}', [HrController::class, 'show'])->name('hr.leave_details');
+        Route::get('/leave/details/{id}', [HrController::class, 'showLeave'])->name('hr.leave_details');
         Route::get('/hr/holidays', [HrController::class, 'holiday'])->name('hr.holiday.calendar');
         Route::get('/hr/leave-certification/{leaveId}', [HrController::class, 'showLeaveCertification'])->name('hr.leave_certification');
         Route::post('/leave/{leave}/review', [HrController::class, 'review'])->name('leave.review');
@@ -62,23 +62,25 @@ Route::middleware('auth')->group(function () {
         Route::get('/overtime/details/{id}', [HrController::class, 'showOvertime'])->name('hr.overtime_details');
 
         Route::post('/update-officer', [EmployeeController::class, 'updateOfficer'])->name('update.officer');
+        Route::put('/hr-supervisor-info/{id}', [HRSupervisorController::class, 'update'])->name('hr-supervisor-info.update');
     });
 
-//Admin Assistant Route
-Route::middleware(['auth', 'adminMiddleware'])->group(function () {
-    Route::get('/admin/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
-    Route::get('/admin/employees', [AdminController::class, 'onLeave'])->name('admin.on_leave');
-    Route::get('/admin/leaderboard', [AdminController::class, 'leaderboard'])->name('admin.leaderboard');
-    Route::get('admin/requests', [AdminController::class, 'requests'])->name('admin.requests');
-    Route::get('/admin/leave/details/{id}', [AdminController::class, 'showleave'])->name('admin.leave_details');
-    Route::get('/admin/cto/details/{id}', [AdminController::class, 'showcto'])->name('admin.cto_details');
-    Route::get('/admin-profile', [AdminController::class, 'profile'])->name('admin.profile.index');
-    Route::get('/admin/profile-edit', [AdminController::class, 'profile_edit'])->name('admin.profile.partials.update-profile-information-form');
-    Route::get('/admin/password-edit', [AdminController::class, 'password_edit'])->name('admin.profile.partials.update-password-form');
-    Route::patch('/admin-profile/update-profile', [AdminController::class, 'updateProfile'])->name('admin-profile.update');
-    Route::patch('/admin-profile/update-email', [AdminController::class, 'updateEmail'])->name('admin-email.update'); 
-    Route::get('/admin/holidays', [AdminController::class, 'holiday'])->name('admin.holiday.calendar');
-});
+    //Admin Assistant Route
+    Route::middleware('admin')->group(function () {
+        Route::get('/admin/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
+        Route::get('/admin/employees', [AdminController::class, 'onLeave'])->name('admin.on_leave');
+        Route::get('/admin/leaderboard', [AdminController::class, 'leaderboard'])->name('admin.leaderboard');
+        Route::get('admin/requests', [AdminController::class, 'requests'])->name('admin.requests');
+        Route::post('/leave/{leave}/admin-review', [AdminController::class, 'review'])->name('leave.admin-review');
+        Route::get('/admin/leave/details/{id}', [AdminController::class, 'showleave'])->name('admin.leave_details');
+        Route::get('/admin/cto/details/{id}', [AdminController::class, 'showcto'])->name('admin.cto_details');
+        Route::get('/admin-profile', [AdminController::class, 'profile'])->name('admin.profile.index');
+        Route::get('/admin/profile-edit', [AdminController::class, 'profile_edit'])->name('admin.profile.partials.update-profile-information-form');
+        Route::get('/admin/password-edit', [AdminController::class, 'password_edit'])->name('admin.profile.partials.update-password-form');
+        Route::patch('/admin-profile/update-profile', [AdminController::class, 'updateProfile'])->name('admin-profile.update');
+        Route::patch('/admin-profile/update-email', [AdminController::class, 'updateEmail'])->name('admin-email.update'); 
+        Route::get('/admin/holidays', [AdminController::class, 'holiday'])->name('admin.holiday.calendar');
+    });
 
 
     //Employee Route
