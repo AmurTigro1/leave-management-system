@@ -60,14 +60,14 @@
     @endif
 
     <!-- Leave Section -->
-    <div class="p-6 bg-gray-100 rounded-xl shadow-lg border border-gray-300">
+    {{-- <div class="p-6 bg-gray-100 rounded-xl shadow-lg border border-gray-300">
         <div class="flex justify-between items-center mb-4">
             <button id="prevMonth" class="text-gray-700 px-4 py-2 rounded-lg bg-white shadow hover:bg-gray-200">&larr;</button>
             <h2 id="monthTitle" class="text-lg font-semibold text-gray-700"></h2>
             <button id="nextMonth" class="text-gray-700 px-4 py-2 rounded-lg bg-white shadow hover:bg-gray-200">&rarr;</button>
         </div>
         <div id="leaveContainer" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4"></div>
-    </div>
+    </div> --}}
 
     <!-- Employees on Leave -->
     <div class="p-6 bg-white rounded-xl shadow-lg border border-gray-300">
@@ -88,6 +88,31 @@
                         <div>
                             <p class="text-md font-semibold text-gray-800">{{ $leave->user->first_name }}</p>
                             <p class="text-sm text-gray-600">On leave from {{ date('M d', strtotime($leave->start_date)) }} to {{ date('M d', strtotime($leave->end_date)) }}</p>
+                        </div>
+                    </li>
+                @endforeach
+            </ul>
+        @endif
+    </div>
+    <div class="p-6 bg-white rounded-xl shadow-lg border border-gray-300 mt-8">
+        <h2 class="text-xl font-semibold text-gray-700 mb-3">Team Members on Compensatory Time Off</h2>
+        @if($overtimeRequests->isEmpty())
+            <p class="text-gray-600">No team members have overtime requests this month.</p>
+        @else
+            <ul class="space-y-4">
+                @foreach($overtimeRequests as $overtime)
+                    <li class="flex items-center space-x-4 bg-gray-50 p-4 rounded-lg shadow">
+                        <div class="w-12 h-12 rounded-full overflow-hidden bg-gray-200">
+                            @if($overtime->user && $overtime->user->profile_image)
+                                <img src="{{ asset('storage/profile_images/' . $overtime->user->profile_image) }}" class="w-full h-full object-cover">
+                            @else
+                                <img src="{{ asset('img/default-avatar.png')}}" alt="default avatar" class="w-full h-full object-cover">
+                            @endif
+                        </div>
+                        <div>
+                            <p class="text-md font-semibold text-gray-800">{{ $overtime->user->first_name }} {{ $overtime->user->last_name }}</p>
+                            <p class="text-sm text-gray-600">CTO starting from {{ \Carbon\Carbon::parse($overtime->inclusive_date_start)->format('M d, Y') }}</p>
+                            <p class="text-sm text-gray-600">Used COCs: {{ $overtime->hours }}</p>
                         </div>
                     </li>
                 @endforeach

@@ -60,14 +60,14 @@
 @endif
 
     <!-- Leave & Overtime Requests Section -->
-    <div class="p-6 bg-gray-100 rounded-xl shadow-lg border border-gray-300">
+    {{-- <div class="p-6 bg-gray-100 rounded-xl shadow-lg border border-gray-300">
         <div class="flex justify-between items-center mb-4">
             <button id="prevMonth" class="text-gray-700 px-4 py-2 rounded-lg bg-white shadow hover:bg-gray-200">&larr;</button>
             <h2 id="monthTitle" class="text-lg font-semibold text-gray-700"></h2>
             <button id="nextMonth" class="text-gray-700 px-4 py-2 rounded-lg bg-white shadow hover:bg-gray-200">&rarr;</button>
         </div>
         <div id="leaveContainer" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4"></div>
-    </div>
+    </div> --}}
 
     <!-- Employees on Leave -->
     <div class="p-6 bg-white rounded-xl shadow-lg border border-gray-300">
@@ -97,7 +97,7 @@
 
     <!-- Employees with Overtime Requests -->
     <div class="p-6 bg-white rounded-xl shadow-lg border border-gray-300 mt-8">
-        <h2 class="text-xl font-semibold text-gray-700 mb-3">Team Members on Compensatory Leave</h2>
+        <h2 class="text-xl font-semibold text-gray-700 mb-3">Team Members on Compensatory Time Off</h2>
         @if($overtimeRequests->isEmpty())
             <p class="text-gray-600">No team members have overtime requests this month.</p>
         @else

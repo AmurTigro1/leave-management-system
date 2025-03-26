@@ -226,8 +226,11 @@ public function approve(Request $request, $leave) {
                             ->where('end_date', '>=', $today) // Ensures leave is still ongoing
                             ->with('user') // Ensures the user object is available
                             ->get();
-    
-        return view('supervisor.on_leave', compact('teamLeaves', 'birthdays', 'month'));
+        $overtimeRequests = OvertimeRequest::where('status', 'approved')
+        ->whereMonth('inclusive_date_start', $month)
+        ->whereYear('inclusive_date_start', now()->year)
+        ->get();
+        return view('supervisor.on_leave', compact('teamLeaves', 'birthdays', 'month', 'overtimeRequests'));
     }
 
     public function leaderboard()
