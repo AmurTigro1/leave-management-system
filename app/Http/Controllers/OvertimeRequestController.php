@@ -20,13 +20,7 @@ class OvertimeRequestController extends Controller
         $overtimereq = OvertimeRequest::where('user_id', auth()->id())->get();
 
         $appliedDates = OvertimeRequest::where('user_id', auth()->id())
-                    ->get(['inclusive_date_start', 'inclusive_date_end']) // Get both dates
-                    ->map(function ($request) {
-                        return [
-                            'start' => $request->inclusive_date_start,
-                            'end' => $request->inclusive_date_end,
-                        ];
-                    });
+                    ->get('inclusive_dates');
         $holidays = Holiday::select('date')->get();
         
         return view('CTO.overtime_request', compact('overtimereq', 'appliedDates', 'holidays'));
@@ -52,17 +46,25 @@ class OvertimeRequestController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'inclusive_date_start' => 'required|date',
-            'inclusive_date_end' => 'required|date|after_or_equal:inclusive_date_start',
+            'inclusive_dates' => 'required|string',
             'working_hours_applied' => 'required|integer|min:4',
         ]);
+
+        // Convert the comma-separated dates string to an array
+        $datesArray = explode(', ', $request->inclusive_dates);
+        
+        // Optionally, you might want to validate each date
+        foreach ($datesArray as $date) {
+            if (!strtotime($date)) {
+                return back()->withErrors(['inclusive_dates' => 'Invalid date format detected']);
+            }
+        }
 
         OvertimeRequest::create([
             'user_id' => auth()->id(),
             'date_filed' => now(),
             'working_hours_applied' => $request->working_hours_applied,
-            'inclusive_date_start' => $request->inclusive_date_start,
-            'inclusive_date_end' => $request->inclusive_date_end,
+            'inclusive_dates' => $request->inclusive_dates, // Store as comma-separated string
             'admin_status' => 'pending', // Goes to admin first
             'hr_status' => 'pending', // HR reviews only after admin approval
         ]);
@@ -70,7 +72,7 @@ class OvertimeRequestController extends Controller
         notify()->success('Overtime request submitted successfully! Pending admin review.');
         return redirect()->back();
     }
-
+    
     public function list()
     {
         $overtimereq = OvertimeRequest::where('user_id', Auth::id())->latest()->paginate(10);
@@ -132,21 +134,30 @@ class OvertimeRequestController extends Controller
     {
         // Validate the form input
         $request->validate([
-            'inclusive_date_start' => 'required|date',
-            'inclusive_date_end' => 'required|date|after_or_equal:inclusive_date_start',
+            'inclusive_dates' => 'required|string',
             'working_hours_applied' => 'required|integer|min:1',
         ]);
+    
+        // Additional validation for date format
+        $dates = explode(', ', $request->inclusive_dates);
+        foreach ($dates as $date) {
+            if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $date)) {
+                return redirect()->back()
+                    ->withErrors(['inclusive_dates' => 'Invalid date format. Use YYYY-MM-DD format.'])
+                    ->withInput();
+            }
+        }
     
         $overtime = OvertimeRequest::findOrFail($id);
     
         // Update overtime details
         $overtime->update([
-            'inclusive_date_start' => $request->inclusive_date_start,
-            'inclusive_date_end' => $request->inclusive_date_end,
+            'inclusive_dates' => $request->inclusive_dates,
             'working_hours_applied' => $request->working_hours_applied,
         ]);
-    
-        return redirect()->back()->with('success', 'Overtime request updated successfully.');
+        
+        notify()->success('Overtime request updated successfully.');
+        return redirect()->back();
     }
 
     public function deleteOvertime($id) {

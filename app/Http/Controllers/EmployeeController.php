@@ -33,10 +33,13 @@ class EmployeeController extends Controller
                             ->where('end_date', '>=', $today) // Ensures leave is still ongoing
                             ->with('user') // Ensures the user object is available
                             ->get();
+        $monthPadded = str_pad($month, 2, '0', STR_PAD_LEFT); // Format as 2 digits (01-12)
+        $year = now()->year;
+        
         $overtimeRequests = OvertimeRequest::where('status', 'approved')
-                            ->whereMonth('inclusive_date_start', $month)
-                            ->whereYear('inclusive_date_start', now()->year)
-                            ->get();
+            ->where('inclusive_dates', 'LIKE', "%-{$monthPadded}-%") // Check for month in any position
+            ->where('inclusive_dates', 'LIKE', "{$year}-%") // Check for current year
+            ->get();
 
         return view('employee.dashboard', compact('teamLeaves', 'birthdays', 'month', 'overtimeRequests'));
     }
@@ -400,25 +403,33 @@ class EmployeeController extends Controller
         $month = $request->month ?? date('m'); // Default to current month
 
         $overtimes = OvertimeRequest::with('user:id,name,first_name,last_name,profile_image')
-            ->whereMonth('inclusive_date_start', $month) // Adjust column name
-            ->orderBy('inclusive_date_start', 'asc')
+            ->where('inclusive_dates', 'LIKE', '%-'.str_pad($month, 2, '0', STR_PAD_LEFT).'-%')
+            ->orderByRaw("SUBSTRING_INDEX(inclusive_dates, ',', 1) ASC") // Orders by first date in the list
             ->get();
-
+            
         return response()->json($overtimes->map(function ($overtime) {
+            // Parse the comma-separated dates
+            $dates = explode(', ', $overtime->inclusive_dates);
+            $firstDate = \Carbon\Carbon::parse($dates[0]);
+            $lastDate = \Carbon\Carbon::parse(end($dates));
+            
+            // Format the date display
+            $dateDisplay = count($dates) === 1
+                ? $firstDate->format('F j, Y')
+                : $firstDate->format('F j, Y') . ' to ' . $lastDate->format('F j, Y');
+        
             return [
                 "id" => $overtime->id,
-                "first_name" => $overtime->user?->first_name ?? 'Unknown', // Avoid null error
+                "first_name" => $overtime->user?->first_name ?? 'Unknown',
                 "last_name" => $overtime->user?->last_name ?? '',
-                "date" => $overtime->inclusive_date_start === $overtime->inclusive_date_end
-                    ? \Carbon\Carbon::parse($overtime->inclusive_date_start)->format('F j, Y')
-                    : \Carbon\Carbon::parse($overtime->inclusive_date_start)->format('F j, Y') . ' to ' . 
-                    \Carbon\Carbon::parse($overtime->inclusive_date_end)->format('F j, Y'),
-
-                "admin_status" => ucfirst($overtime->admin_status ?? 'Pending'), // Default value
-                "hours" => $overtime->working_hours_applied ?? 0, // Use 'earned_hours' if 'hours' doesn't exist
+                "date" => $dateDisplay,
+                "admin_status" => ucfirst($overtime->admin_status ?? 'Pending'),
+                "hours" => $overtime->working_hours_applied ?? 0,
                 "profile_image" => $overtime->user?->profile_image
                     ? asset('storage/profile_images/' . $overtime->user->profile_image)
-                    : asset('images/default.png')
+                    : asset('images/default.png'),
+                // Optional: include all dates if needed
+                "all_dates" => array_map(fn($d) => \Carbon\Carbon::parse($d)->format('F j, Y'), $dates)
             ];
         }));
     }

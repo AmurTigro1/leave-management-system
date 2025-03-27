@@ -14,8 +14,7 @@
                 <tr class="text-gray-600 text-sm bg-gray-100 border-b">
                     <th class="p-3 text-left">Date Filed</th>
                     <th class="p-3 text-left">Working Hours Applied</th>
-                    <th class="p-3 text-left">Inclusive Date Start</th>
-                    <th class="p-3 text-left">Inclusive Date End</th>
+                    <th class="p-3 text-left">Inclusive Dates</th>
                     <th class="p-3 text-left">Status</th>
                     <th class="p-3 text-center">Action</th>
                 </tr>
@@ -25,8 +24,13 @@
                     <tr class="border-b even:bg-gray-50 hover:bg-gray-100 transition">
                         <td class="p-3 text-gray-700">{{ \Carbon\Carbon::parse($overtime->date_filed)->format('F d, Y') }}</td>
                         <td class="p-3 text-gray-700">{{ $overtime->working_hours_applied}} hours</td>
-                        <td class="p-3 text-gray-700">{{ \Carbon\Carbon::parse($overtime->inclusive_date_start)->format('F d, Y') }}</td>
-                        <td class="p-3 text-gray-700">{{ \Carbon\Carbon::parse($overtime->inclusive_date_end)->format('F d, Y') }}</td>
+                        <td class="p-3 text-gray-700 text-xs">
+                            <ul class="list-disc list-inside">
+                                @foreach(explode(', ', $overtime->inclusive_dates) as $date)
+                                    <li>{{ \Carbon\Carbon::parse($date)->format('M j, Y (D)') }}</li>
+                                @endforeach
+                            </ul>
+                        </td>
                         <td class="p-3">
                             @php
                                 $status_classes = [

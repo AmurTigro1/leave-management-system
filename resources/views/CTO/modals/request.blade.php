@@ -34,23 +34,10 @@
                         @enderror
                     </div>
                     <div class="sm:col-span-2">
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Inclusive Dates</label>
-                        <div class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
-                            <input type="date" name="inclusive_date_start" value="{{ old('inclusive_date_start') }}" class="w-full sm:w-1/2 border border-gray-300 p-2 sm:p-3 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
-                            <input type="date" name="inclusive_date_end" value="{{ old('inclusive_date_end') }}" class="w-full sm:w-1/2 border border-gray-300 p-2 sm:p-3 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
-                        </div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Selected Dates</label>
+                        <input type="text" name="inclusive_dates" id="inclusive_dates" value="{{ old('inclusive_dates') }}" 
+                               class="w-full border border-gray-300 p-2 sm:p-3 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" readonly>
                     </div>
-                    {{-- <!-- Checkbox to show distance field -->
-                    <div class="flex items-center space-x-3">
-                        <input type="checkbox" name="is_driver" id="is_driver" value="1" {{ old('is_driver') ? 'checked' : '' }} class="w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
-                        <label for="is_driver" class="text-sm font-medium text-gray-700">Are you a driver?</label>
-                    </div>
-
-                    <!-- Distance field (hidden unless checkbox is checked) -->
-                    <div id="distanceField" class="{{ old('is_driver') ? '' : 'hidden' }} sm:col-span-2">
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Distance (Max 50 km)</label>
-                        <input type="number" name="distance_km" value="{{ old('distance_km') }}" min="0" max="50" class="w-full border border-gray-300 p-2 sm:p-3 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
-                    </div> --}}
                 </div>
             </div>
 

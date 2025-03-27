@@ -152,11 +152,13 @@ document.addEventListener('alpine:init', () => {
         isAppliedDate(day) {
             const date = new Date(this.year, this.month, day);
             const dateString = `${this.year}-${String(this.month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+            
             return this.appliedDates.some(applied => {
-                const startDate = new Date(applied.start);
-                const endDate = new Date(applied.end);
-                const currentDate = new Date(dateString);
-                return currentDate >= startDate && currentDate <= endDate;
+                // Split the comma-separated dates into an array
+                const datesArray = applied.inclusive_dates.split(', ');
+                
+                // Check if any of the dates match the current date
+                return datesArray.some(d => d === dateString);
             });
         },
 
@@ -267,12 +269,34 @@ document.addEventListener('alpine:init', () => {
         },
 
         setModalDates() {
-            // Set the selected dates in the modal's input fields
-            const modal = document.getElementById('requestModal');
-            if (modal) {
-                modal.querySelector('input[name="inclusive_date_start"]').value = this.firstSelectedDate;
-                modal.querySelector('input[name="inclusive_date_end"]').value = this.lastSelectedDate;
-            }
+            // Format the selected dates in a user-friendly way
+            const formattedDates = this.selectedDays.map(day => {
+                const date = new Date(this.year, this.month, day);
+                return date.toLocaleDateString('en-US', { 
+                    month: 'long', 
+                    day: 'numeric', 
+                    year: 'numeric' 
+                });
+            }).join(', ');
+            
+            // Set the formatted dates in the visible input
+            document.getElementById('inclusive_dates').value = formattedDates;
+            
+            // Create a hidden input with the original format for submission
+            const originalFormatDates = this.selectedDays.map(day => {
+                return `${this.year}-${String(this.month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+            }).join(', ');
+            
+            // Remove any existing hidden input
+            const existingHidden = document.querySelector('input[name="inclusive_dates_original"]');
+            if (existingHidden) existingHidden.remove();
+            
+            // Create new hidden input
+            const hiddenInput = document.createElement('input');
+            hiddenInput.type = 'hidden';
+            hiddenInput.name = 'inclusive_dates';
+            hiddenInput.value = originalFormatDates;
+            document.getElementById('overtimeForm').appendChild(hiddenInput);
         },
 
         cancelSelection() {
