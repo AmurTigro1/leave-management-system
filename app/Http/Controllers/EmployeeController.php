@@ -24,8 +24,9 @@ class EmployeeController extends Controller
         $month = $request->query('month', now()->month);
         $today = now()->toDateString(); 
     
-        // Fetch employees whose birthday falls in the selected month
-        $birthdays = User::whereMonth('birthday', $month)->get();
+        $birthdays = User::whereMonth('birthday', $month)
+        ->orderByRaw('DAY(birthday) ASC')
+        ->get();
     
         // Get employees who are on approved leave this month (but only if their leave has not yet ended)
         $teamLeaves = Leave::whereMonth('start_date', $month)
