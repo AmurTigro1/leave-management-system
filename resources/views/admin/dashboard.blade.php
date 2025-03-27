@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="max-w-7xl mx-auto  space-y-6 animate-fade-in">
-    <h2 class="text-2xl font-bold">Application Verificaation</h2>
+    <h2 class="text-2xl font-bold">Application Verification</h2>
     <div class="container mx-auto px-4">
         <!-- Leave & CTO Requests Summary -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">

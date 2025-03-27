@@ -120,7 +120,7 @@
                                                 {{ \Carbon\Carbon::parse($leave->start_date)->diffInDays(\Carbon\Carbon::parse($leave->end_date)) + 1 }} days
                                             </span>
                                         </p> --}}
-                                <p class="text-gray-600 text-sm">Duration: <span class="font-semibold">  {{ \Carbon\Carbon::parse($cto->inclusive_date_start)->diffInDays(\Carbon\Carbon::parse($cto->inclusive_date_end)) + 1 }} days</span></p>
+                                <p class="text-gray-600 text-sm">Duration: <span class="font-semibold">  {{ round(\Carbon\Carbon::parse($cto->inclusive_date_start)->diffInDays(\Carbon\Carbon::parse($cto->inclusive_date_end)) + 1) }} days</span></p>
                                     </div>
                                 </div>
                                 <div>
