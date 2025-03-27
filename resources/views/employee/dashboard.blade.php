@@ -113,9 +113,16 @@
                 </svg>
                 Team Members on Leave
             </h2>
-            <span class="px-3 py-1 text-sm font-semibold bg-indigo-100 text-indigo-800 rounded-full">
-                {{ count($teamLeaves) }} {{ Str::plural('member', count($teamLeaves)) }}
+        <span class="relative inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-medium bg-indigo-100 text-indigo-800 shadow-inner hover:bg-indigo-200 transition-colors duration-200 group">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-indigo-600" viewBox="0 0 20 20" fill="currentColor">
+                <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v1h8v-1zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-1a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v1h-3zM4.75 12.094A5.973 5.973 0 004 15v1H1v-1a3 3 0 013.75-2.906z" />
+            </svg>
+            {{ $teamLeaves->count() }} {{ Str::plural('member', $teamLeaves->count()) }}
+            <span class="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">
+                Team members on leave
+                <svg class="absolute text-gray-800 h-2 w-full left-0 top-full" x="0px" y="0px" viewBox="0 0 255 255"><polygon class="fill-current" points="0,0 127.5,127.5 255,0"/></svg>
             </span>
+        </span>
         </div>
         
         @if($teamLeaves->isEmpty())
@@ -129,7 +136,7 @@
     @else
             <ul class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 @foreach($teamLeaves as $leave)
-                    <li class="flex items-start space-x-4 bg-white p-4 rounded-lg shadow-sm border border-gray-100 hover:border-indigo-200 transition-colors group">
+                    <li class="flex items-start space-x-4 bg-white p-4 rounded-lg shadow-md border border-gray-100 hover:border-indigo-200 transition-colors group">
                         <div class="relative">
                             <div class="w-12 h-12 rounded-full overflow-hidden bg-gradient-to-br from-indigo-100 to-indigo-200 shadow">
                                 @if($leave->user && $leave->user->profile_image)
@@ -138,7 +145,7 @@
                                     <img src="{{ asset('img/default-avatar.png')}}" alt="default avatar" class="w-full h-full object-cover">
                                 @endif
                             </div>
-                            <div class="absolute -bottom-1 -right-1 bg-red-500 rounded-full p-1 shadow">
+                            <div class="absolute -bottom-1 -right-1 bg-green-500 rounded-full p-1 shadow">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 text-white" viewBox="0 0 20 20" fill="currentColor">
                                     <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" />
                                 </svg>
@@ -152,19 +159,20 @@
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                         </svg>
-                                        {{ date('M d', strtotime($leave->start_date)) }} - {{ date('M d', strtotime($leave->end_date)) }}
+                                        {{ date('M d Y', strtotime($leave->start_date)) }} - {{ date('M d Y', strtotime($leave->end_date)) }}
                                     </p>
                                 </div>
-                                <span class="px-2 py-1 text-xs font-semibold bg-red-100 text-red-800 rounded-full">
+                                <span class="px-2 py-1 text-xs font-semibold bg-green-500 text-white rounded-full">
                                     {{ \Carbon\Carbon::parse($leave->start_date)->diffInDays($leave->end_date) + 1 }} {{ Str::plural('day', \Carbon\Carbon::parse($leave->start_date)->diffInDays($leave->end_date) + 1) }}
                                 </span>
                             </div>
-                            @if($leave->reason)
-                                <div class="mt-2 bg-gray-50 p-2 rounded text-sm text-gray-600">
-                                    <p class="font-medium text-gray-700">Reason:</p>
-                                    <p>{{ $leave->reason }}</p>
-                                </div>
-                            @endif
+                            <div class="flex items-center space-x-2">
+                                <span class="text-gray-700">Duration:</span>
+                            
+                                <p class="text-sm text-gray-600">
+                                    {{ $leave->days_applied }} {{ Str::plural('day', $leave->days_applied) }}
+                                </p>
+                            </div>
                         </div>
                     </li>
                 @endforeach
@@ -181,8 +189,15 @@
                 </svg>
                 Compensatory Time Off Requests
             </h2>
-            <span class="px-3 py-1 text-sm font-semibold bg-indigo-100 text-indigo-800 rounded-full">
-                {{ count($overtimeRequests) }} {{ Str::plural('request', count($overtimeRequests)) }}
+            <span class="relative inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-medium bg-indigo-100 text-indigo-800 shadow-inner hover:bg-indigo-200 transition-colors duration-200 group">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                {{ $overtimeRequests->count() }} {{ Str::plural('request', $overtimeRequests->count()) }}
+                <span class="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap z-50">
+                    Compensatory time off requests
+                    <svg class="absolute text-gray-800 h-2 w-full left-0 top-full" x="0px" y="0px" viewBox="0 0 255 255"><polygon class="fill-current" points="0,0 127.5,127.5 255,0"/></svg>
+                </span>
             </span>
         </div>
         
