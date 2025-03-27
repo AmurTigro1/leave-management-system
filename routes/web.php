@@ -131,6 +131,8 @@ Route::middleware('auth')->group(function () {
         Route::delete('/notifications/delete/{id}', [EmployeeController::class, 'delete'])->name('notifications.delete');
         Route::delete('/notifications/delete-all', [EmployeeController::class, 'deleteAll'])->name('notifications.deleteAll');
 
+        Route::get('/employee/calendar', [EmployeeController::class, 'calendar'])->name('employee.holiday.calendar');
+
         //CTO
         Route::get('/cto/dashboard', [OvertimeRequestController::class, 'dashboard'])->name('cto.dashboard');
         Route::get('/overtime-request', [OvertimeRequestController::class, 'index'])->name('cto.overtime_request');
