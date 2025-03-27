@@ -107,7 +107,7 @@ class HrController extends Controller
         ->orderBy('created_at', 'desc') 
         ->paginate(9); 
 
-        $ctoApplications = OvertimeRequest::where('admin_status', 'approved')
+        $ctoApplications = OvertimeRequest::where('admin_status', 'Ready for Review')
         ->orderBy('created_at', 'desc') 
         ->paginate(9); 
 
@@ -237,7 +237,39 @@ class HrController extends Controller
         return redirect()->route('hr.requests');
     }   
 
-    
+    public function ctoreview(Request $request, OvertimeRequest $cto)
+{
+    $request->validate([
+        'hr_status' => 'required|in:Approved,Rejected', // Ensures correct input
+        'disapproval_reason' => 'nullable|string',
+    ]);
+
+    // Convert status to lowercase for consistency
+    $hr_status = strtolower($request->hr_status); // "Approved" -> "approved", "Rejected" -> "rejected"
+
+    // Determine new statuses
+    if ($hr_status === 'approved') {
+        $supervisor_status = 'approved';
+        $status = 'approved'; // Set CTO status to approved
+    } else {
+        $supervisor_status = $cto->supervisor_status; // Keep the existing supervisor status
+        $status = 'rejected'; // Set CTO status to rejected
+    }
+
+    // Update the CTO record
+    $cto->update([
+        'hr_status' => $hr_status, // Update HR status
+        'supervisor_status' => $supervisor_status, // Update Supervisor status if HR approves
+        'status' => $status, // Update CTO status
+        'disapproval_reason' => $request->disapproval_reason,
+        'hr_officer_id' => Auth::id(),
+    ]);
+
+    notify()->success('CTO application reviewed by HR.');
+    return Redirect::route('hr.requests');
+}
+
+
 
         public function generateLeaveReport($leaveId)
     {
@@ -352,6 +384,30 @@ class HrController extends Controller
         return view('hr.holidays.index', compact('holidays'));
     }
 
+    public function viewPdf($id)
+    {
+        $leave = Leave::findOrFail($id);
+        $official = HRSupervisor::find($id);
+
+        $supervisor = User::where('role', 'supervisor')->first();
+        $hr = User::where('role', 'hr')->first();
+        
+        $pdf = PDF::loadView('pdf.leave_details', compact('leave', 'supervisor', 'hr', 'official'));
+        
+        return $pdf->stream('leave_request_' . $leave->id . '.pdf');
+    }
+
+    public function ctoviewPdf($id)
+    {
+        $overtime = OvertimeRequest::findOrFail($id);
+
+        $supervisor = User::where('role', 'supervisor')->first();
+        $hr = User::where('role', 'hr')->first();
+        
+        $pdf = PDF::loadView('pdf.overtime_details', compact('overtime', 'supervisor', 'hr'));
+        
+        return $pdf->stream('overtime_request_' . $overtime->id . '.pdf');
+    }
     /**
      * Show the form for creating a new holiday.
      */
