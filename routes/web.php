@@ -74,6 +74,11 @@ Route::middleware('auth')->group(function () {
 
         Route::post('/update-officer', [EmployeeController::class, 'updateOfficer'])->name('update.officer');
         Route::put('/hr-supervisor-info/{id}', [HRSupervisorController::class, 'update'])->name('hr-supervisor-info.update');
+
+        Route::get('/hr/leave-request', [HrController::class, 'makeLeaveRequest'])->name('hr.make_leave_request');
+        Route::post('/hr/request-leave', [HrController::class, 'storeLeave'])->name('hr-request.leave');
+        Route::get('/hr/cto-request', [HrController::class, 'makeCTORequest'])->name('hr.make_cto_request');
+        Route::post('/hr/overtime-request/store', [HrController::class, 'storeCTO'])->name('hr_overtime_request.store');
     });
 
     //Admin Assistant Route
@@ -92,6 +97,11 @@ Route::middleware('auth')->group(function () {
         Route::patch('/admin-profile/update-profile', [AdminController::class, 'updateProfile'])->name('admin-profile.update');
         Route::patch('/admin-profile/update-email', [AdminController::class, 'updateEmail'])->name('admin-email.update'); 
         Route::get('/admin/holidays', [AdminController::class, 'holiday'])->name('admin.holiday.calendar');
+
+        Route::get('/admin/leave-request', [AdminController::class, 'makeLeaveRequest'])->name('admin.make_leave_request');
+        Route::post('/admin/request-leave', [AdminController::class, 'storeLeave'])->name('admin-request.leave');
+        Route::get('/admin/cto-request', [AdminController::class, 'makeCTORequest'])->name('admin.make_cto_request');
+        Route::post('/admin/overtime-request/store', [AdminController::class, 'storeCTO'])->name('admin_overtime_request.store');
     });
 
 
