@@ -457,6 +457,8 @@ class HrController extends Controller
         $leave->update($updateData);
         $user->save();
     
+         // ✅ Send the notification with the correct Leave model
+        $user->notify(new LeaveStatusNotification($leave, "Your leave request has been approved by the HR."));
         notify()->success('Leave application reviewed successfully!');
         return redirect()->route('hr.requests');
     }   
