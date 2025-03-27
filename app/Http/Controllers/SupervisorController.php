@@ -76,7 +76,12 @@ class SupervisorController extends Controller
         $leaveApplications = Leave::where('status', 'approved')
         ->orderBy('created_at', 'desc') 
         ->paginate(9); 
-        return view('supervisor.requests', compact('leaveApplications'));
+
+        $ctoApplications = OvertimeRequest::where('status', 'approved')
+        ->orderBy('created_at', 'desc') 
+        ->paginate(9); 
+
+        return view('supervisor.requests', compact('leaveApplications', 'ctoApplications'));
     }
 
 //Supervisor Approve

@@ -23,6 +23,16 @@
                         $leave->hr_status != 'rejected')
                         @php $leaveFound = true; @endphp
                         <div class="bg-white shadow-lg rounded-lg p-6 transition-transform transform hover:scale-105 hover:shadow-xl mb-2">
+                            <div class="flex justify-start items-center gap-4">
+                                <div class="flex items-center">
+                                     <p class="mb-1 mr-2 font-bold text-gray-700">Status</p>
+                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5">
+                                         <path stroke-linecap="round" stroke-linejoin="round" d="m5.25 4.5 7.5 7.5-7.5 7.5m6-15 7.5 7.5-7.5 7.5" />
+                                     </svg>
+                                </div>
+                                   
+                                 <span class="bg-yellow-500 text-white py-1 px-3 rounded-full ">{{ $leave->status}}</span>
+                             </div>
                             <div class="flex justify-between items-end">
                                 <div class="flex justify-start items-center">
                                     <div class="flex justify-start items-center mr-3">
@@ -42,7 +52,7 @@
                                                 {{ \Carbon\Carbon::parse($leave->start_date)->diffInDays(\Carbon\Carbon::parse($leave->end_date)) + 1 }} days
                                             </span>
                                         </p> --}}
-                                <p class="text-gray-600 text-sm">Duration: <span class="font-semibold"> {{$leave->days_applied}} </span></p>
+                                <p class="text-gray-600 text-sm">Duration: <span class="font-semibold"> {{$leave->days_applied}} days </span></p>
 
                                     </div>
                                 </div>
@@ -76,9 +86,21 @@
             @php $ctoFound = false; @endphp
             <div>
                 @foreach ($ctoApplications as $cto)
-                    @if (($cto->status == 'pending' && $cto->admin_status == 'approved') || ($cto->status != 'approved' || $cto->admin_status != 'approved'))
+                    @if (($cto->status == 'pending' && $cto->admin_status == 'Ready for Review') || 
+                        ($cto->status != 'approved' || $cto->admin_status != 'Ready for Review') && 
+                        $cto->hr_status != 'rejected')
                         @php $ctoFound = true; @endphp
                         <div class="bg-white shadow-lg rounded-lg p-6 transition-transform transform hover:scale-105 hover:shadow-xl mb-2">
+                            <div class="flex justify-start items-center gap-4">
+                                <div class="flex items-center">
+                                     <p class="mb-1 mr-2 font-bold text-gray-700">Status</p>
+                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5">
+                                         <path stroke-linecap="round" stroke-linejoin="round" d="m5.25 4.5 7.5 7.5-7.5 7.5m6-15 7.5 7.5-7.5 7.5" />
+                                     </svg>
+                                </div>
+                                   
+                                 <span class="bg-yellow-500 text-white py-1 px-3 rounded-full ">{{ $cto->status}}</span>
+                             </div>
                             <div class="flex justify-between items-end">
                                 <div class="flex justify-start items-center">
                                     <div class="flex justify-start items-center mr-3">
@@ -93,11 +115,12 @@
                                             {{ $cto->user->first_name }} {{ strtoupper(substr($cto->user->middle_name, 0, 1)) }}. {{ $cto->user->last_name }}
                                         </h3>
                                         <p class="text-gray-600 text-sm">Working Hours Applied: {{ $cto->working_hours_applied }} hours</p>
-                                        <p class="text-gray-600 text-sm">Duration: 
+                                        {{-- <p class="text-gray-600 text-sm">Duration: 
                                             <span class="font-semibold">
-                                                {{ \Carbon\Carbon::parse($cto->inclusive_date_start)->diffInDays(\Carbon\Carbon::parse($cto->inclusive_date_end)) + 1 }} days
+                                                {{ \Carbon\Carbon::parse($leave->start_date)->diffInDays(\Carbon\Carbon::parse($leave->end_date)) + 1 }} days
                                             </span>
-                                        </p>
+                                        </p> --}}
+                                <p class="text-gray-600 text-sm">Duration: <span class="font-semibold">  {{ \Carbon\Carbon::parse($cto->inclusive_date_start)->diffInDays(\Carbon\Carbon::parse($cto->inclusive_date_end)) + 1 }} days</span></p>
                                     </div>
                                 </div>
                                 <div>

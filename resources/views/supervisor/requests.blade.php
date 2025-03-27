@@ -40,6 +40,7 @@
             No Leave Applications found.
         </div>
     @else
+    <h1>Leave Applications</h1>
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             @foreach ($leaveApplications as $leave)
             <div class="bg-gray-100 p-4 rounded-lg shadow-md text-sm">
@@ -110,6 +111,45 @@
                         });
                     </script>
                 @endif
+            </div>
+            @endforeach
+        </div>
+    @endif
+    @if($ctoApplications->isEmpty())
+        <div class="text-gray-600 mt-4">
+            No CTO Applications found.
+        </div>
+    @else
+    <h1 class="mt-4">CTO Applications</h1>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            @foreach ($ctoApplications as $cto)
+            <div class="bg-gray-100 p-4 rounded-lg shadow-md text-sm">
+                <div class="flex items-center gap-3 border-b pb-3 mb-3">
+                    <div class="bg-blue-500 text-white w-10 h-10 flex items-center justify-center rounded-full text-lg font-bold overflow-hidden">
+                        <img src="{{ asset('storage/profile_images/' . $cto->user->profile_image) }}" 
+                            alt="User Profile" 
+                            class="w-full h-full object-cover rounded-full">
+                    </div>
+                    
+                    <div>
+                        <p class="text-md font-semibold text-gray-800">{{ $cto->user->first_name }} {{ $cto->user->last_name }}</p>
+                        <p class="text-xs text-gray-500">{{ $cto->cto_type }} - {{ $cto->working_hours_applied }} Hours</p>
+                    </div>
+                </div>
+
+                <p class="text-gray-600 mb-2"><strong>Status:</strong> 
+                    <span class="px-2 py-1 text-white text-xs rounded 
+                        {{ $cto->status === 'pending' ? 'bg-yellow-500' : ($cto->status === 'approved' ? 'bg-green-500' : 'bg-yellow-500') }}">
+                        {{ ucfirst($cto->status) }}
+                    </span>
+                </p>
+            
+                <p class="text-gray-500 text-sm mt-2">
+                    From: <span class="font-semibold">{{ \Carbon\Carbon::parse($cto->inclusive_date_start)->format('l, F j, Y') }}</span>
+                    <br>
+                    To: <span class="font-semibold">{{ \Carbon\Carbon::parse($cto->inclusive_date_end)->format('l, F j, Y') }}</span>
+                </p>
+                <p class="text-gray-700 mt-2">Duration: <span class="font-semibold">{{ \Carbon\Carbon::parse($cto->inclusive_date_start)->diffInDays(\Carbon\Carbon::parse($cto->inclusive_date_end)) + 1 }} day(s)</span></p>
             </div>
             @endforeach
         </div>

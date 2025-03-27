@@ -133,14 +133,14 @@
                 </button>
         
                 <!-- Reject Button -->
-                <button type="button" id="rejectBtn" 
+                {{-- <button type="button" id="rejectBtn" 
                     class="bg-orange-600 text-white py-2 px-4 rounded-lg">
                     Reject Request
-                </button>
+                </button> --}}
             </div>
         
             <!-- Hidden Disapproval Reason Field -->
-            <div id="disapprovalSection" class="mt-3 hidden h-auto">
+            {{-- <div id="disapprovalSection" class="mt-3 hidden h-auto">
                 <label class="block text-gray-700 font-medium text-xs">Disapproval Reason:</label>
                 <textarea name="disapproval_reason" id="disapproval_reason" 
                     class="w-full border rounded p-2 text-xs focus:ring focus:ring-blue-200"></textarea>
@@ -155,10 +155,10 @@
                         Cancel
                     </button>
                 </div>
-            </div>            
+            </div>             --}}
         </form>
         
-        <script>
+        {{-- <script>
             document.getElementById('rejectBtn').addEventListener('click', function() {
                 document.getElementById('disapprovalSection').classList.remove('hidden');
             });
@@ -167,7 +167,7 @@
                 document.getElementById('disapprovalSection').classList.add('hidden');
                 document.getElementById('disapproval_reason').value = ""; // Clear text area
             });
-        </script>
+        </script> --}}
        </div>
     </div>
 </div>

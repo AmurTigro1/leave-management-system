@@ -25,6 +25,7 @@ return new class extends Migration
             $table->enum('cto_type', ['none', 'halfday_morning', 'halfday_afternoon', 'wholeday'])->default('none');
 
             // Approvals & Status
+            $table->foreignId('admin_id')->nullable()->constrained('users')->onDelete('set null');
             $table->foreignId('hr_officer_id')->nullable()->constrained('users')->onDelete('set null');
             $table->foreignId('supervisor_id')->nullable()->constrained('users')->onDelete('set null');
             $table->enum('supervisor_status', ['pending', 'approved', 'rejected'])->default('pending');

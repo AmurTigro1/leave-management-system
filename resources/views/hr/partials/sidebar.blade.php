@@ -8,7 +8,7 @@
         ->where('hr_status', '!=', 'rejected') // Exclude cases where hr_status is also rejected
         ->count();
     $pendingOvertimeCount = App\Models\OvertimeRequest::where('status', 'pending')
-        ->where('admin_status', 'approved')
+        ->where('admin_status', 'Ready for Review')
         ->count();
 
     $pendingRequestsCount = $pendingLeaveCount + $pendingOvertimeCount + $rejectedLeaveCount;

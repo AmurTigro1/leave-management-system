@@ -17,7 +17,7 @@
               </svg>
               <p>Upload Info</p>
         </button>
-        <a href="{{ route('leave.viewPdf', $leave->id) }}" target="_blank" 
+        <a href="{{ route('hr.leave.viewPdf', $leave->id) }}" target="_blank" 
             class="bg-blue-600 text-white px-6 py-2 rounded-lg shadow-md hover:bg-blue-700 transition">
             View & Download PDF
         </a>

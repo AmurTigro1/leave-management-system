@@ -45,7 +45,10 @@ Route::middleware('auth')->group(function () {
         Route::get('/hr/employees', [HrController::class, 'onLeave'])->name('hr.on_leave');
         Route::get('/hr/requests', [HrController::class, 'requests'])->name('hr.requests');
         Route::get('/leave/details/{id}', [HrController::class, 'showLeave'])->name('hr.leave_details');
+        Route::get('/hr-leave/view/{id}', [HrController::class, 'viewPdf'])->name('hr.leave.viewPdf');
         Route::get('/hr/cto/details/{id}', [HrController::class, 'showcto'])->name('hr.cto_details');
+        Route::post('/cto/{cto}/hr-review', [HrController::class, 'ctoreview'])->name('cto.hr-review');
+        Route::get('/hr-overtime/view/{id}', [HrController::class, 'ctoviewPdf'])->name('hr.overtime.viewPdf');
         Route::get('/hr/calendar', [HrController::class, 'calendar'])->name('hr.holiday.calendar');
         Route::get('hr/holidays', [HrController::class, 'holiday'])->name('hr.holidays.index');
         Route::get('hr/holidays/create', [HrController::class, 'create'])->name('hr.holidays.create');
@@ -80,6 +83,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/admin/leaderboard', [AdminController::class, 'leaderboard'])->name('admin.leaderboard');
         Route::get('admin/requests', [AdminController::class, 'requests'])->name('admin.requests');
         Route::post('/leave/{leave}/admin-review', [AdminController::class, 'review'])->name('leave.admin-review');
+        Route::post('/cto/{cto}/admin-review', [AdminController::class, 'ctoreview'])->name('cto.admin-review');
         Route::get('/admin/leave/details/{id}', [AdminController::class, 'showleave'])->name('admin.leave_details');
         Route::get('/admin/cto/details/{id}', [AdminController::class, 'showcto'])->name('admin.cto_details');
         Route::get('/admin-profile', [AdminController::class, 'profile'])->name('admin.profile.index');

@@ -111,6 +111,31 @@ class AdminController extends Controller
     return Redirect::route('admin.requests');
 }
 
+public function ctoreview(Request $request, OvertimeRequest $cto)
+{
+    $request->validate([
+        'admin_status' => 'required|in:Ready for Review,Rejected', // Ensures correct input
+        // 'disapproval_reason' => 'nullable|string',
+    ]);
+
+    // Convert status to lowercase for consistency
+    $admin_status = strtolower($request->admin_status); // "Approved" -> "approved", "Rejected" -> "rejected"
+
+    // Determine the new status based on admin_status
+    // $status = ($admin_status === 'rejected') ? 'rejected' : $cto->status;
+
+    // Update leave record
+    $cto->update([
+        'admin_status' => $admin_status, // Update HR status
+        // 'status' => $status, // Also update overall status if rejected
+        // 'disapproval_reason' => $request->disapproval_reason,
+        'admin_id' => Auth::id(),
+    ]);
+
+    notify()->success('CTO application reviewed by Admin.');
+    return Redirect::route('admin.requests');
+}
+
 
     public function showleave($id) {
         $leave = Leave::findOrFail($id); 
