@@ -37,7 +37,6 @@
                     </div>
                 @endforeach
             </div>
-            
             @endforeach
         </div>
 
@@ -113,7 +112,7 @@
                         </div>
                         <div>
                             <p class="text-md font-semibold text-gray-800">{{ $overtime->user->first_name }} {{ $overtime->user->last_name }}</p>
-                            <p class="text-sm text-gray-600">CTO starting from {{ \Carbon\Carbon::parse($overtime->inclusive_date_start)->format('M d, Y') }}</p>
+                            <p class="text-sm text-gray-600">CTO starting from {{ $overtime->inclusive_dates}}</p>
                             <p class="text-sm text-gray-600">Used COCs: {{ $overtime->hours }}</p>
                         </div>
                     </li>

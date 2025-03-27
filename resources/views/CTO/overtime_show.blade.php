@@ -31,18 +31,8 @@
         </div>
 
         <div>
-            <p class="font-semibold text-gray-900">Inclusive Date Start</p>
-            <p class="text-gray-700">{{ \Carbon\Carbon::parse($overtime->inclusive_date_start)->format('F d, Y') }}</p>
-        </div>
-
-        <div>
-            <p class="font-semibold text-gray-900">Inclusive Date End</p>
-            <p class="text-gray-700">{{ \Carbon\Carbon::parse($overtime->inclusive_date_end)->format('F d, Y') }}</p>
-        </div>
-
-        <div>
-            <p class="font-semibold text-gray-900">Total Days</p>
-            <p class="text-gray-700">{{ \Carbon\Carbon::parse($overtime->inclusive_date_start)->diffInDays(\Carbon\Carbon::parse($overtime->inclusive_date_end)) + 1 }}</p>
+            <p class="font-semibold text-gray-900">Inclusive Dates</p>
+            <p class="text-gray-700">{{ $overtime->inclusive_dates}}</p>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-3">

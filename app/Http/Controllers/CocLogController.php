@@ -5,10 +5,11 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\CocLog;
 use App\Models\User;
+use Illuminate\Support\Facades\DB;
 
 class CocLogController extends Controller
 {
-    public function index()
+    public function indexHR()
     {
         $cocLogs = CocLog::with('user')->latest()->paginate(10);
         $users = User::orderBy('last_name', 'asc')->get();
@@ -16,16 +17,24 @@ class CocLogController extends Controller
         return view('hr.CTO.coclog', compact('cocLogs', 'users'));
     }
 
-    public function create()
+    public function indexAdmin()
     {
-        $users = User::all();
-        return view('hr.coc_logs.create', compact('users'));
+        $cocLogs = CocLog::with('user')->latest()->paginate(10);
+        $users = User::orderBy('last_name', 'asc')->get();
+
+        return view('admin.CTO.coclog', compact('cocLogs', 'users'));
     }
 
-    public function showCocLogs($id)
+    public function showHRCocLogs($id)
     {
         $coc = CocLog::find($id);
         return view('hr.CTO.show_coc', compact('coc'));
+    }
+
+    public function showAdminCocLogs($id)
+    {
+        $coc = CocLog::find($id);
+        return view('admin.CTO.show_coc', compact('coc'));
     }
 
     public function store(Request $request)
@@ -38,9 +47,18 @@ class CocLogController extends Controller
             'issuance' => 'required|string|max:255',
         ]);
 
-        CocLog::create($validated);
+        $validated['created_by'] = auth()->id();
 
-        notify()->success('COC Log created successfully.');
+        DB::transaction(function () use ($validated) {
+            // Create the COC log
+            $cocLog = CocLog::create($validated);
+            
+            // Update the user's overtime balance
+            $user = User::find($validated['user_id']);
+            $user->increment('overtime_balance', $validated['coc_earned']);
+        });
+
+        notify()->success('COC Log created successfully and overtime balance updated.');
         return redirect()->back();
     }
 
@@ -67,8 +85,18 @@ class CocLogController extends Controller
 
     public function destroy(CocLog $cocLog)
     {
-        $cocLog->delete();
-        notify()->success('COC Log deleted successfully.');
+        DB::transaction(function () use ($cocLog) {
+            $cocEarned = $cocLog->coc_earned;
+            $userId = $cocLog->user_id;
+            
+            // Delete the log
+            $cocLog->delete();
+            
+            User::where('id', $userId)
+                ->decrement('overtime_balance', $cocEarned);
+        });
+        
+        notify()->success('COC Log deleted successfully and overtime balance adjusted.');
         return redirect()->back();
     }
 }

@@ -156,16 +156,17 @@ Route::middleware('auth')->group(function () {
     Route::get('/api/leaves', [EmployeeController::class, 'getLeaves']); 
     Route::get('/api/overtimes', [EmployeeController::class, 'getOvertimes']);
 
-    Route::middleware('role:hr,admin')->group(function () {
-        Route::prefix('coc-logs')->group(function () {
-            Route::get('/', [CocLogController::class, 'index'])->name('coc_logs');
-            Route::get('/{id}', [CocLogController::class, 'showCocLogs'])->name('coc-logs.show');
-            Route::get('/{id}/pdf', [CocLogController::class, 'generateCocLogsPdf'])->name('coc-logs.pdf');
-            Route::post('/store', [CocLogController::class, 'store'])->name('coc-logs.store');
-            Route::get('/{cocLog}/edit', [CocLogController::class, 'edit'])->name('coc-logs.edit');
-            Route::put('/{cocLog}', [CocLogController::class, 'update'])->name('coc-logs.update');
-            Route::delete('/{cocLog}', [CocLogController::class, 'destroy'])->name('coc-logs.destroy');
-        });
+    Route::prefix('coc-logs')->group(function () {
+        Route::get('/hr/', [CocLogController::class, 'indexHR'])->name('coc_logs.hr');
+        Route::get('/admin/', [CocLogController::class, 'indexAdmin'])->name('coc_logs.admin');
+
+        Route::get('/{id}', [CocLogController::class, 'showHRCocLogs'])->name('coc-logs.show');
+
+        Route::get('/{id}/pdf', [CocLogController::class, 'generateCocLogsPdf'])->name('coc-logs.pdf');
+        Route::post('/store', [CocLogController::class, 'store'])->name('coc-logs.store');
+        Route::get('/{cocLog}/edit', [CocLogController::class, 'edit'])->name('coc-logs.edit');
+        Route::put('/{cocLog}', [CocLogController::class, 'update'])->name('coc-logs.update');
+        Route::delete('/{cocLog}', [CocLogController::class, 'destroy'])->name('coc-logs.destroy');
     });
 });
 require __DIR__.'/auth.php';

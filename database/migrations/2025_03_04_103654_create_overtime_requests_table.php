@@ -17,8 +17,7 @@ return new class extends Migration
             $table->date('date_filed');
             $table->integer('working_hours_applied'); 
 
-            $table->date('inclusive_date_start')->index();
-            $table->date('inclusive_date_end');
+            $table->text('inclusive_dates');
             $table->integer('approved_days')->nullable();
             $table->text('disapproval_reason')->nullable();
             $table->integer('earned_hours')->default(0);
