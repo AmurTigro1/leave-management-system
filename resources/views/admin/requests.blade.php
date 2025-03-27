@@ -88,7 +88,7 @@
                             <div>
                                 <h3 class="text-sm font-semibold text-start mb-2 mt-2 text-gray-900 uppercase">{{ $cto->user->first_name }} {{ strtoupper(substr($cto->user->middle_name, 0, 1)) }}. {{ $cto->user->last_name }}</h3>
                                 <p class="text-gray-600 text-sm">Working Hours Applied: {{ $cto->working_hours_applied }} hours</p>
-                                <p class="text-gray-600 text-sm">Duration: <span class="font-semibold">{{ \Carbon\Carbon::parse($cto->inclusive_date_start)->diffInDays(\Carbon\Carbon::parse($cto->inclusive_date_end)) + 1 }} days</span></p>
+                                <p class="text-gray-600 text-sm">Duration: <span class="font-semibold">{{ round(\Carbon\Carbon::parse($cto->inclusive_date_start)->diffInDays(\Carbon\Carbon::parse($cto->inclusive_date_end)) + 1) }} days</span></p>
                             </div>
                         </div>
                         <div>

@@ -149,7 +149,7 @@
                     <br>
                     To: <span class="font-semibold">{{ \Carbon\Carbon::parse($cto->inclusive_date_end)->format('l, F j, Y') }}</span>
                 </p>
-                <p class="text-gray-700 mt-2">Duration: <span class="font-semibold">{{ \Carbon\Carbon::parse($cto->inclusive_date_start)->diffInDays(\Carbon\Carbon::parse($cto->inclusive_date_end)) + 1 }} day(s)</span></p>
+                <p class="text-gray-700 mt-2">Duration: <span class="font-semibold">{{ round(\Carbon\Carbon::parse($cto->inclusive_date_start)->diffInDays(\Carbon\Carbon::parse($cto->inclusive_date_end)) + 1) }} day(s)</span></p>
             </div>
             @endforeach
         </div>
