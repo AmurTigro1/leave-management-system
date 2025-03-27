@@ -484,6 +484,16 @@ class EmployeeController extends Controller
         return view('employee.holiday-calendar', compact('holidays'));
     }
 
+    public function calendar() {
+        $holidays = Holiday::orderBy('date')->get()->map(function ($holiday) {
+            $holiday->day = Carbon::parse($holiday->date)->format('d'); // Example: 01
+            $holiday->month = Carbon::parse($holiday->date)->format('M'); // Example: Jan
+            $holiday->day_name = Carbon::parse($holiday->date)->format('D'); // Example: Mon
+            return $holiday;
+        });
+        return view('employee.holiday-calendar', compact('holidays'));
+    }
+
     public function editLeave($id) {
         $leave = Leave::findOrFail($id);
         return view('employee.edit', compact('id', 'leave'));
