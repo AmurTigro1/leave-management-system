@@ -1,4 +1,4 @@
-@extends('layouts.hr.sidebar-header')
+@extends('layouts.admin.sidebar-header')
 
 @section('content')
     <!-- Top-Right Header - Mobile Adjusted -->
@@ -138,10 +138,10 @@
                 <!-- Pagination - Stacked on Mobile -->
                 <div class="mt-4 sm:mt-6 flex flex-col sm:flex-row items-center justify-between gap-3">
                     <div class="text-xs sm:text-sm text-gray-500">
-                        Showing <span class="font-medium">{{ $cocLogs->firstItem() }}</span> to <span class="font-medium">{{ $cocLogs->lastItem() }}</span> of <span class="font-medium">{{ $cocLogs->total() }}</span>
+                        {{-- Showing <span class="font-medium">{{ $cocLogs->firstItem() }}</span> to <span class="font-medium">{{ $cocLogs->lastItem() }}</span> of <span class="font-medium">{{ $cocLogs->total() }}</span> --}}
                     </div>
-                    <div class="flex flex-wrap justify-center gap-1">
-                        {{ $cocLogs->onEachSide(1)->links('pagination::tailwind') }}
+                    <div class="flex flex-wrap justify-center gap-2 sm:gap-4">
+                        {{ $cocLogs->links('pagination::tailwind') }}
                     </div>
                 </div>
             </div>

@@ -8,6 +8,7 @@ class CocLog extends Model
 {
     protected $fillable = [
         'user_id',
+        'created_by',
         'activity_name',
         'activity_date',
         'coc_earned',
@@ -19,5 +20,10 @@ class CocLog extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function creator()
+    {
+        return $this->belongsTo(User::class, 'created_by');
     }
 }
