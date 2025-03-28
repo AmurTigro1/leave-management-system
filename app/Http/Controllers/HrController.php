@@ -21,6 +21,7 @@ use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\View\View;
 use App\Models\Holiday;
+use App\Models\CocLog;
 
 class HrController extends Controller
 {
@@ -464,38 +465,67 @@ class HrController extends Controller
     }   
 
     public function ctoreview(Request $request, OvertimeRequest $cto)
-{
-    $request->validate([
-        'hr_status' => 'required|in:Approved,Rejected', // Ensures correct input
-        'disapproval_reason' => 'nullable|string',
-    ]);
+    {
+        $request->validate([
+            'hr_status' => 'required|in:Approved,Rejected', // Ensures correct input
+            'disapproval_reason' => 'nullable|string',
+        ]);
 
-    // Convert status to lowercase for consistency
-    $hr_status = strtolower($request->hr_status); // "Approved" -> "approved", "Rejected" -> "rejected"
+        // Convert status to lowercase for consistency
+        $hr_status = strtolower($request->hr_status); // "Approved" -> "approved", "Rejected" -> "rejected"
 
-    // Determine new statuses
-    if ($hr_status === 'approved') {
-        $supervisor_status = 'approved';
-        $status = 'approved'; // Set CTO status to approved
-    } else {
-        $supervisor_status = $cto->supervisor_status; // Keep the existing supervisor status
-        $status = 'rejected'; // Set CTO status to rejected
+        if ($hr_status === 'approved') {
+            $supervisor_status = 'approved';
+            $status = 'approved'; // Set CTO status to approved
+
+            $user = $cto->user; // Assuming OvertimeRequest belongsTo User
+            $remainingHours = $cto->working_hours_applied; // Hours required to deduct
+
+            if ($user && $user->overtime_balance >= $remainingHours) {
+                // Fetch oldest unused COC logs
+                $cocLogs = CocLog::where('user_id', $user->id)
+                    ->where('is_expired', false)
+                    ->orderBy('created_at', 'asc') // Get oldest logs first
+                    ->get();
+
+                foreach ($cocLogs as $cocLog) {
+                    if ($remainingHours <= 0) {
+                        break; // Stop if all required hours are deducted
+                    }
+
+                    if ($cocLog->coc_earned <= $remainingHours) {
+                        // Fully use this log and disable it
+                        $remainingHours -= $cocLog->coc_earned;
+                        $cocLog->update(['is_expired' => true]);
+                    } else {
+                        // Partially use this log, deduct remaining balance
+                        $cocLog->decrement('coc_earned', $remainingHours);
+                        $remainingHours = 0;
+                    }
+                }
+
+                // Deduct from user's balance
+                $user->decrement('overtime_balance', $cto->working_hours_applied);
+            } else {
+                return back()->withErrors(['overtime_balance' => 'User does not have enough overtime balance.']);
+            }
+        } else {
+            $supervisor_status = $cto->supervisor_status; // Keep the existing supervisor status
+            $status = 'rejected'; // Set CTO status to rejected
+        }
+
+        // Update the CTO record
+        $cto->update([
+            'hr_status' => $hr_status,
+            'supervisor_status' => $supervisor_status,
+            'status' => $status,
+            'disapproval_reason' => $request->disapproval_reason,
+            'hr_officer_id' => Auth::id(),
+        ]);
+
+        notify()->success('CTO application reviewed by HR.');
+        return Redirect::route('hr.requests');
     }
-
-    // Update the CTO record
-    $cto->update([
-        'hr_status' => $hr_status, // Update HR status
-        'supervisor_status' => $supervisor_status, // Update Supervisor status if HR approves
-        'status' => $status, // Update CTO status
-        'disapproval_reason' => $request->disapproval_reason,
-        'hr_officer_id' => Auth::id(),
-    ]);
-
-    notify()->success('CTO application reviewed by HR.');
-    return Redirect::route('hr.requests');
-}
-
-
 
         public function generateLeaveReport($leaveId)
     {

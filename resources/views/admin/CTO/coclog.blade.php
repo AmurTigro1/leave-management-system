@@ -1,6 +1,7 @@
-@extends('layouts.admin.sidebar-header')
+@extends('layouts.hr.sidebar-header')
 
 @section('content')
+
     <!-- Top-Right Header - Mobile Adjusted -->
     <div class="fixed top-4 right-4 z-[9999] sm:top-6 sm:right-6">
         <x-notify::notify />
@@ -41,11 +42,15 @@
                                 <th scope="col" class="py-2 px-2 sm:px-4 border-b text-left">COC</th>
                                 <th scope="col" class="py-2 px-2 sm:px-4 border-b text-left hidden sm:table-cell">Issuance</th>
                                 <th scope="col" class="py-2 px-2 sm:px-4 border-b text-left hidden sm:table-cell">Author</th>
+                                <th scope="col" class="py-2 px-2 sm:px-4 border-b text-left hidden sm:table-cell">COC Status</th>
                                 <th scope="col" class="py-2 px-2 sm:px-4 border-b text-center">Actions</th>
                             </tr>
                         </thead>
                         <tbody class="bg-white divide-y divide-gray-200">
                             @foreach($cocLogs as $log)
+                            @include('hr.CTO.modal.coclog_view', ['log' => $log])
+                            @include('hr.CTO.modal.coclog_update', ['log' => $log])
+
                             <tr class="hover:bg-gray-100 transition-colors duration-150 ease-in-out">
                                 <!-- User Column - Stacked on Mobile -->
                                 <td class="px-2 sm:px-4 py-3 whitespace-nowrap">
@@ -90,6 +95,14 @@
                                         {{ $log->creator->first_name }} {{ $log->creator->last_name }} on {{ $log->created_at->format('M d, Y') }}
                                     </span>
                                 </td>
+
+                                <td class="px-2 sm:px-4 py-3 whitespace-nowrap">
+                                    @if($log->is_expired)
+                                        <span class="badge bg-red-100 text-red-800">Expired</span>
+                                    @else
+                                        <span class="badge px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Active</span>
+                                    @endif
+                                </td>
                                 
                                 <td class="p-3 text-center relative">
                                     <!-- Three-dot menu button -->
@@ -107,15 +120,13 @@
                                         <div x-show="open" @click.away="open = false" 
                                         class="fixed transform -translate-x-1/2 mt-2 w-40 bg-white border rounded-lg shadow-lg z-50">
                                             
-                                            <a href="{{ route('employee.leave_show', ['id' => $log->id]) }}" 
-                                               class="block text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                            <button onclick="opencocViewModal()" class="w-full block text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                                                 View
-                                            </a>
+                                            </button>
                                 
-                                            <a href="{{ route('employee.leave_edit', $log->id) }}" 
-                                               class="block text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                            <button onclick="opencocUpdateModal()" class="w-full block text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                                                 Edit
-                                            </a>
+                                            </button>
                                 
                                             <form action="{{ route('coc-logs.destroy', $log->id) }}" method="POST" class="w-full">
                                                 @csrf
@@ -138,10 +149,10 @@
                 <!-- Pagination - Stacked on Mobile -->
                 <div class="mt-4 sm:mt-6 flex flex-col sm:flex-row items-center justify-between gap-3">
                     <div class="text-xs sm:text-sm text-gray-500">
-                        {{-- Showing <span class="font-medium">{{ $cocLogs->firstItem() }}</span> to <span class="font-medium">{{ $cocLogs->lastItem() }}</span> of <span class="font-medium">{{ $cocLogs->total() }}</span> --}}
+                        Showing <span class="font-medium">{{ $cocLogs->firstItem() }}</span> to <span class="font-medium">{{ $cocLogs->lastItem() }}</span> of <span class="font-medium">{{ $cocLogs->total() }}</span>
                     </div>
-                    <div class="flex flex-wrap justify-center gap-2 sm:gap-4">
-                        {{ $cocLogs->links('pagination::tailwind') }}
+                    <div class="flex flex-wrap justify-center gap-1">
+                        {{ $cocLogs->onEachSide(1)->links('pagination::tailwind') }}
                     </div>
                 </div>
             </div>

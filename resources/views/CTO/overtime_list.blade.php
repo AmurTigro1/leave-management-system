@@ -2,9 +2,7 @@
 
 @section('content')
 <!-- Top-Right Header -->
-<div class="fixed top-4 right-4 z-[9999]">
     <x-notify::notify />
-</div>
 
 <div class="animate-fade-in">
     <div class="bg-white shadow-md rounded-lg overflow-hidden p-6 ">

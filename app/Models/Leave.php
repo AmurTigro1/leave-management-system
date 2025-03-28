@@ -18,7 +18,8 @@ class Leave extends Model
     'hr_status',
     'hr_action_at'
 
-];
+    ];
+          
     public function user() {
         return $this->belongsTo(User::class);
     }
