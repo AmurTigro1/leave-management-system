@@ -92,7 +92,8 @@ class OvertimeRequestController extends Controller
     public function list()
     {
         $overtimereq = OvertimeRequest::where('user_id', Auth::id())->latest()->paginate(10);
-        return view('CTO.overtime_list', compact('overtimereq'));
+        $overtime = OvertimeRequest::where('user_id', Auth::id())->first();
+        return view('CTO.overtime_list', compact('overtimereq', 'overtime'));
     }
 
     public function show($id) {
@@ -153,16 +154,6 @@ class OvertimeRequestController extends Controller
             'inclusive_dates' => 'required|string',
             'working_hours_applied' => 'required|integer|min:1',
         ]);
-    
-        // Additional validation for date format
-        $dates = explode(', ', $request->inclusive_dates);
-        foreach ($dates as $date) {
-            if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $date)) {
-                return redirect()->back()
-                    ->withErrors(['inclusive_dates' => 'Invalid date format. Use YYYY-MM-DD format.'])
-                    ->withInput();
-            }
-        }
     
         $overtime = OvertimeRequest::findOrFail($id);
     

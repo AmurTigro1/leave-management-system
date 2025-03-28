@@ -1,3 +1,5 @@
+<a id="pagination"></a>
+
 <div class="p-6 bg-white shadow-md rounded-lg">
     <h3 class="text-2xl font-semibold text-gray-800 mb-4">Employee Balances</h3>
     <div class="overflow-x-auto">
