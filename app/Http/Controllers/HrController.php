@@ -751,4 +751,11 @@ class HrController extends Controller
         $logs = CompensatoryTimeLog::orderBy('created_at', 'desc')->paginate(10);
         return view('hr.CTO.coclog', compact('logs'));
     }
+
+    public function users()
+    {
+        $users = User::orderBy('last_name', 'asc')->paginate(10);
+        return view('hr.users', compact('users'));
+    }
+    
 }
