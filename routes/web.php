@@ -141,7 +141,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/cto/dashboard', [OvertimeRequestController::class, 'dashboard'])->name('cto.dashboard');
         Route::get('/overtime-request', [OvertimeRequestController::class, 'index'])->name('cto.overtime_request');
         Route::get('/overtime-list', [OvertimeRequestController::class, 'list'])->name('cto.overtime_list');
-        Route::get('/my-requests-overtime/edit/{id}', [OvertimeRequestController::class, 'editOvertime'])->name('cto.overtime_edit');
+        // Route::get('/my-requests-overtime/edit/{id}', [OvertimeRequestController::class, 'editOvertime'])->name('cto.overtime_edit');
         Route::put('/my-requests-overtime/update/{id}', [OvertimeRequestController::class, 'updateOvertime'])->name('cto.overtime_update');
         Route::delete('/my-requests-overtime/delete/{id}', [OvertimeRequestController::class, 'deleteOvertime'])->name('cto.overtime_delete');
         Route::get('/details-overtime/{id}', [OvertimeRequestController::class, 'show'])->name('cto.overtime_show');

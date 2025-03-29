@@ -29,12 +29,12 @@
         @foreach([
             'Working Hours Applied' => $cto->working_hours_applied, 
             'Earned Hours' => $cto->earned_hours, 
-            'Overtime Balance' => $cto->user->overtime_balance
+            'COC Balance' => $cto->user->overtime_balance
         ] as $label => $value)
             <p class="font-semibold">{{ $label }}</p>
             <div class="flex justify-start items-center">
                 <div class="w-[45%] mr-4">
-                    <input type="number" class="border-4 w-full border-gray-400 rounded-lg" placeholder="0" value="{{ $value }}" {{ $label == 'Working Hours Applied' ? 'disabled' : '' }} {{ $label == 'Earned Hours' ? 'disabled' : '' }}> 
+                    <input type="number" class="border-4 w-full border-gray-400 rounded-lg" placeholder="0" value="{{ $value }}" {{ $label == 'Working Hours Applied' ? 'disabled' : '' }} {{ $label == 'Earned Hours' ? 'disabled' : '' }} disabled> 
                 </div>
                 <div class="w-[55%]">
                     <label>
@@ -43,7 +43,7 @@
                         @elseif($label == 'Earned Hours') 
                             Total accumulated overtime hours over the past months. 
                         @else 
-                            The employee's available overtime balance for CTO/COC requests. 
+                            The employee's available COC balance for CTO requests. 
                         @endif
                     </label>
                 </div>
