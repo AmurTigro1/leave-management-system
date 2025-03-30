@@ -83,6 +83,8 @@ Route::middleware('auth')->group(function () {
         Route::post('/hr/overtime-request/store', [HrController::class, 'storeCTO'])->name('hr_overtime_request.store');
 
         Route::post('/hr/users/store', [UserController::class, 'store'])->name('hr.users.store');
+        Route::put('/hr/user/{id}', [UserController::class, 'update'])->name('hr.users.update');
+        Route::delete('/hr/user/{id}', [UserController::class, 'destroy'])->name('hr.users.destroy');
     });
 
     //Admin Assistant Route
