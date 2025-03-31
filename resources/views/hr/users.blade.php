@@ -363,12 +363,18 @@
                                                     <div x-show="open" @click.away="open = false" class="origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50">
                                                         <div class="py-1">
                                                             <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">View</a>
-                                                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Edit</a>
-                                                            <form action="#" method="POST">
+                                                            <button id="editModalBtn-{{ $user->id }}" class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                                                Edit
+                                                            </button>
+                                                            <form action="{{ route('hr.users.destroy', $user->id) }}" method="POST" class="w-full">
                                                                 @csrf
                                                                 @method('DELETE')
-                                                                <button type="submit" class="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-100">Delete</button>
-                                                            </form>
+                                                                <button type="submit" 
+                                                                        onclick="return confirm('Are you sure you want to delete this user?')"
+                                                                        class="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-100">
+                                                                    Delete
+                                                                </button>
+                                                            </form>   
                                                         </div>
                                                     </div>
                                                 </div>

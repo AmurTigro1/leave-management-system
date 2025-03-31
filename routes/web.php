@@ -86,6 +86,11 @@ Route::middleware('auth')->group(function () {
         Route::get('/hr/coc-logs/', [CocLogController::class, 'indexHR'])->name('coc_logs.hr');
         Route::put('/hr/user/{id}', [UserController::class, 'update'])->name('hr.users.update');
         Route::delete('/hr/user/{id}', [UserController::class, 'destroy'])->name('hr.users.destroy');
+
+        Route::put('/hr/user/{id}', [UserController::class, 'update'])->name('hr.users.update');
+        Route::delete('/hr/user/{id}', [UserController::class, 'destroy'])->name('hr.users.destroy');
+
+
     });
 
     //Admin Assistant Route
