@@ -38,7 +38,7 @@ class CocLogCreatedNotification extends Notification implements ShouldQueue
     public function toDatabase($notifiable)
     {
         return [
-            'message' => 'A new COC Log has been created for you.',
+            'message' => "You have received {$this->cocLog->coc_earned} COC.",
             'activity_name' => $this->cocLog->activity_name,
             'activity_date' => $this->cocLog->activity_date,
             'coc_earned' => $this->cocLog->coc_earned,
@@ -52,13 +52,13 @@ class CocLogCreatedNotification extends Notification implements ShouldQueue
     public function toBroadcast($notifiable)
     {
         return new BroadcastMessage([
-            'message' => 'A new COC Log has been created for you.',
+            'message' => "You have received {$this->cocLog->coc_earned} COC.",
             'activity_name' => $this->cocLog->activity_name,
             'activity_date' => $this->cocLog->activity_date,
             'coc_earned' => $this->cocLog->coc_earned,
             'created_by' => $this->cocLog->creator->name,
         ]);
-    }
+    }    
 
     /**
      * Format the notification for email.
@@ -73,7 +73,6 @@ class CocLogCreatedNotification extends Notification implements ShouldQueue
             ->line('**Date:** ' . $this->cocLog->activity_date)
             ->line('**COC Earned:** ' . $this->cocLog->coc_earned)
             ->line('**Issued By:** ' . $this->cocLog->creator->name)
-            ->action('View COC Log', route('coc.logs.show', $this->cocLog->id))
             ->line('Thank you.');
     }
 }

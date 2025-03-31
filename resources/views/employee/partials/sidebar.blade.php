@@ -108,24 +108,7 @@
             </nav>
         </aside>
     </div>
-
-    <!-- Main Content -->
-    <div :class="sidebarOpen ? 'ml-64' : 'ml-0'" class="flex-1 transition-all duration-300 ease-in-out">
-        <button 
-            @click="isSidebarOpen = true" 
-            class="absolute left-4 inline-flex items-center justify-center rounded-md p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-500 m-5"
-            x-show="!isSidebarOpen"
-            x-transition>
-            <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-            </svg>
-        </button>
-    </div>
 </div>
-
-<style>
-    [x-cloak] { display: none !important; }
-</style>
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {

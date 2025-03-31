@@ -62,16 +62,12 @@ class CocLogController extends Controller
 
         $validated['created_by'] = auth()->id();
 
-        DB::transaction(function () use ($validated) {
-            // Create the COC log
-            $cocLog = CocLog::create($validated);
-            
-            // Update the user's overtime balance
-            $user = User::find($validated['user_id']);
-            $user->increment('overtime_balance', $validated['coc_earned']);
+        $user = User::findOrFail($validated['user_id']);
+        $cocLog = $user->cocLogs()->create($validated);
+        $user->increment('overtime_balance', $validated['coc_earned']);
 
-            $user->notify(new CocLogCreatedNotification($cocLog));
-        });
+        \Log::info('Sending notification to user:', ['user_id' => $user->id]);
+        $user->notifyNow(new CocLogCreatedNotification($cocLog));
 
         notify()->success('COC Log created successfully.');
         return redirect()->back();
@@ -79,16 +75,12 @@ class CocLogController extends Controller
 
     public function update(Request $request, CocLog $cocLog)
     {
-        // Get the original COC earned value before update
         $originalCoc = $cocLog->coc_earned;
         
-        // Update the COC log with new values
         $cocLog->update($request->all());
         
-        // Calculate the difference in COC earned
         $difference = $cocLog->coc_earned - $originalCoc;
         
-        // Adjust the user's overtime balance
         if ($difference != 0) {
             $cocLog->user()->increment('overtime_balance', $difference);
         }
@@ -104,14 +96,11 @@ class CocLogController extends Controller
             $cocEarned = $cocLog->coc_earned;
             $user = $cocLog->user;
 
-            // Delete the log
             $cocLog->delete();
 
-            // Adjust the overtime balance
             $user->decrement('overtime_balance', $cocEarned);
 
-            // Send notification
-            $user->notify(new CocLogCreatedNotification($cocLog, "Your COC Log entry has been deleted, and your overtime balance has been adjusted."));
+            // $user->notify(new CocLogCreatedNotification($cocLog, "Your COC Log entry has been deleted, and your overtime balance has been adjusted."));
         });
 
         notify()->success('COC Log deleted successfully and overtime balance adjusted.');
