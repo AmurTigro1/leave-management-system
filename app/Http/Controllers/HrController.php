@@ -80,8 +80,9 @@ class HrController extends Controller
         $month = $request->query('month', now()->month);
         $today = now()->toDateString(); 
     
-        // Fetch employees whose birthday falls in the selected month
-        $birthdays = User::whereMonth('birthday', $month)->get();
+        $birthdays = User::whereMonth('birthday', $month)
+        ->orderByRaw('DAY(birthday) ASC')
+        ->get();
     
         // Get employees who are on approved leave this month (but only if their leave has not yet ended)
         $teamLeaves = Leave::whereMonth('start_date', $month)
@@ -89,19 +90,13 @@ class HrController extends Controller
                             ->where('end_date', '>=', $today) // Ensures leave is still ongoing
                             ->with('user') // Ensures the user object is available
                             ->get();
-                            
-        $month = request()->input('month', now()->month); // Get month from request or default to current
-        $year = now()->year; // Define the year variable
-        $monthPadded = str_pad($month, 2, '0', STR_PAD_LEFT); // Ensure 2-digit month (01-12)
+        $monthPadded = str_pad($month, 2, '0', STR_PAD_LEFT); // Format as 2 digits (01-12)
+        $year = now()->year;
         
         $overtimeRequests = OvertimeRequest::where('status', 'approved')
-            ->where(function($query) use ($monthPadded, $year) {
-                $query->where('inclusive_dates', 'LIKE', "{$year}-{$monthPadded}-%") // Starts with date
-                        ->orWhere('inclusive_dates', 'LIKE', "%, {$year}-{$monthPadded}-%"); // Contains date
-            })
-            ->orderBy('inclusive_dates', 'asc')
+            ->where('inclusive_dates', 'LIKE', "%-{$monthPadded}-%") // Check for month in any position
+            ->where('inclusive_dates', 'LIKE', "{$year}-%") // Check for current year
             ->get();
-
         return view('hr.on_leave', compact('teamLeaves', 'birthdays', 'month', 'overtimeRequests'));
     }
 
@@ -326,19 +321,23 @@ class HrController extends Controller
         if (Auth::user()->role !== 'hr') {
             abort(403, 'Unauthorized access.');
         }
-    
+
         // Get leave applications waiting for supervisor approval
         $leaveApplications = Leave::where('admin_status', 'approved')
-        ->orderBy('created_at', 'desc') 
-        ->paginate(9); 
+            ->orderBy('created_at', 'desc')
+            ->paginate(9);
 
+        // Get CTO applications waiting for review
         $ctoApplications = OvertimeRequest::where('admin_status', 'Ready for Review')
-        ->orderBy('created_at', 'desc') 
-        ->paginate(9); 
+            ->orderBy('created_at', 'desc')
+            ->paginate(9);
 
-        return view('hr.requests', compact('leaveApplications', 'ctoApplications'));
+        // Fetch all HR Supervisors
+        $officials = HRSupervisor::all();
+
+        return view('hr.requests', compact('leaveApplications', 'ctoApplications', 'officials'));
     }
-    
+
     
     public function showLeaveCertification($leaveId)
     {
@@ -349,10 +348,9 @@ class HrController extends Controller
     }
 
     public function showleave($id) {
-        $leave = Leave::findOrFail($id); 
-        $official = HRSupervisor::find($id);
+        $leave = Leave::findOrFail($id);
 
-        return view('hr.leave_details', compact('leave','official'));
+        return view('hr.leave_details', compact('leave'));
     }
 
     public function showcto($id) {
@@ -621,16 +619,102 @@ class HrController extends Controller
         return view('hr.leaderboard', compact('employees'));
     }
 
-    public function calendar() {
-        $holidays = Holiday::orderBy('date')->get()->map(function ($holiday) {
-            $holiday->day = Carbon::parse($holiday->date)->format('d'); // Example: 01
-            $holiday->month = Carbon::parse($holiday->date)->format('M'); // Example: Jan
-            $holiday->day_name = Carbon::parse($holiday->date)->format('D'); // Example: Mon
-            return $holiday;
+    public function calendar(Request $request)
+    {
+        $selectedYear = (int) $request->input('year', date('Y'));  // Cast year to integer
+    
+        // Get holidays for the selected year
+        $holidays = YearlyHoliday::whereYear('date', $selectedYear)
+            ->orWhere('repeats_annually', true)
+            ->orderBy('date')
+            ->get()
+            ->map(function ($holiday) use ($selectedYear) {
+                // Ensure repeating holidays use the selected year
+                if ($holiday->repeats_annually) {
+                    $date = Carbon::parse($holiday->date);
+    
+                    // Force cast to integer to avoid the Carbon::setUnit() error
+                    $holiday->date = Carbon::create((int) $selectedYear, (int) $date->month, (int) $date->day)->format('Y-m-d');
+                }
+                return $holiday;
+            });
+    
+        // Group holidays by month
+        $groupedHolidays = $holidays->groupBy(function ($item) {
+            return Carbon::parse($item->date)->format('F Y');
         });
-        return view('hr.holiday-calendar', compact('holidays'));
+    
+        // Prepare data for calendar view
+        $calendarData = $this->prepareCalendarData($holidays, $selectedYear);
+    
+        // Get available years for dropdown
+        $availableYears = $this->getAvailableYears();
+    
+        return view('hr.holiday-calendar', compact(
+            'groupedHolidays',
+            'calendarData',
+            'selectedYear',
+            'availableYears'
+        ));
+    }
+    
+    protected function prepareCalendarData($holidays, $year)
+{
+    $months = [];
+
+    for ($month = 1; $month <= 12; $month++) {
+        // Cast year and month to integers to avoid Carbon errors
+        $year = (int) $year;
+        $month = (int) $month;
+
+        $date = Carbon::create($year, $month, 1);
+        $daysInMonth = $date->daysInMonth;
+
+        $monthData = [
+            'name' => $date->format('F'),
+            'year' => $year,
+            'days' => []
+        ];
+
+        // Filter holidays for this month
+        $monthHolidays = $holidays->filter(function ($holiday) use ($month) {
+            return (int) Carbon::parse($holiday->date)->month === $month;
+        });
+
+        for ($day = 1; $day <= $daysInMonth; $day++) {
+            $currentDate = Carbon::create($year, $month, $day);
+
+            $dayHolidays = $monthHolidays->filter(function ($holiday) use ($day) {
+                return (int) Carbon::parse($holiday->date)->day === $day;
+            });
+
+            $monthData['days'][$day] = [
+                'date' => $currentDate,
+                'holidays' => $dayHolidays,
+                'isWeekend' => $currentDate->isWeekend()
+            ];
+        }
+
+        $months[$month] = $monthData;
     }
 
+    return $months;
+}
+
+    
+    protected function getAvailableYears()
+    {
+        $minYear = YearlyHoliday::min('date') 
+            ? \Carbon\Carbon::parse(YearlyHoliday::min('date'))->year 
+            : date('Y');
+            
+        $maxYear = YearlyHoliday::max('date') 
+            ? \Carbon\Carbon::parse(YearlyHoliday::max('date'))->year 
+            : date('Y');
+            
+        $years = range($minYear, $maxYear + 1); // Include next year
+        return array_combine($years, $years);
+    }
     public function holiday()
     {
         $holidays = YearlyHoliday::orderBy('date')->get();
@@ -640,12 +724,12 @@ class HrController extends Controller
     public function viewPdf($id)
     {
         $leave = Leave::findOrFail($id);
-        $official = HRSupervisor::find($id);
+        $officials = HRSupervisor::all();
 
         $supervisor = User::where('role', 'supervisor')->first();
         $hr = User::where('role', 'hr')->first();
         
-        $pdf = PDF::loadView('pdf.leave_details', compact('leave', 'supervisor', 'hr', 'official'));
+        $pdf = PDF::loadView('pdf.leave_details', compact('leave', 'supervisor', 'hr', 'officials'));
         
         return $pdf->stream('leave_request_' . $leave->id . '.pdf');
     }

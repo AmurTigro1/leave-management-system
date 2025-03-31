@@ -1,6 +1,12 @@
 @extends('layouts.hr.sidebar-header')
 
 @section('content')
+<a href="{{ route('hr.holidays.index') }}" class="inline-flex items-center text-blue-600 font-medium hover:underline transition duration-300 text-sm sm:text-base">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+    </svg>
+    Back
+</a>
 <div class="container mx-auto px-4 py-8 max-w-2xl">
     <div class="bg-white shadow-md rounded-lg p-6">
         <h1 class="text-2xl font-bold text-gray-800 mb-6">Create New Holiday</h1>

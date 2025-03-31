@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 use App\Models\Holiday;
+use App\Models\YearlyHoliday;
 use App\Services\YearlyHolidayService;
 use App\Models\OvertimeRequest;
 use App\Models\HRSupervisor;
@@ -93,7 +94,7 @@ class EmployeeController extends Controller
         $leaves = Leave::where('user_id', Auth::id())->latest()->get();
         return view('employee.make_request', compact('leaves'));
     }
-
+    
     public function store(Request $request, YearlyHolidayService $yearlyHolidayService)  
 {
     $leaveValidationRules = [];
@@ -707,36 +708,94 @@ private function deductLeaveBalance($user, $leave)
     public function viewPdf($id)
     {
         $leave = Leave::findOrFail($id);
-        $official = HRSupervisor::find($id);
+        $officials = HRSupervisor::all();
 
         $supervisor = User::where('role', 'supervisor')->first();
         $hr = User::where('role', 'hr')->first();
         
-        $pdf = PDF::loadView('pdf.leave_details', compact('leave', 'supervisor', 'hr', 'official'));
+        $pdf = PDF::loadView('pdf.leave_details', compact('leave', 'supervisor', 'hr', 'officials'));
         
         return $pdf->stream('leave_request_' . $leave->id . '.pdf');
     }
     
 
-    public function holiday() {
-        $holidays = Holiday::orderBy('date')->get()->map(function ($holiday) {
-            $holiday->day = Carbon::parse($holiday->date)->format('d'); 
-            $holiday->month = Carbon::parse($holiday->date)->format('M'); 
-            $holiday->day_name = Carbon::parse($holiday->date)->format('D');
-            return $holiday;
+    public function calendar(Request $request)
+    {
+        $selectedYear = (int) $request->input('year', date('Y'));  // Cast year to integer
+    
+        // Get holidays for the selected year
+        $holidays = YearlyHoliday::whereYear('date', $selectedYear)
+            ->orWhere('repeats_annually', true)
+            ->orderBy('date')
+            ->get()
+            ->map(function ($holiday) use ($selectedYear) {
+                // Ensure repeating holidays use the selected year
+                if ($holiday->repeats_annually) {
+                    $date = Carbon::parse($holiday->date);
+    
+                    // Force cast to integer to avoid the Carbon::setUnit() error
+                    $holiday->date = Carbon::create((int) $selectedYear, (int) $date->month, (int) $date->day)->format('Y-m-d');
+                }
+                return $holiday;
+            });
+    
+        // Group holidays by month
+        $groupedHolidays = $holidays->groupBy(function ($item) {
+            return Carbon::parse($item->date)->format('F Y');
         });
-        return view('employee.holiday-calendar', compact('holidays'));
+    
+        // Prepare data for calendar view
+        $calendarData = $this->prepareCalendarData($holidays, $selectedYear);
+    
+        return view('employee.holiday-calendar', compact(
+            'groupedHolidays',
+            'calendarData',
+            'selectedYear',
+        ));
+    }
+    
+    protected function prepareCalendarData($holidays, $year)
+{
+    $months = [];
+
+    for ($month = 1; $month <= 12; $month++) {
+        // Cast year and month to integers to avoid Carbon errors
+        $year = (int) $year;
+        $month = (int) $month;
+
+        $date = Carbon::create($year, $month, 1);
+        $daysInMonth = $date->daysInMonth;
+
+        $monthData = [
+            'name' => $date->format('F'),
+            'year' => $year,
+            'days' => []
+        ];
+
+        // Filter holidays for this month
+        $monthHolidays = $holidays->filter(function ($holiday) use ($month) {
+            return (int) Carbon::parse($holiday->date)->month === $month;
+        });
+
+        for ($day = 1; $day <= $daysInMonth; $day++) {
+            $currentDate = Carbon::create($year, $month, $day);
+
+            $dayHolidays = $monthHolidays->filter(function ($holiday) use ($day) {
+                return (int) Carbon::parse($holiday->date)->day === $day;
+            });
+
+            $monthData['days'][$day] = [
+                'date' => $currentDate,
+                'holidays' => $dayHolidays,
+                'isWeekend' => $currentDate->isWeekend()
+            ];
+        }
+
+        $months[$month] = $monthData;
     }
 
-    public function calendar() {
-        $holidays = Holiday::orderBy('date')->get()->map(function ($holiday) {
-            $holiday->day = Carbon::parse($holiday->date)->format('d'); 
-            $holiday->month = Carbon::parse($holiday->date)->format('M'); 
-            $holiday->day_name = Carbon::parse($holiday->date)->format('D');
-            return $holiday;
-        });
-        return view('employee.holiday-calendar', compact('holidays'));
-    }
+    return $months;
+}
 
     public function editLeave($id) {
         $leave = Leave::findOrFail($id);

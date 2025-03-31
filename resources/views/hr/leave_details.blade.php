@@ -6,95 +6,13 @@
     <a href="{{ route('hr.requests') }}" class="inline-flex items-center text-blue-500 hover:underline transition duration-300">
         &larr; Back to Requests
     </a>
-    <div class="flex justify-between items-center">
-        <button id="openModalBtn" class="text-blue-600 font-bold py-2 px-4 rounded-lg flex">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-                <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
-              </svg>
-              <p>Upload Info</p>
-        </button>
+    <div class="flex justify-end items-center">
         <a href="{{ route('hr.leave.viewPdf', $leave->id) }}" target="_blank" 
             class="bg-blue-600 text-white px-6 py-2 rounded-lg shadow-md hover:bg-blue-700 transition">
             View & Download PDF
         </a>
     </div>
-    
 </div>
-
-<div id="leaveModal" class="fixed inset-0 bg-gray-900 bg-opacity-50 hidden flex justify-center items-center z-[9999]">
-    <div class="bg-white w-full max-w-lg rounded-lg shadow-xl p-6 relative">
-        <!-- Close Button -->
-        <button id="closeModalBtn" class="absolute top-3 right-4 text-gray-600 hover:text-gray-900 text-2xl">&times;</button>
-
-        <h2 class="text-xl font-bold text-center mb-4">HR/Supervisor Information</h2>
-
-        <form action="{{ route('hr-supervisor-info.update', $official->id ?? '') }}" method="POST" enctype="multipart/form-data">
-            @csrf
-            @method('PUT')
-        
-            <div class="mb-4">
-                <label class="block text-gray-700 font-bold mb-2">Supervisor Name</label>
-                <input type="text" name="supervisor_name" class="w-full border p-2 rounded-lg"
-                    value="{{ $official->supervisor_name ?? '' }}" required>
-            </div>
-        
-            <div class="mb-4">
-                <label class="block text-gray-700 font-bold mb-2">HR Name</label>
-                <input type="text" name="hr_name" class="w-full border p-2 rounded-lg"
-                    value="{{ $official->hr_name ?? '' }}" required>
-            </div>
-        
-            <div class="mb-4">
-                <label class="block text-gray-700 font-bold mb-2">Upload Supervisor Signature</label>
-                <input type="file" name="supervisor_signature" class="w-full border p-2 rounded-lg" accept="image/*,.pdf">
-                @if($official && $official->supervisor_signature)
-                    <p class="mt-4">Current File: <a class="bg-blue-600 text-white rounded-lg py-2 px-4" href="{{ asset('storage/'.$official->supervisor_signature) }}" target="_blank">View</a></p>
-                @endif
-            </div>
-        
-            <div class="mb-[25px]">
-                <label class="block text-gray-700 font-bold mb-2">Upload HR Signature</label>
-                <input type="file" name="hr_signature" class="w-full border p-2 rounded-lg" accept="image/*,.pdf">
-                @if($official && $official->hr_signature)
-                    <p class="mt-4">Current File: <a class="bg-blue-600 text-white rounded-lg py-2 px-4" href="{{ asset('storage/'.$official->hr_signature) }}" target="_blank">View</a></p>
-                @endif
-            </div>
-        
-            <div class="flex justify-center gap-2">
-                <button type="submit" class="bg-blue-600 text-white py-2 px-4 rounded-lg">Update</button>
-                <button type="button" id="closeModalBtn2" class="bg-gray-600 text-white py-2 px-4 rounded-lg">Cancel</button>
-            </div>
-        </form>                  
-    </div>
-</div>
-
-<!-- JavaScript for Modal -->
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-        var modal = document.getElementById("leaveModal");
-        var openModalBtn = document.getElementById("openModalBtn");
-        var closeModalBtns = document.querySelectorAll("#closeModalBtn, #closeModalBtn2");
-
-        // Open Modal
-        openModalBtn.addEventListener("click", function () {
-            modal.classList.remove("hidden");
-        });
-
-        // Close Modal
-        closeModalBtns.forEach(btn => {
-            btn.addEventListener("click", function () {
-                modal.classList.add("hidden");
-            });
-        });
-
-        // Close modal if user clicks outside the modal content
-        modal.addEventListener("click", function (event) {
-            if (event.target === modal) {
-                modal.classList.add("hidden");
-            }
-        });
-    });
-</script>
 
 <div class="flex justify-between items-start gap-4 h-full">
     <!-- Right side -->
