@@ -38,7 +38,7 @@
         <!-- Inclusive Dates -->
         <div class="bg-gray-50 p-3 sm:p-4 rounded-lg md:col-span-2">
             <p class="font-semibold text-gray-900 text-sm sm:text-base">Inclusive Dates</p>
-            <p class="text-gray-700 text-sm sm:text-base mt-1">{{ $overtime->inclusive_dates }}</p>
+            <p class="text-gray-700 text-sm sm:text-base mt-1">{{  \Carbon\Carbon::parse($overtime->inclusive_dates)->format('M j Y,') }}</p>
         </div>
 
         <!-- Status Indicators -->

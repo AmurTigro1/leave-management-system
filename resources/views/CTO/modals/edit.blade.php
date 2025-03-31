@@ -27,7 +27,7 @@
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Inclusive Dates</label>
-                        <input type="text" name="inclusive_dates" value="{{ $overtime->inclusive_dates }}" class="w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500">
+                        <input type="text" name="inclusive_dates" value="{{ \Carbon\Carbon::parse($overtime->inclusive_dates)->format('M j, Y') }}" class="w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500">
                     </div>
                 </div>
             </div>

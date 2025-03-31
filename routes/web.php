@@ -59,7 +59,7 @@ Route::middleware('auth')->group(function () {
         Route::put('hr/holidays/{holiday}', [HrController::class, 'update'])->name('hr.holidays.update');
         Route::delete('hr/holidays/{holiday}', [HrController::class, 'destroy'])->name('hr.holidays.destroy');
 
-    Route::get('/hr/leave-certification/{leaveId}', [HrController::class, 'showLeaveCertification'])->name('hr.leave_certification');
+        Route::get('/hr/leave-certification/{leaveId}', [HrController::class, 'showLeaveCertification'])->name('hr.leave_certification');
         Route::post('/leave/{leave}/review', [HrController::class, 'review'])->name('leave.review');
         Route::get('/leave-report/{id}', [HrController::class, 'generateLeaveReport'])->name('leave.report');
         Route::get('/hr/leaderboard', [HrController::class, 'leaderboard'])->name('hr.leaderboard');

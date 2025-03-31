@@ -9,12 +9,10 @@
         Recognizing our most dedicated employees! This leaderboard highlights those with the <strong>fewest absences</strong> in the past 30 days.
     </p>
 
-    <!-- Toggle Button -->
     <div class="flex justify-center mb-4 sm:mb-6">
         <button class="bg-gray-900 text-white px-3 py-1 sm:px-4 sm:py-2 rounded-full text-xs sm:text-sm font-semibold focus:ring">Last 30 days</button>
     </div>
 
-    <!-- Leaderboard List -->
     <div class="space-y-3 sm:space-y-4">
         @foreach ($employees as $index => $employee)
         <div class="flex items-center justify-between p-3 sm:p-4 bg-gray-50 rounded-lg">
@@ -35,7 +33,6 @@
                 </div>
             </div>
         
-            <!-- Badge and Absence Count -->
             <div class="text-right flex-shrink-0 ml-2">
                 @if ($employee->total_absences == 0)
                     <span class="px-2 py-1 bg-green-500 text-white text-xs font-semibold rounded-lg whitespace-nowrap">Perfect 🎯</span>
@@ -52,7 +49,6 @@
         @endforeach
     </div>
 
-    <!-- View More Button -->
     <div class="text-center mt-4 sm:mt-6">
         <button 
             class="bg-black text-white px-4 py-1.5 sm:px-6 sm:py-2 rounded-lg text-xs sm:text-sm font-semibold hover:bg-gray-800"
@@ -63,11 +59,9 @@
         </button>
     </div>
 
-    <!-- Modal -->
     <div id="modal" class="fixed inset-0 bg-gray-900 bg-opacity-50 hidden flex justify-center items-center z-[9999] p-4">
         <div class="bg-white w-full max-w-md mx-auto p-4 sm:p-6 rounded-lg shadow-lg max-h-[80vh] overflow-y-auto">
             <div id="modal-content">
-                <!-- Dynamic content from HTMX will be loaded here -->
             </div>
         </div>
     </div>
