@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->date('date');
-            $table->string('type')->default('regular'); // 'regular', 'special', 'national', etc.
+            $table->string('type')->default('regular');
             $table->boolean('repeats_annually')->default(false);
             $table->timestamps();
         });
