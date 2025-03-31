@@ -28,7 +28,7 @@
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Working Hours Applied</label>
-                        <input type="number" name="working_hours_applied" value="{{ old('working_hours_applied') }}" min="4" max="{{Auth::user()->overtime_balance || 0}}" class="w-full border border-gray-300 p-2 sm:p-3 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
+                        <input type="number" name="working_hours_applied" oninput="this.value = Math.abs(this.value)" value="{{ old('working_hours_applied') }}" min="4" class="w-full border border-gray-300 p-2 sm:p-3 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
                         @error('working_hours_applied')
                             <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                         @enderror
@@ -66,17 +66,14 @@
         if (!event || event.target === modal) {
             modal.classList.add("hidden");
 
-            // Reset validation errors
-            document.querySelectorAll('.error-message').forEach(el => el.remove());
+            // Reset only the working hours field
+            document.querySelector('input[name="working_hours_applied"]').value = "";
+            
+            // Optionally, remove validation error messages for this field
+            let errorMessage = document.querySelector('input[name="working_hours_applied"] + p.text-red-500');
+            if (errorMessage) {
+                errorMessage.remove();
+            }
         }
     }
-
-    document.getElementById("is_driver").addEventListener("change", function () {
-        let distanceField = document.getElementById("distanceField");
-        if (this.checked) {
-            distanceField.classList.remove("hidden"); // Show distance input
-        } else {
-            distanceField.classList.add("hidden"); // Hide distance input
-        }
-    });
 </script>

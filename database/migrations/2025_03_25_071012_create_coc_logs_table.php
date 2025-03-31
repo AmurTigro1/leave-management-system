@@ -19,6 +19,8 @@ return new class extends Migration
             $table->string('activity_date');
             $table->integer('coc_earned');
             $table->string('issuance');
+            $table->timestamp('expires_at')->nullable();
+            $table->boolean('is_expired')->default(false);
             $table->timestamps();
         });
     }

@@ -3,7 +3,9 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
-use Carbon\Carbon;
+use Carbon\Carbon;use App\Observers\UserObserver;
+use App\Models\User;
+
 class AppServiceProvider extends ServiceProvider
 {
     /**

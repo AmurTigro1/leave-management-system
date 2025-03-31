@@ -129,197 +129,208 @@
     </div>
     
     <!-- Employees on Leave -->
-    <div class="p-6 rounded-xl shadow-lg border border-indigo-100 mb-8">
-        <div class="flex items-center justify-between mb-4">
-            <h2 class="text-xl font-semibold text-gray-800 flex items-center">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <div class="p-4 sm:p-6 rounded-lg sm:rounded-xl shadow-md sm:shadow-lg border border-indigo-100 mb-6 sm:mb-8">
+        <!-- Header Section -->
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-3 sm:mb-4 gap-2 sm:gap-0">
+            <h2 class="text-lg sm:text-xl font-semibold text-gray-800 flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-6 sm:w-6 mr-2 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
                 </svg>
                 Team Members on Leave
             </h2>
-        <span class="relative inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-medium bg-indigo-100 text-indigo-800 shadow-inner hover:bg-indigo-200 transition-colors duration-200 group">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-indigo-600" viewBox="0 0 20 20" fill="currentColor">
-                <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v1h8v-1zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-1a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v1h-3zM4.75 12.094A5.973 5.973 0 004 15v1H1v-1a3 3 0 013.75-2.906z" />
-            </svg>
-            {{ $teamLeaves->count() }} {{ Str::plural('member', $teamLeaves->count()) }}
-            <span class="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">
-                Team members on leave
-                <svg class="absolute text-gray-800 h-2 w-full left-0 top-full" x="0px" y="0px" viewBox="0 0 255 255"><polygon class="fill-current" points="0,0 127.5,127.5 255,0"/></svg>
+            
+            <span class="relative inline-flex items-center gap-1 px-2 py-1 sm:px-3 sm:py-1 rounded-full text-xs sm:text-sm font-medium bg-indigo-100 text-indigo-800 shadow-inner hover:bg-indigo-200 transition-colors duration-200 group">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 sm:h-4 sm:w-4 text-indigo-600" viewBox="0 0 20 20" fill="currentColor">
+                    <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v1h8v-1zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-1a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v1h-3zM4.75 12.094A5.973 5.973 0 004 15v1H1v-1a3 3 0 013.75-2.906z" />
+                </svg>
+                {{ $teamLeaves->count() }} {{ Str::plural('member', $teamLeaves->count()) }}
+                <span class="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">
+                    Team members on leave
+                    <svg class="absolute text-gray-800 h-2 w-full left-0 top-full" x="0px" y="0px" viewBox="0 0 255 255"><polygon class="fill-current" points="0,0 127.5,127.5 255,0"/></svg>
+                </span>
             </span>
-        </span>
         </div>
         
+        <!-- Content Section -->
         @if($teamLeaves->isEmpty())
-        <div class="bg-white/80 p-6 rounded-lg border border-dashed border-gray-300 text-center">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4" />
-            </svg>
-            <p class="text-gray-600 mt-2">No scheduled leaves this month</p>
-        </div>
-    @else
-            <ul class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="bg-white/80 p-4 sm:p-6 rounded-lg border border-dashed border-gray-300 text-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 sm:h-12 sm:w-12 mx-auto text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4" />
+                </svg>
+                <p class="text-sm sm:text-base text-gray-600 mt-2">No scheduled leaves this month</p>
+            </div>
+        @else
+            <ul class="grid grid-cols-1 gap-3 sm:gap-4">
                 @foreach($teamLeaves as $leave)
-                    <li class="flex items-start space-x-4 bg-white p-4 rounded-lg shadow-md border border-gray-100 hover:border-indigo-200 transition-colors group">
-                        <div class="relative">
-                            <div class="w-12 h-12 rounded-full overflow-hidden bg-gradient-to-br from-indigo-100 to-indigo-200 shadow">
+                    <li class="flex items-start space-x-3 sm:space-x-4 bg-white p-3 sm:p-4 rounded-md sm:rounded-lg shadow-sm sm:shadow-md border border-gray-100 hover:border-indigo-200 transition-colors group">
+                        <!-- Avatar -->
+                        <div class="relative flex-shrink-0">
+                            <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-full overflow-hidden bg-gradient-to-br from-indigo-100 to-indigo-200 shadow">
                                 @if($leave->user && $leave->user->profile_image)
                                     <img src="{{ asset('storage/profile_images/' . $leave->user->profile_image) }}" class="w-full h-full object-cover">
                                 @else
                                     <img src="{{ asset('img/default-avatar.png')}}" alt="default avatar" class="w-full h-full object-cover">
                                 @endif
                             </div>
-                            <div class="absolute -bottom-1 -right-1 bg-green-500 rounded-full p-1 shadow">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 text-white" viewBox="0 0 20 20" fill="currentColor">
+                            <div class="absolute -bottom-1 -right-1 bg-green-500 rounded-full p-0.5 sm:p-1 shadow">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-2.5 w-2.5 sm:h-3 sm:w-3 text-white" viewBox="0 0 20 20" fill="currentColor">
                                     <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" />
                                 </svg>
                             </div>
                         </div>
-                        <div class="flex-1">
-                            <div class="flex justify-between items-start">
-                                <div>
-                                    <p class="text-md font-semibold text-gray-800 group-hover:text-indigo-600 transition-colors">{{ $leave->user->first_name }} {{ $leave->user->last_name }}</p>
-                                    <p class="text-sm text-gray-600 mt-1 flex items-center">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        
+                        <!-- Details -->
+                        <div class="flex-1 min-w-0">
+                            <div class="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-1 sm:gap-0">
+                                <div class="min-w-0">
+                                    <p class="text-sm sm:text-base font-semibold text-gray-800 group-hover:text-indigo-600 transition-colors truncate">
+                                        {{ $leave->user->first_name }} {{ $leave->user->last_name }}
+                                    </p>
+                                    <p class="text-xs sm:text-sm text-gray-600 mt-1 flex items-center">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 sm:h-4 sm:w-4 mr-1 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                         </svg>
-                                        {{ date('M d Y', strtotime($leave->start_date)) }} - {{ date('M d Y', strtotime($leave->end_date)) }}
+                                        <span class="truncate">
+                                            {{ date('M d Y', strtotime($leave->start_date)) }} - {{ date('M d Y', strtotime($leave->end_date)) }}
+                                        </span>
                                     </p>
                                 </div>
-                                <span class="px-2 py-1 text-xs font-semibold bg-green-500 text-white rounded-full">
+                                <span class="px-2 py-0.5 sm:px-2 sm:py-1 text-xs font-semibold bg-green-500 text-white rounded-full whitespace-nowrap">
                                     {{ \Carbon\Carbon::parse($leave->start_date)->diffInDays($leave->end_date) + 1 }} {{ Str::plural('day', \Carbon\Carbon::parse($leave->start_date)->diffInDays($leave->end_date) + 1) }}
                                 </span>
                             </div>
-                            <div class="flex items-center space-x-2">
-                                <span class="text-gray-700">Duration:</span>
                             
-                                <p class="text-sm text-gray-600">
+                            <div class="mt-1 sm:mt-2 flex items-center space-x-1 sm:space-x-2 text-xs sm:text-sm">
+                                <span class="text-gray-600">Duration:</span>
+                                <span class="text-gray-700 font-medium">
                                     {{ $leave->days_applied }} {{ Str::plural('day', $leave->days_applied) }}
-                                </p>
-                            </div>
-                        </div>
-                    </li>
-                @endforeach
-            </ul>
-        @endif
-    </div>
-
-    <!-- Employees with Overtime Requests -->
-    <div class="p-6 rounded-xl shadow-lg border border-indigo-100">
-        <div class="flex items-center justify-between mb-4">
-            <h2 class="text-xl font-semibold text-gray-800 flex items-center">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                Compensatory Time Off Requests
-            </h2>
-            <span class="relative inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-medium bg-indigo-100 text-indigo-800 shadow-inner hover:bg-indigo-200 transition-colors duration-200 group">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                {{ $overtimeRequests->count() }} {{ Str::plural('request', $overtimeRequests->count()) }}
-                <span class="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap z-50">
-                    Compensatory time off requests
-                    <svg class="absolute text-gray-800 h-2 w-full left-0 top-full" x="0px" y="0px" viewBox="0 0 255 255"><polygon class="fill-current" points="0,0 127.5,127.5 255,0"/></svg>
-                </span>
-            </span>
-        </div>
-        
-        @if($overtimeRequests->isEmpty())
-        <div class="bg-white/80 p-6 rounded-lg border border-dashed border-gray-300 text-center">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto text-yellow-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
-            </svg>
-            <p class="text-gray-600 mt-2">Smooth sailing - no overtime requests</p>
-        </div>
-    @else
-            <ul class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                @foreach($overtimeRequests as $overtime)
-                    <li class="flex items-start space-x-4 bg-white p-4 rounded-lg shadow-md border border-gray-100 hover:border-indigo-200 transition-colors group">
-                        <div class="relative">
-                            <div class="w-12 h-12 rounded-full overflow-hidden bg-gradient-to-br from-indigo-100 to-indigo-200 shadow">
-                                @if($overtime->user && $overtime->user->profile_image)
-                                    <img src="{{ asset('storage/profile_images/' . $overtime->user->profile_image) }}" class="w-full h-full object-cover">
-                                @else
-                                    <img src="{{ asset('img/default-avatar.png')}}" alt="default avatar" class="w-full h-full object-cover">
-                                @endif
-                            </div>
-                            <div class="absolute -bottom-1 -right-1 bg-yellow-500 rounded-full p-1 shadow">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 text-white" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd" />
-                                </svg>
-                            </div>
-                        </div>
-                        <div class="flex-1">
-                            <div class="flex justify-between items-start">
-                                <div>
-                                    <p class="text-md font-semibold text-gray-800 group-hover:text-indigo-600 transition-colors">
-                                        {{ $overtime->user->first_name }} {{ $overtime->user->last_name }}
-                                    </p>
-                                
-                                    <p class="text-sm text-gray-600 mt-1 flex items-center">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                        </svg>
-                                
-                                        @php
-                                            $dates = explode(',', $overtime->inclusive_dates);
-                                            $startDate = \Carbon\Carbon::parse(trim($dates[0]))->format('F d, Y');
-                                            $endDate = \Carbon\Carbon::parse(trim(end($dates)))->format('F d, Y');
-                                        @endphp
-                                
-                                        <span class="inline-block px-2 py-1 rounded-md text-sm text-gray-700">
-                                            {{ $startDate }} – {{ $endDate }}
-                                        </span>
-                                    </p>
-                                </div>
-                                
-                                <span class="px-2 py-1 text-xs font-semibold bg-yellow-400 text-white rounded-full">
-                                    {{ $overtime->working_hours_applied }} {{ Str::plural('hour', $overtime->working_hours_applied) }}
                                 </span>
                             </div>
-                            <div class="mt-2 flex justify-between items-center">
-                                <div class="bg-gray-50 p-4 rounded-lg text-sm">
-                                    <p class="font-medium text-gray-700">Status:
-                                        @php
-                                            // Prioritizing status display order
-                                            $status = $overtime->status;  // Default to overall status
-                                
-                                            if ($overtime->hr_status !== 'pending') {
-                                                $status = $overtime->hr_status;
-                                            } elseif ($overtime->admin_status !== 'pending') {
-                                                $status = $overtime->admin_status;
-                                            } elseif ($overtime->supervisor_status !== 'pending') {
-                                                $status = $overtime->supervisor_status;
-                                            }
-                                        @endphp
-                                
-                                        <span class="inline-block px-4 py-2 rounded-full text-xs font-semibold
-                                            @switch($status)
-                                                @case('approved') bg-green-100 text-green-600 @break
-                                                @case('rejected') bg-red-100 text-red-600 @break
-                                                @case('cancelled') bg-gray-200 text-gray-600 @break
-                                                @case('Ready for Review') bg-blue-100 text-blue-600 @break
-                                                @case('Waiting for Supervisor') bg-indigo-100 text-indigo-600 @break
-                                                @default bg-yellow-100 text-yellow-600
-                                            @endswitch">
-                                            {{ ucfirst($status) }}
-                                        </span>
-                                    </p>
-                                </div>
-                                
-                                <p class="text-sm font-medium text-indigo-600 hover:text-indigo-800 transition-colors focus:outline-none">
-                                    <span class="font-medium text-gray-700">Date Filed:</span> 
-                                    {{ \Carbon\Carbon::parse($overtime->date_filed)->format('F d, Y') }}
-                                </p>
-                                
-                            </div>
                         </div>
                     </li>
                 @endforeach
             </ul>
         @endif
     </div>
+<!-- Employees with Overtime Requests - Responsive -->
+<div class="p-4 sm:p-6 rounded-lg sm:rounded-xl shadow-md sm:shadow-lg border border-indigo-100">
+    <!-- Header Section -->
+    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-3 sm:mb-4 gap-2 sm:gap-0">
+        <h2 class="text-lg sm:text-xl font-semibold text-gray-800 flex items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-6 sm:w-6 mr-2 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            Compensatory Time Off
+        </h2>
+        
+        <span class="relative inline-flex items-center gap-1 px-2 py-1 sm:px-3 sm:py-1 rounded-full text-xs sm:text-sm font-medium bg-indigo-100 text-indigo-800 shadow-inner hover:bg-indigo-200 transition-colors duration-200 group">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 sm:h-4 sm:w-4 animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            {{ $overtimeRequests->count() }} {{ Str::plural('request', $overtimeRequests->count()) }}
+            <span class="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap z-50">
+                Compensatory time off requests
+                <svg class="absolute text-gray-800 h-2 w-full left-0 top-full" x="0px" y="0px" viewBox="0 0 255 255"><polygon class="fill-current" points="0,0 127.5,127.5 255,0"/></svg>
+            </span>
+        </span>
+    </div>
+    
+    <!-- Content Section -->
+    @if($overtimeRequests->isEmpty())
+        <div class="bg-white/80 p-4 sm:p-6 rounded-lg border border-dashed border-gray-300 text-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 sm:h-12 sm:w-12 mx-auto text-yellow-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+            </svg>
+            <p class="text-sm sm:text-base text-gray-600 mt-2">Smooth sailing - no CTO requests</p>
+        </div>
+    @else
+        <ul class="grid grid-cols-1 gap-3 sm:gap-4">
+            @foreach($overtimeRequests as $overtime)
+                <li class="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 bg-white p-3 sm:p-4 rounded-md sm:rounded-lg shadow-sm sm:shadow-md border border-gray-100 hover:border-indigo-200 transition-colors group">
+                    <!-- Avatar with Status -->
+                    <div class="relative flex-shrink-0">
+                        <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-full overflow-hidden bg-gradient-to-br from-indigo-100 to-indigo-200 shadow">
+                            @if($overtime->user && $overtime->user->profile_image)
+                                <img src="{{ asset('storage/profile_images/' . $overtime->user->profile_image) }}" class="w-full h-full object-cover">
+                            @else
+                                <img src="{{ asset('img/default-avatar.png')}}" alt="default avatar" class="w-full h-full object-cover">
+                            @endif
+                        </div>
+                        <div class="absolute -bottom-1 -right-1 bg-yellow-500 rounded-full p-0.5 sm:p-1 shadow">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-2.5 w-2.5 sm:h-3 sm:w-3 text-white" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd" />
+                            </svg>
+                        </div>
+                    </div>
+                    
+                    <!-- Main Content -->
+                    <div class="flex-1 min-w-0 w-full">
+                        <!-- Top Row (Name and Hours) -->
+                        <div class="flex flex-col sm:flex-row sm:justify-between gap-1 sm:gap-0">
+                            <p class="text-sm sm:text-base font-semibold text-gray-800 group-hover:text-indigo-600 transition-colors truncate">
+                                {{ $overtime->user->first_name }} {{ $overtime->user->last_name }}
+                            </p>
+                            <span class="px-2 py-0.5 sm:px-2 sm:py-1 text-xs font-semibold bg-yellow-400 text-white rounded-full whitespace-nowrap">
+                                {{ $overtime->working_hours_applied }} {{ Str::plural('hour', $overtime->working_hours_applied) }}
+                            </span>
+                        </div>
+                        
+                        <!-- Dates -->
+                        <div class="mt-1 flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 sm:h-4 sm:w-4 mr-1 text-indigo-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                            @php
+                                $dates = explode(',', $overtime->inclusive_dates);
+                                $startDate = \Carbon\Carbon::parse(trim($dates[0]))->format('M d, Y');
+                                $endDate = \Carbon\Carbon::parse(trim(end($dates)))->format('M d, Y');
+                            @endphp
+                            <span class="text-xs sm:text-sm text-gray-600 truncate">
+                                {{ $startDate }} – {{ $endDate }}
+                            </span>
+                        </div>
+                        
+                        <!-- Bottom Row (Status and Date Filed) -->
+                        <div class="mt-2 sm:mt-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-4">
+                            <!-- Status -->
+                            <div class="bg-gray-50 p-2 sm:p-3 rounded text-xs sm:text-sm w-full sm:w-auto">
+                                @php
+                                    $status = $overtime->status;
+                                    if ($overtime->hr_status !== 'pending') {
+                                        $status = $overtime->hr_status;
+                                    } elseif ($overtime->admin_status !== 'pending') {
+                                        $status = $overtime->admin_status;
+                                    } elseif ($overtime->supervisor_status !== 'pending') {
+                                        $status = $overtime->supervisor_status;
+                                    }
+                                @endphp
+                                <span class="font-medium text-gray-700">Status:</span>
+                                <span class="inline-block px-2 sm:px-3 py-1 rounded-full text-xs font-semibold
+                                    @switch($status)
+                                        @case('approved') bg-green-100 text-green-600 @break
+                                        @case('rejected') bg-red-100 text-red-600 @break
+                                        @case('cancelled') bg-gray-200 text-gray-600 @break
+                                        @case('Ready for Review') bg-blue-100 text-blue-600 @break
+                                        @case('Waiting for Supervisor') bg-indigo-100 text-indigo-600 @break
+                                        @default bg-yellow-100 text-yellow-600
+                                    @endswitch">
+                                    {{ ucfirst($status) }}
+                                </span>
+                            </div>
+                            
+                            <!-- Date Filed -->
+                            <p class="text-xs sm:text-sm text-gray-600 sm:text-right whitespace-nowrap">
+                                <span class="font-medium text-gray-700">Filed:</span> 
+                                {{ \Carbon\Carbon::parse($overtime->date_filed)->format('M d, Y') }}
+                            </p>
+                        </div>
+                    </div>
+                </li>
+            @endforeach
+        </ul>
+    @endif
+</div>
 </div>
 @endif
 

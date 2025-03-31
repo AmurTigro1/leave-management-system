@@ -1,4 +1,5 @@
 <?php
+use App\Http\Controllers\UserController;
 use App\Http\Controllers\HrController;
 use App\Http\Controllers\LeaveApplicationController;
 use App\Http\Controllers\EmployeeController;
@@ -43,6 +44,7 @@ Route::middleware('auth')->group(function () {
     Route::middleware('hr')->group(function () {
         Route::get('/hr/dashboard', [HrController::class, 'index'])->name('hr.dashboard');
         Route::get('/hr/employees', [HrController::class, 'onLeave'])->name('hr.on_leave');
+        Route::get('/hr/users', [HrController::class, 'users'])->name('hr.users');
         Route::get('/hr/requests', [HrController::class, 'requests'])->name('hr.requests');
         Route::get('/leave/details/{id}', [HrController::class, 'showLeave'])->name('hr.leave_details');
         Route::get('/hr-leave/view/{id}', [HrController::class, 'viewPdf'])->name('hr.leave.viewPdf');
@@ -79,6 +81,10 @@ Route::middleware('auth')->group(function () {
         Route::post('/hr/request-leave', [HrController::class, 'storeLeave'])->name('hr-request.leave');
         Route::get('/hr/cto-request', [HrController::class, 'makeCTORequest'])->name('hr.make_cto_request');
         Route::post('/hr/overtime-request/store', [HrController::class, 'storeCTO'])->name('hr_overtime_request.store');
+
+        Route::post('/hr/users/store', [UserController::class, 'store'])->name('hr.users.store');
+        Route::put('/hr/user/{id}', [UserController::class, 'update'])->name('hr.users.update');
+        Route::delete('/hr/user/{id}', [UserController::class, 'destroy'])->name('hr.users.destroy');
     });
 
     //Admin Assistant Route
@@ -137,7 +143,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/cto/dashboard', [OvertimeRequestController::class, 'dashboard'])->name('cto.dashboard');
         Route::get('/overtime-request', [OvertimeRequestController::class, 'index'])->name('cto.overtime_request');
         Route::get('/overtime-list', [OvertimeRequestController::class, 'list'])->name('cto.overtime_list');
-        Route::get('/my-requests-overtime/edit/{id}', [OvertimeRequestController::class, 'editOvertime'])->name('cto.overtime_edit');
+        // Route::get('/my-requests-overtime/edit/{id}', [OvertimeRequestController::class, 'editOvertime'])->name('cto.overtime_edit');
         Route::put('/my-requests-overtime/update/{id}', [OvertimeRequestController::class, 'updateOvertime'])->name('cto.overtime_update');
         Route::delete('/my-requests-overtime/delete/{id}', [OvertimeRequestController::class, 'deleteOvertime'])->name('cto.overtime_delete');
         Route::get('/details-overtime/{id}', [OvertimeRequestController::class, 'show'])->name('cto.overtime_show');

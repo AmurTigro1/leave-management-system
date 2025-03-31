@@ -141,18 +141,17 @@
     </div>
     
     <!-- Pagination -->
-    <div class="mt-4 flex justify-between items-center">
-        <p class="text-gray-600 text-sm">
-            Showing {{ $leaves->firstItem() }} to {{ $leaves->lastItem() }} of {{ $leaves->total() }} leave requests
+    <div class="mt-4 flex flex-col sm:flex-row justify-between items-center space-y-2 sm:space-y-0">
+        <p class="text-gray-600 text-xs sm:text-sm">
+            Showing {{ $leaves->firstItem() }} to {{ $leaves->lastItem() }} of {{ $leaves->total() }} requests
         </p>
-        <div class="text-sm">
+        <div class="text-xs sm:text-sm">
             {{ $leaves->appends(request()->query())->links() }}
         </div>
     </div>
 </div>
 
 <script>
-   
     function deleteLeave(id) {
         if (confirm("Are you sure you want to delete this leave request?")) {
             fetch(`/leave/delete/${id}`, {
@@ -167,6 +166,7 @@
             .catch(error => console.error('Error:', error));
         }
     }
+    
     const successMessage = document.getElementById('success-message');
     if (successMessage) {
         setTimeout(() => {
@@ -174,24 +174,21 @@
         }, 3000);
     }
 
-    // Hide error message after 3 seconds
     const errorMessage = document.getElementById('error-message');
     if (errorMessage) {
         setTimeout(() => {
             errorMessage.style.display = 'none';
         }, 3000);
     }
-
-
 </script>
+
 <style>
     .animate-fade-in {
-   animation: fadeIn 0.8s ease-in-out;
-}
-
-@keyframes fadeIn {
-   from { opacity: 0; }
-   to { opacity: 1; }
-}
+        animation: fadeIn 0.5s ease-out;
+    }
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
 </style>
 @endsection

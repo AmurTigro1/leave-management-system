@@ -11,19 +11,31 @@ class CocLogController extends Controller
 {
     public function indexHR()
     {
-        $cocLogs = CocLog::with('user')->latest()->paginate(10);
-        $users = User::orderBy('last_name', 'asc')->get();
+        $cocLogs = CocLog::where('is_expired', false)
+            ->join('users', 'coc_logs.user_id', '=', 'users.id') 
+            ->orderBy('coc_logs.expires_at', 'asc') 
+            ->with(['user', 'creator'])
+            ->select('coc_logs.*') // Select only COC log columns
+            ->paginate(10);
+
+        $users = User::get();
 
         return view('hr.CTO.coclog', compact('cocLogs', 'users'));
     }
 
     public function indexAdmin()
     {
-        $cocLogs = CocLog::with('user')->latest()->paginate(10);
-        $users = User::orderBy('last_name', 'asc')->get();
-
+        $cocLogs = CocLog::where('is_expired', false)
+            ->join('users', 'coc_logs.user_id', '=', 'users.id') 
+            ->orderBy('coc_logs.expires_at', 'asc') 
+            ->with(['user', 'creator'])
+            ->select('coc_logs.*') // Select only COC log columns
+            ->paginate(10);
+    
+        $users = User::get();
+    
         return view('admin.CTO.coclog', compact('cocLogs', 'users'));
-    }
+    }      
 
     public function showHRCocLogs($id)
     {
@@ -62,24 +74,24 @@ class CocLogController extends Controller
         return redirect()->back();
     }
 
-    public function edit(CocLog $cocLog)
-    {
-        $users = User::all();
-        return view('hr.coc_logs.edit', compact('cocLog', 'users'));
-    }
-
     public function update(Request $request, CocLog $cocLog)
     {
-        $validated = $request->validate([
-            'user_id' => 'required|exists:users,id',
-            'activity_name' => 'required|string|max:255',
-            'activity_date' => 'required|date',
-            'coc_earned' => 'required|integer|min:0',
-            'issuance' => 'required|string|max:255',
-        ]);
-
-        $cocLog->update($validated);
-        notify()->success('COC Log updated successfully.');
+        // Get the original COC earned value before update
+        $originalCoc = $cocLog->coc_earned;
+        
+        // Update the COC log with new values
+        $cocLog->update($request->all());
+        
+        // Calculate the difference in COC earned
+        $difference = $cocLog->coc_earned - $originalCoc;
+        
+        // Adjust the user's overtime balance
+        if ($difference != 0) {
+            $cocLog->user()->increment('overtime_balance', $difference);
+        }
+        
+        notify()->success('COC Log for ' . $cocLog->user->last_name . ' updated successfully. ' . 
+                        ($difference != 0 ? 'Balance adjusted by ' . $difference . ' hours.' : ''));
         return redirect()->back();
     }
 
