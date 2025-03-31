@@ -29,9 +29,6 @@
                                     <p class="text-sm lg:text-base font-bold text-gray-700">Status</p>
                                     <span class="bg-yellow-500 text-white py-1 px-3 rounded-full text-sm">{{ $leave->status }}</span>
                                 </div>
-                                
-                                <!-- View Link - Always visible but positioned differently -->
-                                <a href="{{ route('hr.leave_details', ['id' => $leave->id]) }}" class="text-blue-600 text-sm lg:text-base sm:self-end">View Request</a>
                             </div>
                             
                             <!-- User Info Section -->
@@ -50,11 +47,12 @@
                                     <h3 class="text-sm lg:text-base font-semibold text-gray-900 uppercase">
                                         {{ $leave->user->first_name }} {{ strtoupper(substr($leave->user->middle_name, 0, 1)) }}. {{ $leave->user->last_name }}
                                     </h3>
-                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-2">
+                                    <div class="mt-2">
                                         <p class="text-gray-600 text-sm">Leave Type: {{ $leave->leave_type }}</p>
-                                        <p class="text-gray-600 text-sm">Duration: <span class="font-semibold">{{$leave->days_applied}} days</span></p>
                                     </div>
+                                    <p class="text-gray-600 text-sm">Duration: <span class="font-semibold">{{$leave->days_applied}} days</span></p>
                                 </div>
+                                <a href="{{ route('hr.leave_details', ['id' => $leave->id]) }}" class="text-blue-600 text-sm lg:text-base sm:self-end">View Request</a>
                             </div>
                             
                             @if($leave->leave_type == 'Mandatory Leave' && $leave->supervisor_status == 'rejected')
