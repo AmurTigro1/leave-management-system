@@ -16,12 +16,12 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->date('start_date');
             $table->date('end_date');
-            $table->string('salary_file');
+            $table->string('salary_file')->nullable();
             $table->date('date_filing');
             $table->integer('days_applied');
             $table->boolean('commutation')->default(false);
             $table->string('reason')->nullable();
-            $table->string('signature');
+            $table->string('signature')->nullable();
             $table->string('leave_type');
             $table->json('leave_details')->nullable();
             $table->text('disapproval_reason')->nullable();
