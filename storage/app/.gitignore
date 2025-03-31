@@ -2,3 +2,8 @@
 !private/
 !public/
 !.gitignore
+
+storage/*
+!storage/app/
+!storage/app/profile_images
+!storage/app/profile_images/**    
