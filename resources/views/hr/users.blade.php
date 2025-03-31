@@ -43,7 +43,7 @@
                     </button>
 
                     <div id="userModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex justify-center items-center z-[9999]">
-                        <div class="bg-white w-full sm:w-[90%] md:w-[80%] lg:w-[60%] xl:w-[50%] h-auto max-h-[90vh] overflow-y-auto max-w-3xl rounded-2xl shadow-2xl p-4 sm:p-6 relative transition-all transform scale-95 hover:scale-100 text-sm">
+                        <div class="bg-white w-full sm:w-[90%] md:w-[80%] lg:w-[60%] xl:w-[50%] h-auto max-h-[90vh] overflow-y-auto max-w-3xl rounded-2xl shadow-2xl p-4 sm:p-6 relative transition-all text-sm">
 
                             <button id="closeModalBtn" class="absolute top-4 right-4 text-gray-500 hover:text-gray-800 text-2xl">&times;</button>
                     
@@ -255,11 +255,6 @@
                                                class="block text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                                                 View
                                             </a>
-                                
-                                            {{-- <a href="" 
-                                               class="block text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                                                Edit
-                                            </a> --}}
 
                                             <button id="editModalBtn-{{ $user->id }}" class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                                                 Edit

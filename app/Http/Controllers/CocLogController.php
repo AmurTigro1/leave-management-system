@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\CocLog;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
+use App\Notifications\CocLogCreatedNotification;
 
 class CocLogController extends Controller
 {
@@ -69,11 +70,10 @@ class CocLogController extends Controller
             $user = User::find($validated['user_id']);
             $user->increment('overtime_balance', $validated['coc_earned']);
 
-            // Send notification to the employee
             $user->notify(new CocLogCreatedNotification($cocLog));
         });
 
-        notify()->success('COC Log created successfully and notification sent.');
+        notify()->success('COC Log created successfully.');
         return redirect()->back();
     }
 
@@ -102,15 +102,18 @@ class CocLogController extends Controller
     {
         DB::transaction(function () use ($cocLog) {
             $cocEarned = $cocLog->coc_earned;
-            $userId = $cocLog->user_id;
-            
+            $user = $cocLog->user;
+
             // Delete the log
             $cocLog->delete();
-            
-            User::where('id', $userId)
-                ->decrement('overtime_balance', $cocEarned);
+
+            // Adjust the overtime balance
+            $user->decrement('overtime_balance', $cocEarned);
+
+            // Send notification
+            $user->notify(new CocLogCreatedNotification($cocLog, "Your COC Log entry has been deleted, and your overtime balance has been adjusted."));
         });
-        
+
         notify()->success('COC Log deleted successfully and overtime balance adjusted.');
         return redirect()->back();
     }

@@ -5,65 +5,56 @@
 </div>
 
 <div class="w-full p-3 rounded-xl shadow-md">
-        <!-- Back Button with Animation -->
-        <div class="bg-[url('/public/img/office-image.jpg')] bg-cover bg-center bg-no-repeat min-h-[400px] md:min-h-[450px] w-full rounded-lg overflow-hidden">
-        </div>       
-          
+    <!-- Hero Image -->
+    <div class="bg-[url('/public/img/office-image.jpg')] bg-cover bg-center bg-no-repeat min-h-[300px] md:min-h-[450px] w-full rounded-lg overflow-hidden">
+    </div>       
+
     <!-- Profile Image & Upload -->
-    <div class="relative w-32 h-32 ml-6 mt-[-100px]">
-        <!-- Image Wrapper (Group for Hover) -->
-        <div class="relative group w-full h-full ml-6">
-            <!-- Profile Image -->
+    <div class="relative w-32 h-32 sm:flex sm:justify-center mt-[-60px] sm:mt-[-80px] mx-auto">
+        <div class="relative group w-full h-full">
             <img id="profile-preview"
                 src="{{ auth()->user()->profile_image ? asset('storage/profile_images/' . auth()->user()->profile_image) : asset('img/default-avatar.png') }}"
                 class="w-full h-full rounded-full object-cover border-4 border-gray-300 shadow-md cursor-pointer">
 
-            <!-- Hover Overlay (Only on Image Hover) -->
             <label for="profile_image" 
                 class="absolute inset-0 bg-black bg-opacity-50 rounded-full opacity-0 group-hover:opacity-100 flex justify-center items-center transition-opacity duration-300 cursor-pointer pointer-events-none">
                 <span class="text-white text-sm font-medium pointer-events-auto">Change Image</span>
             </label>
         </div>
 
-        <!-- Hidden File Input & Update Button -->
         <form action="{{ route('profile.update-image') }}" method="POST" enctype="multipart/form-data" class="relative mt-1">
             @csrf
             <input type="file" name="profile_image" id="profile_image" class="hidden">
-            
-            <!-- Update Button (Moved Down & Right) -->
             <button id="update-button" type="submit" 
-                class="absolute top-[-65px] -right-20 bg-green-500 text-white px-4 py-1 text-sm rounded-md hidden hover:bg-green-600 transition z-20 pointer-events-auto">
+                class="absolute top-[-65px] right-[-20px] bg-green-500 text-white px-4 py-1 text-sm rounded-md hidden hover:bg-green-600 transition z-20 pointer-events-auto">
                 Update
             </button>
         </form>
     </div>
 
-    
     <!-- User Info -->
-    <div class="ml-[25px] py-2">
+    <div class="sm:ml-[25px] py-2">
         <div class="mt-3 space-y-3">
-            <div class="flex justify-between items-center">
-                <div class="ml-[35px]">
-                    <h2 class="text-2xl font-medium text-gray-900">
-                        {{ __('Password') }}
-                    </h2>
-                </div>
-                <div class="mr-3">
-                    <a class="text-blue-600" href="/hr-profile"><i class="fa fa-arrow-left" aria-hidden="true"></i> Go back</a>
-                </div>
+            <div class="flex flex-col sm:flex-row justify-between items-center">
+                <h2 class="text-2xl font-medium text-gray-900 text-center sm:text-left">
+                    {{ __('Password') }}
+                </h2>
+                <a class="text-blue-600 text-center sm:text-right" href="/lms-profile">
+                    <i class="fa fa-arrow-left" aria-hidden="true"></i> Go back
+                </a>
             </div>
         </div>
     </div>
 </div>
-<div class="p-3 rounded-xl mt-2 flex justify-start items-center">
-    <div class="mr-4">
-        <h3 class="text-2xl font-semibold text-gray-700 ml-[25px]">Update Password</h3>
-        <div class="ml-[25px]">
-            <header>
-                <p class="mt-1 text-sm text-gray-600">
-                    {{ __('Ensure your account is using a long, random password to stay secure.') }}
-                </p>
-            </header>
+
+<!-- Password Update Section -->
+<div class="p-3 rounded-xl mt-2 flex flex-col md:flex-row justify-start items-center">
+    <div class="md:w-1/2">
+        <h3 class="text-2xl font-semibold text-gray-700 sm:ml-6">Update Password</h3>
+        <div class="sm:ml-6">
+            <p class="mt-1 text-sm text-gray-600">
+                {{ __('Ensure your account is using a long, random password to stay secure.') }}
+            </p>
         
             <form method="post" action="{{ route('password.update') }}" class="mt-6 space-y-6">
                 @csrf
@@ -91,21 +82,18 @@
                     <x-primary-button>{{ __('Save') }}</x-primary-button>
         
                     @if (session('status') === 'password-updated')
-                        <p
-                            x-data="{ show: true }"
-                            x-show="show"
-                            x-transition
-                            x-init="setTimeout(() => show = false, 2000)"
-                            class="text-sm text-gray-600"
-                        >{{ __('Saved.') }}</p>
+                        <p x-data="{ show: true }" x-show="show" x-transition x-init="setTimeout(() => show = false, 2000)"
+                           class="text-sm text-gray-600">{{ __('Saved.') }}</p>
                     @endif
                 </div>
             </form>
         </div>
     </div>
-    <div class="w-[500px] h-[480px]">
-        <img src="/img/password.jpg" alt="">
+
+    <!-- Password Image -->
+    <div class="md:w-1/2 flex justify-center md:justify-end">
+        <img src="/img/password.jpg" alt="Password" class="max-w-full h-auto rounded-lg">
     </div>
-</div> 
+</div>
 @endsection
 @notifyCss

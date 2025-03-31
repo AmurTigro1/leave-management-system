@@ -8,6 +8,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Notification;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Messages\DatabaseMessage;
+use Illuminate\Notifications\Messages\BroadcastMessage;
 
 class CocLogCreatedNotification extends Notification implements ShouldQueue
 {
@@ -28,21 +29,34 @@ class CocLogCreatedNotification extends Notification implements ShouldQueue
      */
     public function via($notifiable)
     {
-        return ['database', 'mail']; // Sends to database and email
+        return ['database', 'broadcast', 'mail']; 
     }
 
     /**
-     * Format the notification for database storage.
+     * Store the notification in the database.
      */
     public function toDatabase($notifiable)
     {
-        return new DatabaseMessage([
+        return [
             'message' => 'A new COC Log has been created for you.',
             'activity_name' => $this->cocLog->activity_name,
             'activity_date' => $this->cocLog->activity_date,
             'coc_earned' => $this->cocLog->coc_earned,
             'created_by' => $this->cocLog->creator->name,
-            'url' => route('coc.logs.show', $this->cocLog->id),
+        ];
+    }
+
+    /**
+     * Broadcast notification event.
+     */
+    public function toBroadcast($notifiable)
+    {
+        return new BroadcastMessage([
+            'message' => 'A new COC Log has been created for you.',
+            'activity_name' => $this->cocLog->activity_name,
+            'activity_date' => $this->cocLog->activity_date,
+            'coc_earned' => $this->cocLog->coc_earned,
+            'created_by' => $this->cocLog->creator->name,
         ]);
     }
 
