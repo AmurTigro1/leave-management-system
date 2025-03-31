@@ -3,7 +3,8 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
-use Carbon\Carbon;use App\Observers\UserObserver;
+use Carbon\Carbon;
+use App\Observers\UserObserver;
 use App\Models\User;
 
 class AppServiceProvider extends ServiceProvider
@@ -31,5 +32,7 @@ class AppServiceProvider extends ServiceProvider
             }
             return $date;
         });
+
+        User::observe(UserObserver::class);
     }
 }
