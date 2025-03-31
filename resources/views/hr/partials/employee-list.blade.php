@@ -26,8 +26,14 @@
                         <td class="py-2 px-2 sm:py-3 sm:px-4 border-b">
                             <div class="flex justify-center items-center">
                                 @if ($employee->profile_image)
-                                    <img src="{{ asset('storage/profile_images/' . $employee->profile_image) }}" 
-                                         class="w-8 h-8 sm:w-10 sm:h-10 rounded-full object-cover">
+                                <img src="{{ 
+                                    $employee->profile_image && file_exists(storage_path('app/profile_images/' . $employee->profile_image)) 
+                                        ? asset('storage/profile_images/' . $employee->profile_image) 
+                                        : ($employee->profile_image && file_exists(storage_path('app/public/profile_pictures/' . $employee->profile_pictures)) 
+                                            ? asset('storage/profile_pictures/' . $employee->profile_image) 
+                                            : asset('img/default-avatar.png')) 
+                                }}" 
+                                class="h-10 w-10 rounded-full object-cover" alt="{{ $employee->name }}">
                                 @else
                                     <img src="{{ asset('img/default-avatar.png') }}" 
                                          alt="" 

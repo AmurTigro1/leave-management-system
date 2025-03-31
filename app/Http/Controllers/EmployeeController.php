@@ -707,12 +707,12 @@ private function deductLeaveBalance($user, $leave)
     public function viewPdf($id)
     {
         $leave = Leave::findOrFail($id);
-        $official = HRSupervisor::find($id);
+        $officials = HRSupervisor::all();
 
         $supervisor = User::where('role', 'supervisor')->first();
         $hr = User::where('role', 'hr')->first();
         
-        $pdf = PDF::loadView('pdf.leave_details', compact('leave', 'supervisor', 'hr', 'official'));
+        $pdf = PDF::loadView('pdf.leave_details', compact('leave', 'supervisor', 'hr', 'officials'));
         
         return $pdf->stream('leave_request_' . $leave->id . '.pdf');
     }

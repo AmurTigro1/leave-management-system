@@ -312,8 +312,15 @@
                             </tr>
                         </tbody>                        
                     </table>
-                </div>                
-                <p class="last-sign">________<span class="underline">{{ $official->hr_name}}</span>________</p>
+                </div>  
+                @if($leave->days_applied > 10)              
+                    @foreach ($officials as $official)
+                        <p class="last-sign">________<span class="underline">{{ $official->hr_name }}</span>________</p>
+                    @endforeach
+                @else
+                        <p class="last-sign">________<span class="underline">{{ $hr->first_name}} {{ strtoupper(substr($hr->middle_name, 0, 1)) }}. {{ $hr->last_name}}</span>________</p>
+                @endif
+
                 <p class="text-last">HRMO</p>
             </div>
             <div class="last-part3">
@@ -366,8 +373,16 @@
                 <p class="last-line">____________________________________</p>
                 <p class="last-line">____________________________________</p>
                 <p class="last-line">____________________________________</p>
-                @endif             
-                <p class="last-sign2">________<span class="underline">{{ $official->hr_name}}</span>________</p>
+                @endif     
+                 
+                @if($leave->days_applied > 10)
+                    @foreach ($officials as $official)       
+                        <p class="last-sign2">________<span class="underline">{{ $official->hr_name}}</span>________</p>
+                    @endforeach
+                @else
+                    <p class="last-sign2">________<span class="underline">{{ $hr->first_name}} {{ strtoupper(substr($hr->middle_name, 0, 1)) }}. {{ $hr->last_name}}</span>________</p>
+                @endif
+            
                 <p class="text-last">Authorized Officer</p>
             </div>
             <div class="final-part">
@@ -383,7 +398,13 @@
                     <p class="list01">______________________________</p>
                     <p class="list01">______________________________</p>
                 </div>
-                <p class="final-sign">____________<span class="underline">{{ $official->supervisor_name}}</span>____________</p>
+                @if($leave->days_applied > 10)
+                    @foreach ($officials as $official)
+                        <p class="final-sign">____________<span class="underline">{{ $official->supervisor_name}}</span>____________</p>
+                    @endforeach
+                @else
+                    <p class="final-sign">____________<span class="underline">{{ $supervisor->first_name}} {{ strtoupper(substr($supervisor->middle_name, 0, 1)) }}. {{ $supervisor->last_name}}</span>____________</p>
+                @endif
                 <p class="text-last">(Authorized Official)</p> 
             </div>
         </div>
