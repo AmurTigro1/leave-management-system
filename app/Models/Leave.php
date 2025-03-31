@@ -11,6 +11,7 @@ class Leave extends Model
     'approved_days_without_pay',
     'hr_officer_id',
     'hr_status',
+    'leave_files',
     'admin_id',
     'admin_status',
     'supervisor_id',
@@ -19,6 +20,28 @@ class Leave extends Model
     'hr_action_at'
 
 ];
+
+
+public function getDisplayStatusAttribute()
+{
+    if ($this->status === 'cancelled') {
+        return 'cancelled';
+    }
+
+    if ($this->admin_status === 'approved' && $this->hr_status === 'pending') {
+        return 'waiting';
+    }
+
+    if ($this->admin_status === 'rejected' || $this->hr_status === 'rejected' || $this->supervisor_status === 'rejected') {
+        return 'rejected';
+    }
+
+    if ($this->hr_status === 'approved' && $this->supervisor_status === 'approved') {
+        return 'approved';
+    }
+
+    return 'pending';
+}
     public function user() {
         return $this->belongsTo(User::class);
     }

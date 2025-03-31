@@ -4,6 +4,18 @@
 <div class="animate-fade-in">
     <div class="bg-white shadow-md rounded-lg overflow-hidden p-6">
         <!-- Leave Request List -->
+        @if(session('success'))
+<div class="bg-green-100 text-green-800 p-4 rounded-lg shadow-md mb-4">
+    <strong>Success:</strong> {{ session('success') }}
+</div>
+@endif
+@if ($errors->any())
+    <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4" role="alert">
+        <strong>Error:</strong> {{ $errors->first('error') }}
+    </div>
+@endif
+
+
     <h3 class="text-2xl font-bold mb-3 text-gray-800">Your Leave Requests</h3>
     
     
@@ -50,29 +62,13 @@
                                     'waiting' => 'bg-orange-500',
                                     'cancelled' => 'bg-gray-500 line-through'  // Muted gray + strikethrough
                                 ];
-
-                                $status = 'pending';
-
-                                if ($leave->admin_status == 'approved' && $leave->hr_status == 'pending') {
-                                    $status = 'waiting';
-                                } elseif ($leave->admin_status == 'rejected') {
-                                    $status = 'rejected';
-                                } elseif ($leave->hr_status == 'rejected') {
-                                    $status = 'rejected';
-                                } elseif ($leave->supervisor_status == 'rejected') {
-                                    $status = 'rejected';
-                                } elseif ($leave->hr_status == 'approved' && $leave->supervisor_status == 'approved') {
-                                    $status = 'approved';
-                                } elseif ($leave->hr_status == 'rejected' || $leave->hr_status == 'rejected') {
-                                    $status = 'rejected';
-                                } elseif ($leave->status == 'cancelled' || $leave->supervisor_status == 'cancelled') {
-                                    $status = 'cancelled';
-                                }            
                             @endphp
-                            <span class="px-2 py-1 text-xs text-white rounded-lg {{ $status_classes[$status] }}">
-                                {{ ucfirst($status) }}
+                        
+                            <span class="px-2 py-1 text-xs text-white rounded-lg {{ $status_classes[$leave->display_status] }}">
+                                {{ ucfirst($leave->display_status) }}
                             </span>
                         </td>
+                        
                         <td class="p-3 text-center text-gray-800 overflow-visible">
                             {{-- {{ \Carbon\Carbon::parse($leave->start_date)->diffInDays(\Carbon\Carbon::parse($leave->end_date)) + 1 }} --}}
                             {{$leave->days_applied}}
@@ -91,39 +87,41 @@
                         
                                 <!-- Dropdown menu -->
                                 <div x-show="open" @click.away="open = false" 
-                                class="fixed transform -translate-x-1/2 mt-2 w-40 bg-white border rounded-lg shadow-lg z-50">
+                                    class="fixed transform -translate-x-1/2 mt-2 w-40 bg-white border rounded-lg shadow-lg z-50">
                                     
                                     <a href="{{ route('employee.leave_show', ['id' => $leave->id]) }}" 
-                                       class="block text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                    class="block text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                                         View
                                     </a>
-                        
+
                                     <a href="{{ route('employee.leave_edit', $leave->id) }}" 
-                                       class="block text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                    class="block text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                                         Edit
                                     </a>
-                        
-                                    @if($leave->status === 'pending')
-                                    <form action="{{ route('employee.leave_cancel', $leave->id) }}" 
-                                          method="POST" class="w-full">
-                                        @csrf
-                                        <button type="submit" 
-                                                onclick="return confirm('Are you sure you want to cancel this leave request?')"
-                                                class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                                            Cancel Request
-                                        </button>
-                                    </form>
-                                    @elseif($leave->status === 'cancelled')
-                                    <form action="{{ route('employee.leave_restore', $leave->id) }}" method="POST" class="w-full">
-                                        @csrf
-                                        <button type="submit" 
-                                            onclick="return confirm('Do you want to restore this canceled request?')"
-                                            class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                                            Restore Request
-                                        </button>
-                                    </form>
+
+                                    <!-- Hide "Cancel Request" if already cancelled -->
+                                    @if($leave->status !== 'cancelled')
+                                        <form action="{{ route('employee.leave_cancel', $leave->id) }}" method="POST" class="w-full">
+                                            @csrf
+                                            <button type="submit" 
+                                                    onclick="return confirm('Are you sure you want to cancel this leave request?')"
+                                                    class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                                Cancel Request
+                                            </button>
+                                        </form>
                                     @endif
-                        
+
+                                    @if($leave->status === 'cancelled')
+                                        <form action="{{ route('employee.leave_restore', $leave->id) }}" method="POST" class="w-full">
+                                            @csrf
+                                            <button type="submit" 
+                                                onclick="return confirm('Do you want to restore this canceled request?')"
+                                                class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                                Restore Request
+                                            </button>
+                                        </form>
+                                    @endif
+
                                     <form action="{{ route('employee.leave_delete', $leave->id) }}" method="POST" class="w-full">
                                         @csrf
                                         @method('DELETE')
@@ -133,7 +131,6 @@
                                             Delete
                                         </button>
                                     </form>
-                        
                                 </div>
                             </div>
                         </td>                        

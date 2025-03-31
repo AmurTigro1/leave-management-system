@@ -26,7 +26,7 @@
     }
 
     .bg {
-            animation: slide 3s ease-in-out infinite alternate;
+            animation: slide 1s ease-in-out infinite alternate;
             background-image: linear-gradient(-60deg, rgb(226, 217, 217) 50%, white 50%);
             bottom: 0;
             left: -50%;
@@ -39,11 +39,11 @@
 
         .bg2 {
             animation-direction: alternate-reverse;
-            animation-duration: 4s;
+            animation-duration: 2s;
         }
 
         .bg3 {
-            animation-duration: 5s;
+            animation-duration: 3s;
         }
 
         @keyframes slide {

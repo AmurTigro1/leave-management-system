@@ -39,6 +39,29 @@
         <form method="POST" action="{{ route('request.leave') }}" class=" p-4 rounded-lg" enctype="multipart/form-data">
             @csrf
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <!-- Enhanced Info Message -->
+            <div id="info_message" class="col-span-2 hidden">
+                <div class="p-4 bg-blue-50 border-l-4 border-blue-400 rounded-md shadow-sm">
+                    <div class="flex items-start">
+                        <div class="flex-shrink-0">
+                            <svg class="h-5 w-5 text-blue-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2h-1V9z" clip-rule="evenodd" />
+                            </svg>
+                        </div>
+                            <div class="ml-3">
+                                <h3 class="text-sm font-medium text-blue-800" id="info_title">Information</h3>
+                                <div class="mt-1 text-sm text-blue-700">
+                                    <p id="info_text"></p>
+                                </div>
+                                <div class="mt-2">
+                                    <button type="button" onclick="document.getElementById('info_message').classList.add('hidden')" class="text-blue-700 hover:text-blue-600 text-sm font-medium focus:outline-none">
+                                        Dismiss
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <div>
                     <label class="block text-sm font-medium">Leave Type</label>
                     <select name="leave_type" id="leave_type" class="mt-1 w-full p-2 border rounded" onchange="handleLeaveType()">
@@ -63,7 +86,7 @@
                     <p class="text-red-500 text-sm">{{ $message }}</p>
                     @enderror
                 </div>
-               
+
                 <div class="mb-4">
                     <label class="block font-medium">Salary File</label>
                     <input type="text" name="salary_file" class="w-full border p-2 rounded" required placeholder="Enter Salary File">
@@ -131,63 +154,97 @@
                     <label class="block text-gray-700 font-bold mb-2">Signature</label>
                     <input type="file" name="signature" class="w-full border p-2 rounded-lg" accept="image/*,.pdf" required>
                 </div>
+                            <!-- File Upload for Required Documents -->
+                <div id="file_upload_section" class="hidden">
+                    <label class="block text-gray-700 font-bold mb-2">Required Documents</label>
+                    <input type="file" name="leave_files[]" multiple class="w-full border p-2 rounded-lg" accept="image/*,.pdf">
+                    @error('leave_files')
+                    <p class="text-red-500 text-sm">{{ $message }}</p>
+                    @enderror
+                </div>
             </div>      
             
-        <!-- Vacation Leave & Special Privilege Leave -->
-        <div id="vacation_options" class="hidden">
-           <div class="mt-4">
-                <label><input type="checkbox" name="within_philippines" value="1"> Within the Philippines</label>
-                <input type="text" name="within_philippines" class="border rounded p-1">
-                @error('within_philippines')
-                <p class="text-red-500 text-sm">{{ $message }}</p>
-                @enderror
-           </div>
-            <div class="mt-2">
-                <label>
-                    <input type="checkbox" name="abroad" value="1"> Abroad
+            <!-- Vacation Leave & Special Privilege Leave -->
+            <div id="vacation_options" class="hidden">
+                <div class="mt-4">
+                    <label>
+                        <input type="checkbox" name="within_philippines" value="1"> Within the Philippines
+                    </label>
+                    <input type="text" name="within_philippines" class="border rounded p-1">
+                    @error('within_philippines')
+                    <p class="text-red-500 text-sm">{{ $message }}</p>
+                    @enderror
+                </div>
+                
+                <div class="mt-2">
+                    <label>
+                        <input type="checkbox" name="abroad" value="1"> Abroad
+                    </label>
                     <input type="text" name="abroad_details" class="border rounded p-1" placeholder="Specify">
                     @error('abroad_details')
                     <p class="text-red-500 text-sm">{{ $message }}</p>
                     @enderror
-                </label>
+                </div>
             </div>
-        </div>
 
-<!-- Sick Leave -->
-<div id="sick_leave_options" class="hidden">
-   <div class="mt-4">
-        <label>
-            <input type="checkbox" name="in_hospital" value="1"> In Hospital:
-            <input type="text" name="in_hospital_details" class="border rounded p-1" placeholder="Specify Illness">
-        </label>
-   </div>
-    <div class="mt-2">
-        <label>
-            <input type="checkbox" name="out_patient" value="1"> Out Patient:
-            <input type="text" name="out_patient_details" class="border rounded p-1" placeholder="Specify Illness">
-        </label>
-    </div>
+            <!-- Sick Leave -->
+            <div id="sick_leave_options" class="hidden">
+                <div class="mt-4">
+                    <label>
+                        <input type="checkbox" name="in_hospital" value="1"> In Hospital
+                    </label>
+                    <input type="text" name="in_hospital_details" class="border rounded p-1" placeholder="Specify Illness">
+                    @error('in_hospital_details')
+                    <p class="text-red-500 text-sm">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <div class="mt-2">
+                    <label>
+                        <input type="checkbox" name="out_patient" value="1"> Out Patient
+                    </label>
+                    <input type="text" name="out_patient_details" class="border rounded p-1" placeholder="Specify Illness">
+                    @error('out_patient_details')
+                    <p class="text-red-500 text-sm">{{ $message }}</p>
+                    @enderror
+                </div>
+            </div>
+
+
+   <!-- Study Leave -->
+<div id="study_leave_options" class="hidden">
+    <label>
+        <input type="checkbox" name="completion_masters" value="1"> Completion of Master's Degree
+    </label>
+    @error('completion_masters')
+    <p class="text-red-500 text-sm">{{ $message }}</p>
+    @enderror
+
+    <label>
+        <input type="checkbox" name="bar_review" value="1"> BAR Review
+    </label>
+    @error('bar_review')
+    <p class="text-red-500 text-sm">{{ $message }}</p>
+    @enderror
 </div>
 
-    <!-- Study Leave -->
-    <div id="study_leave_options" class="hidden">
-        <label><input type="checkbox" name="completion_masters" value="1"> Completion of Master's Degree</label>
-        <label><input type="checkbox" name="bar_review" value="1"> BAR Review</label>
-    </div>
+<!-- Other Purposes -->
+<div id="other_purposes_options" class="hidden">
+    <label>
+        <input type="checkbox" name="monetization" value="1"> Monetization of Leave Credits
+    </label>
+    @error('monetization')
+    <p class="text-red-500 text-sm">{{ $message }}</p>
+    @enderror
 
-    <!-- Other Purposes -->
-    <div id="other_purposes_options" class="hidden">
-        <label><input type="checkbox" name="monetization" value="1"> Monetization of Leave Credits</label>
-        <label><input type="checkbox" name="terminal_leave" value="1"> Terminal Leave</label>
-    </div>
+    <label>
+        <input type="checkbox" name="terminal_leave" value="1"> Terminal Leave
+    </label>
+    @error('terminal_leave')
+    <p class="text-red-500 text-sm">{{ $message }}</p>
+    @enderror
+</div>
 
-        <!-- Input field for "Others" -->
-    <div id="others_input" class="hidden mt-2">
-        <label class="block text-sm font-medium">Specify Leave Details</label>
-        {{-- <input type="text" name="others_details" class="mt-1 w-full p-2 border rounded" placeholder="Enter leave details"> --}}
-        <textarea name="others_details" id="others_details" cols="30" rows="10" class="mt-1 w-full p-2 border rounded" placeholder="Enter leave details"></textarea>
-        
-    </div>  
     <button type="submit" class="bg-blue-500 text-white px-4 py-2 mt-4 rounded">Request Leave</button>
     </form>
  </div>
@@ -196,69 +253,145 @@
 @endsection
 
 <script>
-    document.addEventListener("DOMContentLoaded", function() {
-    const leaveType = document.querySelector('select[name="leave_type"]');
-    const vacationOptions = document.getElementById("vacation_options");
-    const sickLeaveOptions = document.getElementById("sick_leave_options");
-    const studyLeaveOptions = document.getElementById("study_leave_options");
-    const otherPurposesOptions = document.getElementById("other_purposes_options");
+    document.addEventListener("DOMContentLoaded", function () {
+        const leaveType = document.querySelector('select[name="leave_type"]');
+        const vacationOptions = document.getElementById("vacation_options");
+        const sickLeaveOptions = document.getElementById("sick_leave_options");
+        const studyLeaveOptions = document.getElementById("study_leave_options");
+        const otherPurposesOptions = document.getElementById("other_purposes_options");
+        
+        const successMessage = document.getElementById('success-message');
+        const errorMessage = document.getElementById('error-message');
+        
+        const startDate = document.getElementById('start_date');
+        const endDate = document.getElementById('end_date');
+        const infoMessage = document.getElementById('info_message');
+        const infoText = document.getElementById('info_text');
+        const fileUploadSection = document.getElementById('file_upload_section');
+        const oneDayLeave = document.getElementById('one_day_leave');  
 
-    function toggleOptions() {
-        const selectedValue = leaveType.value;
+        // ✅ Leave messages
+        const leaveMessages = {
+            "Vacation Leave": "Vacation Leave must be filed at least <strong>5 calendar days in advance</strong> (excluding weekends and holidays).",
+            "Special Privilege Leave": "Special Privilege Leave must be filed at least <strong>7 calendar days prior</strong>, except for emergencies. Filing on weekends or holidays is not allowed.",
+            "Solo Parent Leave": "Solo Parent Leave must be filed <strong>5 days in advance</strong>. For emergencies, file as soon as possible.",
+            "Special Leave Benefits for Women Leave": "Special Leave Benefits for Women must be filed <strong>5 calendar days ahead</strong>. Leave filed on weekends or holidays is not valid.",
+            "Sick Leave": "Sick Leave exceeding 5 days or filed in advance requires a <strong>medical certificate</strong>.",
+            "Maternity Leave": "Maternity Leave requires proof of pregnancy, such as <strong>ultrasound or doctor's certificate</strong>.",
+            "Paternity Leave": "Paternity Leave requires proof of child's delivery, such as <strong>birth certificate</strong> or medical certificate.",
+            "Mandatory Leave": "Mandatory Leave must be taken annually. Unused leave will be <strong>forfeited</strong> if not availed within the year."
+        };
 
-        // Hide all sections
-        vacationOptions.classList.add("hidden");
-        sickLeaveOptions.classList.add("hidden");
-        studyLeaveOptions.classList.add("hidden");
-        otherPurposesOptions.classList.add("hidden");
-
-        // Show the relevant options
-        if (selectedValue === "Vacation Leave" || selectedValue === "Special Privilege Leave") {
-            vacationOptions.classList.remove("hidden");
-        } else if (selectedValue === "Sick Leave") {
-            sickLeaveOptions.classList.remove("hidden");
-        } else if (selectedValue === "Study Leave") {
-            studyLeaveOptions.classList.remove("hidden");
-        } else if (selectedValue === "Other Purposes") {
-            otherPurposesOptions.classList.remove("hidden");
+        // ✅ Display leave-specific message
+        function updateInfoMessage() {
+            const selectedType = leaveType.value;
+            if (leaveMessages[selectedType]) {
+                infoText.innerHTML = leaveMessages[selectedType];
+                infoMessage.classList.remove('hidden');
+            } else {
+                infoMessage.classList.add('hidden');
+                infoText.innerHTML = "";
+            }
         }
-    }
 
-    // Run function on change
-    leaveType.addEventListener("change", toggleOptions);
+        // ✅ Show/hide different leave sections
+        function toggleOptions() {
+            const selectedValue = leaveType.value;
 
-    // Run function on page load (if editing)
-    toggleOptions();
-});
+            // Hide all sections
+            vacationOptions.classList.add("hidden");
+            sickLeaveOptions.classList.add("hidden");
+            studyLeaveOptions.classList.add("hidden");
+            otherPurposesOptions.classList.add("hidden");
 
-const successMessage = document.getElementById('success-message');
-    if (successMessage) {
-        setTimeout(() => {
-            successMessage.style.display = 'none';
-        }, 3000);
-    }
-
-    // Hide error message after 3 seconds
-    const errorMessage = document.getElementById('error-message');
-    if (errorMessage) {
-        setTimeout(() => {
-            errorMessage.style.display = 'none';
-        }, 3000);
-    }
-
-    document.addEventListener("DOMContentLoaded", function() {
-    let leaveType = document.getElementById("leave_type");
-    let othersInput = document.getElementById("others_input");
-
-    leaveType.addEventListener("change", function() {
-        if (this.value === "Others") {
-            othersInput.classList.remove("hidden");
-        } else {
-            othersInput.classList.add("hidden");
+            // Show the relevant section
+            if (selectedValue === "Vacation Leave" || selectedValue === "Special Privilege Leave") {
+                vacationOptions.classList.remove("hidden");
+            } else if (selectedValue === "Sick Leave") {
+                sickLeaveOptions.classList.remove("hidden");
+            } else if (selectedValue === "Study Leave") {
+                studyLeaveOptions.classList.remove("hidden");
+            } else if (selectedValue === "Other Purposes") {
+                otherPurposesOptions.classList.remove("hidden");
+            }
         }
+
+        // ✅ Handle "One Day" checkbox and file upload visibility
+        function toggleFileUpload() {
+            const selectedType = leaveType.value;
+
+            // Sync end date with start date when "One Day" is checked
+            if (oneDayLeave && oneDayLeave.checked) {
+                endDate.value = startDate.value;
+                endDate.readOnly = true;
+            } else {
+                endDate.readOnly = false;
+            }
+
+            // Always show the file upload for Maternity and Paternity Leave
+            if (selectedType === 'Maternity Leave' || selectedType === 'Paternity Leave') {
+                fileUploadSection.classList.remove('hidden');
+                return;
+            }
+
+            // Hide the upload section if no date is selected
+            if (!startDate.value || !endDate.value) {
+                fileUploadSection.classList.add('hidden');
+                return;
+            }
+
+            const start = new Date(startDate.value);
+            const end = new Date(endDate.value);
+            const today = new Date();
+            
+            // Calculate the number of requested days
+            const daysRequested = Math.ceil((end - start) / (1000 * 60 * 60 * 24)) + 1;
+            
+            // Calculate how many days until the leave starts
+            const daysUntilStart = Math.floor((start - today) / (1000 * 60 * 60 * 24));
+
+            // ✅ Show file upload only for Sick Leave exceeding 5 days or filed in advance
+            if (selectedType === 'Sick Leave' && (daysRequested > 5 || daysUntilStart > 0)) {
+                fileUploadSection.classList.remove('hidden');
+            } else {
+                fileUploadSection.classList.add('hidden');
+            }
+        }
+
+        // ✅ Hide success and error messages after timeout
+        if (successMessage) {
+            setTimeout(() => {
+                successMessage.style.display = 'none';
+            }, 10000);
+        }
+
+        if (errorMessage) {
+            setTimeout(() => {
+                errorMessage.style.display = 'none';
+            }, 10000);
+        }
+
+        // ✅ Event listeners
+        leaveType.addEventListener("change", () => {
+            toggleOptions();
+            updateInfoMessage();
+            toggleFileUpload();
+        });
+
+        startDate.addEventListener("change", toggleFileUpload);
+        endDate.addEventListener("change", toggleFileUpload);
+
+        if (oneDayLeave) {
+            oneDayLeave.addEventListener("change", toggleFileUpload);
+        }
+
+        // ✅ Initialize on page load
+        toggleOptions();
+        updateInfoMessage();
+        toggleFileUpload();
     });
-});
 </script>
+
 @notifyCss
 <style>
     .animate-fade-in {

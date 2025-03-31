@@ -29,7 +29,7 @@ return Application::configure(basePath: dirname(__DIR__))
         // Schedule multiple commands
         $schedule->command('holidays:fetch')->monthly();
         $schedule->command('leave:reset-yearly')->yearly();
-        $schedule->command('leave:update-balance')->everyMinute();
+        $schedule->command('leave:update-balance')->monthly();
     })
     
     ->create();
