@@ -461,7 +461,6 @@ document.addEventListener("DOMContentLoaded", function () {
     loadRequests(); // Initial load
 });
 </script>
-@endsection
 
 <style>
     @keyframes glow {
@@ -662,4 +661,5 @@ document.addEventListener("DOMContentLoaded", function () {
     
     <!-- Include confetti.js library -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+@endsection
 @notifyCss

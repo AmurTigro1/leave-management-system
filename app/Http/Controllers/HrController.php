@@ -321,19 +321,23 @@ class HrController extends Controller
         if (Auth::user()->role !== 'hr') {
             abort(403, 'Unauthorized access.');
         }
-    
+
         // Get leave applications waiting for supervisor approval
         $leaveApplications = Leave::where('admin_status', 'approved')
-        ->orderBy('created_at', 'desc') 
-        ->paginate(9); 
+            ->orderBy('created_at', 'desc')
+            ->paginate(9);
 
+        // Get CTO applications waiting for review
         $ctoApplications = OvertimeRequest::where('admin_status', 'Ready for Review')
-        ->orderBy('created_at', 'desc') 
-        ->paginate(9); 
+            ->orderBy('created_at', 'desc')
+            ->paginate(9);
 
-        return view('hr.requests', compact('leaveApplications', 'ctoApplications'));
+        // Fetch all HR Supervisors
+        $officials = HRSupervisor::all();
+
+        return view('hr.requests', compact('leaveApplications', 'ctoApplications', 'officials'));
     }
-    
+
     
     public function showLeaveCertification($leaveId)
     {
@@ -344,10 +348,9 @@ class HrController extends Controller
     }
 
     public function showleave($id) {
-        $leave = Leave::findOrFail($id); 
-        $official = HRSupervisor::find($id);
+        $leave = Leave::findOrFail($id);
 
-        return view('hr.leave_details', compact('leave','official'));
+        return view('hr.leave_details', compact('leave'));
     }
 
     public function showcto($id) {
@@ -721,12 +724,12 @@ class HrController extends Controller
     public function viewPdf($id)
     {
         $leave = Leave::findOrFail($id);
-        $official = HRSupervisor::find($id);
+        $officials = HRSupervisor::all();
 
         $supervisor = User::where('role', 'supervisor')->first();
         $hr = User::where('role', 'hr')->first();
         
-        $pdf = PDF::loadView('pdf.leave_details', compact('leave', 'supervisor', 'hr', 'official'));
+        $pdf = PDF::loadView('pdf.leave_details', compact('leave', 'supervisor', 'hr', 'officials'));
         
         return $pdf->stream('leave_request_' . $leave->id . '.pdf');
     }

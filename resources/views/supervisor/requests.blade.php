@@ -72,6 +72,8 @@
                 </p>
                 <p class="text-gray-700 mt-2">Duration: <span class="font-semibold">{{ \Carbon\Carbon::parse($leave->start_date)->diffInDays(\Carbon\Carbon::parse($leave->end_date)) + 1 }} day(s)</span></p>
         
+                <iframe src="" frameborder="0"></iframe>
+                
                 @if($leave->leave_type == 'Mandatory Leave')
                     <form action="{{ route('supervisor.reject', $leave->id) }}" method="POST">
                         @csrf

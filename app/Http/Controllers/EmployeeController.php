@@ -30,18 +30,17 @@ class EmployeeController extends Controller
         ->orderByRaw('DAY(birthday) ASC')
         ->get();
     
-        // Get employees who are on approved leave this month (but only if their leave has not yet ended)
         $teamLeaves = Leave::whereMonth('start_date', $month)
                             ->where('status', 'approved')
-                            ->where('end_date', '>=', $today) // Ensures leave is still ongoing
-                            ->with('user') // Ensures the user object is available
+                            ->where('end_date', '>=', $today)
+                            ->with('user') 
                             ->get();
-        $monthPadded = str_pad($month, 2, '0', STR_PAD_LEFT); // Format as 2 digits (01-12)
+        $monthPadded = str_pad($month, 2, '0', STR_PAD_LEFT); 
         $year = now()->year;
         
         $overtimeRequests = OvertimeRequest::where('status', 'approved')
-            ->where('inclusive_dates', 'LIKE', "%-{$monthPadded}-%") // Check for month in any position
-            ->where('inclusive_dates', 'LIKE', "{$year}-%") // Check for current year
+            ->where('inclusive_dates', 'LIKE', "%-{$monthPadded}-%") 
+            ->where('inclusive_dates', 'LIKE', "{$year}-%") 
             ->get();
 
         return view('employee.dashboard', compact('teamLeaves', 'birthdays', 'month', 'overtimeRequests'));
@@ -51,11 +50,10 @@ class EmployeeController extends Controller
     {
         $employees = User::with(['leaves' => function ($query) {
             $query->where('status', 'approved')
-                  ->whereMonth('start_date', now()->month) // Ensure it's within the month
+                  ->whereMonth('start_date', now()->month) 
                   ->whereYear('start_date', now()->year);
         }])->get();
     
-        // Calculate total absences correctly
         $employees->each(function ($employee) {
             $employee->total_absences = $employee->leaves->sum(function ($leave) {
                 return \Carbon\Carbon::parse($leave->start_date)
@@ -71,12 +69,11 @@ class EmployeeController extends Controller
     {
         $employees = User::with(['leaves' => function ($query) {
             $query->where('status', 'approved')
-                  ->whereMonth('start_date', now()->month) // Ensure it's within the month
+                  ->whereMonth('start_date', now()->month) 
                   ->whereYear('start_date', now()->year);
         }])
-        ->orderBy('last_name', 'asc')  // Sort by last name ascending
+        ->orderBy('last_name', 'asc')  
         ->get();
-        // Calculate total absences correctly
         $employees->each(function ($employee) {
             $employee->total_absences = $employee->leaves->sum(function ($leave) {
                 return \Carbon\Carbon::parse($leave->start_date)
@@ -191,7 +188,6 @@ class EmployeeController extends Controller
     $startDate = Carbon::parse($request->start_date);
     $endDate = Carbon::parse($request->end_date);
 
-    // Define required documents with conditions
     $requiredDocs = [
         'Sick Leave' => 'Medical Certificate (if filed in advance or > 5 days)',
         'Maternity Leave' => 'Proof of Pregnancy (Ultrasound, Doctor’s Certificate)',
@@ -202,31 +198,25 @@ class EmployeeController extends Controller
     $endDate = Carbon::parse($request->end_date);
     $today = Carbon::now();
 
-    // Calculate the difference in days between filing and leave start
     $daysUntilLeave = $today->diffInDays($startDate, false);
     $daysRequested = $startDate->diffInDays($endDate) + 1;
 
-    // Document upload conditions
     $requiresDocs = false;
 
     if ($request->leave_type === 'Sick Leave') {
-        // Sick Leave: Only require docs if filed in advance OR exceeds 5 days
         if ($daysUntilLeave > 0 || $daysRequested > 5) {
             $requiresDocs = true;
         }
     } elseif (in_array($request->leave_type, ['Maternity Leave', 'Paternity Leave'])) {
-        // Always require docs for Maternity and Paternity Leave
         $requiresDocs = true;
     }
 
-    // Validate document upload only when necessary
     if ($requiresDocs && !$request->hasFile('leave_files')) {
         return redirect()->back()->withErrors([
             'leave_files' => "For {$request->leave_type}, please upload the required documents: " . $requiredDocs[$request->leave_type]
         ]);
     }
 
-    // Calculate days applied
     if (in_array($request->leave_type, $inclusiveLeaveTypes)) {
         $daysApplied = $startDate->diffInDays($endDate) + 1;
     } else {
@@ -254,7 +244,6 @@ class EmployeeController extends Controller
         }
     }
 
-    // Handle available leave balance
     $leaveTypeForBalance = $request->leave_type === 'Mandatory Leave' ? 'Vacation Leave' : $request->leave_type;
 
     if ($leaveTypeForBalance === 'Sick Leave') {
@@ -275,7 +264,6 @@ class EmployeeController extends Controller
         };
     }
 
-    // Check combined balance for Sick + Vacation Leave
     if (in_array($leaveTypeForBalance, ['Sick Leave', 'Vacation Leave'])) {
         $combinedBalance = $user->sick_leave_balance + $user->vacation_leave_balance;
         if ($daysApplied > $combinedBalance) {
@@ -287,7 +275,6 @@ class EmployeeController extends Controller
         }
     }
 
-    // Handle file uploads
     $leaveFiles = [];
     if ($request->hasFile('leave_files')) {
         foreach ($request->file('leave_files') as $file) {
@@ -296,7 +283,6 @@ class EmployeeController extends Controller
         }
     }
 
-    // Prepare leave details
     $leaveDetails = [];
     
     if ($request->leave_type === 'Vacation Leave' || $request->leave_type === 'Special Privilege Leave') {
@@ -317,7 +303,6 @@ class EmployeeController extends Controller
         }
     }
 
-    // **Study Leave**
     if ($request->leave_type === 'Study Leave') {
         if ($request->has('completion_masters')) {
             $leaveDetails[] = 'Completion of Master\'s Degree';
@@ -327,7 +312,6 @@ class EmployeeController extends Controller
         }
     }
 
-    // **Other Purposes**
     if ($request->leave_type === 'Other Purposes') {
         if ($request->has('monetization')) {
             $leaveDetails[] = 'Monetization of Leave Credits';
@@ -337,7 +321,6 @@ class EmployeeController extends Controller
         }
     }
 
-    // **Others Leave Type**
     if ($request->leave_type === 'Others') {
         if ($request->filled('others_details')) {
             $leaveDetails[] = 'Other Details';
@@ -345,7 +328,6 @@ class EmployeeController extends Controller
         }
     }
 
-    // Store leave request
     Leave::create([
         'user_id' => auth()->id(),
         'leave_type' => $request->leave_type,
@@ -372,7 +354,6 @@ public function cancel($id)
     $leave = Leave::findOrFail($id);
     $user = Auth::user();
 
-    // ✅ Only restore balance if both status and hr_status are approved
     if ($leave->status === 'approved' && $leave->hr_status === 'approved') {
         $this->restoreLeaveBalance($user, $leave);
     }
@@ -384,13 +365,11 @@ public function cancel($id)
 }
 
 
-// Restore Leave
 public function restore($id)
 {
     $leave = Leave::findOrFail($id);
     $user = Auth::user();
 
-    // ✅ Only deduct balance if the leave was previously approved by HR
     if ($leave->status === 'cancelled' && $leave->hr_status === 'approved') {
         $this->deductLeaveBalance($user, $leave);
         $leave->status = 'approved';
@@ -403,17 +382,13 @@ public function restore($id)
     return redirect()->back()->with('success', 'Leave request has been restored and balance deducted.');
 }
 
-
-
-// Restore Leave Balance
 private function restoreLeaveBalance($user, $leave)
 {
     $days = $leave->days_applied;
 
     switch ($leave->leave_type) {
-        // ✅ Restore to Vacation Leave for both Vacation and Mandatory Leave
         case 'Vacation Leave':
-        case 'Mandatory Leave':  // 🔥 Treat Mandatory Leave as Vacation Leave
+        case 'Mandatory Leave': 
             $user->vacation_leave_balance += $days;
             break;
 
@@ -457,34 +432,27 @@ private function restoreLeaveBalance($user, $leave)
     $user->save();
 }
 
-
-// Deduct Leave Balance
 private function deductLeaveBalance($user, $leave)
 {
     $days = $leave->days_applied;
 
     switch ($leave->leave_type) {
-        // ✅ Vacation Leave + Mandatory Leave (share the same balance)
         case 'Vacation Leave':
         case 'Mandatory Leave':
             if ($user->vacation_leave_balance >= $days) {
-                // ✅ Deduct from vacation leave if sufficient
                 $user->vacation_leave_balance -= $days;
             } elseif (($user->vacation_leave_balance + $user->sick_leave_balance) >= $days) {
-                // ✅ Combine Vacation + Sick Leave if insufficient
                 $combinedBalance = $user->vacation_leave_balance + $user->sick_leave_balance;
 
                 if ($combinedBalance >= $days) {
                     $remainingDays = $days;
 
-                    // Deduct from vacation first
                     if ($user->vacation_leave_balance > 0) {
                         $deductFromVacation = min($remainingDays, $user->vacation_leave_balance);
                         $user->vacation_leave_balance -= $deductFromVacation;
                         $remainingDays -= $deductFromVacation;
                     }
 
-                    // Deduct remaining from sick leave
                     if ($remainingDays > 0) {
                         $user->sick_leave_balance -= $remainingDays;
                     }
@@ -494,26 +462,21 @@ private function deductLeaveBalance($user, $leave)
             }
             break;
 
-        // ✅ Sick Leave (combines with Vacation Leave if insufficient)
         case 'Sick Leave':
             if ($user->sick_leave_balance >= $days) {
-                // ✅ Deduct from sick leave if sufficient
                 $user->sick_leave_balance -= $days;
             } elseif (($user->sick_leave_balance + $user->vacation_leave_balance) >= $days) {
-                // ✅ Combine Sick + Vacation Leave if insufficient
                 $combinedBalance = $user->sick_leave_balance + $user->vacation_leave_balance;
 
                 if ($combinedBalance >= $days) {
                     $remainingDays = $days;
 
-                    // Deduct from sick leave first
                     if ($user->sick_leave_balance > 0) {
                         $deductFromSick = min($remainingDays, $user->sick_leave_balance);
                         $user->sick_leave_balance -= $deductFromSick;
                         $remainingDays -= $deductFromSick;
                     }
 
-                    // Deduct remaining from vacation leave
                     if ($remainingDays > 0) {
                         $user->vacation_leave_balance -= $remainingDays;
                     }
@@ -523,7 +486,6 @@ private function deductLeaveBalance($user, $leave)
             }
             break;
 
-        // ✅ Maternity Leave
         case 'Maternity Leave':
             if ($user->maternity_leave >= $days) {
                 $user->maternity_leave -= $days;
@@ -532,7 +494,6 @@ private function deductLeaveBalance($user, $leave)
             }
             break;
 
-        // ✅ Paternity Leave
         case 'Paternity Leave':
             if ($user->paternity_leave >= $days) {
                 $user->paternity_leave -= $days;
@@ -541,7 +502,6 @@ private function deductLeaveBalance($user, $leave)
             }
             break;
 
-        // ✅ Solo Parent Leave
         case 'Solo Parent Leave':
             if ($user->solo_parent_leave >= $days) {
                 $user->solo_parent_leave -= $days;
@@ -550,7 +510,6 @@ private function deductLeaveBalance($user, $leave)
             }
             break;
 
-        // ✅ Study Leave
         case 'Study Leave':
             if ($user->study_leave >= $days) {
                 $user->study_leave -= $days;
@@ -559,7 +518,6 @@ private function deductLeaveBalance($user, $leave)
             }
             break;
 
-        // ✅ VAWC Leave
         case 'VAWC Leave':
             if ($user->vawc_leave >= $days) {
                 $user->vawc_leave -= $days;
@@ -568,7 +526,6 @@ private function deductLeaveBalance($user, $leave)
             }
             break;
 
-        // ✅ Rehabilitation Leave
         case 'Rehabilitation Leave':
             if ($user->rehabilitation_leave >= $days) {
                 $user->rehabilitation_leave -= $days;
@@ -577,7 +534,6 @@ private function deductLeaveBalance($user, $leave)
             }
             break;
 
-        // ✅ Special Leave Benefit
         case 'Special Leave Benefit':
             if ($user->special_leave_benefit >= $days) {
                 $user->special_leave_benefit -= $days;
@@ -586,7 +542,6 @@ private function deductLeaveBalance($user, $leave)
             }
             break;
 
-        // ✅ Special Emergency Leave
         case 'Special Emergency Leave':
             if ($user->special_emergency_leave >= $days) {
                 $user->special_emergency_leave -= $days;
@@ -602,26 +557,24 @@ private function deductLeaveBalance($user, $leave)
 
     public function showRequests() {
         $holidays = Holiday::orderBy('date')->get()->map(function ($holiday) {
-            $holiday->day = Carbon::parse($holiday->date)->format('d'); // Example: 01
-            $holiday->month = Carbon::parse($holiday->date)->format('M'); // Example: Jan
-            $holiday->day_name = Carbon::parse($holiday->date)->format('D'); // Example: Mon
+            $holiday->day = Carbon::parse($holiday->date)->format('d'); 
+            $holiday->month = Carbon::parse($holiday->date)->format('M'); 
+            $holiday->day_name = Carbon::parse($holiday->date)->format('D'); 
             return $holiday;
         });
-        // Ensure the user is authenticated
         $user = auth()->user();
     
         if (!$user) {
             return redirect()->route('login')->with('error', 'Please log in to view your reservations.');
         }
     
-        // Get the authenticated user's reservations ordered by latest first with pagination
-        $leaves = $user->leaves()->orderBy('created_at', 'desc')->paginate(10); // Adjust the number as needed
+        $leaves = $user->leaves()->orderBy('created_at', 'desc')->paginate(10); 
     
         return view('employee.leave_request', compact('leaves', 'holidays'));
     }
     
     public function show($id) {
-        $leave = Leave::findOrFail($id); // Fetch the leave request by ID
+        $leave = Leave::findOrFail($id); 
     
         return view('employee.leave_show', compact('leave'));
     }
@@ -675,7 +628,7 @@ private function deductLeaveBalance($user, $leave)
 
     public function getLeaves(Request $request)
     {
-        $month = $request->month ?? date('m'); // Default to current month
+        $month = $request->month ?? date('m');
     
         $leaves = Leave::with('user:id,name,first_name,last_name,profile_image')
             ->whereMonth('start_date', $month)
@@ -689,7 +642,7 @@ private function deductLeaveBalance($user, $leave)
                 "last_name" => $leave->user->last_name,
                 "start" => \Carbon\Carbon::parse($leave->start_date)->format('F j, Y'),
                 "end" => \Carbon\Carbon::parse($leave->end_date)->format('F j, Y'),
-                "status" => ucfirst($leave->status), // Capitalize first letter
+                "status" => ucfirst($leave->status),
                 "duration" => \Carbon\Carbon::parse($leave->start_date)->diffInDays($leave->end_date) + 1,
                 "profile_image" => $leave->user->profile_image ? asset('storage/profile_images/' . $leave->user->profile_image) : asset('images/default.png')
             ];
@@ -698,20 +651,18 @@ private function deductLeaveBalance($user, $leave)
 
     public function getOvertimes(Request $request)
     {
-        $month = $request->month ?? date('m'); // Default to current month
+        $month = $request->month ?? date('m'); 
 
         $overtimes = OvertimeRequest::with('user:id,name,first_name,last_name,profile_image')
             ->where('inclusive_dates', 'LIKE', '%-'.str_pad($month, 2, '0', STR_PAD_LEFT).'-%')
-            ->orderByRaw("SUBSTRING_INDEX(inclusive_dates, ',', 1) ASC") // Orders by first date in the list
+            ->orderByRaw("SUBSTRING_INDEX(inclusive_dates, ',', 1) ASC") 
             ->get();
             
         return response()->json($overtimes->map(function ($overtime) {
-            // Parse the comma-separated dates
             $dates = explode(', ', $overtime->inclusive_dates);
             $firstDate = \Carbon\Carbon::parse($dates[0]);
             $lastDate = \Carbon\Carbon::parse(end($dates));
             
-            // Format the date display
             $dateDisplay = count($dates) === 1
                 ? $firstDate->format('F j, Y')
                 : $firstDate->format('F j, Y') . ' to ' . $lastDate->format('F j, Y');
@@ -726,7 +677,6 @@ private function deductLeaveBalance($user, $leave)
                 "profile_image" => $overtime->user?->profile_image
                     ? asset('storage/profile_images/' . $overtime->user->profile_image)
                     : asset('images/default.png'),
-                // Optional: include all dates if needed
                 "all_dates" => array_map(fn($d) => \Carbon\Carbon::parse($d)->format('F j, Y'), $dates)
             ];
         }));
@@ -741,12 +691,10 @@ private function deductLeaveBalance($user, $leave)
         $user = Auth::user();
 
         if ($request->hasFile('profile_image')) {
-            // Delete old image if exists
             if ($user->profile_image) {
-                Storage::delete('public/profile_images/' . $user->profile_image);
+                Storage::delete('public/profile_pictures/' . $user->profile_image);
             }
 
-            // Store new image
             $imagePath = $request->file('profile_image')->store('profile_images', 'public');
             $filename = basename($imagePath);
 
@@ -760,12 +708,12 @@ private function deductLeaveBalance($user, $leave)
     public function viewPdf($id)
     {
         $leave = Leave::findOrFail($id);
-        $official = HRSupervisor::find($id);
+        $officials = HRSupervisor::all();
 
         $supervisor = User::where('role', 'supervisor')->first();
         $hr = User::where('role', 'hr')->first();
         
-        $pdf = PDF::loadView('pdf.leave_details', compact('leave', 'supervisor', 'hr', 'official'));
+        $pdf = PDF::loadView('pdf.leave_details', compact('leave', 'supervisor', 'hr', 'officials'));
         
         return $pdf->stream('leave_request_' . $leave->id . '.pdf');
     }
@@ -857,7 +805,6 @@ private function deductLeaveBalance($user, $leave)
     public function updateLeave(Request $request, $id)
     {
         
-        // Validate the form input
         $request->validate([
             'leave_type' => 'required|string|max:255',
             'salary_file' => 'required|string|max:255',
@@ -867,26 +814,22 @@ private function deductLeaveBalance($user, $leave)
             'commutation' => 'required|boolean',
             'reason' => 'nullable|string',
             'signature' => 'nullable|file|mimes:jpg,png,pdf|max:2048',
-            'abroad_details' => 'nullable|string', // Ensure it's validated
+            'abroad_details' => 'nullable|string',
         ]);
     
-        // Find the leave record
         $leave = Leave::findOrFail($id);
     
-        // Initialize leave details array
         $leaveDetails = [];
     
-        // **Vacation Leave / Special Privilege Leave**
         if ($request->leave_type === 'Vacation Leave' || $request->leave_type === 'Special Privilege Leave') {
             if ($request->filled('within_philippines')) {
-                $leaveDetails['Within the Philippines'] = $request->within_philippines; // Store the text input
+                $leaveDetails['Within the Philippines'] = $request->within_philippines;
             }
             if ($request->filled('abroad_details')) {
-                $leaveDetails['Abroad'] = $request->abroad_details; // Store the text input
+                $leaveDetails['Abroad'] = $request->abroad_details; 
             }
         }
     
-        // **Sick Leave**
         if ($request->leave_type === 'Sick Leave') {
             if ($request->has('in_hospital')) {
                 $leaveDetails['In Hospital'] = $request->input('in_hospital_details', 'Yes');
@@ -896,7 +839,6 @@ private function deductLeaveBalance($user, $leave)
             }
         }
     
-        // **Study Leave**
         if ($request->leave_type === 'Study Leave') {
             if ($request->has('completion_masters')) {
                 $leaveDetails[] = 'Completion of Master\'s Degree';
@@ -906,7 +848,6 @@ private function deductLeaveBalance($user, $leave)
             }
         }
     
-        // **Other Purposes**
         if ($request->leave_type === 'Other Purposes') {
             if ($request->has('monetization')) {
                 $leaveDetails[] = 'Monetization of Leave Credits';
@@ -916,7 +857,6 @@ private function deductLeaveBalance($user, $leave)
             }
         }
     
-        // **Others Leave Type**
         if ($request->leave_type === 'Others') {
             if ($request->filled('others_details')) {
                 $leaveDetails[] = 'Other Details';
@@ -924,7 +864,6 @@ private function deductLeaveBalance($user, $leave)
             }
         }
     
-        // Update leave details
         $leave->update([
             'leave_type' => $request->leave_type,
             'salary_file' => $request->salary_file,
@@ -971,7 +910,6 @@ private function deductLeaveBalance($user, $leave)
         return response()->json(['success' => false, 'message' => 'Notification not found.']);
     }
 
-    // Delete all notifications
     public function deleteAll()
     {
         $user = Auth::user();

@@ -1,51 +1,66 @@
 <div id="cocRequestUpdateModal" class="hidden fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center px-4 z-[9999] overflow-auto" onclick="closecocRequestUpdateModal(event)">
     <div class="w-full max-w-2xl mx-4 bg-white shadow-xl rounded-lg p-6 relative max-h-[70vh] overflow-y-auto" onclick="event.stopPropagation()">
-        <!-- Modal Header -->
-        <div class="text-center border-b pb-4">
-            <h3 class="text-2xl font-bold text-gray-900">
-                Update COC Log for <span class="text-green-500">{{ $overtime->user->first_name }} {{ $overtime->user->last_name }}</span>
-            </h3>
-            <p class="text-sm text-gray-600 mt-2">
-                Current Overtime Balance: <span class="font-bold">{{ $overtime->user->overtime_balance }} hours</span>
-            </p>
-            <p class="text-sm text-gray-600 mt-2">
-                Date Filed: <span class="font-bold">{{ $overtime->date_filed }}</span>
-            </p>
-        </div>
+        
+        @if ($overtime)
+            <!-- Modal Header -->
+            <div class="text-center border-b pb-4">
+                <h3 class="text-2xl font-bold text-gray-900">
+                    Update COC Log for <span class="text-green-500">{{ $overtime->user->first_name ?? 'Unknown' }} {{ $overtime->user->last_name ?? '' }}</span>
+                </h3>
+                <p class="text-sm text-gray-600 mt-2">
+                    Current Overtime Balance: <span class="font-bold">{{ $overtime->user->overtime_balance ?? '0' }} hours</span>
+                </p>
+                <p class="text-sm text-gray-600 mt-2">
+                    Date Filed: <span class="font-bold">{{ $overtime->date_filed ?? 'N/A' }}</span>
+                </p>
+            </div>
 
-        <!-- Form Section -->
-        <form action="{{ route('coc-logs.update', $overtime->id) }}" method="POST">
-            @csrf
-            @method('PUT')
+            <!-- Form Section -->
+            <form action="{{ route('coc-logs.update', $overtime->id) }}" method="POST">
+                @csrf
+                @method('PUT')
 
-            <div class="mt-6 space-y-4">                
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Working Hours Applied</label>
-                    <input type="text" name="working_hours_applied" value="{{ $overtime->working_hours_applied }} hours" class="w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500">
-                </div>
-                
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div class="mt-6 space-y-4">                
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Inclusive Dates</label>
-                        <input type="text" name="inclusive_dates" value="{{ \Carbon\Carbon::parse($overtime->inclusive_dates)->format('M j, Y') }}" class="w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Working Hours Applied</label>
+                        <input type="text" name="working_hours_applied" value="{{ $overtime->working_hours_applied ?? '0' }} hours" class="w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Inclusive Dates</label>
+                            <input type="text" name="inclusive_dates" value="{{ $overtime->inclusive_dates ? \Carbon\Carbon::parse($overtime->inclusive_dates)->format('M j, Y') : 'N/A' }}" class="w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500">
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- Buttons -->
-            <div class="mt-8 flex justify-end space-x-3">
+                <!-- Buttons -->
+                <div class="mt-8 flex justify-end space-x-3">
+                    <button type="button" onclick="closecocRequestUpdateModal()" 
+                            class="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 transition">
+                        Cancel
+                    </button>
+                    <button type="submit" 
+                            class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition">
+                        Update CTO request
+                    </button>
+                </div>
+            </form>
+        @else
+            <!-- Display a message when no overtime record exists -->
+            <div class="text-center py-10">
+                <h3 class="text-xl font-semibold text-gray-900">No COC Log Found</h3>
+                <p class="text-gray-600 mt-2">There is no COC log available for update at this time.</p>
                 <button type="button" onclick="closecocRequestUpdateModal()" 
-                        class="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 transition">
-                    Cancel
-                </button>
-                <button type="submit" 
-                        class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition">
-                    Update CTO request
+                        class="mt-4 px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 transition">
+                    Close
                 </button>
             </div>
-        </form>
+        @endif
+
     </div>
 </div>
+
 
 <script>
     function opencocRequestUpdateModal() {
