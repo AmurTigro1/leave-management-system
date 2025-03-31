@@ -7,18 +7,23 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 use Illuminate\Notifications\Messages\BroadcastMessage;
+
 class LeaveStatusNotification extends Notification
 {
     use Queueable;
-    public $leave;
+
+    public $request;
     public $message;
+    public $type; // 'leave' or 'overtime'
+
     /**
      * Create a new notification instance.
      */
-    public function __construct($leave, $message)
+    public function __construct($request, $message, $type = 'leave')
     {
-        $this->leave = $leave;
+        $this->request = $request;
         $this->message = $message;
+        $this->type = $type;
     }
 
     /**
@@ -30,48 +35,84 @@ class LeaveStatusNotification extends Notification
     {
         return ['database', 'broadcast']; 
     }
+
+    /**
+     * Store notification in the database.
+     */
     public function toDatabase($notifiable)
     {
-        return [
-            'leave_id' => $this->leave->id,
-            'message' => $this->message,
-            'user_id' => $this->leave->user_id,
-            'start_date' => $this->leave->start_date,
-            'end_date' => $this->leave->end_date,
-            'status' => $this->leave->status,
-        ];
+        if ($this->type === 'leave') {
+            return [
+                'type' => 'leave',
+                'leave_id' => $this->request->id,
+                'message' => $this->message,
+                'user_id' => $this->request->user_id,
+                'start_date' => $this->request->start_date,
+                'end_date' => $this->request->end_date,
+                'status' => $this->request->status,
+            ];
+        } else {
+            return [
+                'type' => 'overtime',
+                'overtime_id' => $this->request->id,
+                'message' => $this->message,
+                'user_id' => $this->request->user_id,
+                'date_filed' => $this->request->date_filed,
+                'working_hours_applied' => $this->request->working_hours_applied,
+                'inclusive_dates' => $this->request->inclusive_dates,
+                'status' => $this->request->status,
+            ];
+        }
     }
+
+    /**
+     * Broadcast notification event.
+     */
     public function toBroadcast($notifiable)
     {
-        return new BroadcastMessage([
-            'leave_id' => $this->leave->id,
-            'message' => $this->message,
-            'user_id' => $this->leave->user_id,
-            'start_date' => $this->leave->start_date,
-            'end_date' => $this->leave->end_date,
-            'status' => $this->leave->status,
-        ]);
+        if ($this->type === 'leave') {
+            return new BroadcastMessage([
+                'type' => 'leave',
+                'leave_id' => $this->request->id,
+                'message' => $this->message,
+                'user_id' => $this->request->user_id,
+                'start_date' => $this->request->start_date,
+                'end_date' => $this->request->end_date,
+                'status' => $this->request->status,
+            ]);
+        } else {
+            return new BroadcastMessage([
+                'type' => 'overtime',
+                'overtime_id' => $this->request->id,
+                'message' => $this->message,
+                'user_id' => $this->request->user_id,
+                'date_filed' => $this->request->date_filed,
+                'working_hours_applied' => $this->request->working_hours_applied,
+                'inclusive_dates' => $this->request->inclusive_dates,
+                'status' => $this->request->status,
+            ]);
+        }
     }
+
     /**
      * Get the mail representation of the notification.
      */
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage)
-                    ->line('The introduction to the notification.')
-                    ->action('Notification Action', url('/'))
+                    ->line("Notification regarding your {$this->type} request.")
+                    ->action('View Details', url('/'))
                     ->line('Thank you for using our application!');
     }
 
     /**
      * Get the array representation of the notification.
-     *
-     * @return array<string, mixed>
      */
     public function toArray(object $notifiable): array
     {
         return [
-            'leave_id' => $this->leave->id,
+            'type' => $this->type,
+            'request_id' => $this->request->id,
             'message' => $this->message,
         ];
     }

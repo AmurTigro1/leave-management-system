@@ -2,7 +2,6 @@
     x-init="window.addEventListener('resize', () => sidebarOpen = window.innerWidth > 1024)" 
     class="h-screen">
 
-    <!-- Burger Button (Only Appears When Sidebar is Closed) -->
     <button @click="sidebarOpen = true" 
         x-show="!sidebarOpen"
         class="lg:hidden fixed top-4 left-4 z-40 p-2 rounded-md text-gray-800 bg-white shadow-md">
@@ -11,12 +10,10 @@
         </svg>
     </button>
 
-    <!-- Sidebar -->
     <div x-cloak :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'"
         class="fixed inset-y-0 left-0 z-30 w-64 text-white shadow-lg transition-transform duration-300 ease-in-out 
         lg:translate-x-0 lg:static lg:inset-0 ">
         <aside class="w-64 bg-gray-50 h-screen shadow-md fixed">
-            <!-- Header Section -->
             <div class="flex items-center justify-between px-4 py-4">
                 <div class="flex items-center space-x-4">
                     <div class="w-12 h-12 rounded-full overflow-hidden bg-gray-700">
@@ -28,7 +25,6 @@
                     </div>
                 </div>
 
-                <!-- Close Button (Only in Mobile) -->
                 <button @click="sidebarOpen = false" class="lg:hidden text-gray-300 hover:text-white">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
@@ -55,10 +51,8 @@
                 </a>
 
                 <div class="relative">
-                    <!-- Hidden Checkbox for Toggle -->
                     <input type="checkbox" id="dropdown-toggle1" class="peer hidden">
                     
-                    <!-- Make a Request Dropdown Button -->
                     <label for="dropdown-toggle1" class="flex items-center p-2 space-x-2 rounded-md w-full text-gray-500 hover:bg-gray-200 focus:bg-white cursor-pointer">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                             <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" />
@@ -82,10 +76,8 @@
                 </div>
                 
                 <div class="relative">
-                    <!-- Hidden Checkbox for Toggle -->
                     <input type="checkbox" id="dropdown-toggle2" class="peer hidden">
                     
-                    <!-- List of Requests Dropdown Button -->
                     <label for="dropdown-toggle2" class="flex items-center p-2 space-x-2 rounded-md w-full text-gray-500 hover:bg-gray-200 focus:bg-white cursor-pointer">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 6.75h12M8.25 12h12m-12 5.25h12M3.75 6.75h.007v.008H3.75V6.75Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0ZM3.75 12h.007v.008H3.75V12Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm-.375 5.25h.007v.008H3.75v-.008Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" />
@@ -96,7 +88,6 @@
                         </svg>
                     </label>
                 
-                    <!-- Dropdown Menu -->
                     <div class="absolute left-0 top-full hidden peer-checked:flex flex-col w-48 mt-1 bg-white border border-gray-300 rounded-md shadow-lg z-10">
                         <a href="{{ route('employee.leave_request') }}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">
                             Leave List
@@ -119,7 +110,7 @@
     </div>
 
     <!-- Main Content -->
-    <div :class="sidebarOpen ? 'ml-64' : 'ml-0'" class="flex-1 transition-all duration-300 ease-in-out">
+    {{-- <div :class="sidebarOpen ? 'ml-64' : 'ml-0'" class="flex-1 transition-all duration-300 ease-in-out">
         <button 
             @click="isSidebarOpen = true" 
             class="absolute left-4 inline-flex items-center justify-center rounded-md p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-500 m-5"
@@ -129,7 +120,7 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
             </svg>
         </button>
-    </div>
+    </div> --}}
 </div>
 
 <style>
@@ -141,21 +132,18 @@
         const dropdownToggle1 = document.getElementById('dropdown-toggle1');
         const dropdownToggle2 = document.getElementById('dropdown-toggle2');
 
-        // Close dropdown 2 when dropdown 1 is opened
         dropdownToggle1.addEventListener('change', function () {
             if (this.checked) {
                 dropdownToggle2.checked = false;
             }
         });
 
-        // Close dropdown 1 when dropdown 2 is opened
         dropdownToggle2.addEventListener('change', function () {
             if (this.checked) {
                 dropdownToggle1.checked = false;
             }
         });
 
-        // Close dropdowns when clicking outside
         document.addEventListener('click', function (event) {
             const isClickInsideDropdown1 = event.target.closest('.relative') === document.querySelector('#dropdown-toggle1').closest('.relative');
             const isClickInsideDropdown2 = event.target.closest('.relative') === document.querySelector('#dropdown-toggle2').closest('.relative');

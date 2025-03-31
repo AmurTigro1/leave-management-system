@@ -76,7 +76,7 @@ class HrController extends Controller
     }
     
     
-        public function onLeave(Request $request) {
+    public function onLeave(Request $request) {
         $month = $request->query('month', now()->month);
         $today = now()->toDateString(); 
     
@@ -467,54 +467,50 @@ class HrController extends Controller
     public function ctoreview(Request $request, OvertimeRequest $cto)
     {
         $request->validate([
-            'hr_status' => 'required|in:Approved,Rejected', // Ensures correct input
+            'hr_status' => 'required|in:Approved,Rejected', 
             'disapproval_reason' => 'nullable|string',
         ]);
 
-        // Convert status to lowercase for consistency
-        $hr_status = strtolower($request->hr_status); // "Approved" -> "approved", "Rejected" -> "rejected"
+        $hr_status = strtolower($request->hr_status); 
 
         if ($hr_status === 'approved') {
             $supervisor_status = 'approved';
-            $status = 'approved'; // Set CTO status to approved
+            $status = 'approved'; 
 
-            $user = $cto->user; // Assuming OvertimeRequest belongsTo User
-            $remainingHours = $cto->working_hours_applied; // Hours required to deduct
+            $user = $cto->user; 
+            $remainingHours = $cto->working_hours_applied; 
 
             if ($user && $user->overtime_balance >= $remainingHours) {
-                // Fetch oldest unused COC logs
+
                 $cocLogs = CocLog::where('user_id', $user->id)
                     ->where('is_expired', false)
-                    ->orderBy('created_at', 'asc') // Get oldest logs first
+                    ->orderBy('created_at', 'asc') 
                     ->get();
 
                 foreach ($cocLogs as $cocLog) {
                     if ($remainingHours <= 0) {
-                        break; // Stop if all required hours are deducted
+                        break; 
                     }
 
                     if ($cocLog->coc_earned <= $remainingHours) {
-                        // Fully use this log and disable it
                         $remainingHours -= $cocLog->coc_earned;
                         $cocLog->update(['is_expired' => true]);
                     } else {
-                        // Partially use this log, deduct remaining balance
+                        
                         $cocLog->decrement('coc_earned', $remainingHours);
                         $remainingHours = 0;
                     }
                 }
 
-                // Deduct from user's balance
                 $user->decrement('overtime_balance', $cto->working_hours_applied);
             } else {
                 return back()->withErrors(['overtime_balance' => 'User does not have enough overtime balance.']);
             }
         } else {
-            $supervisor_status = $cto->supervisor_status; // Keep the existing supervisor status
-            $status = 'rejected'; // Set CTO status to rejected
+            $supervisor_status = $cto->supervisor_status; 
+            $status = 'rejected'; 
         }
 
-        // Update the CTO record
         $cto->update([
             'hr_status' => $hr_status,
             'supervisor_status' => $supervisor_status,
@@ -523,6 +519,7 @@ class HrController extends Controller
             'hr_officer_id' => Auth::id(),
         ]);
 
+        $cto->user->notify(new LeaveStatusNotification($cto, "Your overtime request has been approved by the HR."));
         notify()->success('CTO application reviewed by HR.');
         return Redirect::route('hr.requests');
     }

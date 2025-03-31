@@ -4,11 +4,11 @@
 <div class="fixed top-4 right-4 z-[9999]">
     <x-notify::notify />
 </div>
-<div class="w-full bg-white rounded animate-fade-in flex justify-between items-start p-6">
+<div class="w-full bg-white rounded animate-fade-in p-4 lg:p-6 flex flex-col lg:flex-row gap-6">
 
     <!-- Leave Applications Section -->
-    <div class="shadow-lg rounded mr-4 py-2 px-4 w-full">
-        <h2 class="text-2xl font-bold text-gray-700 mb-6 flex items-center gap-2">
+    <div class="shadow-lg rounded-lg py-4 px-4 w-full">
+        <h2 class="text-xl lg:text-2xl font-bold text-gray-700 mb-4 lg:mb-6 flex items-center gap-2">
             <i class="lucide lucide-file-text"></i> Review Leave Applications
         </h2>
 
@@ -16,54 +16,53 @@
             <p class="text-gray-600">No leave applications available.</p>
         @else
             @php $leaveFound = false; @endphp
-            <div>
+            <div class="space-y-4">
                 @foreach ($leaveApplications as $leave)
                     @if (($leave->status == 'pending' && $leave->admin_status == 'approved') || 
                         ($leave->status != 'approved' || $leave->admin_status != 'approved') && 
                         $leave->hr_status != 'rejected')
                         @php $leaveFound = true; @endphp
-                        <div class="bg-white shadow-lg rounded-lg p-6 transition-transform transform hover:scale-105 hover:shadow-xl mb-2">
-                            <div class="flex justify-start items-center gap-4">
-                                <div class="flex items-center">
-                                     <p class="mb-1 mr-2 font-bold text-gray-700">Status</p>
-                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5">
-                                         <path stroke-linecap="round" stroke-linejoin="round" d="m5.25 4.5 7.5 7.5-7.5 7.5m6-15 7.5 7.5-7.5 7.5" />
-                                     </svg>
+                        <div class="bg-white shadow-md rounded-lg p-4 lg:p-6 transition-all hover:shadow-lg">
+                            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                                <!-- Status Section -->
+                                <div class="flex items-center gap-2">
+                                    <p class="text-sm lg:text-base font-bold text-gray-700">Status</p>
+                                    <span class="bg-yellow-500 text-white py-1 px-3 rounded-full text-sm">{{ $leave->status }}</span>
                                 </div>
-                                   
-                                 <span class="bg-yellow-500 text-white py-1 px-3 rounded-full ">{{ $leave->status}}</span>
-                             </div>
-                            <div class="flex justify-between items-end">
-                                <div class="flex justify-start items-center">
-                                    <div class="flex justify-start items-center mr-3">
-                                        @if ($leave->user->profile_image)
-                                            <img src="{{ asset('storage/profile_images/' . $leave->user->profile_image) }}" class="w-[100px] h-[100px] rounded-full object-cover">
-                                        @else
-                                            <img src="{{ asset('img/default-avatar.png') }}" alt="" class="w-[50px] h-[100px] rounded-full object-cover">
-                                        @endif
-                                    </div>
-                                    <div>
-                                        <h3 class="text-sm font-semibold text-start mb-2 mt-2 text-gray-900 uppercase">
-                                            {{ $leave->user->first_name }} {{ strtoupper(substr($leave->user->middle_name, 0, 1)) }}. {{ $leave->user->last_name }}
-                                        </h3>
+                                
+                                <!-- View Link - Always visible but positioned differently -->
+                                <a href="{{ route('hr.leave_details', ['id' => $leave->id]) }}" class="text-blue-600 text-sm lg:text-base sm:self-end">View Request</a>
+                            </div>
+                            
+                            <!-- User Info Section -->
+                            <div class="mt-4 flex flex-col sm:flex-row gap-4">
+                                <!-- Profile Image -->
+                                <div class="flex-shrink-0">
+                                    @if ($leave->user->profile_image)
+                                        <img src="{{ asset('storage/profile_images/' . $leave->user->profile_image) }}" class="w-16 h-16 lg:w-20 lg:h-20 rounded-full object-cover">
+                                    @else
+                                        <img src="{{ asset('img/default-avatar.png') }}" alt="" class="w-16 h-16 lg:w-20 lg:h-20 rounded-full object-cover">
+                                    @endif
+                                </div>
+                                
+                                <!-- User Details -->
+                                <div class="flex-grow">
+                                    <h3 class="text-sm lg:text-base font-semibold text-gray-900 uppercase">
+                                        {{ $leave->user->first_name }} {{ strtoupper(substr($leave->user->middle_name, 0, 1)) }}. {{ $leave->user->last_name }}
+                                    </h3>
+                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-2">
                                         <p class="text-gray-600 text-sm">Leave Type: {{ $leave->leave_type }}</p>
-                                        {{-- <p class="text-gray-600 text-sm">Duration: 
-                                            <span class="font-semibold">
-                                                {{ \Carbon\Carbon::parse($leave->start_date)->diffInDays(\Carbon\Carbon::parse($leave->end_date)) + 1 }} days
-                                            </span>
-                                        </p> --}}
-                                <p class="text-gray-600 text-sm">Duration: <span class="font-semibold"> {{$leave->days_applied}} days </span></p>
-
+                                        <p class="text-gray-600 text-sm">Duration: <span class="font-semibold">{{$leave->days_applied}} days</span></p>
                                     </div>
-                                </div>
-                                <div>
-                                    <a href="{{ route('hr.leave_details', ['id' => $leave->id]) }}" class="text-blue-600">View Request</a>
                                 </div>
                             </div>
+                            
                             @if($leave->leave_type == 'Mandatory Leave' && $leave->supervisor_status == 'rejected')
-                            <h1 class="font-bold">Supervisor Status: <span class="text-red-500 capitalize">{{ $leave->supervisor_status}}</span></h1>
-                            <p class="text-gray-500">Reason: <span class="text-red-500 capitalize">{{ $leave->disapproval_reason}}</span></p>
-                        @endif
+                                <div class="mt-3 p-3 bg-red-50 rounded-lg">
+                                    <p class="font-bold text-sm lg:text-base">Supervisor Status: <span class="text-red-500 capitalize">{{ $leave->supervisor_status}}</span></p>
+                                    <p class="text-gray-600 text-sm">Reason: <span class="text-red-500">{{ $leave->disapproval_reason}}</span></p>
+                                </div>
+                            @endif
                         </div>
                     @endif
                 @endforeach
@@ -75,8 +74,8 @@
     </div>
 
     <!-- CTO Applications Section -->
-    <div class="shadow-lg rounded mr-4 py-2 px-4 w-full">
-        <h2 class="text-2xl font-bold text-gray-700 mb-6 flex items-center gap-2">
+    <div class="shadow-lg rounded-lg py-4 px-4 w-full">
+        <h2 class="text-xl lg:text-2xl font-bold text-gray-700 mb-4 lg:mb-6 flex items-center gap-2">
             <i class="lucide lucide-file-text"></i> Review CTO Applications
         </h2>
 
@@ -84,47 +83,44 @@
             <p class="text-gray-600">No CTO applications available.</p>
         @else
             @php $ctoFound = false; @endphp
-            <div>
+            <div class="space-y-4">
                 @foreach ($ctoApplications as $cto)
                     @if (($cto->status == 'pending' && $cto->admin_status == 'Ready for Review') || 
                         ($cto->status != 'approved' || $cto->admin_status != 'Ready for Review') && 
                         $cto->hr_status != 'rejected')
                         @php $ctoFound = true; @endphp
-                        <div class="bg-white shadow-lg rounded-lg p-6 transition-transform transform hover:scale-105 hover:shadow-xl mb-2">
-                            <div class="flex justify-start items-center gap-4">
-                                <div class="flex items-center">
-                                     <p class="mb-1 mr-2 font-bold text-gray-700">Status</p>
-                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5">
-                                         <path stroke-linecap="round" stroke-linejoin="round" d="m5.25 4.5 7.5 7.5-7.5 7.5m6-15 7.5 7.5-7.5 7.5" />
-                                     </svg>
+                        <div class="bg-white shadow-md rounded-lg p-4 lg:p-6 transition-all hover:shadow-lg">
+                            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                                <!-- Status Section -->
+                                <div class="flex items-center gap-2">
+                                    <p class="text-sm lg:text-base font-bold text-gray-700">Status</p>
+                                    <span class="bg-yellow-500 text-white py-1 px-3 rounded-full text-sm">{{ $cto->status }}</span>
                                 </div>
-                                   
-                                 <span class="bg-yellow-500 text-white py-1 px-3 rounded-full ">{{ $cto->status}}</span>
-                             </div>
-                            <div class="flex justify-between items-end">
-                                <div class="flex justify-start items-center">
-                                    <div class="flex justify-start items-center mr-3">
-                                        @if ($cto->user->profile_image)
-                                            <img src="{{ asset('storage/profile_images/' . $cto->user->profile_image) }}" class="w-[100px] h-[100px] rounded-full object-cover">
-                                        @else
-                                            <img src="{{ asset('img/default-avatar.png') }}" alt="" class="w-[50px] h-[100px] rounded-full object-cover">
-                                        @endif
-                                    </div>
-                                    <div>
-                                        <h3 class="text-sm font-semibold text-start mb-2 mt-2 text-gray-900 uppercase">
-                                            {{ $cto->user->first_name }} {{ strtoupper(substr($cto->user->middle_name, 0, 1)) }}. {{ $cto->user->last_name }}
-                                        </h3>
-                                        <p class="text-gray-600 text-sm">Working Hours Applied: {{ $cto->working_hours_applied }} hours</p>
-                                        {{-- <p class="text-gray-600 text-sm">Duration: 
-                                            <span class="font-semibold">
-                                                {{ \Carbon\Carbon::parse($leave->start_date)->diffInDays(\Carbon\Carbon::parse($leave->end_date)) + 1 }} days
-                                            </span>
-                                        </p> --}}
-                                <p class="text-gray-600 text-sm">Duration: <span class="font-semibold">  {{ round(\Carbon\Carbon::parse($cto->inclusive_date_start)->diffInDays(\Carbon\Carbon::parse($cto->inclusive_date_end)) + 1) }} days</span></p>
-                                    </div>
+                                
+                                <!-- View Link -->
+                                <a href="{{ route('hr.cto_details', ['id' => $cto->id]) }}" class="text-blue-600 text-sm lg:text-base sm:self-end">View Request</a>
+                            </div>
+                            
+                            <!-- User Info Section -->
+                            <div class="mt-4 flex flex-col sm:flex-row gap-4">
+                                <!-- Profile Image -->
+                                <div class="flex-shrink-0">
+                                    @if ($cto->user->profile_image)
+                                        <img src="{{ asset('storage/profile_images/' . $cto->user->profile_image) }}" class="w-16 h-16 lg:w-20 lg:h-20 rounded-full object-cover">
+                                    @else
+                                        <img src="{{ asset('img/default-avatar.png') }}" alt="" class="w-16 h-16 lg:w-20 lg:h-20 rounded-full object-cover">
+                                    @endif
                                 </div>
-                                <div>
-                                    <a href="{{ route('hr.cto_details', ['id' => $cto->id]) }}" class="text-blue-600">View Request</a>
+                                
+                                <!-- User Details -->
+                                <div class="flex-grow">
+                                    <h3 class="text-sm lg:text-base font-semibold text-gray-900 uppercase">
+                                        {{ $cto->user->first_name }} {{ strtoupper(substr($cto->user->middle_name, 0, 1)) }}. {{ $cto->user->last_name }}
+                                    </h3>
+                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-2">
+                                        <p class="text-gray-600 text-sm">Hours Applied: {{ $cto->working_hours_applied }} hours</p>
+                                        <p class="text-gray-600 text-sm">Duration: <span class="font-semibold">{{ round(\Carbon\Carbon::parse($cto->inclusive_date_start)->diffInDays(\Carbon\Carbon::parse($cto->inclusive_date_end))) + 1 }} days</span></p>
+                                    </div>
                                 </div>
                             </div>
                         </div>

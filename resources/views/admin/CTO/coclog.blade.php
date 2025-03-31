@@ -1,4 +1,4 @@
-@extends('layouts.hr.sidebar-header')
+@extends('layouts.admin.sidebar-header')
 
 @section('content')
 
