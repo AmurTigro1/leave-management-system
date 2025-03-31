@@ -15,7 +15,7 @@ class CocLogController extends Controller
             ->join('users', 'coc_logs.user_id', '=', 'users.id') 
             ->orderBy('coc_logs.expires_at', 'asc') 
             ->with(['user', 'creator'])
-            ->select('coc_logs.*') // Select only COC log columns
+            ->select('coc_logs.*')
             ->paginate(10);
 
         $users = User::get();
@@ -29,7 +29,7 @@ class CocLogController extends Controller
             ->join('users', 'coc_logs.user_id', '=', 'users.id') 
             ->orderBy('coc_logs.expires_at', 'asc') 
             ->with(['user', 'creator'])
-            ->select('coc_logs.*') // Select only COC log columns
+            ->select('coc_logs.*')
             ->paginate(10);
     
         $users = User::get();
@@ -68,9 +68,12 @@ class CocLogController extends Controller
             // Update the user's overtime balance
             $user = User::find($validated['user_id']);
             $user->increment('overtime_balance', $validated['coc_earned']);
+
+            // Send notification to the employee
+            $user->notify(new CocLogCreatedNotification($cocLog));
         });
 
-        notify()->success('COC Log created successfully and overtime balance updated.');
+        notify()->success('COC Log created successfully and notification sent.');
         return redirect()->back();
     }
 

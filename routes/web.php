@@ -83,6 +83,7 @@ Route::middleware('auth')->group(function () {
         Route::post('/hr/overtime-request/store', [HrController::class, 'storeCTO'])->name('hr_overtime_request.store');
 
         Route::post('/hr/users/store', [UserController::class, 'store'])->name('hr.users.store');
+        Route::get('/hr/coc-logs/', [CocLogController::class, 'indexHR'])->name('coc_logs.hr');
     });
 
     //Admin Assistant Route
@@ -106,6 +107,7 @@ Route::middleware('auth')->group(function () {
         Route::post('/admin/request-leave', [AdminController::class, 'storeLeave'])->name('admin-request.leave');
         Route::get('/admin/cto-request', [AdminController::class, 'makeCTORequest'])->name('admin.make_cto_request');
         Route::post('/admin/overtime-request/store', [AdminController::class, 'storeCTO'])->name('admin_overtime_request.store');
+        Route::get('/admin/coc-logs/', [CocLogController::class, 'indexAdmin'])->name('coc_logs.admin');
     });
 
 
@@ -162,17 +164,12 @@ Route::middleware('auth')->group(function () {
     Route::get('/api/leaves', [EmployeeController::class, 'getLeaves']); 
     Route::get('/api/overtimes', [EmployeeController::class, 'getOvertimes']);
 
-    Route::prefix('coc-logs')->group(function () {
-        Route::get('/hr/', [CocLogController::class, 'indexHR'])->name('coc_logs.hr');
-        Route::get('/admin/', [CocLogController::class, 'indexAdmin'])->name('coc_logs.admin');
+    Route::get('/coc-logs/{id}', [CocLogController::class, 'showHRCocLogs'])->name('coc-logs.show');
+    Route::get('/coc-logs/{id}/pdf', [CocLogController::class, 'generateCocLogsPdf'])->name('coc-logs.pdf');
 
-        Route::get('/{id}', [CocLogController::class, 'showHRCocLogs'])->name('coc-logs.show');
-
-        Route::get('/{id}/pdf', [CocLogController::class, 'generateCocLogsPdf'])->name('coc-logs.pdf');
-        Route::post('/store', [CocLogController::class, 'store'])->name('coc-logs.store');
-        Route::get('/{cocLog}/edit', [CocLogController::class, 'edit'])->name('coc-logs.edit');
-        Route::put('/{cocLog}', [CocLogController::class, 'update'])->name('coc-logs.update');
-        Route::delete('/{cocLog}', [CocLogController::class, 'destroy'])->name('coc-logs.destroy');
-    });
+    Route::post('/coc-logs/store', [CocLogController::class, 'store'])->name('coc-logs.store');
+    Route::get('/coc-logs/{cocLog}/edit', [CocLogController::class, 'edit'])->name('coc-logs.edit');
+    Route::put('/coc-logs/{cocLog}', [CocLogController::class, 'update'])->name('coc-logs.update');
+    Route::delete('/coc-logs/{cocLog}', [CocLogController::class, 'destroy'])->name('coc-logs.destroy');
 });
 require __DIR__.'/auth.php';
