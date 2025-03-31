@@ -158,37 +158,24 @@ class EmployeeController extends Controller
         'start_date' => [
             'required',
             'date',
-            function ($attribute, $value, $fail) use (
-                $request, 
-                $advanceFilingRules, 
-                $yearlyHolidayService
-            ) {
+            function ($attribute, $value, $fail) use ($request, $advanceFilingRules) {
                 $leaveType = $request->leave_type;
                 $startDate = Carbon::parse($value);
                 $today = Carbon::now();
                 $advanceDaysRequired = $advanceFilingRules[$leaveType] ?? 0;
-
+    
+                // Only validate based on the required advance filing days
                 if ($advanceDaysRequired > 0) {
-                    $holidays = $yearlyHolidayService->getHolidaysBetweenDates(
-                        $today, 
-                        $today->copy()->addDays($advanceDaysRequired * 3) 
-                    );
-                    $minStartDate = $today->copy()->addBusinessDays($advanceDaysRequired, $holidays);
-                
+                    $minStartDate = $today->copy()->addDays($advanceDaysRequired);
+                    
                     if ($startDate->lt($minStartDate)) {
-                        $fail("You must request {$leaveType} at least {$advanceDaysRequired} business days in advance (excluding weekends/holidays).");
+                        $fail("You must request {$leaveType} at least {$advanceDaysRequired} days in advance.");
                     }
-                }
-
-                if (!in_array($leaveType, ['Sick Leave', 'Maternity Leave', 'Paternity Leave']) && 
-                    ($startDate->isWeekend() || $yearlyHolidayService->isHoliday($startDate))) {
-                 $fail("You must request {$leaveType} at least {$advanceDaysRequired} business days in advance (excluding weekends/holidays).");
                 }
             }
         ],
         'end_date' => 'required|date|after_or_equal:start_date',
         'reason' => 'nullable|string',
-        'signature' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',
         'leave_files.*' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048', // Multiple files
         'days_applied' => 'required|integer|min:1',
         'commutation' => 'required|boolean',
@@ -704,7 +691,7 @@ private function deductLeaveBalance($user, $leave)
 
         if ($request->hasFile('profile_image')) {
             if ($user->profile_image) {
-                Storage::delete('public/profile_images/' . $user->profile_image);
+                Storage::delete('public/profile_pictures/' . $user->profile_image);
             }
 
             $imagePath = $request->file('profile_image')->store('profile_images', 'public');

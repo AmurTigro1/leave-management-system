@@ -5,8 +5,9 @@
 <a href="{{ route('admin.requests') }}" class="inline-flex items-center text-blue-500 hover:underline transition duration-300">
     &larr; Back to Requests
 </a>
-<div class="flex justify-between items-start gap-4 px-4">
-    <div class="bg-white shadow-xl rounded-lg p-6 space-y-6 w-full h-auto py-[25px]">
+<div class="flex justify-between items-start gap-4 h-full">
+    <!-- Right side -->
+    <div class="bg-white shadow-xl rounded-lg p-6 space-y-6 w-[60%] min-h-[865px] h-full">
         <h2 class="text-2xl font-bold">Leave Balances</h2>
         <div class="flex justify-between items-center">
             <div class="bg-blue-600 text-white rounded-lg p-2 text-[10px] w-[124px] text-center mr-2">Vacation Leave</div>
@@ -77,6 +78,32 @@
                 <div class="p-2 bg-gray-300 text-black rounded-lg mb-2 w-full text-center">{{ $leave->leave_type}}</div>
             </div>
         </div>
+        @if(in_array($leave->leave_type, ['Sick Leave', 'Maternity Leave', 'Paternity Leave']))
+            <div>
+                <p>Attached Documents:</p>
+                @php
+                    $leaveFiles = json_decode($leave->leave_files, true); // Decode JSON to array
+                @endphp
+            
+                @if(!empty($leaveFiles))
+                    <ul class="flex gap-2 flex-wrap">
+                        @foreach($leaveFiles as $file)
+                            <li>
+                                <button 
+                                    class="w-[50px] h-auto border rounded-lg overflow-hidden hover:opacity-80"
+                                    onclick="openModal('{{ asset('storage/' . $file) }}')">
+                                    <img src="{{ asset('storage/' . $file) }}" class="w-full h-full object-cover" alt="Preview">
+                                </button>
+                            </li>
+                        @endforeach
+                    </ul>
+                @else
+                    <p>No Image Available</p>
+                @endif
+            </div>
+        @else
+            {{ Null }}
+        @endif
         <div>
             <p>Details:</p>
             @php
@@ -84,91 +111,63 @@
                 $decodedDetails = is_string($details) ? json_decode($details, true) : $details;
             @endphp
         
-            <div class="p-2 bg-gray-300 text-black rounded-lg mb-2 w-full">
-                {{ !empty($decodedDetails) ? (is_array($decodedDetails) ? implode(', ', $decodedDetails) : $decodedDetails) : 'None' }}
-            </div>
+        <textarea class="p-2 border text-black rounded-lg mb-2 w-full h-[100px] resize-none overflow-auto" 
+        readonly>{{ !empty($decodedDetails) ? (is_array($decodedDetails) ? implode(', ', $decodedDetails) : $decodedDetails) : 'None' }}</textarea>
         </div>        
     </div>
-    <div class="bg-white shadow-xl rounded-lg p-6 space-y-6 w-full h-auto">
-        <p class="uppercase text-center text-[10px] font-bold mt-4">Total leave balances left here:</p>
-        <div class="text-blue-600 rounded-lg text-center font-bold text-4xl">
-            {{ 
-                $leave->user->vacation_leave_balance + 
-                $leave->user->sick_leave_balance + 
-                $leave->user->maternity_leave + 
-                $leave->user->paternity_leave + 
-                $leave->user->solo_parent_leave + 
-                $leave->user->study_leave + 
-                $leave->user->vawc_leave + 
-                $leave->user->rehabilitation_leave + 
-                $leave->user->special_leave_benefit + 
-                $leave->user->special_emergency_leave 
-            }} days
-        </div>
-        <div class="flex justify-center items-start gap-2">
-            <div class="p-2 bg-blue-600 text-white rounded-lg mb-2 w-[25%] text-center">
-                Monthly
-            </div>
-            <div class="p-1 border-4 border-blue-300 text-blue-600 font-bold rounded-lg mb-2 w-[25%] text-center">
-                Annually
+        <!-- Modal -->
+        <div id="imageModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex justify-center items-center z-[9999]" onclick="closeModal(event)">
+            <div class="bg-white p-4 rounded-lg relative" onclick="event.stopPropagation()">
+                <img id="modalImage" src="" class="w-[600px] h-auto object-cover rounded-lg">
             </div>
         </div>
-       <div class="flex justify-between items-start gap-4 px-4">
-                <!-- Canvas for Pie Chart -->
-            <canvas id="leaveBalanceChart"></canvas>
-        </div>
-        <div class="border-2 border-gray"></div>
-        <h1 class="text-blue-600 font-bold text-center">Request Verification complete? Proceed to HR!</h1>
-        <div class="py-2 px-4">
-            <p class="text-sm text-gray-500">The request has been confirmed and will be transfered to the HR for approval. Make sure to look carefully before proceeding and finalize the verification.</p>
-        </div>
+
+        <!-- JavaScript for Modal -->
+        <script>
+            function openModal(imageSrc) {
+                document.getElementById('modalImage').src = imageSrc;
+                document.getElementById('imageModal').classList.remove('hidden');
+            }
+
+            function closeModal(event) {
+                if (event.target.id === 'imageModal') {
+                    document.getElementById('imageModal').classList.add('hidden');
+                }
+            }
+        </script>
+
+    <!-- Left side -->
+    <div class="bg-white shadow-xl rounded-lg p-6 w-[500px] h-full min-h-[865px] flex flex-col">
        <div class="flex justify-center items-center">
-        <form action="{{ route('leave.admin-review', $leave->id) }}" method="POST" class="space-y-2">
-            @csrf 
-            <div class="flex gap-2">
-                <!-- Approve Button -->
-                <button type="submit" name="admin_status" value="Approved" 
-                    class="bg-blue-600 text-white py-2 px-4 rounded-lg mr-3">
-                    Proceed to HR
-                </button>
-        
-                <!-- Reject Button -->
-                {{-- <button type="button" id="rejectBtn" 
-                    class="bg-orange-600 text-white py-2 px-4 rounded-lg">
-                    Reject Request
-                </button> --}}
-            </div>
-        
-            <!-- Hidden Disapproval Reason Field -->
-            {{-- <div id="disapprovalSection" class="mt-3 hidden h-auto">
-                <label class="block text-gray-700 font-medium text-xs">Disapproval Reason:</label>
-                <textarea name="disapproval_reason" id="disapproval_reason" 
-                    class="w-full border rounded p-2 text-xs focus:ring focus:ring-blue-200"></textarea>
-                
-                <div class="flex gap-2 mt-2">
-                    <button type="submit" name="admin_status" value="Rejected" id="finalRejectBtn"
-                        class="bg-red-600 text-white py-2 px-4 rounded-lg">
-                        Confirm Rejection
-                    </button>
-                    
-                    <button type="button" id="cancelDisapprovalBtn" class="bg-gray-500 text-white py-2 px-4 rounded-lg">
-                        Cancel
+            <img src="{{ $leave->user->profile_image ? asset('storage/profile_images/' . $leave->user->profile_image) : asset('img/default-avatar.png') }}" 
+            class="w-[400px] h-[400px] object-cover" alt="{{ $leave->user->name }}">
+       </div>
+
+        <p class="font-semibold mt-4">Employee: {{ $leave->user->first_name}} {{ strtoupper(substr($leave->user->middle_name, 0, 1)) }}. {{ $leave->user->last_name}}</p>
+        <p class="font-semibold">Email: <span class="text-blue-600">{{ $leave->user->email }}</span></p>
+        <p class="mb-4 font-semibold">Position: {{ $leave->user->position}}</p>
+
+        <div class="border-2 border-gray mb-[15px]"></div>
+
+        <h1 class="text-blue-600 font-bold text-center text-xl">Request Verification complete?</h1>
+        <h1 class="text-blue-600 font-bold text-center text-xl mb-[15px]">Proceed to HR!</h1>
+
+        <div class="py-2 px-4 flex-grow">
+            <p class="text-sm text-gray-500">The request has been successfully reviewed and is now ready for submission to HR for final approval. Please take a moment to carefully verify all details to ensure accuracy and completeness before proceeding. Once submitted, any necessary changes may require additional processing time.</p>
+        </div>
+
+        <div class="flex justify-center items-center mt-auto">
+            <form action="{{ route('leave.admin-review', $leave->id) }}" method="POST" class="space-y-2 w-full">
+                @csrf 
+                <div class="flex gap-2">
+                    <!-- Approve Button -->
+                    <button type="submit" name="admin_status" value="Approved" 
+                        class="bg-blue-600 text-white py-2 px-4 rounded-lg w-full">
+                        Proceed to HR
                     </button>
                 </div>
-            </div>             --}}
-        </form>
-        
-        {{-- <script>
-            document.getElementById('rejectBtn').addEventListener('click', function() {
-                document.getElementById('disapprovalSection').classList.remove('hidden');
-            });
-        
-            document.getElementById('cancelDisapprovalBtn').addEventListener('click', function() {
-                document.getElementById('disapprovalSection').classList.add('hidden');
-                document.getElementById('disapproval_reason').value = ""; // Clear text area
-            });
-        </script> --}}
-       </div>
+            </form>
+        </div>
     </div>
 </div>
 @endsection
@@ -192,95 +191,7 @@
     50% { transform: scale(1.05); }
     100% { transform: scale(1); }
 }
-#leaveBalanceChart {
-    max-width: 200px;  /* Reduce size */
-    max-height: 200px;
-    display: block;
-    margin: 0 auto;  /* Center the chart */
-}
-
 </style> 
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-    // Get leave balances from PHP
-    let leaveBalances = {
-        vacation_leave: {{ $leave->user->vacation_leave_balance }},
-        sick_leave: {{ $leave->user->sick_leave_balance }},
-        maternity_leave: {{ $leave->user->maternity_leave }},
-        paternity_leave: {{ $leave->user->paternity_leave }},
-        solo_parent_leave: {{ $leave->user->solo_parent_leave }},
-        study_leave: {{ $leave->user->study_leave }},
-        vawc_leave: {{ $leave->user->vawc_leave }},
-        rehabilitation_leave: {{ $leave->user->rehabilitation_leave }},
-        special_leave_benefit: {{ $leave->user->special_leave_benefit }},
-        special_emergency_leave: {{ $leave->user->special_emergency_leave }}
-    };
-
-    let appliedDays = {{ $leave->days_applied }};
-    
-    // Calculate total balance and percentage
-    let totalBalance = Object.values(leaveBalances).reduce((a, b) => a + b, 0);
-    let remainingBalance = totalBalance - appliedDays;
-    let remainingPercentage = ((remainingBalance / totalBalance) * 100).toFixed(1); // Fixed to 1 decimal place
-
-    // Chart Data
-    let data = {
-        labels: ["Remaining Balance", "Applied Days"],
-        datasets: [{
-            data: [remainingBalance, appliedDays],
-            backgroundColor: ["#ff3b3b", "#bbbbbb"]
-        }]
-    };
-
-    // Custom plugin to display percentage in center
-    const centerText = {
-        id: "centerText",
-        beforeDraw(chart) {
-            let { width } = chart;
-            let { height } = chart;
-            let ctx = chart.ctx;
-            ctx.restore();
-
-            // Set font properties
-            let fontSize = (height / 100).toFixed(2);
-            ctx.font = `bold ${fontSize * 12}px Arial`;
-            ctx.textBaseline = "middle";
-            ctx.textAlign = "center";
-
-            // Display remaining leave percentage in center
-            let text = `${remainingPercentage}%`;
-            let x = width / 2;
-            let y = height / 2.6;
-
-            ctx.fillStyle = "#333"; // Text color
-            ctx.fillText(text, x, y);
-            ctx.save();
-        }
-    };
-
-    // Get canvas
-    let ctx = document.getElementById("leaveBalanceChart").getContext("2d");
-
-    // Create Doughnut Chart
-    new Chart(ctx, {
-        type: "doughnut",
-        data: data,
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            cutout: "60%", // Adjust to make space for text
-            plugins: {
-                legend: {
-                    position: "bottom"
-                }
-            }
-        },
-        plugins: [centerText] // Register custom plugin
-    });
-});
-
-</script>
 
     

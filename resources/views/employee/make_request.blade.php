@@ -63,7 +63,7 @@
                     </div>
                 </div>
                 <div>
-                    <label class="block text-sm font-medium">Leave Type</label>
+                    <label class="block text-sm font-medium text-gray-700">Leave Type</label>
                     <select name="leave_type" id="leave_type" class="mt-1 w-full p-2 border rounded" onchange="handleLeaveType()">
                         <option value="">Select Leave Type</option>
                         <option value="Vacation Leave">Vacation Leave (Sec. 51, Rule XVI, Omnibus Rules Implementing E.O. No. 292)  </option>
@@ -79,21 +79,75 @@
                         <option value="Special Leave Benefits for Women Leave">Special Leave Benefits for Women (R>A. No. 9710/CSC MC No. 25, s. 2010))</option>
                         <option value="Special Emergency Leave">Special Emergency (Calamity) Leave (CSC MC No. 2, s. 2012, as amended)</option>
                         <option value="Adoption Leave ">Adoption Leave (R.A. No. 8552)</option>
-                        <option value="Other Purposes">Other Purposes</option>
-                        <option value="Others">Others</option> 
+                        {{-- <option value="Other Purposes">Other Purposes</option>
+                        <option value="Others">Others</option>  --}}
                     </select>
                     @error('leave_type')
                     <p class="text-red-500 text-sm">{{ $message }}</p>
                     @enderror
                 </div>
 
-                <div class="mb-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Signature (Optional)</label>
+                    
+                    <!-- Preview container (hidden by default) -->
+                    <div id="signature-preview-container" class="hidden">
+                        <p class="text-sm text-gray-500 mb-1">Signature Preview:</p>
+                        <div class="border border-gray-300 rounded-lg p-2 flex justify-center">
+                            <img id="signature-preview" src="#" alt="Signature Preview" class="max-h-32 object-contain hidden"/>
+                            <p id="pdf-preview-message" class="text-sm text-gray-500 hidden">PDF file selected (preview not available)</p>
+                        </div>
+                    </div>
+                    
+                    <!-- File input with better styling -->
+                    <div class="flex items-center space-x-4">
+                        <label class="flex flex-col items-center px-4 py-3 bg-white rounded-lg border border-gray-300 cursor-pointer hover:bg-gray-50">
+                            <span class="text-sm font-medium text-gray-700">Choose File</span>
+                            <input type="file" name="signature" id="signature-upload" class="hidden" accept="image/*,.pdf">
+                        </label>
+                        <span id="file-name" class="text-sm text-gray-500">No file chosen</span>
+                    </div>
+                    <p class="text-xs text-gray-500">Supports JPG, PNG, or PDF (max 5MB)</p>
+                </div>
+                
+                <script>
+                document.getElementById('signature-upload').addEventListener('change', function(e) {
+                    const file = e.target.files[0];
+                    const previewContainer = document.getElementById('signature-preview-container');
+                    const imgPreview = document.getElementById('signature-preview');
+                    const pdfMessage = document.getElementById('pdf-preview-message');
+                    const fileNameDisplay = document.getElementById('file-name');
+                    
+                    fileNameDisplay.textContent = file ? file.name : 'No file chosen';
+                    
+                    if (!file) {
+                        previewContainer.classList.add('hidden');
+                        return;
+                    }
+                    
+                    previewContainer.classList.remove('hidden');
+                    
+                    if (file.type.startsWith('image/')) {
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            imgPreview.src = e.target.result;
+                            imgPreview.classList.remove('hidden');
+                            pdfMessage.classList.add('hidden');
+                        }
+                        reader.readAsDataURL(file);
+                    } else if (file.type === 'application/pdf') {
+                        imgPreview.classList.add('hidden');
+                        pdfMessage.classList.remove('hidden');
+                    }
+                });
+                </script>
+                {{-- <div class="mb-4">
                     <label class="block font-medium">Salary File</label>
                     <input type="text" name="salary_file" class="w-full border p-2 rounded" required placeholder="Enter Salary File">
-                </div>
+                </div> --}}
 
                 <div>
-                    <label class="block text-sm font-medium">Start of time-off</label>
+                    <label class="block text-sm font-medium text-gray-700">Start of time-off</label>
                     <input type="date" name="start_date" id="start_date" class="mt-1 w-full p-2 border rounded" required>
                     @error('start_date')
                     <p class="text-red-500 text-sm">{{ $message }}</p>
@@ -105,7 +159,7 @@
                 </div>
                 
                 <div>
-                    <label class="block text-sm font-medium">End of time-off</label>
+                    <label class="block text-sm font-medium text-gray-700">End of time-off</label>
                     <input type="date" name="end_date" id="end_date" class="mt-1 w-full p-2 border rounded" required>
                     @error('end_date')
                     <p class="text-red-500 text-sm">{{ $message }}</p>
@@ -134,34 +188,192 @@
                 });
                 </script>
                 <div>
-                    <label class="block mt-2">Commutation:</label>
+                    <label class="block mt-2 text-sm font-medium text-gray-700">Commutation:</label>
                     <select name="commutation" class="w-full border p-2 rounded">
                         <option value="1">Yes</option>
                         <option value="0">No</option>
                     </select>
                 </div>
                 <div class="">
-                    <label class="block mt-2">Days Applied:</label>
+                    <label class="block mt-2 text-sm font-medium text-gray-700">Days Applied:</label>
                     <input type="number" name="days_applied" class="w-full border p-2 rounded" min="1" required placeholder="Enter Days Applied">
                 </div>
                 <div class="mt-2">
-                    <label class="block text-sm font-medium">Reason (Optional)</label>
+                    <label class="block text-sm font-medium text-gray-700">Reason (Optional)</label>
                     {{-- <input type="text" name="reason" class="mt-1 w-full p-2 border rounded"> --}}
                     <textarea name="reason" id="reason" cols="15" rows="5" class="mt-1 w-full p-2 border rounded" placeholder="Enter Reason"></textarea>
                 </div>
-
-                <div class="mb-4">
-                    <label class="block text-gray-700 font-bold mb-2">Signature</label>
-                    <input type="file" name="signature" class="w-full border p-2 rounded-lg" accept="image/*,.pdf" required>
-                </div>
                             <!-- File Upload for Required Documents -->
-                <div id="file_upload_section" class="hidden">
-                    <label class="block text-gray-700 font-bold mb-2">Required Documents</label>
-                    <input type="file" name="leave_files[]" multiple class="w-full border p-2 rounded-lg" accept="image/*,.pdf">
-                    @error('leave_files')
-                    <p class="text-red-500 text-sm">{{ $message }}</p>
-                    @enderror
-                </div>
+                            <div id="file_upload_section" class="hidden">
+                                <div>
+                                    <label class="block text-gray-700 font-bold">Required Documents</label>
+                                    <p class="text-sm text-gray-500">Upload multiple images or PDFs (max 5MB each)</p>
+                                    
+                                    <!-- File upload area -->
+                                    <div class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-blue-400 transition-colors cursor-pointer" id="dropzone">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                                        </svg>
+                                        <p class="mt-2 text-sm text-gray-600">Drag and drop files here or</p>
+                                        <label for="leave_files" class="mt-4 px-4 py-2 text-blue-700 rounded-md text-sm font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 cursor-pointer">
+                                            Select Files
+                                        </label>
+                                        <input type="file" name="leave_files[]" id="leave_files" multiple class="hidden" accept="image/*,.pdf">
+                                    </div>
+                                    
+                                    <!-- Selected files preview -->
+                                    <div id="file-previews" class="mt-4 space-y-3 hidden">
+                                        <p class="text-sm font-medium text-gray-700">Selected files:</p>
+                                        <div id="preview-container" class="grid grid-cols-1 sm:grid-cols-2 gap-3"></div>
+                                    </div>
+                                    
+                                    @error('leave_files')
+                                    <p class="mt-2 text-red-500 text-sm">{{ $message }}</p>
+                                    @enderror
+                                </div>
+                            </div>
+                            
+                            <script>
+                            document.addEventListener('DOMContentLoaded', function() {
+                                const fileInput = document.getElementById('leave_files');
+                                const dropzone = document.getElementById('dropzone');
+                                const previewContainer = document.getElementById('preview-container');
+                                const filePreviewsSection = document.getElementById('file-previews');
+                                
+                                // Handle file selection
+                                fileInput.addEventListener('change', handleFiles);
+                                
+                                // Drag and drop functionality
+                                ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                                    dropzone.addEventListener(eventName, preventDefaults, false);
+                                });
+                                
+                                function preventDefaults(e) {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                }
+                                
+                                ['dragenter', 'dragover'].forEach(eventName => {
+                                    dropzone.addEventListener(eventName, highlight, false);
+                                });
+                                
+                                ['dragleave', 'drop'].forEach(eventName => {
+                                    dropzone.addEventListener(eventName, unhighlight, false);
+                                });
+                                
+                                function highlight() {
+                                    dropzone.classList.add('border-blue-500', 'bg-blue-50');
+                                }
+                                
+                                function unhighlight() {
+                                    dropzone.classList.remove('border-blue-500', 'bg-blue-50');
+                                }
+                                
+                                dropzone.addEventListener('drop', handleDrop, false);
+                                
+                                function handleDrop(e) {
+                                    const dt = e.dataTransfer;
+                                    const files = dt.files;
+                                    fileInput.files = files;
+                                    handleFiles({ target: fileInput });
+                                }
+                                
+                                function handleFiles(e) {
+                                    const files = e.target.files;
+                                    if (!files || files.length === 0) return;
+                                    
+                                    previewContainer.innerHTML = '';
+                                    filePreviewsSection.classList.remove('hidden');
+                                    
+                                    Array.from(files).forEach(file => {
+                                        const previewElement = createPreviewElement(file);
+                                        previewContainer.appendChild(previewElement);
+                                    });
+                                }
+                                
+                                function createPreviewElement(file) {
+                                    const previewDiv = document.createElement('div');
+                                    previewDiv.className = 'border border-gray-200 rounded-lg p-3 flex items-start space-x-3';
+                                    
+                                    // File icon or preview
+                                    const previewContent = document.createElement('div');
+                                    previewContent.className = 'flex-shrink-0';
+                                    
+                                    if (file.type.startsWith('image/')) {
+                                        const imgPreview = document.createElement('img');
+                                        imgPreview.className = 'h-12 w-12 object-cover rounded';
+                                        imgPreview.alt = 'Preview';
+                                        const reader = new FileReader();
+                                        reader.onload = function(e) {
+                                            imgPreview.src = e.target.result;
+                                        };
+                                        reader.readAsDataURL(file);
+                                        previewContent.appendChild(imgPreview);
+                                    } else {
+                                        const iconDiv = document.createElement('div');
+                                        iconDiv.className = 'h-12 w-12 bg-gray-100 rounded flex items-center justify-center';
+                                        iconDiv.innerHTML = `
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                                            </svg>
+                                        `;
+                                        previewContent.appendChild(iconDiv);
+                                    }
+                                    
+                                    // File info
+                                    const fileInfo = document.createElement('div');
+                                    fileInfo.className = 'flex-1 min-w-0';
+                                    
+                                    const fileName = document.createElement('p');
+                                    fileName.className = 'text-sm font-medium text-gray-900 truncate';
+                                    fileName.textContent = file.name;
+                                    
+                                    const fileSize = document.createElement('p');
+                                    fileSize.className = 'text-xs text-gray-500';
+                                    fileSize.textContent = formatFileSize(file.size);
+                                    
+                                    // Remove button
+                                    const removeBtn = document.createElement('button');
+                                    removeBtn.type = 'button';
+                                    removeBtn.className = 'text-red-500 hover:text-red-700';
+                                    removeBtn.innerHTML = `
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+                                        </svg>
+                                    `;
+                                    removeBtn.addEventListener('click', () => {
+                                        previewDiv.remove();
+                                        updateFileInput();
+                                        if (previewContainer.children.length === 0) {
+                                            filePreviewsSection.classList.add('hidden');
+                                        }
+                                    });
+                                    
+                                    fileInfo.appendChild(fileName);
+                                    fileInfo.appendChild(fileSize);
+                                    
+                                    previewDiv.appendChild(previewContent);
+                                    previewDiv.appendChild(fileInfo);
+                                    previewDiv.appendChild(removeBtn);
+                                    
+                                    return previewDiv;
+                                }
+                                
+                                function updateFileInput() {
+                                    // This would need more complex handling to actually remove files from the FileList
+                                    // In a real implementation, you might need to use a different approach
+                                    console.log('Update file input logic would go here');
+                                }
+                                
+                                function formatFileSize(bytes) {
+                                    if (bytes === 0) return '0 Bytes';
+                                    const k = 1024;
+                                    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+                                    const i = Math.floor(Math.log(bytes) / Math.log(k));
+                                    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+                                }
+                            });
+                            </script>
             </div>      
             
             <!-- Vacation Leave & Special Privilege Leave -->
