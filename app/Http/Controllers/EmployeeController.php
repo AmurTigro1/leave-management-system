@@ -928,11 +928,11 @@ private function deductLeaveBalance($user, $leave)
         if ($request->hasFile('profile_image')) {
             // Delete old image if exists
             if ($user->profile_image) {
-                Storage::delete('public/profile_images/' . $user->profile_image);
+                Storage::delete('public/profile_pictures/' . $user->profile_image);
             }
 
             // Store new image
-            $imagePath = $request->file('profile_image')->store('profile_images', 'public');
+            $imagePath = $request->file('profile_image')->store('profile_pictures', 'public');
             $filename = basename($imagePath);
 
 
