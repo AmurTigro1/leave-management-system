@@ -2,7 +2,7 @@
 @section('content')
 
 <div class="animate-fade-in">
-    <div class="bg-white shadow-md rounded-lg overflow-hidden p-6">
+    <div class="bg-white shadow-md rounded-lg p-6">
         <!-- Leave Request List -->
         @if(session('success'))
 <div class="bg-green-100 text-green-800 p-4 rounded-lg shadow-md mb-4">
@@ -69,11 +69,11 @@
                             </span>
                         </td>
                         
-                        <td class="p-3 text-center text-gray-800 overflow-visible">
+                        <td class="p-3 text-center text-gray-800 overflow-visible relative">
                             {{-- {{ \Carbon\Carbon::parse($leave->start_date)->diffInDays(\Carbon\Carbon::parse($leave->end_date)) + 1 }} --}}
                             {{$leave->days_applied}}
                         </td>
-                        <td class="p-3 text-center relative">
+                        <td class="p-3 text-center overflow-visible relative">
                             <!-- Three-dot menu button -->
                             <div x-data="{ open: false }" class="relative inline-block">
                                 <button @click="open = !open" 
@@ -87,7 +87,7 @@
                         
                                 <!-- Dropdown menu -->
                                 <div x-show="open" @click.away="open = false" 
-                                    class="fixed transform -translate-x-1/2 mt-2 w-40 bg-white border rounded-lg shadow-lg z-50">
+                                    class="absolute transform -translate-x-1/2 mt-2 w-40 bg-white border rounded-lg shadow-lg z-50 overflow-visible">
                                     
                                     <a href="{{ route('employee.leave_show', ['id' => $leave->id]) }}" 
                                     class="block text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">

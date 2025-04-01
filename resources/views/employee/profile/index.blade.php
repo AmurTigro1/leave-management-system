@@ -117,61 +117,101 @@
                 <!-- Vacation Leave -->
                 <div class="flex justify-between items-center bg-white p-2 rounded shadow-sm">
                     <span class="text-sm sm:text-base text-gray-600">Vacation:</span>
-                    <span class="font-medium">{{ $user->vacation_leave_balance ?? 0 }} day(s)</span>
+                    <span class="font-medium text-gray-600">
+                        {{ $user->vacation_leave_balance ?? 0 }} 
+                        {{ Str::plural('day', $user->vacation_leave_balance ?? 0) }}
+                    </span>
+                    
                 </div>
                 
                 <!-- Sick Leave -->
                 <div class="flex justify-between items-center bg-white p-2 rounded shadow-sm">
                     <span class="text-sm sm:text-base text-gray-600">Sick:</span>
-                    <span class="font-medium">{{ $user->sick_leave_balance ?? 0 }} day(s)</span>
+                    <span class="font-medium text-gray-600">
+                        {{ $user->sick_leave_balance ?? 0 }} 
+                        {{ Str::plural('day', $user->sick_leave_balance ?? 0) }}
+                    </span>
+                    
                 </div>
                 
                 <!-- Maternity Leave -->
                 <div class="flex justify-between items-center bg-white p-2 rounded shadow-sm">
                     <span class="text-sm sm:text-base text-gray-600">Maternity:</span>
-                    <span class="font-medium">{{ $user->maternity_leave ?? 0 }} day(s)</span>
+                    <span class="font-medium text-gray-600">
+                        {{ $user->maternity_leave ?? 0 }} 
+                        {{ Str::plural('day', $user->maternity_leave ?? 0) }}
+                    </span>
+                    
                 </div>
                 
                 <!-- Paternity Leave -->
                 <div class="flex justify-between items-center bg-white p-2 rounded shadow-sm">
                     <span class="text-sm sm:text-base text-gray-600">Paternity:</span>
-                    <span class="font-medium">{{ $user->paternity_leave ?? 0 }} day(s)</span>
+                    <span class="font-medium text-gray-600">
+                        {{ $user->paternity_leave ?? 0 }} 
+                        {{ Str::plural('day', $user->paternity_leave ?? 0) }}
+                    </span>
+                    
                 </div>
                 
                 <!-- Solo Parent Leave -->
                 <div class="flex justify-between items-center bg-white p-2 rounded shadow-sm">
                     <span class="text-sm sm:text-base text-gray-600">Solo Parent:</span>
-                    <span class="font-medium">{{ $user->solo_parent_leave ?? 0 }} day(s)</span>
+                    <span class="font-medium text-gray-600">
+                        {{ $user->solo_parent_leave ?? 0 }} 
+                        {{ Str::plural('day', $user->solo_parent_leave ?? 0) }}
+                    </span>
+                    
                 </div>
                 
                 <!-- Study Leave -->
                 <div class="flex justify-between items-center bg-white p-2 rounded shadow-sm">
                     <span class="text-sm sm:text-base text-gray-600">Study:</span>
-                    <span class="font-medium">{{ $user->study_leave ?? 0 }} day(s)</span>
+                    <span class="font-medium text-gray-600">
+                        {{ $user->study_leave ?? 0 }} 
+                        {{ Str::plural('day', $user->study_leave ?? 0) }}
+                    </span>
+                    
                 </div>
                 
                 <!-- VAWC Leave -->
                 <div class="flex justify-between items-center bg-white p-2 rounded shadow-sm">
                     <span class="text-sm sm:text-base text-gray-600">VAWC:</span>
-                    <span class="font-medium">{{ $user->vawc_leave ?? 0 }} day(s)</span>
+                    <span class="font-medium text-gray-600">
+                        {{ $user->vawc_leave ?? 0 }} 
+                        {{ Str::plural('day', $user->vawc_leave ?? 0) }}
+                    </span>
+                    
                 </div>
                 
                 <!-- Rehabilitation Leave -->
                 <div class="flex justify-between items-center bg-white p-2 rounded shadow-sm">
                     <span class="text-sm sm:text-base text-gray-600">Rehabilitation:</span>
-                    <span class="font-medium">{{ $user->rehabilitation_leave ?? 0 }} day(s)</span>
+                    <span class="font-medium text-gray-600">
+                        {{ $user->rehabilitation_leave ?? 0 }} 
+                        {{ Str::plural('day', $user->rehabilitation_leave ?? 0) }}
+                    </span>
+                    
                 </div>
                 
                 <!-- Special Leave Benefit -->
                 <div class="flex justify-between items-center bg-white p-2 rounded shadow-sm">
                     <span class="text-sm sm:text-base text-gray-600">Special Benefit:</span>
-                    <span class="font-medium">{{ $user->special_leave_benefit ?? 0 }} day(s)</span>
+                    <span class="font-medium text-gray-600">
+                        {{ $user->special_leave_benefit ?? 0 }} 
+                        {{ Str::plural('day', $user->special_leave_benefit ?? 0) }}
+                    </span>
+                    
                 </div>
                 
                 <!-- Special Emergency Leave -->
                 <div class="flex justify-between items-center bg-white p-2 rounded shadow-sm">
                     <span class="text-sm sm:text-base text-gray-600">Emergency:</span>
-                    <span class="font-medium">{{ $user->special_emergency_leave ?? 0 }} day(s)</span>
+                    <span class="font-medium text-gray-600">
+                        {{ $user->special_emergency_leave ?? 0 }} 
+                        {{ Str::plural('day', $user->special_emergency_leave ?? 0) }}
+                    </span>
+                    
                 </div>
             </div>
             

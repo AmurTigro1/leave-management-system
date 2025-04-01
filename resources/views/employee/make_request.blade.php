@@ -484,10 +484,10 @@
 
         // ✅ Leave messages
         const leaveMessages = {
-            "Vacation Leave": "Vacation Leave must be filed at least <strong>5 calendar days in advance</strong> (excluding weekends and holidays).",
-            "Special Privilege Leave": "Special Privilege Leave must be filed at least <strong>7 calendar days prior</strong>, except for emergencies. Filing on weekends or holidays is not allowed.",
+            "Vacation Leave": "Vacation Leave must be filed at least <strong>5 calendar days in advance</strong>.",
+            "Special Privilege Leave": "Special Privilege Leave must be filed at least <strong>7 calendar days prior</strong>, except for emergencies.",
             "Solo Parent Leave": "Solo Parent Leave must be filed <strong>5 days in advance</strong>. For emergencies, file as soon as possible.",
-            "Special Leave Benefits for Women Leave": "Special Leave Benefits for Women must be filed <strong>5 calendar days ahead</strong>. Leave filed on weekends or holidays is not valid.",
+            "Special Leave Benefits for Women Leave": "Special Leave Benefits for Women must be filed <strong>5 calendar days ahead</strong>",
             "Sick Leave": "Sick Leave exceeding 5 days or filed in advance requires a <strong>medical certificate</strong>.",
             "Maternity Leave": "Maternity Leave requires proof of pregnancy, such as <strong>ultrasound or doctor's certificate</strong>.",
             "Paternity Leave": "Paternity Leave requires proof of child's delivery, such as <strong>birth certificate</strong> or medical certificate.",
