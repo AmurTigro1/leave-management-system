@@ -39,7 +39,7 @@
                 <h2 class="text-2xl font-medium text-gray-900 text-center sm:text-left">
                     {{ __('Password') }}
                 </h2>
-                <a class="text-blue-600 text-center sm:text-right" href="/lms-profile">
+                <a class="text-blue-600 text-center sm:text-right" href="/hr-profile">
                     <i class="fa fa-arrow-left" aria-hidden="true"></i> Go back
                 </a>
             </div>
