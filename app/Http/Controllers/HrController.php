@@ -408,7 +408,9 @@ class HrController extends Controller
                         $user->sick_leave_balance -= $remainingDays;
                     }
                     break;
-    
+                case 'Special Privilege Leave':
+                    $user->special_privilege_leave -= $leave->days_applied;
+                    break;
                 case 'Maternity Leave':
                     $user->maternity_leave -= $leave->days_applied;
                     break;
@@ -455,12 +457,17 @@ class HrController extends Controller
         // Save changes
         $leave->update($updateData);
         $user->save();
+        
+        notify()->success('CTO application reviewed by HR.');
     
-         // ✅ Send the notification with the correct Leave model
-         $user->notify(new LeaveStatusNotification($leave, "Your leave request has been <span class='" .
-         ($leave->status === 'approved' ? 'text-green-500' : 'text-red-500') . "'>" .
-         $leave->status . "</span> by the HR."));     
-        notify()->success('Leave application reviewed successfully!');
+        $user->notify(new LeaveStatusNotification($leave, 
+        "Your leave request has been <span class='" . 
+        ($leave->status === 'approved' ? 'text-green-500' : 'text-red-500') . "'>" . 
+        $leave->status . "</span> by the HR.", 
+        $leave, 
+        'leave' 
+    ));
+    
         return redirect()->route('hr.requests');
     }   
 
