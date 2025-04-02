@@ -7,12 +7,12 @@
         &larr; Back to Requests
     </a>
 
-    <div class="flex flex-col lg:flex-row justify-between items-start gap-6">
+    <div class="flex flex-col lg:flex-row justify-between items-stretch gap-6">
         <!-- Left Side: Employee Request Details -->
-        <div class="bg-white shadow-xl rounded-lg p-4 md:p-6 space-y-6 w-full">
+        <div class="bg-white shadow-xl rounded-lg p-4 md:p-6 space-y-6 w-full lg:w-1/2 flex flex-col">
             <div class="w-full">
                 <h1 class="uppercase text-lg md:text-xl font-semibold">Employee Request Details</h1> 
-                <p class="text-gray-500 mt-a2">Date Filed: {{ \Carbon\Carbon::parse($cto->date_filed)->format('F d, Y') }}</p>
+                <p class="text-gray-500 mt-2">Date Filed: {{ \Carbon\Carbon::parse($cto->date_filed)->format('F d, Y') }}</p>
             </div>
 
             <!-- CTO Type Selection - Responsive Grid -->
@@ -26,33 +26,35 @@
             </div>
 
             <!-- Working Hours - Stacked on Mobile -->
-            @foreach([
-                'Working Hours Applied' => $cto->working_hours_applied, 
-                'Earned Hours' => $cto->earned_hours, 
-                'COC Balance' => $cto->user->overtime_balance
-            ] as $label => $value)
-                <div class="space-y-2">
-                    <p class="font-semibold text-sm md:text-base">{{ $label }}</p>
-                    <div class="flex flex-col sm:flex-row justify-start items-start sm:items-center gap-2 md:gap-4">
-                        <div class="w-full sm:w-[45%]">
-                            <input type="number" class="border-4 w-full border-gray-400 rounded-lg p-2" 
-                                   placeholder="0" value="{{ $value }}" disabled> 
-                        </div>
-                        <div class="w-full sm:w-[55%] text-xs md:text-sm text-gray-600">
-                            @if($label == 'Working Hours Applied') 
-                                The number of working hours requested by the employee. 
-                            @elseif($label == 'Earned Hours') 
-                                Total accumulated overtime hours over the past months. 
-                            @else 
-                                The employee's available COC balance for CTO requests. 
-                            @endif
+            <div class="flex-grow space-y-4">
+                @foreach([
+                    'Working Hours Applied' => $cto->working_hours_applied, 
+                    'Earned Hours' => $cto->earned_hours, 
+                    'COC Balance' => $cto->user->overtime_balance
+                ] as $label => $value)
+                    <div class="space-y-2">
+                        <p class="font-semibold text-sm md:text-base">{{ $label }}</p>
+                        <div class="flex flex-col sm:flex-row justify-start items-start sm:items-center gap-2 md:gap-4">
+                            <div class="w-full sm:w-[45%]">
+                                <input type="number" class="border-4 w-full border-gray-400 rounded-lg p-2" 
+                                       placeholder="0" value="{{ $value }}" disabled> 
+                            </div>
+                            <div class="w-full sm:w-[55%] text-xs md:text-sm text-gray-600">
+                                @if($label == 'Working Hours Applied') 
+                                    The number of working hours requested by the employee. 
+                                @elseif($label == 'Earned Hours') 
+                                    Total accumulated overtime hours over the past months. 
+                                @else 
+                                    The employee's available COC balance for CTO requests. 
+                                @endif
+                            </div>
                         </div>
                     </div>
-                </div>
-            @endforeach
+                @endforeach
+            </div>
 
             <!-- Buttons - Centered on Mobile -->
-            <div class="pt-4">
+            <div class="pt-4 mt-auto">
                 <form action="{{ route('cto.admin-review', $cto->id) }}" method="POST">
                     @csrf 
                     <button type="submit" name="admin_status" value="Ready for Review" 
@@ -64,30 +66,32 @@
         </div>
 
         <!-- Right Side: Processing Steps -->
-        <div class="bg-white shadow-xl rounded-lg p-4 md:p-6 space-y-6 w-full">
-            <p class="text-gray-500 text-sm md:text-base">
-                Inclusive Dates: {{ \Carbon\Carbon::parse($cto->inclusive_date_start)->format('F d, Y') }} - 
-                {{ \Carbon\Carbon::parse($cto->inclusive_date_end)->format('F d, Y') }}
-            </p>
+        <div class="bg-white shadow-xl rounded-lg p-4 md:p-6 space-y-6 w-full lg:w-1/2 flex flex-col">
+            <div>
+                <p class="text-gray-500 text-sm md:text-base">
+                    Inclusive Dates: {{ \Carbon\Carbon::parse($cto->inclusive_date_start)->format('F d, Y') }} - 
+                    {{ \Carbon\Carbon::parse($cto->inclusive_date_end)->format('F d, Y') }}
+                </p>
 
-            <h1 class="text-center font-bold text-xl md:text-2xl bg-gradient-to-r from-blue-500 to-blue-800 bg-clip-text text-transparent">
-                Steps for Processing the Request
-            </h1>
+                <h1 class="text-center font-bold text-xl md:text-2xl bg-gradient-to-r from-blue-500 to-blue-800 bg-clip-text text-transparent mt-4">
+                    Steps for Processing the Request
+                </h1>
+            </div>
 
-            <div class="flex flex-col lg:flex-row justify-between items-center gap-4">
+            <div class="flex-grow flex flex-col lg:flex-row justify-between items-stretch gap-4">
                 <!-- Chart - Full width on mobile, 40% on desktop -->
-                <div class="w-full lg:w-[40%] h-[300px] lg:h-[400px] flex items-center justify-center">
-                    <canvas id="myChart"></canvas>
+                <div class="w-full lg:w-[40%] h-[250px] lg:h-auto flex items-center justify-center">
+                    <canvas id="myChart" class="max-h-full w-full"></canvas>
                 </div>
 
                 <!-- Status Boxes - Full width on mobile, 60% on desktop -->
-                <div class="w-full lg:w-[60%] space-y-4">
+                <div class="w-full lg:w-[60%] space-y-4 flex flex-col justify-center">
                     @foreach([
                         'Admin Status' => ['status' => $cto->admin_status, 'color' => 'yellow', 'description' => 'The Admin reviews the request before sending it to HR.'],
                         'HR Status' => ['status' => $cto->hr_status, 'color' => 'gray', 'description' => 'HR verifies the request and forwards it to the Supervisor.'],
                         'Supervisor Status' => ['status' => $cto->supervisor_status, 'color' => 'gray', 'description' => 'The Supervisor conducts a final review before approval.']
                     ] as $step => $details)
-                        <div class="status-box {{ $details['color'] }}-box">
+                        <div class="status-box {{ $details['color'] }}-box flex-grow">
                             <p class="status-title">{{ $step }}</p>
                             <h1 class="text-xl md:text-2xl mt-2 mb-2">
                                 <span class="status-text {{ $details['color'] }}-text">
@@ -120,6 +124,8 @@
         border-width: 4px;
         text-align: center;
         font-weight: 600;
+        display: flex;
+        flex-direction: column;
     }
     
     .status-title {
@@ -157,6 +163,15 @@
     }
 
     /* Responsive adjustments */
+    @media (max-width: 1024px) {
+        .flex-col.lg\:flex-row {
+            flex-direction: column;
+        }
+        .w-full.lg\:w-1\/2 {
+            width: 100%;
+        }
+    }
+
     @media (max-width: 640px) {
         .status-box {
             padding: 8px;
