@@ -73,11 +73,23 @@
                             <div class="w-full sm:w-[220px] bg-gradient-to-br from-white/5 to-white/20 backdrop-blur-sm rounded-2xl p-6 flex flex-col items-center border border-white/10 shadow-xl transition-all duration-500 hover:-translate-y-3 hover:shadow-2xl hover:border-indigo-400/50">
                             {{-- <div class="w-16 sm:w-20 h-16 sm:h-20 rounded-full overflow-hidden bg-gray-300 shadow-md ring-4 ring-blue-400 animate-pulse"> --}}
                                 <div class="relative w-20 h-20 sm:w-24 sm:h-24 rounded-full overflow-hidden bg-gradient-to-br from-purple-500 to-pink-500 shadow-lg ring-4 ring-white/20 ring-offset-2 ring-offset-white/10 animate-float-slow">
-                                @if ($employee->profile_image)
-                                    <img src="{{ asset('storage/profile_images/' . $employee->profile_image) }}" class="w-full h-full object-cover">
-                                @else
-                                    <img src="{{ asset('img/default-avatar.png')}}" alt="default avatar" class="w-full h-full object-cover">
-                                @endif
+                                    @php
+                                    $profileImage = null;
+                                
+                                    if ($employee->profile_image) {
+                                        $imagePath1 = 'storage/profile_images/' . $employee->profile_image;
+                                        $imagePath2 = 'storage/profile_pictures/' . $employee->profile_image;
+                                
+                                        if (file_exists(public_path($imagePath1))) {
+                                            $profileImage = asset($imagePath1);
+                                        } elseif (file_exists(public_path($imagePath2))) {
+                                            $profileImage = asset($imagePath2);
+                                        }
+                                    }
+                                @endphp
+                                
+                                <img src="{{ $profileImage ?? asset('img/default-avatar.png') }}" alt="Profile Image" class="w-full h-full object-cover">
+                                
                             </div>
                             <div class="mt-3 text-center group-hover:text-indigo-600 transition-colors">
                                 <p class="text-md font-bold text-indigo-500">{{ $employee->first_name }} {{ strtoupper(substr($employee->middle_name, 0, 1)) }}. {{$employee->last_name}}</p>
