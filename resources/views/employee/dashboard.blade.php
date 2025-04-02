@@ -74,22 +74,23 @@
                             {{-- <div class="w-16 sm:w-20 h-16 sm:h-20 rounded-full overflow-hidden bg-gray-300 shadow-md ring-4 ring-blue-400 animate-pulse"> --}}
                                 <div class="relative w-20 h-20 sm:w-24 sm:h-24 rounded-full overflow-hidden bg-gradient-to-br from-purple-500 to-pink-500 shadow-lg ring-4 ring-white/20 ring-offset-2 ring-offset-white/10 animate-float-slow">
                                     @php
-                                    $profileImage = null;
-                                
-                                    if ($employee->profile_image) {
-                                        $imagePath1 = 'storage/profile_images/' . $employee->profile_image;
-                                        $imagePath2 = 'storage/profile_pictures/' . $employee->profile_image;
-                                
-                                        if (file_exists(public_path($imagePath1))) {
-                                            $profileImage = asset($imagePath1);
-                                        } elseif (file_exists(public_path($imagePath2))) {
-                                            $profileImage = asset($imagePath2);
+                                        $profileImage = asset('img/default-avatar.png'); // Default image
+
+                                        if ($employee->profile_image) {
+                                            // Ensure images are stored in 'public' disk for accessibility
+                                            $imagePath1 = 'profile_images/' . $employee->profile_image;
+                                            $imagePath2 = 'profile_pictures/' . $employee->profile_image;
+
+                                            if (Storage::disk('public')->exists($imagePath1)) {
+                                                $profileImage = Storage::url($imagePath1);
+                                            } elseif (Storage::disk('public')->exists($imagePath2)) {
+                                                $profileImage = Storage::url($imagePath2);
+                                            }
                                         }
-                                    }
-                                @endphp
-                                
-                                <img src="{{ $profileImage ?? asset('img/default-avatar.png') }}" alt="Profile Image" class="w-full h-full object-cover">
-                                
+                                        @endphp
+
+                                        <img src="{{ $profileImage }}" alt="Profile Image" class="w-full h-full object-cover">
+
                             </div>
                             <div class="mt-3 text-center group-hover:text-indigo-600 transition-colors">
                                 <p class="text-md font-bold text-indigo-500">{{ $employee->first_name }} {{ strtoupper(substr($employee->middle_name, 0, 1)) }}. {{$employee->last_name}}</p>
