@@ -7,6 +7,8 @@ use App\Http\Requests\EmailUpdateRequest;
 use App\Models\Leave;
 use App\Models\User;
 use Carbon\Carbon;
+use Barryvdh\DomPDF\Facade\Pdf;
+use App\Models\HRSupervisor;
 use App\Models\OvertimeRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -72,17 +74,19 @@ class SupervisorController extends Controller
             abort(403, 'Unauthorized access.');
         }
     
-        // Get leave applications waiting for supervisor approval
+        // Get leave applications waiting for supervisor approval with pagination
         $leaveApplications = Leave::where('status', 'approved')
-        ->orderBy('created_at', 'desc') 
-        ->paginate(9); 
-
+            ->orderBy('created_at', 'desc')
+            ->paginate(5, ['*'], 'leave_page'); // Use a custom page name
+    
+        // Get CTO applications waiting for supervisor approval with pagination
         $ctoApplications = OvertimeRequest::where('status', 'approved')
-        ->orderBy('created_at', 'desc') 
-        ->paginate(9); 
-
+            ->orderBy('created_at', 'desc')
+            ->paginate(5, ['*'], 'cto_page'); // Use a different page name to avoid conflict
+    
         return view('supervisor.requests', compact('leaveApplications', 'ctoApplications'));
     }
+    
 
 //Supervisor Approve
 // public function approve(Request $request, $leave) {
@@ -287,5 +291,31 @@ class SupervisorController extends Controller
             return $holiday;
         });
         return view('supervisor.holiday-calendar', compact('holidays'));
+    }
+
+    public function viewPdf($id)
+    {
+        $leave = Leave::findOrFail($id);
+        $officials = HRSupervisor::all();
+
+        $supervisor = User::where('role', 'supervisor')->first();
+        $hr = User::where('role', 'hr')->first();
+        
+        $pdf = PDF::loadView('pdf.leave_details', compact('leave', 'supervisor', 'hr', 'officials'));
+        
+        return $pdf->stream( $leave->user->last_name . ', '. $leave->user->first_name . '- Leave Request' . '.pdf');
+    }
+
+    public function ctoviewPdf($id)
+    {
+        $overtime = OvertimeRequest::findOrFail($id);
+
+        $supervisor = User::where('role', 'supervisor')->first();
+        $hr = User::where('role', 'hr')->first();
+        
+        $pdf = PDF::loadView('pdf.overtime_details', compact('overtime', 'supervisor', 'hr'));
+        
+        return $pdf->stream( $overtime->user->last_name . ', '. $overtime->user->first_name . '- CTO Request' . '.pdf');
+
     }
 }
