@@ -942,6 +942,13 @@ class HrController extends Controller
             $query->orderBy('first_name', 'asc'); 
         }
         
+        // For PDF export - get all users without pagination
+        if ($request->has('export') && $request->export == 'pdf') {
+            $users = $query->get();
+            $pdf = Pdf::loadView('hr.partials.user-pdf', compact('users'));
+            return $pdf->download('users-list-'.now()->format('Y-m-d').'.pdf');
+        }
+        
         $users = $query->paginate(10);
         
         if ($request->ajax()) {

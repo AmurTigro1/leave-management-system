@@ -132,8 +132,9 @@ class DatabaseSeeder extends Seeder
                 'password' => bcrypt('password'),
                 'role' => $employee[3],
                 'position' => $employee[8],
-                'profile_images' => $employee[9]
+                'profile_image' => $employee[9]
             ]);
         }   
+        $this->call(YearlyHolidaysSeeder::class);
     }
 }
