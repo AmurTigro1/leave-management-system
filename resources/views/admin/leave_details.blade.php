@@ -143,9 +143,9 @@
             class="w-[400px] h-[400px] object-cover" alt="{{ $leave->user->name }}">
        </div>
 
-        <p class="font-semibold mt-4">Employee: {{ $leave->user->first_name}} {{ strtoupper(substr($leave->user->middle_name, 0, 1)) }}. {{ $leave->user->last_name}}</p>
-        <p class="font-semibold">Email: <span class="text-blue-600">{{ $leave->user->email }}</span></p>
-        <p class="mb-4 font-semibold">Position: {{ $leave->user->position}}</p>
+        <p class="font-semibold mt-4 text-gray-500">Employee: {{ $leave->user->first_name}} {{ strtoupper(substr($leave->user->middle_name, 0, 1)) }}. {{ $leave->user->last_name}}</p>
+        <p class="font-semibold text-gray-500">Email:{{ $leave->user->email }}</p>
+        <p class="mb-4 font-semibold text-gray-500">Position: {{ $leave->user->position}}</p>
 
         <div class="border-2 border-gray mb-[15px]"></div>
 
