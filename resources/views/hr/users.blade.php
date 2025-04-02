@@ -34,6 +34,20 @@
                           
                         Users Account Management
                     </h2>
+
+                    <form method="GET" action="{{ route('hr.users') }}" class="flex justify-between items-center mt-4 gap-2 w-[55%]">
+                        <div class="w-[30%]">
+                            <select name="order_by" class="w-full border rounded-lg focus:ring-2 focus:ring-blue-400 p-2 text-gray-500 border-gray-300 text-xs sm:text-sm" onchange="this.form.submit()">
+                                <option value="">Order By</option>
+                                <option value="created_at" {{ request('order_by') == 'created_at' ? 'selected' : '' }}>Created At</option>
+                                <option value="last_name" {{ request('order_by') == 'last_name' ? 'selected' : '' }}>Last Name</option>
+                            </select>
+                        </div>
+                        <input type="text" name="search" placeholder="Search employee account" class="py-2 px-4 w-full rounded-lg border-gray-300" value="{{ request('search') }}">
+                        <button type="submit" class="py-2 px-4 bg-blue-500 rounded-lg text-white">Search</button>
+                        <a href="{{ route('hr.users') }}" class="py-2 px-4 bg-gray-300 rounded-lg text-black">Clear</a>
+                    </form>
+                    
                    
                     <button id="openModalBtn" class="bg-blue-600 text-white font-bold py-2 px-4 rounded-lg flex justify-center items-center">
                         <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
@@ -348,29 +362,19 @@
                                                 {{ $user->department }}
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium overflow-visible">
-                                                <div x-data="{ open: false }" class="relative inline-block text-left">
-                                                    <button @click="open = !open" type="button" class="text-gray-400 hover:text-gray-600">
-                                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
-                                                        </svg>
+                                                <div class="flex justify-between items-center">
+                                                    <button id="editModalBtn-{{ $user->id }}" class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                                       View | Edit
                                                     </button>
-                                                    
-                                                    <div x-show="open" @click.away="open = false" class="origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50 overflow-visible">
-                                                        <div class="py-1">
-                                                            <button id="editModalBtn-{{ $user->id }}" class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                                                               View | Edit
-                                                            </button>
-                                                            <form action="{{ route('hr.users.destroy', $user->id) }}" method="POST" class="w-full">
-                                                                @csrf
-                                                                @method('DELETE')
-                                                                <button type="submit" 
-                                                                        onclick="return confirm('Are you sure you want to delete this user?')"
-                                                                        class="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-100">
-                                                                    Delete
-                                                                </button>
-                                                            </form>   
-                                                        </div>
-                                                    </div>
+                                                    <form action="{{ route('hr.users.destroy', $user->id) }}" method="POST" class="w-full">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button type="submit" 
+                                                                onclick="return confirm('Are you sure you want to delete this user?')"
+                                                                class="block w-full text-left mt-3 px-4 py-2 text-sm text-red-600 hover:bg-red-100">
+                                                            Delete
+                                                        </button>
+                                                    </form>   
                                                 </div>
                                             </td>
                                         </tr>
