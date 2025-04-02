@@ -48,7 +48,11 @@
                 
                         @forelse(auth()->user()->notifications as $notification)
                             <div class="notification-item p-2 rounded mb-2 bg-gray-200 flex justify-between items-center" data-id="{{ $notification->id }}">
-                                <span class="text-xs font-bold">{{ $notification->data['message'] ?? 'New Notification' }}</span>
+                                <span class="text-xs">
+                                    {!! Str::of($notification->data['message'] ?? 'New Notification')
+                                        ->replace('approved', '<span class="text-green-500">approved</span>')
+                                        ->replace('rejected', '<span class="text-red-500">rejected</span>') !!}
+                                </span>                                
                                 <button class="delete-notification text-red-500 text-xs px-1" data-id="{{ $notification->id }}">
                                     ✖
                                 </button>
@@ -72,7 +76,7 @@
             @if (Auth::check())
             <!-- Dropdown Menu -->
             <div class="relative">
-                <button id="dropdown-btn" class="flex items-center justify-between w-full bg-white px-4 rounded-lg shadow-md border border-gray-300 transition-all duration-200 ease-in-out">
+                <button id="dropdown-btn" class="flex items-center justify-between w-full px-4 rounded-lg transition-all duration-200 ease-in-out">
                     <div class="flex items-center justify-between bg-white p-2 rounded-lg">
                         
                         <!-- Profile Section -->    

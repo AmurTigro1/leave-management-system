@@ -14,16 +14,18 @@ class LeaveStatusNotification extends Notification
 
     public $request;
     public $message;
+    public $leave;
     public $type; // 'leave' or 'overtime'
 
     /**
      * Create a new notification instance.
      */
-    public function __construct($request, $message, $type = 'leave')
+    public function __construct($request, $message, $leave, $type = 'leave')
     {
         $this->request = $request;
         $this->message = $message;
         $this->type = $type;
+        $this->leave = $leave;
     }
 
     /**
@@ -113,7 +115,8 @@ class LeaveStatusNotification extends Notification
         return [
             'type' => $this->type,
             'request_id' => $this->request->id,
-            'message' => $this->message,
+            'message' => "Your leave request has been {$this->leave->status} by the HR.",
+            'status' => $this->leave->status,
         ];
     }
 }

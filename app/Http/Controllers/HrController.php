@@ -48,11 +48,11 @@ class HrController extends Controller
     
     
         // Get pending leave requests
-        $pendingLeaves = Leave::where('status', 'pending')->get();
+        $pendingLeaves = Leave::where('admin_status', 'approved')->get();
     
         // Statistics Data
         $totalEmployees = User::count();
-        $totalPendingLeaves = Leave::where('status', 'pending')->count();
+        $totalPendingLeaves = Leave::where('admin_status', 'approved')->count();
         $totalApprovedLeaves = Leave::where('status', 'approved')->count();
         $totalRejectedLeaves = Leave::where('status', 'rejected')->count();
         $totalApprovedOvertime = OvertimeRequest::where('status', 'approved')->count();
@@ -457,7 +457,9 @@ class HrController extends Controller
         $user->save();
     
          // ✅ Send the notification with the correct Leave model
-        $user->notify(new LeaveStatusNotification($leave, "Your leave request has been approved by the HR."));
+         $user->notify(new LeaveStatusNotification($leave, "Your leave request has been <span class='" .
+         ($leave->status === 'approved' ? 'text-green-500' : 'text-red-500') . "'>" .
+         $leave->status . "</span> by the HR."));     
         notify()->success('Leave application reviewed successfully!');
         return redirect()->route('hr.requests');
     }   

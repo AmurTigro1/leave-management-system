@@ -23,7 +23,7 @@
 
     <div class="container mx-auto px-3 sm:px-4 py-4 sm:py-6 animate-fade-in">
         @notifyJs
-        <div class="bg-white rounded-lg sm:rounded-xl shadow-md overflow-hidden">
+        <div class="bg-white rounded-lg sm:rounded-xl shadow-md">
             <div class="p-4 sm:p-6 border-b border-gray-200">
                 <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
                     <h2 class="text-lg sm:text-xl font-bold flex items-center">
@@ -235,7 +235,7 @@
                                     </span>
                                 </td>
                                 
-                                <td class="p-3 text-center relative">
+                                <td class="p-3 text-center relative overflow-visible">
                                     <!-- Three-dot menu button -->
                                     <div x-data="{ open: false }" class="relative inline-block">
                                         <button @click="open = !open" 
@@ -249,7 +249,7 @@
                                 
                                         <!-- Dropdown menu -->
                                         <div x-show="open" @click.away="open = false" 
-                                        class="fixed transform -translate-x-1/2 mt-2 w-40 bg-white border rounded-lg shadow-lg z-50">
+                                        class="absolute transform -translate-x-1/2 mt-2 w-40 bg-white border rounded-lg shadow-lg overflow-visible z-50">
                                             
                                             <a href="" 
                                                class="block text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
@@ -302,7 +302,7 @@
                 <div class="hidden sm:block">
                     <div class="overflow-x-auto">
                         <div class="min-w-full inline-block align-middle">
-                            <div class="overflow-hidden">
+                            <div class="overflow-visible">
                                 <table class="min-w-full divide-y divide-gray-200">
                                     <thead class="bg-gray-50">
                                         <tr>
@@ -341,7 +341,7 @@
                                                     </div>
                                                 </div>
                                             </td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-blue-500">
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-blue-500 relative">
                                                 {{ $user->email }}
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap">
@@ -352,7 +352,7 @@
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                                 {{ $user->department }}
                                             </td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
+                                            <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium overflow-visible">
                                                 <div x-data="{ open: false }" class="relative inline-block text-left">
                                                     <button @click="open = !open" type="button" class="text-gray-400 hover:text-gray-600">
                                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -360,7 +360,7 @@
                                                         </svg>
                                                     </button>
                                                     
-                                                    <div x-show="open" @click.away="open = false" class="origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50">
+                                                    <div x-show="open" @click.away="open = false" class="origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50 overflow-visible">
                                                         <div class="py-1">
                                                             <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">View</a>
                                                             <button id="editModalBtn-{{ $user->id }}" class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
