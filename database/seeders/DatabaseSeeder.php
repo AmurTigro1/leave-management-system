@@ -135,5 +135,6 @@ class DatabaseSeeder extends Seeder
                 'profile_image' => $employee[9]
             ]);
         }   
+        $this->call(YearlyHolidaysSeeder::class);
     }
 }

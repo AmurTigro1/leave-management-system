@@ -103,6 +103,56 @@ class HrController extends Controller
 
     public function storeLeave(Request $request, YearlyHolidayService $yearlyHolidayService)  
     {
+        $leaveValidationRules = [];
+    
+        switch ($request->leave_type) {
+            case 'Vacation Leave':
+            case 'Special Privilege Leave':
+                $leaveValidationRules = [
+                    'within_philippines' => 'required_without:abroad_details|string|nullable',
+                    'abroad_details' => 'required_without:within_philippines|string|nullable',
+                ];
+                break;
+    
+            case 'Sick Leave':
+                $leaveValidationRules = [
+                    'in_hospital_details' => 'required_without:out_patient_details|string|nullable',
+                    'out_patient_details' => 'required_without:in_hospital_details|string|nullable',
+                ];
+                break;
+    
+            case 'Study Leave':
+                $leaveValidationRules = [
+                    'completion_masters' => 'required_without:bar_review|boolean|nullable',
+                    'bar_review' => 'required_without:completion_masters|boolean|nullable',
+                ];
+                break;
+    
+            case 'Other Purposes':
+                $leaveValidationRules = [
+                    'monetization' => 'required_without:terminal_leave|boolean|nullable',
+                    'terminal_leave' => 'required_without:monetization|boolean|nullable',
+                ];
+                break;
+    
+            case 'Others':
+                $leaveValidationRules = [
+                    'others_details' => 'required|string|nullable'
+                ];
+                break;
+        }
+    
+        $advanceFilingRules = [
+            'Vacation Leave' => 5,
+            'Special Privilege Leave' => 7,
+            'Solo Parent Leave' => 5,
+            'Special Leave Benefits for Women Leave' => 5,
+            'Sick Leave' => 0, 
+            'Maternity Leave' => 0, 
+            'Paternity Leave' => 0, 
+            'Mandatory Leave' => 0,
+        ];
+    
         $inclusiveLeaveTypes = [
             'Maternity Leave',
             'Study Leave',
@@ -110,35 +160,69 @@ class HrController extends Controller
             'Special Leave Benefits for Women Leave'
         ];
     
-        $request->validate([
+        $request->validate(array_merge([
             'leave_type' => 'required|string',
             'start_date' => [
                 'required',
                 'date',
-                function ($attribute, $value, $fail) use ($request, $inclusiveLeaveTypes, $yearlyHolidayService) {
+                function ($attribute, $value, $fail) use ($request, $advanceFilingRules) {
                     $leaveType = $request->leave_type;
                     $startDate = Carbon::parse($value);
-    
-                    if (!in_array($leaveType, $inclusiveLeaveTypes) && 
-                        ($startDate->isWeekend() || $yearlyHolidayService->isHoliday($startDate))) {
-                        $fail('The start date cannot be a weekend or holiday for this leave type.');
+                    $today = Carbon::now();
+                    $advanceDaysRequired = $advanceFilingRules[$leaveType] ?? 0;
+        
+                    // Only validate based on the required advance filing days
+                    if ($advanceDaysRequired > 0) {
+                        $minStartDate = $today->copy()->addDays($advanceDaysRequired);
+                        
+                        if ($startDate->lt($minStartDate)) {
+                            $fail("You must request {$leaveType} at least {$advanceDaysRequired} days in advance.");
+                        }
                     }
                 }
             ],
             'end_date' => 'required|date|after_or_equal:start_date',
             'reason' => 'nullable|string',
-            'signature' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',
+            'leave_files.*' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048', // Multiple files
             'days_applied' => 'required|integer|min:1',
             'commutation' => 'required|boolean',
             'leave_details' => 'nullable|array', 
-            'abroad_details' => 'nullable|string', 
-        ]);
+            'abroad_details' => 'nullable|string',
+        ], $leaveValidationRules));
     
         $user = Auth::user();
+        $startDate = Carbon::parse($request->start_date);
+        $endDate = Carbon::parse($request->end_date);
+    
+        $requiredDocs = [
+            'Sick Leave' => 'Medical Certificate (if filed in advance or > 5 days)',
+            'Maternity Leave' => 'Proof of Pregnancy (Ultrasound, Doctor’s Certificate)',
+            'Paternity Leave' => 'Proof of Child Delivery (Birth Certificate, Medical Certificate, Marriage Contract)'
+        ];
     
         $startDate = Carbon::parse($request->start_date);
         $endDate = Carbon::parse($request->end_date);
-        
+        $today = Carbon::now();
+    
+        $daysUntilLeave = $today->diffInDays($startDate, false);
+        $daysRequested = $startDate->diffInDays($endDate) + 1;
+    
+        $requiresDocs = false;
+    
+        if ($request->leave_type === 'Sick Leave') {
+            if ($daysUntilLeave > 0 || $daysRequested > 5) {
+                $requiresDocs = true;
+            }
+        } elseif (in_array($request->leave_type, ['Maternity Leave', 'Paternity Leave'])) {
+            $requiresDocs = true;
+        }
+    
+        if ($requiresDocs && !$request->hasFile('leave_files')) {
+            return redirect()->back()->withErrors([
+                'leave_files' => "For {$request->leave_type}, please upload the required documents: " . $requiredDocs[$request->leave_type]
+            ]);
+        }
+    
         if (in_array($request->leave_type, $inclusiveLeaveTypes)) {
             $daysApplied = $startDate->diffInDays($endDate) + 1;
         } else {
@@ -154,8 +238,7 @@ class HrController extends Controller
             }
     
             if ($daysApplied === 0) {
-                $isValidStartDate = !$startDate->isWeekend() && 
-                                    !$yearlyHolidayService->isHoliday($startDate);
+                $isValidStartDate = !$startDate->isWeekend() && !$yearlyHolidayService->isHoliday($startDate);
     
                 if ($isValidStartDate) {
                     $daysApplied = 1;
@@ -168,13 +251,14 @@ class HrController extends Controller
         }
     
         $leaveTypeForBalance = $request->leave_type === 'Mandatory Leave' ? 'Vacation Leave' : $request->leave_type;
-        
+    
         if ($leaveTypeForBalance === 'Sick Leave') {
             $availableLeaveBalance = $user->sick_leave_balance;
         } elseif ($leaveTypeForBalance === 'Vacation Leave') {
             $availableLeaveBalance = $user->vacation_leave_balance;
         } else {
             $availableLeaveBalance = match ($leaveTypeForBalance) {
+                'Special Privilege Leave' => $user->special_privilege_leave,
                 'Maternity Leave' => $user->maternity_leave,
                 'Paternity Leave' => $user->paternity_leave,
                 'Solo Parent Leave' => $user->solo_parent_leave,
@@ -198,8 +282,16 @@ class HrController extends Controller
             }
         }
     
-        $leaveDetails = [];
+        $leaveFiles = [];
+        if ($request->hasFile('leave_files')) {
+            foreach ($request->file('leave_files') as $file) {
+                $path = $file->store('leave_files', 'public');
+                $leaveFiles[] = $path;
+            }
+        }
     
+        $leaveDetails = [];
+        
         if ($request->leave_type === 'Vacation Leave' || $request->leave_type === 'Special Privilege Leave') {
             if ($request->filled('within_philippines')) {
                 $leaveDetails['Within the Philippines'] = $request->within_philippines;
@@ -255,9 +347,9 @@ class HrController extends Controller
             'date_filing' => now(),
             'reason' => $request->reason,
             'signature' => $request->signature,
+            'leave_files' => json_encode($leaveFiles),
             'status' => 'pending',
         ]);
-
     
         notify()->success('Leave request submitted successfully! It is now pending approval.');
         return redirect()->back();
@@ -848,6 +940,13 @@ class HrController extends Controller
             }
         } else {
             $query->orderBy('first_name', 'asc'); 
+        }
+        
+        // For PDF export - get all users without pagination
+        if ($request->has('export') && $request->export == 'pdf') {
+            $users = $query->get();
+            $pdf = Pdf::loadView('hr.partials.user-pdf', compact('users'));
+            return $pdf->download('users-list-'.now()->format('Y-m-d').'.pdf');
         }
         
         $users = $query->paginate(10);
