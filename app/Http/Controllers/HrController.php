@@ -41,16 +41,13 @@ class HrController extends Controller
     
         $employees = $query->paginate(10)->withQueryString();
     
-        // If it's an AJAX request, return only the partial view
         if ($request->ajax()) {
             return view('hr.partials.employee-list', compact('employees'))->render();
         }
     
     
-        // Get pending leave requests
         $pendingLeaves = Leave::where('admin_status', 'approved')->get();
     
-        // Statistics Data
         $totalEmployees = User::count();
         $totalPendingLeaves = Leave::where('admin_status', 'approved')->count();
         $totalApprovedLeaves = Leave::where('status', 'approved')->count();
@@ -59,7 +56,6 @@ class HrController extends Controller
         $totalPendingOvertime = OvertimeRequest::where('status', 'pending')->count();
         $totalRejectedOvertime = OvertimeRequest::where('status', 'rejected')->count();
     
-        // Data for Chart.js
         $leaveStats = [
             'Pending' => $totalPendingLeaves,
             'Approved' => $totalApprovedLeaves,
@@ -84,18 +80,17 @@ class HrController extends Controller
         ->orderByRaw('DAY(birthday) ASC')
         ->get();
     
-        // Get employees who are on approved leave this month (but only if their leave has not yet ended)
         $teamLeaves = Leave::whereMonth('start_date', $month)
                             ->where('status', 'approved')
-                            ->where('end_date', '>=', $today) // Ensures leave is still ongoing
-                            ->with('user') // Ensures the user object is available
+                            ->where('end_date', '>=', $today)
+                            ->with('user')
                             ->get();
-        $monthPadded = str_pad($month, 2, '0', STR_PAD_LEFT); // Format as 2 digits (01-12)
+        $monthPadded = str_pad($month, 2, '0', STR_PAD_LEFT); 
         $year = now()->year;
         
         $overtimeRequests = OvertimeRequest::where('status', 'approved')
-            ->where('inclusive_dates', 'LIKE', "%-{$monthPadded}-%") // Check for month in any position
-            ->where('inclusive_dates', 'LIKE', "{$year}-%") // Check for current year
+            ->where('inclusive_dates', 'LIKE', "%-{$monthPadded}-%")
+            ->where('inclusive_dates', 'LIKE', "{$year}-%")
             ->get();
         return view('hr.on_leave', compact('teamLeaves', 'birthdays', 'month', 'overtimeRequests'));
     }
@@ -108,6 +103,56 @@ class HrController extends Controller
 
     public function storeLeave(Request $request, YearlyHolidayService $yearlyHolidayService)  
     {
+        $leaveValidationRules = [];
+    
+        switch ($request->leave_type) {
+            case 'Vacation Leave':
+            case 'Special Privilege Leave':
+                $leaveValidationRules = [
+                    'within_philippines' => 'required_without:abroad_details|string|nullable',
+                    'abroad_details' => 'required_without:within_philippines|string|nullable',
+                ];
+                break;
+    
+            case 'Sick Leave':
+                $leaveValidationRules = [
+                    'in_hospital_details' => 'required_without:out_patient_details|string|nullable',
+                    'out_patient_details' => 'required_without:in_hospital_details|string|nullable',
+                ];
+                break;
+    
+            case 'Study Leave':
+                $leaveValidationRules = [
+                    'completion_masters' => 'required_without:bar_review|boolean|nullable',
+                    'bar_review' => 'required_without:completion_masters|boolean|nullable',
+                ];
+                break;
+    
+            case 'Other Purposes':
+                $leaveValidationRules = [
+                    'monetization' => 'required_without:terminal_leave|boolean|nullable',
+                    'terminal_leave' => 'required_without:monetization|boolean|nullable',
+                ];
+                break;
+    
+            case 'Others':
+                $leaveValidationRules = [
+                    'others_details' => 'required|string|nullable'
+                ];
+                break;
+        }
+    
+        $advanceFilingRules = [
+            'Vacation Leave' => 5,
+            'Special Privilege Leave' => 7,
+            'Solo Parent Leave' => 5,
+            'Special Leave Benefits for Women Leave' => 5,
+            'Sick Leave' => 0, 
+            'Maternity Leave' => 0, 
+            'Paternity Leave' => 0, 
+            'Mandatory Leave' => 0,
+        ];
+    
         $inclusiveLeaveTypes = [
             'Maternity Leave',
             'Study Leave',
@@ -115,35 +160,69 @@ class HrController extends Controller
             'Special Leave Benefits for Women Leave'
         ];
     
-        $request->validate([
+        $request->validate(array_merge([
             'leave_type' => 'required|string',
             'start_date' => [
                 'required',
                 'date',
-                function ($attribute, $value, $fail) use ($request, $inclusiveLeaveTypes, $yearlyHolidayService) {
+                function ($attribute, $value, $fail) use ($request, $advanceFilingRules) {
                     $leaveType = $request->leave_type;
                     $startDate = Carbon::parse($value);
-    
-                    if (!in_array($leaveType, $inclusiveLeaveTypes) && 
-                        ($startDate->isWeekend() || $yearlyHolidayService->isHoliday($startDate))) {
-                        $fail('The start date cannot be a weekend or holiday for this leave type.');
+                    $today = Carbon::now();
+                    $advanceDaysRequired = $advanceFilingRules[$leaveType] ?? 0;
+        
+                    // Only validate based on the required advance filing days
+                    if ($advanceDaysRequired > 0) {
+                        $minStartDate = $today->copy()->addDays($advanceDaysRequired);
+                        
+                        if ($startDate->lt($minStartDate)) {
+                            $fail("You must request {$leaveType} at least {$advanceDaysRequired} days in advance.");
+                        }
                     }
                 }
             ],
             'end_date' => 'required|date|after_or_equal:start_date',
             'reason' => 'nullable|string',
-            'signature' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',
+            'leave_files.*' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048', // Multiple files
             'days_applied' => 'required|integer|min:1',
             'commutation' => 'required|boolean',
             'leave_details' => 'nullable|array', 
-            'abroad_details' => 'nullable|string', 
-        ]);
+            'abroad_details' => 'nullable|string',
+        ], $leaveValidationRules));
     
         $user = Auth::user();
+        $startDate = Carbon::parse($request->start_date);
+        $endDate = Carbon::parse($request->end_date);
+    
+        $requiredDocs = [
+            'Sick Leave' => 'Medical Certificate (if filed in advance or > 5 days)',
+            'Maternity Leave' => 'Proof of Pregnancy (Ultrasound, Doctor’s Certificate)',
+            'Paternity Leave' => 'Proof of Child Delivery (Birth Certificate, Medical Certificate, Marriage Contract)'
+        ];
     
         $startDate = Carbon::parse($request->start_date);
         $endDate = Carbon::parse($request->end_date);
-        
+        $today = Carbon::now();
+    
+        $daysUntilLeave = $today->diffInDays($startDate, false);
+        $daysRequested = $startDate->diffInDays($endDate) + 1;
+    
+        $requiresDocs = false;
+    
+        if ($request->leave_type === 'Sick Leave') {
+            if ($daysUntilLeave > 0 || $daysRequested > 5) {
+                $requiresDocs = true;
+            }
+        } elseif (in_array($request->leave_type, ['Maternity Leave', 'Paternity Leave'])) {
+            $requiresDocs = true;
+        }
+    
+        if ($requiresDocs && !$request->hasFile('leave_files')) {
+            return redirect()->back()->withErrors([
+                'leave_files' => "For {$request->leave_type}, please upload the required documents: " . $requiredDocs[$request->leave_type]
+            ]);
+        }
+    
         if (in_array($request->leave_type, $inclusiveLeaveTypes)) {
             $daysApplied = $startDate->diffInDays($endDate) + 1;
         } else {
@@ -159,8 +238,7 @@ class HrController extends Controller
             }
     
             if ($daysApplied === 0) {
-                $isValidStartDate = !$startDate->isWeekend() && 
-                                    !$yearlyHolidayService->isHoliday($startDate);
+                $isValidStartDate = !$startDate->isWeekend() && !$yearlyHolidayService->isHoliday($startDate);
     
                 if ($isValidStartDate) {
                     $daysApplied = 1;
@@ -172,16 +250,15 @@ class HrController extends Controller
             }
         }
     
-        // For Mandatory Leave, check vacation leave balance
         $leaveTypeForBalance = $request->leave_type === 'Mandatory Leave' ? 'Vacation Leave' : $request->leave_type;
-        
-        // Calculate available balance
+    
         if ($leaveTypeForBalance === 'Sick Leave') {
             $availableLeaveBalance = $user->sick_leave_balance;
         } elseif ($leaveTypeForBalance === 'Vacation Leave') {
             $availableLeaveBalance = $user->vacation_leave_balance;
         } else {
             $availableLeaveBalance = match ($leaveTypeForBalance) {
+                'Special Privilege Leave' => $user->special_privilege_leave,
                 'Maternity Leave' => $user->maternity_leave,
                 'Paternity Leave' => $user->paternity_leave,
                 'Solo Parent Leave' => $user->solo_parent_leave,
@@ -194,7 +271,6 @@ class HrController extends Controller
             };
         }
     
-        // For Sick Leave and Vacation Leave, we need to check combined balance
         if (in_array($leaveTypeForBalance, ['Sick Leave', 'Vacation Leave'])) {
             $combinedBalance = $user->sick_leave_balance + $user->vacation_leave_balance;
             if ($daysApplied > $combinedBalance) {
@@ -206,8 +282,16 @@ class HrController extends Controller
             }
         }
     
-        $leaveDetails = [];
+        $leaveFiles = [];
+        if ($request->hasFile('leave_files')) {
+            foreach ($request->file('leave_files') as $file) {
+                $path = $file->store('leave_files', 'public');
+                $leaveFiles[] = $path;
+            }
+        }
     
+        $leaveDetails = [];
+        
         if ($request->leave_type === 'Vacation Leave' || $request->leave_type === 'Special Privilege Leave') {
             if ($request->filled('within_philippines')) {
                 $leaveDetails['Within the Philippines'] = $request->within_philippines;
@@ -226,7 +310,6 @@ class HrController extends Controller
             }
         }
     
-        // **Study Leave**
         if ($request->leave_type === 'Study Leave') {
             if ($request->has('completion_masters')) {
                 $leaveDetails[] = 'Completion of Master\'s Degree';
@@ -236,7 +319,6 @@ class HrController extends Controller
             }
         }
     
-        // **Other Purposes**
         if ($request->leave_type === 'Other Purposes') {
             if ($request->has('monetization')) {
                 $leaveDetails[] = 'Monetization of Leave Credits';
@@ -246,7 +328,6 @@ class HrController extends Controller
             }
         }
     
-        // **Others Leave Type**
         if ($request->leave_type === 'Others') {
             if ($request->filled('others_details')) {
                 $leaveDetails[] = 'Other Details';
@@ -254,11 +335,10 @@ class HrController extends Controller
             }
         }
     
-        // Store leave request with a default status of "Pending"
         Leave::create([
             'user_id' => auth()->id(),
             'leave_type' => $request->leave_type,
-            'leave_details' => json_encode($leaveDetails), // Store all selected details as JSON
+            'leave_details' => json_encode($leaveDetails),
             'start_date' => $request->start_date,
             'end_date' => $request->end_date,
             'salary_file' => $request->salary_file,
@@ -267,9 +347,9 @@ class HrController extends Controller
             'date_filing' => now(),
             'reason' => $request->reason,
             'signature' => $request->signature,
-            'status' => 'pending', // Default status for new requests
+            'leave_files' => json_encode($leaveFiles),
+            'status' => 'pending',
         ]);
-
     
         notify()->success('Leave request submitted successfully! It is now pending approval.');
         return redirect()->back();
@@ -293,10 +373,8 @@ class HrController extends Controller
             'working_hours_applied' => 'required|integer|min:4',
         ]);
 
-        // Convert the comma-separated dates string to an array
         $datesArray = explode(', ', $request->inclusive_dates);
         
-        // Optionally, you might want to validate each date
         foreach ($datesArray as $date) {
             if (!strtotime($date)) {
                 return back()->withErrors(['inclusive_dates' => 'Invalid date format detected']);
@@ -307,9 +385,9 @@ class HrController extends Controller
             'user_id' => auth()->id(),
             'date_filed' => now(),
             'working_hours_applied' => $request->working_hours_applied,
-            'inclusive_dates' => $request->inclusive_dates, // Store as comma-separated string
-            'admin_status' => 'pending', // Goes to admin first
-            'hr_status' => 'pending', // HR reviews only after admin approval
+            'inclusive_dates' => $request->inclusive_dates,
+            'admin_status' => 'pending', 
+            'hr_status' => 'pending', 
         ]);
 
         notify()->success('Overtime request submitted successfully! Pending admin review.');
@@ -322,17 +400,14 @@ class HrController extends Controller
             abort(403, 'Unauthorized access.');
         }
 
-        // Get leave applications waiting for supervisor approval
         $leaveApplications = Leave::where('admin_status', 'approved')
             ->orderBy('created_at', 'desc')
             ->paginate(9);
 
-        // Get CTO applications waiting for review
         $ctoApplications = OvertimeRequest::where('admin_status', 'Ready for Review')
             ->orderBy('created_at', 'desc')
             ->paginate(9);
 
-        // Fetch all HR Supervisors
         $officials = HRSupervisor::all();
 
         return view('hr.requests', compact('leaveApplications', 'ctoApplications', 'officials'));
@@ -359,22 +434,18 @@ class HrController extends Controller
         return view('hr.cto_details', compact('cto'));
     }
 
-    // HR officer reviews applications
     public function review(Request $request, $leaveId) 
     {
         $leave = Leave::findOrFail($leaveId);
         $user = $leave->user;
     
-        // Validate the request
         $request->validate([
             'status' => 'required|in:Approved,Rejected',
             'disapproval_reason' => 'nullable|string',
         ]);
     
-        // Convert status to lowercase
         $hr_status = strtolower($request->status);
     
-        // Prepare the update data
         $updateData = [
             'hr_status' => $hr_status,
             'status' => $hr_status === 'rejected' ? 'rejected' : $leave->status,
@@ -382,10 +453,8 @@ class HrController extends Controller
             'hr_officer_id' => auth()->id(),
         ];
     
-        // If approved, apply leave deductions
         if ($hr_status === 'approved') {
     
-            // Handle balance deductions
             $leaveTypeForDeduction = $leave->leave_type === 'Mandatory Leave' ? 'Vacation Leave' : $leave->leave_type;
     
             switch ($leaveTypeForDeduction) {
@@ -408,7 +477,9 @@ class HrController extends Controller
                         $user->sick_leave_balance -= $remainingDays;
                     }
                     break;
-    
+                case 'Special Privilege Leave':
+                    $user->special_privilege_leave -= $leave->days_applied;
+                    break;
                 case 'Maternity Leave':
                     $user->maternity_leave -= $leave->days_applied;
                     break;
@@ -442,21 +513,28 @@ class HrController extends Controller
                     break;
     
                 default:
-                    // No deduction for other leave types
                     break;
             }
     
-            // Update supervisor fields
             $updateData['supervisor_status'] = 'approved';
             $updateData['supervisor_id'] = auth()->id();
             $updateData['status'] = 'approved';
         }
     
-        // Save changes
         $leave->update($updateData);
         $user->save();
+        
+        notify()->success('CTO application reviewed by HR.');
     
-         // ✅ Send the notification with the correct Leave model
+        $user->notify(new LeaveStatusNotification($leave, 
+        "Your leave request has been <span class='" . 
+        ($leave->status === 'approved' ? 'text-green-500' : 'text-red-500') . "'>" . 
+        $leave->status . "</span> by the HR.", 
+        $leave, 
+        'leave' 
+    ));
+    
+    
          $user->notify(new LeaveStatusNotification($leave, "Your leave request has been <span class='" .
          ($leave->status === 'approved' ? 'text-green-500' : 'text-red-500') . "'>" .
          $leave->status . "</span> by the HR."));     
@@ -542,10 +620,8 @@ class HrController extends Controller
             'date' => now()->format('F d, Y'),
         ];
 
-        // Load PDF view
         $pdf = Pdf::loadView('hr.leave_report', $data);
         
-        // Return PDF for download
         return $pdf->download('leave_certificate.pdf');
     }
 
@@ -610,7 +686,6 @@ class HrController extends Controller
                   ->whereYear('start_date', now()->year);
         }])->get();
     
-        // Calculate total absences correctly
         $employees->each(function ($employee) {
             $employee->total_absences = $employee->leaves->sum(function ($leave) {
                 return \Carbon\Carbon::parse($leave->start_date)
@@ -625,31 +700,25 @@ class HrController extends Controller
     {
         $selectedYear = (int) $request->input('year', date('Y'));  // Cast year to integer
     
-        // Get holidays for the selected year
         $holidays = YearlyHoliday::whereYear('date', $selectedYear)
             ->orWhere('repeats_annually', true)
             ->orderBy('date')
             ->get()
             ->map(function ($holiday) use ($selectedYear) {
-                // Ensure repeating holidays use the selected year
                 if ($holiday->repeats_annually) {
                     $date = Carbon::parse($holiday->date);
     
-                    // Force cast to integer to avoid the Carbon::setUnit() error
                     $holiday->date = Carbon::create((int) $selectedYear, (int) $date->month, (int) $date->day)->format('Y-m-d');
                 }
                 return $holiday;
             });
     
-        // Group holidays by month
         $groupedHolidays = $holidays->groupBy(function ($item) {
             return Carbon::parse($item->date)->format('F Y');
         });
     
-        // Prepare data for calendar view
         $calendarData = $this->prepareCalendarData($holidays, $selectedYear);
     
-        // Get available years for dropdown
         $availableYears = $this->getAvailableYears();
     
         return view('hr.holiday-calendar', compact(
@@ -665,7 +734,6 @@ class HrController extends Controller
     $months = [];
 
     for ($month = 1; $month <= 12; $month++) {
-        // Cast year and month to integers to avoid Carbon errors
         $year = (int) $year;
         $month = (int) $month;
 
@@ -678,7 +746,6 @@ class HrController extends Controller
             'days' => []
         ];
 
-        // Filter holidays for this month
         $monthHolidays = $holidays->filter(function ($holiday) use ($month) {
             return (int) Carbon::parse($holiday->date)->month === $month;
         });
@@ -747,17 +814,12 @@ class HrController extends Controller
         
         return $pdf->stream('overtime_request_' . $overtime->id . '.pdf');
     }
-    /**
-     * Show the form for creating a new holiday.
-     */
+
     public function create()
     {
         return view('hr.holidays.create');
     }
 
-    /**
-     * Store a newly created holiday in storage.
-     */
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -784,17 +846,11 @@ class HrController extends Controller
             ->with('success', 'Holiday created successfully.');
     }
 
-    /**
-     * Show the form for editing the specified holiday.
-     */
     public function edit(YearlyHoliday $holiday)
     {
         return view('hr.holidays.edit', compact('holiday'));
     }
 
-    /**
-     * Update the specified holiday in storage.
-     */
     public function update(Request $request, YearlyHoliday $holiday)
     {
         $validator = Validator::make($request->all(), [
@@ -821,9 +877,6 @@ class HrController extends Controller
             ->with('success', 'Holiday updated successfully.');
     }
 
-    /**
-     * Remove the specified holiday from storage.
-     */
     public function destroy(YearlyHoliday $holiday)
     {
         $holiday->delete();
@@ -868,19 +921,17 @@ class HrController extends Controller
     public function users(Request $request)
     {
         $query = User::query();
-    
-        // Search functionality
+        
         if ($request->has('search') && !empty($request->search)) {
             $searchTerm = $request->search;
             $query->where(function ($q) use ($searchTerm) {
                 $q->where('first_name', 'LIKE', "%{$searchTerm}%")
-                  ->orWhere('last_name', 'LIKE', "%{$searchTerm}%")
-                  ->orWhere('email', 'LIKE', "%{$searchTerm}%")
-                  ->orWhere('employee_code', 'LIKE', "%{$searchTerm}%");
+                ->orWhere('last_name', 'LIKE', "%{$searchTerm}%")
+                ->orWhere('email', 'LIKE', "%{$searchTerm}%")
+                ->orWhere('employee_code', 'LIKE', "%{$searchTerm}%");
             });
         }
-    
-        // Sorting functionality
+        
         if ($request->has('order_by') && !empty($request->order_by)) {
             if ($request->order_by == 'created_at') {
                 $query->orderBy('created_at', 'desc');
@@ -888,13 +939,15 @@ class HrController extends Controller
                 $query->orderBy('last_name', 'asc');
             }
         } else {
-            $query->orderBy('first_name', 'asc'); // Default sorting
+            $query->orderBy('first_name', 'asc'); 
         }
-    
+        
         $users = $query->paginate(10);
-    
+        
+        if ($request->ajax()) {
+            return view('hr.partials.user-list', compact('users')); 
+        }
+        
         return view('hr.users', compact('users'));
     }
-    
-    
 }

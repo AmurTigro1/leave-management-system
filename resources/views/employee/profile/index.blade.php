@@ -125,9 +125,22 @@
                         {{ $user->vacation_leave_balance ?? 0 }} 
                         {{ Str::plural('day', $user->vacation_leave_balance ?? 0) }}
                     </span>
-                    
                 </div>
-                
+
+                <!-- Mandatory Leave Notice -->
+                @if(($user->total_annual_vacation_leave - $user->vacation_leave_balance) < 5)
+                <div class="bg-yellow-100 text-yellow-800 p-2 rounded mt-2 text-sm flex items-center border-l-4 border-yellow-500">
+                    <svg class="w-5 h-5 mr-2 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M12 8h.01M12 18h.01M12 20h.01"></path>
+                    </svg>
+                    <span>
+                        <strong>Mandatory Leave Reminder:</strong> You must use at least <strong>5 vacation leave days</strong> this year.  
+                        Unused days will be <strong>forfeited after December 31st</strong>.  
+                        You have used <strong>{{ $user->total_annual_vacation_leave - $user->vacation_leave_balance }}</strong> day(s) so far.
+                    </span>
+                </div>
+                @endif
+       
                 <!-- Sick Leave -->
                 <div class="flex justify-between items-center bg-white p-2 rounded shadow-sm">
                     <span class="text-sm sm:text-base text-gray-600">Sick:</span>
@@ -154,10 +167,17 @@
                     <span class="font-medium text-gray-600">
                         {{ $user->paternity_leave ?? 0 }} 
                         {{ Str::plural('day', $user->paternity_leave ?? 0) }}
-                    </span>
-                    
+                    </span> 
                 </div>
-                
+                <!-- Paternity Leave -->
+                <div class="flex justify-between items-center bg-white p-2 rounded shadow-sm">
+                    <span class="text-sm sm:text-base text-gray-600">Special Privilege Leave:</span>
+                    <span class="font-medium text-gray-600">
+                        {{ $user->special_privilege_leave ?? 0 }} 
+                        {{ Str::plural('day', $user->special_privilege_leave ?? 0) }}
+                    </span> 
+                </div>
+
                 <!-- Solo Parent Leave -->
                 <div class="flex justify-between items-center bg-white p-2 rounded shadow-sm">
                     <span class="text-sm sm:text-base text-gray-600">Solo Parent:</span>
@@ -200,7 +220,7 @@
                 
                 <!-- Special Leave Benefit -->
                 <div class="flex justify-between items-center bg-white p-2 rounded shadow-sm">
-                    <span class="text-sm sm:text-base text-gray-600">Special Benefit:</span>
+                    <span class="text-sm sm:text-base text-gray-600">Special Benefits :</span>
                     <span class="font-medium text-gray-600">
                         {{ $user->special_leave_benefit ?? 0 }} 
                         {{ Str::plural('day', $user->special_leave_benefit ?? 0) }}
@@ -282,6 +302,7 @@
                         {{ $user->sick_leave_balance ?? 0 }}, 
                         {{ $user->maternity_leave ?? 0 }}, 
                         {{ $user->paternity_leave ?? 0 }}, 
+                        {{ $user->special_privilege_leave ?? 0 }}, 
                         {{ $user->solo_parent_leave ?? 0 }}, 
                         {{ $user->study_leave ?? 0 }}, 
                         {{ $user->vawc_leave ?? 0 }}, 

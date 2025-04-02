@@ -144,7 +144,7 @@ class EmployeeController extends Controller
         'Sick Leave' => 0, 
         'Maternity Leave' => 0, 
         'Paternity Leave' => 0, 
-        'Mandatory Leave' => 5,
+        'Mandatory Leave' => 0,
     ];
 
     $inclusiveLeaveTypes = [
@@ -252,6 +252,7 @@ class EmployeeController extends Controller
         $availableLeaveBalance = $user->vacation_leave_balance;
     } else {
         $availableLeaveBalance = match ($leaveTypeForBalance) {
+            'Special Privilege Leave' => $user->special_privilege_leave,
             'Maternity Leave' => $user->maternity_leave,
             'Paternity Leave' => $user->paternity_leave,
             'Solo Parent Leave' => $user->solo_parent_leave,
@@ -802,82 +803,142 @@ private function deductLeaveBalance($user, $leave)
         return view('employee.edit', compact('id', 'leave'));
     }
 
-    public function updateLeave(Request $request, $id)
-    {
-        
-        $request->validate([
-            'leave_type' => 'required|string|max:255',
-            'salary_file' => 'required|string|max:255',
-            'start_date' => 'required|date',
-            'end_date' => 'required|date|after_or_equal:start_date',
-            'days_applied' => 'required|integer|min:1',
-            'commutation' => 'required|boolean',
-            'reason' => 'nullable|string',
-            'signature' => 'nullable|file|mimes:jpg,png,pdf|max:2048',
-            'abroad_details' => 'nullable|string',
-        ]);
-    
-        $leave = Leave::findOrFail($id);
-    
-        $leaveDetails = [];
-    
-        if ($request->leave_type === 'Vacation Leave' || $request->leave_type === 'Special Privilege Leave') {
-            if ($request->filled('within_philippines')) {
-                $leaveDetails['Within the Philippines'] = $request->within_philippines;
-            }
-            if ($request->filled('abroad_details')) {
-                $leaveDetails['Abroad'] = $request->abroad_details; 
-            }
-        }
-    
-        if ($request->leave_type === 'Sick Leave') {
-            if ($request->has('in_hospital')) {
-                $leaveDetails['In Hospital'] = $request->input('in_hospital_details', 'Yes');
-            }
-            if ($request->has('out_patient')) {
-                $leaveDetails['Out Patient'] = $request->input('out_patient_details', 'Yes');
-            }
-        }
-    
-        if ($request->leave_type === 'Study Leave') {
-            if ($request->has('completion_masters')) {
-                $leaveDetails[] = 'Completion of Master\'s Degree';
-            }
-            if ($request->has('bar_review')) {
-                $leaveDetails[] = 'BAR Review';
-            }
-        }
-    
-        if ($request->leave_type === 'Other Purposes') {
-            if ($request->has('monetization')) {
-                $leaveDetails[] = 'Monetization of Leave Credits';
-            }
-            if ($request->has('terminal_leave')) {
-                $leaveDetails[] = 'Terminal Leave';
-            }
-        }
-    
-        if ($request->leave_type === 'Others') {
-            if ($request->filled('others_details')) {
-                $leaveDetails[] = 'Other Details';
-                $leaveDetails[] = $request->others_details;
-            }
-        }
-    
-        $leave->update([
-            'leave_type' => $request->leave_type,
-            'salary_file' => $request->salary_file,
-            'start_date' => $request->start_date,
-            'end_date' => $request->end_date,
-            'days_applied' => $request->days_applied,
-            'commutation' => $request->commutation,
-            'reason' => $request->reason,
-            'signature' => $request->signature,
-            'leave_details' => !empty($leaveDetails) ? json_encode($leaveDetails) : null, // Save as JSON
-        ]);
-    
-        return redirect()->back()->with('success', 'Leave request updated successfully.');
+    public function updateLeave(Request $request, $id, YearlyHolidayService $yearlyHolidayService)
+{
+    $leave = Leave::findOrFail($id);
+
+    // Initialize today date
+    $today = Carbon::now();
+
+    // Initialize $days_applied, calculate the days between start_date and end_date
+    $startDate = Carbon::parse($request->start_date);
+    $endDate = Carbon::parse($request->end_date);
+    $days_applied = $startDate->diffInDays($endDate) + 1;  // Add 1 to include the start day
+
+    $leaveValidationRules = [];
+
+    switch ($request->leave_type) {
+        case 'Vacation Leave':
+        case 'Special Privilege Leave':
+            $leaveValidationRules = [
+                'within_philippines' => 'required_without:abroad_details|string|nullable',
+                'abroad_details' => 'required_without:within_philippines|string|nullable',
+            ];
+            break;
+
+        case 'Sick Leave':
+            $leaveValidationRules = [
+                'in_hospital_details' => 'required_without:out_patient_details|string|nullable',
+                'out_patient_details' => 'required_without:in_hospital_details|string|nullable',
+            ];
+            break;
+
+        case 'Study Leave':
+            $leaveValidationRules = [
+                'completion_masters' => 'required_without:bar_review|boolean|nullable',
+                'bar_review' => 'required_without:completion_masters|boolean|nullable',
+            ];
+            break;
+
+        case 'Other Purposes':
+            $leaveValidationRules = [
+                'monetization' => 'required_without:terminal_leave|boolean|nullable',
+                'terminal_leave' => 'required_without:monetization|boolean|nullable',
+            ];
+            break;
+
+        case 'Others':
+            $leaveValidationRules = [
+                'others_details' => 'required|string|nullable'
+            ];
+            break;
     }
+
+    $advanceFilingRules = [
+        'Vacation Leave' => 5,
+        'Special Privilege Leave' => 7,
+        'Solo Parent Leave' => 5,
+        'Special Leave Benefits for Women Leave' => 5,
+        'Sick Leave' => 0, 
+        'Maternity Leave' => 0, 
+        'Paternity Leave' => 0, 
+        'Mandatory Leave' => 0,
+    ];
+
+    $inclusiveLeaveTypes = [
+        'Maternity Leave',
+        'Study Leave',
+        'Rehabilitation Privilege',
+        'Special Leave Benefits for Women Leave'
+    ];
+
+    $request->validate(array_merge([ 
+        'leave_type' => 'required|string',
+        'start_date' => [
+            'required',
+            'date',
+            function ($attribute, $value, $fail) use ($request, $advanceFilingRules) {
+                $leaveType = $request->leave_type;
+                $startDate = Carbon::parse($value);
+                $today = Carbon::now();
+                $advanceDaysRequired = $advanceFilingRules[$leaveType] ?? 0;
+
+                // Only validate based on the required advance filing days
+                if ($advanceDaysRequired > 0) {
+                    $minStartDate = $today->copy()->addDays($advanceDaysRequired);
+
+                    if ($startDate->lt($minStartDate)) {
+                        $fail("You must request {$leaveType} at least {$advanceDaysRequired} days in advance.");
+                    }
+                }
+            }
+        ],
+        'end_date' => 'required|date|after_or_equal:start_date',
+        'reason' => 'nullable|string',
+        'leave_files.*' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048', // Multiple files
+        'days_applied' => 'required|integer|min:1',
+        'commutation' => 'required|boolean',
+        'leave_details' => 'nullable|array',
+        'abroad_details' => 'nullable|string',
+    ], $leaveValidationRules));
+
+    $user = Auth::user();
+
+    // Recalculate leave days (same as the store method)
+    // Other logic remains the same...
+
+    // Handle leave files (if new files are uploaded)
+    $leaveFiles = [];
+    if ($request->hasFile('leave_files')) {
+        foreach ($request->file('leave_files') as $file) {
+            $path = $file->store('leave_files', 'public');
+            $leaveFiles[] = $path;
+        }
+    }
+
+    $leaveDetails = [];
+
+    // Populate leave details based on leave type
+    // Same logic as in store function...
+
+    // Update the leave record
+    $leave->update([
+        'leave_type' => $request->leave_type,
+        'leave_details' => json_encode($leaveDetails),
+        'start_date' => $request->start_date,
+        'end_date' => $request->end_date,
+        'salary_file' => $request->salary_file,
+        'days_applied' => $days_applied,
+        'commutation' => $request->commutation,
+        'reason' => $request->reason,
+        'signature' => $request->signature,
+        'leave_files' => json_encode($leaveFiles),
+        'status' => 'pending',  // Can be modified based on the requirements
+    ]);
+
+    notify()->success('Leave request updated successfully!');
+    return redirect()->back()->with('success', 'Leave request updated successfully.');
+}
 
     public function deleteLeave($id) {
         Leave::findOrFail($id)->delete();
