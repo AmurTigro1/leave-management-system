@@ -32,7 +32,7 @@ return new class extends Migration
             $table->foreignId('supervisor_id')->nullable()->constrained('users')->onDelete('set null');
             $table->enum('supervisor_status', ['pending', 'approved', 'rejected'])->default('pending');
             $table->enum('hr_status', ['pending', 'approved', 'rejected'])->default('pending');
-            $table->json('leave_files')->nullable(); 
+            // $table->json('leave_files')->nullable(); 
             $table->enum('admin_status', ['pending', 'approved', 'rejected'])->default('pending');
             $table->enum('status', ['pending', 'approved', 'rejected', 'cancelled'])->default('pending');
             $table->timestamps();

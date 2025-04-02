@@ -31,6 +31,7 @@ class User extends Authenticatable
         'password',
         'role', 
         'vacation_leave_balance',
+        'special_privilege_leave',
         'sick_leave_balance',
         'leave_balance',
         'vacation_leave_balance',
