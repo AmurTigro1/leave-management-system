@@ -178,11 +178,23 @@
                         <!-- Avatar -->
                         <div class="relative flex-shrink-0">
                             <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-full overflow-hidden bg-gradient-to-br from-indigo-100 to-indigo-200 shadow">
-                                @if($leave->user && $leave->user->profile_image)
-                                    <img src="{{ asset('storage/profile_images/' . $leave->user->profile_image) }}" class="w-full h-full object-cover">
-                                @else
-                                    <img src="{{ asset('img/default-avatar.png')}}" alt="default avatar" class="w-full h-full object-cover">
-                                @endif
+                                @php
+                                $profileImage = null;
+                            
+                                if ($leave->user && $leave->user->profile_image) {
+                                    $imagePath1 = 'storage/profile_images/' . $leave->user->profile_image;
+                                    $imagePath2 = 'storage/profile_pictures/' . $leave->user->profile_image;
+                            
+                                    if (file_exists(public_path($imagePath1))) {
+                                        $profileImage = asset($imagePath1);
+                                    } elseif (file_exists(public_path($imagePath2))) {
+                                        $profileImage = asset($imagePath2);
+                                    }
+                                }
+                            @endphp
+                            
+                            <img src="{{ $profileImage ?? asset('img/default-avatar.png') }}" alt="Profile Image" class="w-full h-full object-cover">
+                            
                             </div>
                             <div class="absolute -bottom-1 -right-1 bg-green-500 rounded-full p-0.5 sm:p-1 shadow">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-2.5 w-2.5 sm:h-3 sm:w-3 text-white" viewBox="0 0 20 20" fill="currentColor">
@@ -262,11 +274,23 @@
                     <!-- Avatar with Status -->
                     <div class="relative flex-shrink-0">
                         <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-full overflow-hidden bg-gradient-to-br from-indigo-100 to-indigo-200 shadow">
-                            @if($overtime->user && $overtime->user->profile_image)
-                                <img src="{{ asset('storage/profile_images/' . $overtime->user->profile_image) }}" class="w-full h-full object-cover">
-                            @else
-                                <img src="{{ asset('img/default-avatar.png')}}" alt="default avatar" class="w-full h-full object-cover">
-                            @endif
+                            @php
+                                $profileImage = null;
+
+                                if ($overtime->user && $overtime->user->profile_image) {
+                                    $imagePath1 = 'storage/profile_images/' . $overtime->user->profile_image;
+                                    $imagePath2 = 'storage/profile_pictures/' . $overtime->user->profile_image;
+
+                                    if (file_exists(public_path($imagePath1))) {
+                                        $profileImage = asset($imagePath1);
+                                    } elseif (file_exists(public_path($imagePath2))) {
+                                        $profileImage = asset($imagePath2);
+                                    }
+                                }
+                            @endphp
+
+                            <img src="{{ $profileImage ?? asset('img/default-avatar.png') }}" alt="Profile Image" class="w-full h-full object-cover">
+
                         </div>
                         <div class="absolute -bottom-1 -right-1 bg-yellow-500 rounded-full p-0.5 sm:p-1 shadow">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-2.5 w-2.5 sm:h-3 sm:w-3 text-white" viewBox="0 0 20 20" fill="currentColor">
