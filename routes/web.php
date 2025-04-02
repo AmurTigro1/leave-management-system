@@ -37,6 +37,8 @@ Route::middleware('auth')->group(function () {
         Route::patch('/supervisor-profile/update-email', [SupervisorController::class, 'updateEmail'])->name('supervisor-email.update'); 
         Route::get('/supervisor/holidays', [SupervisorController::class, 'holiday'])->name('supervisor.holiday.calendar');
         
+        Route::get('/supervisor-leave/view/{id}', [SupervisorController::class, 'viewPdf'])->name('supervisor.leave.viewPdf');
+        Route::get('/supervisor-cto/view/{id}', [SupervisorController::class, 'ctoviewPdf'])->name('supervisor.cto.viewPdf');
         // Route::get('/supervisor/requests', [SupervisorController::class, 'requests'])->name('supervisor.requests');
     });
 
@@ -90,7 +92,9 @@ Route::middleware('auth')->group(function () {
         Route::put('/hr/user/{id}', [UserController::class, 'update'])->name('hr.users.update');
         Route::delete('/hr/user/{id}', [UserController::class, 'destroy'])->name('hr.users.destroy');
 
-
+        Route::get('/check-existing-roles', [UserController::class, 'checkExistingRoles'])->name('check.existing.roles');
+        Route::post('/swap-roles', [UserController::class, 'swapRoles'])->name('swap.roles');
+        
     });
 
     //Admin Assistant Route
