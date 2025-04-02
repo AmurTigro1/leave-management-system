@@ -119,6 +119,9 @@ Route::middleware('auth')->group(function () {
         Route::get('/admin/cto-request', [AdminController::class, 'makeCTORequest'])->name('admin.make_cto_request');
         Route::post('/admin/overtime-request/store', [AdminController::class, 'storeCTO'])->name('admin_overtime_request.store');
         Route::get('/admin/coc-logs/', [CocLogController::class, 'indexAdmin'])->name('coc_logs.admin');
+
+        Route::get('/admins/modal', [AdminController::class, 'showAdminsModal'])->name('admins.modal');
+        Route::get('/admin/employees', [AdminController::class, 'onLeave'])->name('admin.on_leave');
     });
 
 
