@@ -865,10 +865,36 @@ class HrController extends Controller
         return view('hr.CTO.coclog', compact('logs'));
     }
 
-    public function users()
+    public function users(Request $request)
     {
-        $users = User::orderBy('last_name', 'asc')->paginate(10);
+        $query = User::query();
+    
+        // Search functionality
+        if ($request->has('search') && !empty($request->search)) {
+            $searchTerm = $request->search;
+            $query->where(function ($q) use ($searchTerm) {
+                $q->where('first_name', 'LIKE', "%{$searchTerm}%")
+                  ->orWhere('last_name', 'LIKE', "%{$searchTerm}%")
+                  ->orWhere('email', 'LIKE', "%{$searchTerm}%")
+                  ->orWhere('employee_code', 'LIKE', "%{$searchTerm}%");
+            });
+        }
+    
+        // Sorting functionality
+        if ($request->has('order_by') && !empty($request->order_by)) {
+            if ($request->order_by == 'created_at') {
+                $query->orderBy('created_at', 'desc');
+            } elseif ($request->order_by == 'last_name') {
+                $query->orderBy('last_name', 'asc');
+            }
+        } else {
+            $query->orderBy('first_name', 'asc'); // Default sorting
+        }
+    
+        $users = $query->paginate(10);
+    
         return view('hr.users', compact('users'));
     }
+    
     
 }

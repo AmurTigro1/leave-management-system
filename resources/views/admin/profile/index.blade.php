@@ -2,7 +2,7 @@
 @section('content')
 <div class="w-full p-3 sm:p-4 rounded-xl shadow-md animate-fade-in">
     <!-- Banner Image -->
-    <div class="bg-[url('/public/img/office-image.jpg')] bg-cover bg-center bg-no-repeat min-h-[200px] sm:min-h-[300px] md:min-h-[400px] w-full rounded-lg overflow-hidden"></div>     
+    <div class="bg-[url('/public/img/Background.png')] bg-cover bg-center bg-no-repeat min-h-[200px] sm:min-h-[300px] md:min-h-[400px] w-full rounded-lg overflow-hidden"></div>     
           
     <!-- Profile Section -->
     <div class="flex flex-col">
@@ -10,10 +10,14 @@
         <div class="relative w-24 h-24 sm:w-32 sm:h-32 ml-4 sm:ml-6 mt-[-50px] sm:mt-[-100px]">
             <div class="relative group w-full h-full">
                 <!-- Profile Image -->
-                <img id="profile-preview"
-                    src="{{ auth()->user()->profile_image ? asset('storage/profile_images/' . auth()->user()->profile_image) : asset('img/default-avatar.png') }}"
-                    class="w-full h-full rounded-full object-cover border-4 border-gray-300 shadow-md cursor-pointer">
-          
+                <img id="profile-preview" src="{{ 
+                    $user->profile_image && file_exists(storage_path('app/public/profile_images/' . $user->profile_image)) 
+                        ? asset('storage/profile_images/' . $user->profile_image) 
+                        : ($user->profile_image && file_exists(storage_path('app/public/profile_pictures/' . $user->profile_pictures)) 
+                            ? asset('storage/profile_pictures/' . $user->profile_image) 
+                            : asset('img/default-avatar.png')) 
+                }}" 
+                class="w-full h-full rounded-full object-cover border-4 border-gray-300 shadow-md cursor-pointer" alt="{{ $user->name }}">
                 <!-- Hover Overlay -->
                 <label for="profile_image" 
                     class="absolute inset-0 bg-black bg-opacity-50 rounded-full opacity-0 group-hover:opacity-100 flex justify-center items-center transition-opacity duration-300 cursor-pointer pointer-events-none">

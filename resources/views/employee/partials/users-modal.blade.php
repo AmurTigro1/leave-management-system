@@ -12,8 +12,24 @@
         @foreach($employees as $employee)
             <li class="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
                 <!-- Profile Image -->
-                <img src="{{ $employee->profile_image ? asset('storage/profile_images/' . $employee->profile_image) : asset('img/default-avatar.png') }}" alt="Profile" 
-                     class="w-12 h-12 rounded-full border border-gray-300 object-cover">
+                @php
+                    $profileImage = null;
+
+                    if ($employee->profile_image) {
+                        $imagePath1 = 'storage/profile_images/' . $employee->profile_image;
+                        $imagePath2 = 'storage/profile_pictures/' . $employee->profile_image;
+
+                        if (file_exists(public_path($imagePath1))) {
+                            $profileImage = asset($imagePath1);
+                        } elseif (file_exists(public_path($imagePath2))) {
+                            $profileImage = asset($imagePath2);
+                        }
+                    }
+                @endphp
+
+                <img src="{{ $profileImage ?? asset('img/default-avatar.png') }}" 
+                    class="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover flex-shrink-0" 
+                    alt="{{ $employee->name }}">
 
                 <!-- User Info -->
                 <div>

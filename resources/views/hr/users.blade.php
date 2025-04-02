@@ -34,6 +34,20 @@
                           
                         Users Account Management
                     </h2>
+
+                    <form method="GET" action="{{ route('hr.users') }}" class="flex justify-between items-center mt-4 gap-2 w-[55%]">
+                        <div class="w-[30%]">
+                            <select name="order_by" class="w-full border rounded-lg focus:ring-2 focus:ring-blue-400 p-2 text-gray-500 border-gray-300 text-xs sm:text-sm" onchange="this.form.submit()">
+                                <option value="">Order By</option>
+                                <option value="created_at" {{ request('order_by') == 'created_at' ? 'selected' : '' }}>Created At</option>
+                                <option value="last_name" {{ request('order_by') == 'last_name' ? 'selected' : '' }}>Last Name</option>
+                            </select>
+                        </div>
+                        <input type="text" name="search" placeholder="Search employee account" class="py-2 px-4 w-full rounded-lg border-gray-300" value="{{ request('search') }}">
+                        <button type="submit" class="py-2 px-4 bg-blue-500 rounded-lg text-white">Search</button>
+                        <a href="{{ route('hr.users') }}" class="py-2 px-4 bg-gray-300 rounded-lg text-black">Clear</a>
+                    </form>
+                    
                    
                     <button id="openModalBtn" class="bg-blue-600 text-white font-bold py-2 px-4 rounded-lg flex justify-center items-center">
                         <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
@@ -43,7 +57,7 @@
                     </button>
 
                     <div id="userModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex justify-center items-center z-[9999]">
-                        <div class="bg-white w-full sm:w-[90%] md:w-[80%] lg:w-[60%] xl:w-[50%] h-auto max-h-[90vh] overflow-y-auto max-w-3xl rounded-2xl shadow-2xl p-4 sm:p-6 relative transition-all transform scale-95 hover:scale-100 text-sm">
+                        <div class="bg-white w-full sm:w-[90%] md:w-[80%] lg:w-[60%] xl:w-[50%] h-[750px] overflow-y-auto max-w-3xl rounded-2xl shadow-2xl p-4 sm:p-6 relative transition-all transform scale-95 hover:scale-100 text-sm">
 
                             <button id="closeModalBtn" class="absolute top-4 right-4 text-gray-500 hover:text-gray-800 text-2xl">&times;</button>
                     
@@ -251,18 +265,13 @@
                                         <div x-show="open" @click.away="open = false" 
                                         class="absolute transform -translate-x-1/2 mt-2 w-40 bg-white border rounded-lg shadow-lg overflow-visible z-50">
                                             
-                                            <a href="" 
-                                               class="block text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                                                View
-                                            </a>
-                                
                                             {{-- <a href="" 
                                                class="block text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                                                 Edit
                                             </a> --}}
 
                                             <button id="editModalBtn-{{ $user->id }}" class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                                                Edit
+                                              View | Edit
                                             </button>
                     
                                             <form action="{{ route('hr.users.destroy', $user->id) }}" method="POST" class="w-full">
@@ -353,30 +362,19 @@
                                                 {{ $user->department }}
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium overflow-visible">
-                                                <div x-data="{ open: false }" class="relative inline-block text-left">
-                                                    <button @click="open = !open" type="button" class="text-gray-400 hover:text-gray-600">
-                                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
-                                                        </svg>
+                                                <div class="flex justify-between items-center">
+                                                    <button id="editModalBtn-{{ $user->id }}" class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                                       View | Edit
                                                     </button>
-                                                    
-                                                    <div x-show="open" @click.away="open = false" class="origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50 overflow-visible">
-                                                        <div class="py-1">
-                                                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">View</a>
-                                                            <button id="editModalBtn-{{ $user->id }}" class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                                                                Edit
-                                                            </button>
-                                                            <form action="{{ route('hr.users.destroy', $user->id) }}" method="POST" class="w-full">
-                                                                @csrf
-                                                                @method('DELETE')
-                                                                <button type="submit" 
-                                                                        onclick="return confirm('Are you sure you want to delete this user?')"
-                                                                        class="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-100">
-                                                                    Delete
-                                                                </button>
-                                                            </form>   
-                                                        </div>
-                                                    </div>
+                                                    <form action="{{ route('hr.users.destroy', $user->id) }}" method="POST" class="w-full">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button type="submit" 
+                                                                onclick="return confirm('Are you sure you want to delete this user?')"
+                                                                class="block w-full text-left mt-3 px-4 py-2 text-sm text-red-600 hover:bg-red-100">
+                                                            Delete
+                                                        </button>
+                                                    </form>   
                                                 </div>
                                             </td>
                                         </tr>
@@ -390,153 +388,129 @@
             
                 <!-- Pagination -->
                 @foreach ($users as $user)
-                    <div id="editModal-{{ $user->id }}" class="fixed inset-0 bg-black bg-opacity-50 hidden flex justify-center items-center z-[9999]">
-                        <div class="bg-white w-[50%] h-[800px] max-w-3xl rounded-2xl shadow-2xl p-6 relative transition-all transform scale-95 hover:scale-100 text-sm">
-                            <!-- Close Button -->
-                            <button id="closeEditModalBtn-{{ $user->id }}" class="absolute top-4 right-4 text-gray-500 hover:text-gray-800 text-2xl">&times;</button>
-                    
-                            <h2 class="text-3xl font-extrabold text-center text-gray-800">Update User Information</h2>
-                    
-                            <div class="flex justify-between items-center mt-4">
-                                <div class="border-2 border-gray-200 w-[38%]"></div>
-                                <span class="font-semibold text-[15px]">Employee Information</span>
-                                <div class="border-2 border-gray-200 w-[38%]"></div>
+                <div id="editModal-{{ $user->id }}" class="fixed inset-0 bg-black bg-opacity-50 hidden flex justify-center items-center z-[9999]">
+                    <div class="bg-white w-full sm:w-[90%] md:w-[80%] lg:w-[60%] xl:w-[50%] h-[750px] max-w-3xl rounded-2xl shadow-2xl p-4 sm:p-6 relative transition-all transform scale-95 hover:scale-100 text-sm">
+                        
+                        <!-- Close Button -->
+                        <button id="closeEditModalBtn-{{ $user->id }}" class="absolute top-4 right-4 text-gray-500 hover:text-gray-800 text-2xl">&times;</button>
+
+                        <h2 class="text-xl sm:text-2xl md:text-3xl font-extrabold text-center text-gray-800">Update User Information</h2>
+
+                        <!-- Divider -->
+                        <div class="flex justify-between items-center mt-4">
+                            <div class="border-2 border-gray-200 w-[30%] sm:w-[38%]"></div>
+                            <span class="font-semibold text-xs sm:text-[15px]">Employee Information</span>
+                            <div class="border-2 border-gray-200 w-[30%] sm:w-[38%]"></div>
                         </div>
 
                         <form action="{{ route('hr.users.update', $user->id) }}" method="POST" enctype="multipart/form-data">
-                                @csrf
-                                @method('PUT') <!-- Use PUT method for updating -->
-                            
-                                <!-- Profile Picture Section -->
-                                <div class="flex justify-center items-start mt-4">
-                                    <div class="w-full flex justify-center items-start">
-                                        <div> 
-                                            <div class="w-40 h-40 border-4 border-dashed border-gray-300 rounded-full overflow-hidden bg-gray-100 ml-[25%]">
-                                                <img id="profilePreview-{{ $user->id }}" 
-                                                    src="{{ 
-                                                        $user->profile_image && file_exists(storage_path('app/public/profile_images/' . $user->profile_image)) 
-                                                            ? asset('storage/profile_images/' . $user->profile_image) 
-                                                            : ($user->profile_image && file_exists(storage_path('app/public/profile_pictures/' . $user->profile_pictures)) 
-                                                                ? asset('storage/profile_pictures/' . $user->profile_image) 
-                                                                : asset('img/default-avatar.png')) 
-                                                            }}" 
-                                                     class="w-full h-full rounded-full object-cover" 
-                                                     alt="{{ $user->name }}">
-                                            </div>
-                                            
-                                            <div class="">
-                                                <label class=" text-gray-700 font-semibold">Profile Picture</label>
-                                                <input type="file" name="profile_image" id="profile_image-{{ $user->id }}" 
-                                                class="mt-3 w-3/4 border p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400" 
-                                                accept="image/*">                                         
-                                            </div>
-                                        </div>
-                                    </div>
-                            
-                                    <script>
-                                        document.addEventListener("DOMContentLoaded", function () {
-                                            // Attach event listeners for all profile image inputs
-                                            document.querySelectorAll("input[type='file'][id^='profile_image-']").forEach(input => {
-                                                input.addEventListener("change", function (event) {
-                                                    const userId = this.id.split('-')[1]; // Extract user ID
-                                                    const file = event.target.files[0];
-                                    
-                                                    if (file) {
-                                                        const reader = new FileReader();
-                                                        reader.onload = function (e) {
-                                                            document.getElementById(`profilePreview-${userId}`).src = e.target.result;
-                                                        };
-                                                        reader.readAsDataURL(file);
-                                                    }
-                                                });
-                                            });
-                                        });
-                                    </script>
-                                    
+                            @csrf
+                            @method('PUT')
 
-                                    <div class="mt-[15px] w-full">
-                                        <div class="mb-4">
-                                            <label class="block text-xs text-gray-700 font-semibold">Employee Code</label>
-                                            <input type="text" name="employee_code" id="employee_code" value="{{ $user->employee_code }}" class="w-full border rounded-lg focus:ring-2 focus:ring-blue-400" required>
-                                        </div>
-                                        <div class="mb-4">
-                                            <label class="block text-xs text-gray-700 font-semibold">Position</label>
-                                            <input type="text" name="position" id="position" value="{{ $user->position }}" class="w-full border rounded-lg focus:ring-2 focus:ring-blue-400" required>
-                                        </div>
-                                        <div class="mb-4">
-                                            <label class="block text-xs text-gray-700 font-semibold">Department</label>
-                                            <input type="text" name="department" id="department" value="{{ $user->department }}" class="w-full border rounded-lg focus:ring-2 focus:ring-blue-400" required>
-                                        </div>
-                                    </div>
-                                </div>
-                            
-                                <!-- Personal Information -->
-                                <div class="flex justify-between items-center mb-4 mt-4">
-                                    <div class="border-2 border-gray-200 w-[38%]"></div>
-                                    <span class="font-semibold text-[15px]">Personal Information</span>
-                                    <div class="border-2 border-gray-200 w-[38%]"></div>
-                                </div>
-                            
-                                <!-- Two-Column Form -->
-                                <div class="grid grid-cols-2 gap-3">
+                            <!-- Profile Picture & Employee Info -->
+                            <div class="flex flex-col sm:flex-row justify-center items-start mt-4 gap-4">
+                                <div class="w-full sm:w-auto flex flex-col items-center">
                                     <div>
-                                        <div class="mb-4">
-                                            <label class="block text-xs text-gray-700 font-semibold">First Name</label>
-                                            <input type="text" name="first_name" id="first_name" value="{{ $user->first_name }}" class="w-full border rounded-lg focus:ring-2 focus:ring-blue-400" required>
+                                        <div class="w-32 h-32 sm:w-40 sm:h-40 border-4 border-dashed border-gray-300 rounded-full overflow-hidden bg-gray-100 mx-auto">
+                                            <img id="profilePreview-{{ $user->id }}" 
+                                                                    src="{{ 
+                                                                        $user->profile_image && file_exists(storage_path('app/public/profile_images/' . $user->profile_image)) 
+                                                                            ? asset('storage/profile_images/' . $user->profile_image) 
+                                                                            : ($user->profile_image && file_exists(storage_path('app/public/profile_pictures/' . $user->profile_pictures)) 
+                                                                                ? asset('storage/profile_pictures/' . $user->profile_image) 
+                                                                                : asset('img/default-avatar.png')) 
+                                                                            }}" 
+                                                                    class="w-full h-full rounded-full object-cover" 
+                                                                    alt="{{ $user->name }}">
+
                                         </div>
-                                        <div class="mb-4">
-                                            <label class="block text-xs text-gray-700 font-semibold">Middle Name</label>
-                                            <input type="text" name="middle_name" id="middle_name" value="{{ $user->middle_name }}" class="w-full border rounded-lg focus:ring-2 focus:ring-blue-400">
-                                        </div>
-                                        <div class="mb-4">
-                                            <label class="block text-xs text-gray-700 font-semibold">Last Name</label>
-                                            <input type="text" name="last_name" id="last_name" value="{{ $user->last_name }}" class="w-full border rounded-lg focus:ring-2 focus:ring-blue-400" required>
-                                        </div>
-                                        <div class="mb-4">
-                                            <label class="block text-xs text-gray-700 font-semibold">Birthday</label>
-                                            <input type="date" name="birthday" id="birthday" value="{{ $user->birthday }}" class="w-full border rounded-lg focus:ring-2 focus:ring-blue-400" required>
-                                        </div>
-                                    </div>
-                            
-                                    <div>
-                                        <div class="mb-3">
-                                            <label class="block text-xs text-gray-700 font-semibold">Role</label>
-                                            <select name="role" id="role" class="w-full border rounded-lg focus:ring-2 focus:ring-blue-400" required>
-                                                <option value="">Select Role</option>
-                                                <option value="employee" {{ $user->role == 'employee' ? 'selected' : '' }}>Employee</option>
-                                                <option value="admin" {{ $user->role == 'admin' ? 'selected' : '' }}>Admin</option>
-                                                <option value="hr" {{ $user->role == 'hr' ? 'selected' : '' }}>HR</option>
-                                                <option value="supervisor" {{ $user->role == 'supervisor' ? 'selected' : '' }}>Supervisor</option>
-                                            </select>
-                                        </div>
-                                        <div class="mb-4">
-                                            <label class="block text-xs text-gray-700 font-semibold">User Name</label>
-                                            <input type="text" name="name" id="name" value="{{ $user->name }}" class="w-full border rounded-lg focus:ring-2 focus:ring-blue-400" required>
-                                        </div>
-                                        <div class="mb-4">
-                                            <label class="block text-xs text-gray-700 font-semibold">Email</label>
-                                            <input type="email" name="email" id="email" value="{{ $user->email }}" class="w-full border rounded-lg focus:ring-2 focus:ring-blue-400" required>
-                                        </div>
-                                        <div class="mb-4">
-                                            <label class="block text-xs text-gray-700 font-semibold">Password <span class="text-gray-500">(Leave blank if unchanged)</span></label>
-                                            <input type="password" name="password" id="password" placeholder="-------" class="w-full border rounded-lg focus:ring-2 focus:ring-blue-400">
+                                        <div class="mt-3 text-center sm:text-left">
+                                            <label class="text-gray-700 font-semibold text-xs sm:text-sm">Profile Picture</label>
+                                            <input type="file" name="profile_image" id="profile_image-{{ $user->id }}" 
+                                            class="mt-2 w-full sm:w-48 border p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400" 
+                                            accept="image/*">
                                         </div>
                                     </div>
                                 </div>
-                            
-                                <div class="flex justify-end items-center gap-4 mt-4">
-                                    <button type="submit" class="bg-blue-600 text-white py-3 px-6 rounded-lg shadow-md hover:shadow-lg transform hover:scale-105 transition-all">
-                                        Save Changes
-                                    </button>
-                                    <button type="button" id="closeEditModalBtn2-{{ $user->id }}" class="bg-gray-500 text-white py-3 px-6 rounded-lg shadow-md hover:shadow-lg transform hover:scale-105 transition-all">
-                                        Cancel
-                                    </button>
+
+                                <div class="mt-2 sm:mt-[15px] w-full">
+                                    <div class="mb-3">
+                                        <label class="block text-xs text-gray-700 font-semibold">Employee Code</label>
+                                        <input type="text" name="employee_code" value="{{ $user->employee_code }}" class="w-full border rounded-lg focus:ring-2 focus:ring-blue-400 p-2 text-xs sm:text-sm" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="block text-xs text-gray-700 font-semibold">Position</label>
+                                        <input type="text" name="position" value="{{ $user->position }}" class="w-full border rounded-lg focus:ring-2 focus:ring-blue-400 p-2 text-xs sm:text-sm" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="block text-xs text-gray-700 font-semibold">Department</label>
+                                        <input type="text" name="department" value="{{ $user->department }}" class="w-full border rounded-lg focus:ring-2 focus:ring-blue-400 p-2 text-xs sm:text-sm" required>
+                                    </div>
                                 </div>
-                            </form>
-                        </div>
+                            </div>
+
+                            <!-- Personal Information -->
+                            <div class="flex justify-between items-center mb-4 mt-4">
+                                <div class="border-2 border-gray-200 w-[30%] sm:w-[38%]"></div>
+                                <span class="font-semibold text-xs sm:text-[15px]">Personal Information</span>
+                                <div class="border-2 border-gray-200 w-[30%] sm:w-[38%]"></div>
+                            </div>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                <div>                                
+                                    <div class="mb-3">
+                                        <label class="block text-xs text-gray-700 font-semibold">First Name</label>
+                                        <input type="text" name="first_name" value="{{ $user->first_name }}" class="w-full border rounded-lg focus:ring-2 focus:ring-blue-400 p-2 text-xs sm:text-sm" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="block text-xs text-gray-700 font-semibold">Middle Name</label>
+                                        <input type="text" name="middle_name" value="{{ $user->middle_name }}" class="w-full border rounded-lg focus:ring-2 focus:ring-blue-400 p-2 text-xs sm:text-sm">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="block text-xs text-gray-700 font-semibold">Last Name</label>
+                                        <input type="text" name="last_name" value="{{ $user->last_name }}" class="w-full border rounded-lg focus:ring-2 focus:ring-blue-400 p-2 text-xs sm:text-sm" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="block text-xs text-gray-700 font-semibold">Birthday</label>
+                                        <input type="date" name="birthday" value="{{ $user->birthday }}" class="w-full border rounded-lg focus:ring-2 focus:ring-blue-400 p-2 text-xs sm:text-sm" required>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <div class="mb-3">
+                                        <label class="block text-xs text-gray-700 font-semibold">Role</label>
+                                        <select name="role" id="role" class="w-full border rounded-lg focus:ring-2 focus:ring-blue-400 p-2 text-xs sm:text-sm" required>
+                                            <option value="employee" {{ $user->role == 'employee' ? 'selected' : '' }}>Employee</option>
+                                            <option value="admin" {{ $user->role == 'admin' ? 'selected' : '' }}>Admin</option>
+                                            <option value="hr" {{ $user->role == 'hr' ? 'selected' : '' }}>HR</option>
+                                            <option value="supervisor" {{ $user->role == 'supervisor' ? 'selected' : '' }}>Supervisor</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label class="block text-xs text-gray-700 font-semibold">Username</label>
+                                        <input type="text" name="name" value="{{ $user->name }}" class="w-full border rounded-lg focus:ring-2 focus:ring-blue-400 p-2 text-xs sm:text-sm" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="block text-xs text-gray-700 font-semibold">Email</label>
+                                        <input type="email" name="email" value="{{ $user->email }}" class="w-full border rounded-lg focus:ring-2 focus:ring-blue-400 p-2 text-xs sm:text-sm" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="block text-xs text-gray-700 font-semibold">Password <span class="text-gray-500">(Leave blank if unchanged)</span></label>
+                                        <input type="password" name="password" placeholder="••••••••" class="w-full border rounded-lg focus:ring-2 focus:ring-blue-400 p-2 text-xs sm:text-sm">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="flex flex-col sm:flex-row justify-end items-center gap-2 sm:gap-4 mt-4">
+                                <button type="submit" class="bg-blue-600 text-white py-2 sm:py-3 px-4 sm:px-6 rounded-lg shadow-md hover:shadow-lg transform hover:scale-105 transition-all w-full sm:w-auto">Save Changes</button>
+                                <button type="button" id="closeEditModalBtn2-{{ $user->id }}" class="bg-gray-500 text-white py-2 sm:py-3 px-4 sm:px-6 rounded-lg shadow-md hover:shadow-lg transform hover:scale-105 transition-all w-full sm:w-auto">Cancel</button>
+                            </div>
+                        </form>
                     </div>
+                </div>
                 @endforeach
-                
+
                 <!-- JavaScript for Modal -->
                 <script>
                     document.addEventListener("DOMContentLoaded", function () {
