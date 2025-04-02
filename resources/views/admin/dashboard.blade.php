@@ -8,12 +8,12 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             @foreach([['Leave Requests', $leaveStats], ['CTO Requests', $cocStats]] as [$title, $stats])
                 <div class="bg-white p-6 rounded-lg shadow-md flex flex-col h-full">
-                    <h2 class="text-2xl font-bold text-gray-800 mb-4">{{ $title }}</h2>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 flex-grow">
+                    <h2 class="text-xl md:text-2xl font-bold text-gray-800 mb-4">{{ $title }}</h2>
+                    <div class="grid grid-cols-3 gap-4 flex-grow">
                         @foreach(['Pending' => 'yellow', 'Approved' => 'green', 'Rejected' => 'red'] as $status => $color)
-                            <div class="bg-{{ $color }}-100 p-6 rounded-lg shadow text-center flex flex-col justify-center min-h-[140px]">
-                                <h3 class="text-md sm:text-xl font-semibold text-gray-700">{{ $status }}</h3>
-                                <p class="text-3xl sm:text-4xl font-bold text-{{ $color }}-600">{{ $stats[$status] }}</p>
+                            <div class="bg-{{ $color }}-100 p-4 md:p-6 rounded-lg shadow text-center flex flex-col justify-center min-h-[120px] md:min-h-[140px]">
+                                <h3 class="text-sm md:text-lg font-semibold text-gray-700">{{ $status }}</h3>
+                                <p class="text-2xl md:text-3xl font-bold text-{{ $color }}-600 mt-1">{{ $stats[$status] }}</p>
                             </div>
                         @endforeach
                     </div>

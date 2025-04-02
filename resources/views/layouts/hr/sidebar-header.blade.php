@@ -14,16 +14,12 @@
     @vite('resources/css/app.css')
 </head>
 <body class="font-poppins h-screen overflow-hidden" x-data="{ sidebarOpen: false }">
-    {{-- <div x-data="{ sidebarOpen: false }" class="flex h-screen"> --}}
     <div class="flex h-screen">
-        <!-- Sidebar -->
         @include('hr.partials.sidebar')
 
         <div class="flex-1 flex flex-col min-h-screen">
-            <!-- Header -->
             @include('hr.partials.header')
 
-            <!-- Page Content (Scrollable Area) -->
             <main class="flex-1 p-6 overflow-y-auto">
                 @yield('content')
             </main>

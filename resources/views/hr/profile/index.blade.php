@@ -1,8 +1,8 @@
-@extends('layouts.sidebar-header')
+@extends('layouts.hr.sidebar-header')
 @section('content')
 <div class="w-full p-3 sm:p-4 rounded-xl shadow-md animate-fade-in">
     <!-- Banner Image -->
-    <div class="bg-[url('/public/img/office-image.jpg')] bg-cover bg-center bg-no-repeat min-h-[200px] sm:min-h-[300px] md:min-h-[400px] w-full rounded-lg overflow-hidden"></div>     
+    <div class="bg-[url('/public/img/Background.png')] bg-cover bg-center bg-no-repeat min-h-[200px] sm:min-h-[300px] md:min-h-[400px] w-full rounded-lg overflow-hidden"></div>     
           
     <!-- Profile Section -->
     <div class="flex flex-col">
