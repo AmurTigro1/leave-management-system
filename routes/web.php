@@ -108,6 +108,8 @@ Route::middleware('auth')->group(function () {
         Route::delete('/notifications/hr-delete/{id}', [HRController::class, 'delete'])->name('hr.notifications.delete');
         Route::delete('/notifications/hr-delete-all', [HRController::class, 'deleteAll'])->name('hr.notifications.deleteAll');
 
+        Route::get('/check-existing-roles', [UserController::class, 'checkExistingRoles'])->name('check.existing.roles');
+        Route::post('/swap-roles', [UserController::class, 'swapRoles'])->name('swap.roles');
         
     });
 

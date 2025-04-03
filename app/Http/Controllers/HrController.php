@@ -1328,7 +1328,6 @@ public function deleteLeave($id) {
         
         return view('hr.users', compact('users'));
     }
-
     public function markAsRead()
     {
         $user = auth()->user();

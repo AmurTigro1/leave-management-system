@@ -26,14 +26,24 @@
                         <td class="py-2 px-2 sm:py-3 sm:px-4 border-b">
                             <div class="flex justify-center items-center">
                                 @if ($employee->profile_image)
-                                <img src="{{ 
-                                    $employee->profile_image && file_exists(storage_path('app/profile_images/' . $employee->profile_image)) 
-                                        ? asset('storage/profile_images/' . $employee->profile_image) 
-                                        : ($employee->profile_image && file_exists(storage_path('app/public/profile_pictures/' . $employee->profile_pictures)) 
-                                            ? asset('storage/profile_pictures/' . $employee->profile_image) 
-                                            : asset('img/default-avatar.png')) 
-                                }}" 
-                                class="h-10 w-10 rounded-full object-cover" alt="{{ $employee->name }}">
+                                @php
+                                    $profileImage = null;
+
+                                    if ($employee->profile_image) {
+                                        $imagePath1 = 'storage/profile_images/' . $employee->profile_image;
+                                        $imagePath2 = 'storage/profile_pictures/' . $employee->profile_image;
+
+                                        if (file_exists(public_path($imagePath1))) {
+                                            $profileImage = asset($imagePath1);
+                                        } elseif (file_exists(public_path($imagePath2))) {
+                                            $profileImage = asset($imagePath2);
+                                        }
+                                    }
+                                @endphp
+
+                                <img src="{{ $profileImage ?? asset('img/default-avatar.png') }}" 
+                                    class="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover flex-shrink-0" 
+                                    alt="{{ $employee->name }}">
                                 @else
                                     <img src="{{ asset('img/default-avatar.png') }}" 
                                          alt="" 

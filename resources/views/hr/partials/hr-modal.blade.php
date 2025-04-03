@@ -53,3 +53,7 @@
 <script>
     document.getElementById('modal').classList.remove('hidden');
 </script>
+
+<script>
+    document.getElementById('modal').classList.remove('hidden');
+</script>
