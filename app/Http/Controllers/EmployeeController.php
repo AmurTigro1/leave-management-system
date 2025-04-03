@@ -8,6 +8,7 @@ use App\Models\OvertimeRequest;
 use App\Models\HRSupervisor;
 use App\Models\Leave;
 use App\Models\User;
+use App\Models\TimeManagement;
 use Illuminate\Validation\ValidationException;
 use PDF;
 use Illuminate\Support\Facades\Storage;

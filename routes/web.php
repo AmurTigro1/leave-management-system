@@ -8,6 +8,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\SupervisorController;
 use App\Http\Controllers\HRSupervisorController;
 use App\Http\Controllers\OvertimeRequestController;
+use App\Http\Controllers\TimeManagementController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\CocLogController;
 use Illuminate\Support\Facades\Route;
@@ -152,7 +153,9 @@ Route::middleware('auth')->group(function () {
         Route::delete('/notifications/delete-all', [EmployeeController::class, 'deleteAll'])->name('notifications.deleteAll');
 
         Route::get('/employee/calendar', [EmployeeController::class, 'calendar'])->name('employee.holiday.calendar');
-
+        Route::get('/time-management', [TimeManagementController::class, 'timeManagement'])->name('employee.time');
+        Route::post('/time-management', [TimeManagementController::class, 'store'])->name('time.management.store');
+        
         //CTO
         Route::get('/cto/dashboard', [OvertimeRequestController::class, 'dashboard'])->name('cto.dashboard');
         Route::get('/overtime-request', [OvertimeRequestController::class, 'index'])->name('cto.overtime_request');
