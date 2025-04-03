@@ -48,6 +48,13 @@ Route::middleware('auth')->group(function () {
         Route::get('/hr/employees', [HrController::class, 'onLeave'])->name('hr.on_leave');
         Route::get('/hr/users', [HrController::class, 'users'])->name('hr.users');
         Route::get('/hr/requests', [HrController::class, 'requests'])->name('hr.requests');
+        Route::get('/hr/my-requests', [HrController::class, 'myRequests'])->name('hr.my_requests');
+        Route::get('/hr/my-requests/edit/{id}', [HrController::class, 'editLeave'])->name('hr.leave_edit');
+        Route::put('/hr/my-requests/update/{id}', [HrController::class, 'updateLeave'])->name('hr.leave_update');
+        Route::post('/hr/leaves/{id}/cancel', [HrController::class, 'cancel'])->name('hr.leave_cancel');
+        Route::post('/hr/leaves/{id}/restore', [HrController::class, 'restore'])->name('hr.leave_restore');
+        Route::delete('/hr/my-requests/delete/{id}', [HrController::class, 'deleteLeave'])->name('hr.leave_delete');
+        Route::get('/hr/details/{id}', [HrController::class, 'show'])->name('hr.leave_show');
         Route::get('/leave/details/{id}', [HrController::class, 'showLeave'])->name('hr.leave_details');
         Route::get('/hr-leave/view/{id}', [HrController::class, 'viewPdf'])->name('hr.leave.viewPdf');
         Route::get('/hr/cto/details/{id}', [HrController::class, 'showcto'])->name('hr.cto_details');
@@ -94,6 +101,12 @@ Route::middleware('auth')->group(function () {
 
         Route::get('/check-existing-roles', [UserController::class, 'checkExistingRoles'])->name('check.existing.roles');
         Route::post('/swap-roles', [UserController::class, 'swapRoles'])->name('swap.roles');
+
+        //Notification
+        Route::post('/notifications/hr-mark-as-read', [HRController::class, 'markAsRead'])->name('hr.notifications.markAsRead');
+        Route::delete('/notifications/hr-delete/{id}', [HRController::class, 'delete'])->name('hr.notifications.delete');
+        Route::delete('/notifications/hr-delete-all', [HRController::class, 'deleteAll'])->name('hr.notifications.deleteAll');
+
         
     });
 
@@ -103,6 +116,14 @@ Route::middleware('auth')->group(function () {
         Route::get('/admin/employees', [AdminController::class, 'onLeave'])->name('admin.on_leave');
         Route::get('/admin/leaderboard', [AdminController::class, 'leaderboard'])->name('admin.leaderboard');
         Route::get('admin/requests', [AdminController::class, 'requests'])->name('admin.requests');
+        Route::get('/admin/my-requests', [AdminController::class, 'myRequests'])->name('admin.my_requests');
+        Route::get('/admin/my-requests/edit/{id}', [AdminController::class, 'editLeave'])->name('admin.leave_edit');
+        Route::put('/admin/my-requests/update/{id}', [AdminController::class, 'updateLeave'])->name('admin.leave_update');
+        Route::post('/admin/leaves/{id}/cancel', [AdminController::class, 'cancel'])->name('admin.leave_cancel');
+        Route::post('/admin/leaves/{id}/restore', [AdminController::class, 'restore'])->name('admin.leave_restore');
+        Route::delete('/admin/my-requests/delete/{id}', [AdminController::class, 'deleteLeave'])->name('admin.leave_delete');
+        Route::get('/admin/details/{id}', [AdminController::class, 'show'])->name('admin.leave_show');
+        Route::get('/admin-leave/view/{id}', [AdminController::class, 'viewPdf'])->name('admin.leave.viewPdf');
         Route::post('/leave/{leave}/admin-review', [AdminController::class, 'review'])->name('leave.admin-review');
         Route::post('/cto/{cto}/admin-review', [AdminController::class, 'ctoreview'])->name('cto.admin-review');
         Route::get('/admin/leave/details/{id}', [AdminController::class, 'showleave'])->name('admin.leave_details');
@@ -119,6 +140,11 @@ Route::middleware('auth')->group(function () {
         Route::get('/admin/cto-request', [AdminController::class, 'makeCTORequest'])->name('admin.make_cto_request');
         Route::post('/admin/overtime-request/store', [AdminController::class, 'storeCTO'])->name('admin_overtime_request.store');
         Route::get('/admin/coc-logs/', [CocLogController::class, 'indexAdmin'])->name('coc_logs.admin');
+
+        Route::post('/notifications/admin-mark-as-read', [AdminController::class, 'markAsRead'])->name('admin.notifications.markAsRead');
+        Route::delete('/notifications/admin-delete/{id}', [AdminController::class, 'delete'])->name('admin.notifications.delete');
+        Route::delete('/notifications/admin-delete-all', [AdminController::class, 'deleteAll'])->name('admin.notifications.deleteAll');
+
     });
 
 

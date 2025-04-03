@@ -166,53 +166,77 @@
         </div>
 
         <div class="flex justify-center items-center mt-auto">
-            
-        <form action="{{ route('leave.review', $leave->id) }}" method="POST" class="space-y-2">
-            @csrf 
-            <div class="flex gap-2">
-                <!-- Approve Button -->
-                <button type="submit" name="status" value="Approved" 
-                    class="bg-blue-600 text-white py-2 px-4 rounded-lg mr-3">
-                    Process Recommendation
-                </button>
-
-                <!-- Reject Button -->
-                <button type="button" id="rejectBtn" 
-                    class="bg-orange-600 text-white py-2 px-4 rounded-lg">
-                    Reject Request
-                </button>
-            </div>
-
-            <!-- Hidden Disapproval Reason Field -->
-            <div id="disapprovalSection" class="mt-3 hidden h-auto">
-                <label class="block text-gray-700 font-medium text-xs">Disapproval Reason:</label>
-                <textarea name="disapproval_reason" id="disapproval_reason" 
-                    class="w-full border rounded p-2 text-xs focus:ring focus:ring-blue-200"></textarea>
-                
-                <div class="flex gap-2 mt-2">
-                    <button type="submit" name="status" value="Rejected" id="finalRejectBtn"
-                        class="bg-red-600 text-white py-2 px-4 rounded-lg">
-                        Confirm Rejection
+            <form action="{{ route('leave.review', $leave->id) }}" method="POST" class="space-y-2" id="leaveForm">
+                @csrf 
+        
+                <div class="flex gap-2">
+                    <!-- Approve Button -->
+                    <button type="button" id="approveBtn" 
+                        class="bg-blue-600 text-white py-2 px-4 rounded-lg mr-3">
+                        Process Recommendation
                     </button>
-                    
-                    <button type="button" id="cancelDisapprovalBtn" class="bg-gray-500 text-white py-2 px-4 rounded-lg">
-                        Cancel
+        
+                    <!-- Reject Button -->
+                    <button type="button" id="rejectBtn" 
+                        class="bg-red-600 text-white py-2 px-4 rounded-lg">
+                        Reject Request
                     </button>
                 </div>
-            </div>            
-        </form>
-
+        
+                <!-- Hidden Approval Fields -->
+                <div id="approvalSection" class="mt-3 hidden h-auto">
+                    <label class="block text-gray-700 font-medium text-xs">Approved Days With Pay:</label>
+                    <input type="number" name="approved_days_with_pay" class="w-full border rounded p-2 text-xs focus:ring focus:ring-blue-200">
+        
+                    <label class="block text-gray-700 font-medium text-xs">Approved Days Without Pay:</label>
+                    <input type="number" name="approved_days_without_pay" class="w-full border rounded p-2 text-xs focus:ring focus:ring-blue-200">
+        
+                    <label class="block text-gray-700 font-medium text-xs">Others:</label>
+                    <textarea name="others" class="w-full border rounded p-2 text-xs focus:ring focus:ring-blue-200" 
+                        placeholder="Specify any other details..."></textarea>
+        
+                    <button type="submit" name="status" value="Approved" class="bg-green-600 text-white py-2 px-4 rounded-lg mt-2">
+                        Confirm Approval
+                    </button>
+                </div>
+        
+                <!-- Hidden Disapproval Reason Field -->
+                <div id="disapprovalSection" class="mt-3 hidden h-auto">
+                    <label class="block text-gray-700 font-medium text-xs">Disapproval Reason:</label>
+                    <textarea name="disapproval_reason" id="disapproval_reason" 
+                        class="w-full border rounded p-2 text-xs focus:ring focus:ring-blue-200"></textarea>
+                    
+                    <div class="flex gap-2 mt-2">
+                        <button type="submit" name="status" value="Rejected" id="finalRejectBtn"
+                            class="bg-red-600 text-white py-2 px-4 rounded-lg">
+                            Confirm Rejection
+                        </button>
+                        
+                        <button type="button" id="cancelDisapprovalBtn" class="bg-gray-500 text-white py-2 px-4 rounded-lg">
+                            Cancel
+                        </button>
+                    </div>
+                </div>            
+            </form>
+        </div>
+        
         <script>
-            document.getElementById('rejectBtn').addEventListener('click', function() {
-                document.getElementById('disapprovalSection').classList.remove('hidden');
+            document.getElementById('approveBtn').addEventListener('click', function() {
+                document.getElementById('approvalSection').classList.remove('hidden'); // Show approval fields
+                document.getElementById('disapprovalSection').classList.add('hidden'); // Hide rejection fields
             });
-
+        
+            document.getElementById('rejectBtn').addEventListener('click', function() {
+                document.getElementById('disapprovalSection').classList.remove('hidden'); // Show rejection fields
+                document.getElementById('approvalSection').classList.add('hidden'); // Hide approval fields
+            });
+        
             document.getElementById('cancelDisapprovalBtn').addEventListener('click', function() {
                 document.getElementById('disapprovalSection').classList.add('hidden');
                 document.getElementById('disapproval_reason').value = ""; // Clear text area
             });
         </script>
-        </div>
+        
     </div>
 </div>
 @endsection

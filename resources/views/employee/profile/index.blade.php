@@ -243,10 +243,10 @@
             <div class="mt-4 bg-white p-4 rounded-lg shadow-sm">
                 <h3 class="text-lg sm:text-xl font-semibold text-gray-700 mb-3">Total Balance</h3>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div class="flex justify-between items-center bg-blue-50 p-2 rounded">
+                    {{-- <div class="flex justify-between items-center bg-blue-50 p-2 rounded">
                         <span class="text-sm sm:text-base text-gray-700">Leave Available:</span>
                         <span class="font-medium text-blue-600">{{ $user->leave_balance ?? 0 }} day(s)</span>
-                    </div>
+                    </div> --}}
                     <div class="flex justify-between items-center bg-blue-50 p-2 rounded">
                         <span class="text-sm sm:text-base text-gray-700">COC Available:</span>
                         <span class="font-medium text-blue-600">{{ $user->overtime_balance ?? 0 }} hour(s)</span>
@@ -293,7 +293,7 @@
                 labels: [
                     'Vacation', 'Sick', 'Maternity', 'Paternity', 'Solo Parent', 
                     'Study', 'VAWC', 'Rehabilitation', 'Special Benefit', 
-                    'Emergency', 'COC', 'Leave'
+                    'Emergency', 'COC',
                 ],
                 datasets: [{
                     label: 'Days',
@@ -310,12 +310,12 @@
                         {{ $user->special_leave_benefit ?? 0 }}, 
                         {{ $user->special_emergency_leave ?? 0 }}, 
                         {{ $user->overtime_balance ?? 0 }}, 
-                        {{ $user->leave_balance ?? 0 }}
+                        // {{ $user->leave_balance ?? 0 }}
                     ],
                     backgroundColor: [
                         '#22c55e', '#eab308', '#3b82f6', '#a855f7', '#f97316', 
                         '#14b8a6', '#ef4444', '#8b5cf6', '#64748b', '#f43f5e', 
-                        '#6b7280', '#4b5563'
+                        '#6b7280', '#4b5563',
                     ],
                     borderWidth: 1
                 }]

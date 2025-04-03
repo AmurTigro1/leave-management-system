@@ -60,7 +60,7 @@ class EmployeeController extends Controller
                         ->diffInDays(\Carbon\Carbon::parse($leave->end_date)) + 1;
             });
         });
-        $employees = $employees->sortBy('total_absences')->take(5);
+        $employees = $employees->sortBy('total_absences')->take(10);
         return view('employee.leaderboard', compact('employees'));
     }
     
@@ -189,51 +189,35 @@ class EmployeeController extends Controller
     $endDate = Carbon::parse($request->end_date);
 
     $requiredDocs = [
-        'Sick Leave' => 'Medical Certificate (if filed in advance or > 5 days)',
         'Maternity Leave' => 'Proof of Pregnancy (Ultrasound, Doctor’s Certificate)',
         'Paternity Leave' => 'Proof of Child Delivery (Birth Certificate, Medical Certificate, Marriage Contract)'
     ];
-
-    $startDate = Carbon::parse($request->start_date);
-    $endDate = Carbon::parse($request->end_date);
-    $today = Carbon::now();
-
-    $daysUntilLeave = $today->diffInDays($startDate, false);
-    $daysRequested = $startDate->diffInDays($endDate) + 1;
-
-    $requiresDocs = false;
-
-    if ($request->leave_type === 'Sick Leave') {
-        if ($daysUntilLeave > 0 || $daysRequested > 5) {
-            $requiresDocs = true;
-        }
-    } elseif (in_array($request->leave_type, ['Maternity Leave', 'Paternity Leave'])) {
-        $requiresDocs = true;
-    }
-
+    
+    $requiresDocs = in_array($request->leave_type, ['Maternity Leave', 'Paternity Leave']);
+    
     if ($requiresDocs && !$request->hasFile('leave_files')) {
         return redirect()->back()->withErrors([
             'leave_files' => "For {$request->leave_type}, please upload the required documents: " . $requiredDocs[$request->leave_type]
         ]);
     }
-
+    
     if (in_array($request->leave_type, $inclusiveLeaveTypes)) {
         $daysApplied = $startDate->diffInDays($endDate) + 1;
     } else {
         $daysApplied = 0;
         $currentDate = $startDate->copy();
         $holidays = $yearlyHolidayService->getHolidaysBetweenDates($startDate, $endDate);
-
+    
         while ($currentDate->lte($endDate)) {
             if (!$currentDate->isWeekend() && !in_array($currentDate->format('Y-m-d'), $holidays)) {
                 $daysApplied++;
             }
             $currentDate->addDay();
         }
-
+    
         if ($daysApplied === 0) {
             $isValidStartDate = !$startDate->isWeekend() && !$yearlyHolidayService->isHoliday($startDate);
-
+    
             if ($isValidStartDate) {
                 $daysApplied = 1;
             } else {
@@ -557,12 +541,12 @@ private function deductLeaveBalance($user, $leave)
 
 
     public function showRequests() {
-        $holidays = Holiday::orderBy('date')->get()->map(function ($holiday) {
-            $holiday->day = Carbon::parse($holiday->date)->format('d'); 
-            $holiday->month = Carbon::parse($holiday->date)->format('M'); 
-            $holiday->day_name = Carbon::parse($holiday->date)->format('D'); 
-            return $holiday;
-        });
+        // $holidays = Holiday::orderBy('date')->get()->map(function ($holiday) {
+        //     $holiday->day = Carbon::parse($holiday->date)->format('d'); 
+        //     $holiday->month = Carbon::parse($holiday->date)->format('M'); 
+        //     $holiday->day_name = Carbon::parse($holiday->date)->format('D'); 
+        //     return $holiday;
+        // });
         $user = auth()->user();
     
         if (!$user) {
@@ -571,7 +555,7 @@ private function deductLeaveBalance($user, $leave)
     
         $leaves = $user->leaves()->orderBy('created_at', 'desc')->paginate(10); 
     
-        return view('employee.leave_request', compact('leaves', 'holidays'));
+        return view('employee.leave_request', compact('leaves',));
     }
     
     public function show($id) {
