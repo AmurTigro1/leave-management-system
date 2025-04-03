@@ -54,7 +54,12 @@
                                     <td>
                                         <div class="flex justify-center gap-4 items-center">
                                             <button class="text-blue-600 font-semibold">View | Edit</button>
-                                            <button class="text-red-600 font-semibold">Delete</button>
+                                            <form action="{{ route('time.management.destroy', $record->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this record?');">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="text-red-600 mt-3 font-semibold">Delete</button>
+                                            </form>
+                                            
                                         </div>
                                     </td>
                                 </tr>

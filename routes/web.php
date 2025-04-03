@@ -155,6 +155,8 @@ Route::middleware('auth')->group(function () {
         Route::get('/employee/calendar', [EmployeeController::class, 'calendar'])->name('employee.holiday.calendar');
         Route::get('/time-management', [TimeManagementController::class, 'timeManagement'])->name('employee.time');
         Route::post('/time-management', [TimeManagementController::class, 'store'])->name('time.management.store');
+        Route::delete('/time-management/{id}', [TimeManagementController::class, 'destroy'])->name('time.management.destroy');
+
         
         //CTO
         Route::get('/cto/dashboard', [OvertimeRequestController::class, 'dashboard'])->name('cto.dashboard');

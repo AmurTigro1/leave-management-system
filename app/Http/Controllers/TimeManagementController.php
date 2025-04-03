@@ -102,4 +102,14 @@ class TimeManagementController extends Controller
     return redirect()->back()->with('success', '');
 }
 
+public function destroy($id)
+{
+    $record = TimeManagement::findOrFail($id); // Find the record
+    $record->delete(); // Delete the record
+
+    notify()->success('Record deleted successfully!');
+    return redirect()->back();
+}
+
+
 }
