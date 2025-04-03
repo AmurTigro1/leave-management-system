@@ -48,14 +48,12 @@ class OvertimeRequestController extends Controller
         $user = auth()->user();
         $overtimeBalance = $user->overtime_balance;
 
-        // Map CTO Type to predefined working hours
         $ctoHoursMap = [
             'halfday_morning' => 4,
             'halfday_afternoon' => 4,
             'wholeday' => 8,
         ];
 
-        // If CTO type is selected, assign corresponding hours
         if ($request->cto_type !== 'none') {
             $request->merge(['working_hours_applied' => $ctoHoursMap[$request->cto_type]]);
         }
@@ -80,7 +78,6 @@ class OvertimeRequestController extends Controller
             ],
         ]);
 
-        // Validate inclusive dates
         $datesArray = explode(', ', $request->inclusive_dates);
         foreach ($datesArray as $date) {
             if (!strtotime($date)) {
@@ -88,7 +85,6 @@ class OvertimeRequestController extends Controller
             }
         }
 
-        // Store the overtime request
         OvertimeRequest::create([
             'user_id' => auth()->id(),
             'date_filed' => now(),
@@ -97,6 +93,8 @@ class OvertimeRequestController extends Controller
             'admin_status' => 'pending', 
             'hr_status' => 'pending', 
         ]);
+        
+        $user->decrement('overtime_balance', $request->working_hours_applied);
 
         notify()->success('Overtime request submitted successfully! Pending admin review.');
         return redirect()->back();

@@ -7,22 +7,12 @@
         &larr; Back to Requests
     </a>
 
-    <div class="flex flex-col lg:flex-row justify-between items-stretch gap-6">
+    <div class="flex flex-col lg:flex-row justify-between items-stretch gap-4">
         <!-- Left Side: Employee Request Details -->
-        <div class="bg-white shadow-xl rounded-lg p-4 md:p-6 space-y-6 w-full lg:w-1/2 flex flex-col">
+        <div class="bg-white shadow-xl rounded-lg p-4 md:p-6 space-y-6 w-full lg:w-3/5 flex flex-col">
             <div class="w-full">
                 <h1 class="uppercase text-lg md:text-xl font-semibold">Employee Request Details</h1> 
                 <p class="text-gray-500 mt-2">Date Filed: {{ \Carbon\Carbon::parse($cto->date_filed)->format('F d, Y') }}</p>
-            </div>
-
-            <!-- CTO Type Selection - Responsive Grid -->
-            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 md:gap-4">
-                @foreach(['none' => 'None', 'halfday_morning' => 'Morning', 'halfday_afternoon' => 'Afternoon', 'wholeday' => 'Whole Day'] as $type => $label)
-                    <div class="py-2 px-2 md:px-4 rounded-lg border-4 text-xs sm:text-sm text-center font-semibold w-full 
-                        {{ $cto->cto_type == $type ? 'border-blue-500 bg-gradient-to-r from-blue-100 to-blue-300' : 'border-gray-400 bg-gradient-to-r from-gray-100 to-gray-300' }}">
-                        {{ $label }}
-                    </div>
-                @endforeach
             </div>
 
             <!-- Working Hours - Stacked on Mobile -->
@@ -53,55 +43,88 @@
                 @endforeach
             </div>
 
-            <!-- Buttons - Centered on Mobile -->
-            <div class="pt-4 mt-auto">
-                <form action="{{ route('cto.admin-review', $cto->id) }}" method="POST">
-                    @csrf 
-                    <button type="submit" name="admin_status" value="Ready for Review" 
-                        class="w-full sm:w-auto bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition">
-                        Proceed to HR
-                    </button>
-                </form>
+            <!-- Bar Chart -->
+            <div class="w-full h-full">
+                <canvas id="barChart"></canvas>
             </div>
+
+            <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+            <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                const ctx = document.getElementById('barChart').getContext('2d');
+
+                const labels = ["Working Hours Applied", "Earned Hours", "COC Balance"];
+                const data = [
+                    {{ $cto->working_hours_applied }},
+                    {{ $cto->earned_hours }},
+                    {{ $cto->user->overtime_balance }}
+                ];
+
+                new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Hours Overview',
+                            data: data,
+                            backgroundColor: ['#3b82f6', '#f97316', '#10b981'], // Blue, Orange, Green
+                            borderColor: ['#1e40af', '#c2410c', '#065f46'],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    precision: 0
+                                }
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
+                        }
+                    }
+                });
+            });
+            </script>
         </div>
 
         <!-- Right Side: Processing Steps -->
-        <div class="bg-white shadow-xl rounded-lg p-4 md:p-6 space-y-6 w-full lg:w-1/2 flex flex-col">
-            <div>
-                <p class="text-gray-500 text-sm md:text-base">
-                    Inclusive Dates: {{ \Carbon\Carbon::parse($cto->inclusive_date_start)->format('F d, Y') }} - 
-                    {{ \Carbon\Carbon::parse($cto->inclusive_date_end)->format('F d, Y') }}
-                </p>
-
-                <h1 class="text-center font-bold text-xl md:text-2xl bg-gradient-to-r from-blue-500 to-blue-800 bg-clip-text text-transparent mt-4">
-                    Steps for Processing the Request
-                </h1>
+        <div class="bg-white shadow-xl rounded-lg p-6 w-full lg:w-2/5 h-full min-h-[865px] flex flex-col">
+            <div class="flex justify-center items-center">
+                <img src="{{ $cto->user->profile_image ? asset('storage/profile_images/' . $cto->user->profile_image) : asset('img/default-avatar.png') }}" 
+                     class="w-[400px] h-[400px] object-cover" alt="{{ $cto->user->name }}">
             </div>
 
-            <div class="flex-grow flex flex-col lg:flex-row justify-between items-stretch gap-4">
-                <!-- Chart - Full width on mobile, 40% on desktop -->
-                <div class="w-full lg:w-[40%] h-[250px] lg:h-auto flex items-center justify-center">
-                    <canvas id="myChart" class="max-h-full w-full"></canvas>
-                </div>
+            <p class="font-semibold mt-4 text-gray-500">Employee: {{ $cto->user->first_name}} {{ strtoupper(substr($cto->user->middle_name, 0, 1)) }}. {{ $cto->user->last_name}}</p>
+            <p class="font-semibold text-gray-500">Email: {{ $cto->user->email }}</p>
+            <p class="mb-4 font-semibold text-gray-500">Position: {{ $cto->user->position }}</p>
 
-                <!-- Status Boxes - Full width on mobile, 60% on desktop -->
-                <div class="w-full lg:w-[60%] space-y-4 flex flex-col justify-center">
-                    @foreach([
-                        'Admin Status' => ['status' => $cto->admin_status, 'color' => 'yellow', 'description' => 'The Admin reviews the request before sending it to HR.'],
-                        'HR Status' => ['status' => $cto->hr_status, 'color' => 'gray', 'description' => 'HR verifies the request and forwards it to the Supervisor.'],
-                        'Supervisor Status' => ['status' => $cto->supervisor_status, 'color' => 'gray', 'description' => 'The Supervisor conducts a final review before approval.']
-                    ] as $step => $details)
-                        <div class="status-box {{ $details['color'] }}-box flex-grow">
-                            <p class="status-title">{{ $step }}</p>
-                            <h1 class="text-xl md:text-2xl mt-2 mb-2">
-                                <span class="status-text {{ $details['color'] }}-text">
-                                    {{ $details['status'] }}
-                                </span>
-                            </h1>
-                            <p class="text-xs md:text-sm">{{ $details['description'] }}</p>
-                        </div>
-                    @endforeach
-                </div>                       
+            <div class="border-2 border-gray mb-[15px]"></div>
+
+            <h1 class="text-blue-600 font-bold text-center text-xl">Request Verification complete?</h1>
+            <h1 class="text-blue-600 font-bold text-center text-xl mb-[15px]">Proceed to HR!</h1>
+
+            <div class="py-2 px-4 flex-grow">
+                <p class="text-sm text-gray-500">The request has been successfully reviewed and is now ready for submission to HR for final approval. Please take a moment to carefully verify all details to ensure accuracy and completeness before proceeding. Once submitted, any necessary changes may require additional processing time.</p>
+            </div>
+
+            <div class="flex justify-center items-center mt-auto">
+                <form action="{{ route('cto.admin-review', $cto->id) }}" method="POST" class="space-y-2 w-full">
+                    @csrf 
+                    <div class="flex gap-2">
+                        <!-- Approve Button -->
+                        <button type="submit" name="admin_status" value="Ready for Review" 
+                            class="bg-blue-600 text-white py-2 px-4 rounded-lg w-full">
+                            Proceed to HR
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
@@ -117,57 +140,12 @@
         to { opacity: 1; }
     }
 
-    .status-box {
-        margin-top: 8px;
-        padding: 12px;
-        border-radius: 8px;
-        border-width: 4px;
-        text-align: center;
-        font-weight: 600;
-        display: flex;
-        flex-direction: column;
-    }
-    
-    .status-title {
-        text-transform: uppercase;
-        color: #303337;
-        font-size: 14px;
-    }
-    
-    .status-text {
-        font-size: 20px;
-        font-weight: bold;
-        text-transform: capitalize;
-        display: inline-block;
-        background-clip: text;
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-    }
-    
-    .yellow-box { 
-        background: linear-gradient(to right, #FEF9C3, #FACC15); 
-        border-color: #FACC15; 
-    }
-    
-    .gray-box { 
-        background: linear-gradient(to right, #E5E7EB, #9CA3AF); 
-        border-color: #9CA3AF; 
-    }
-    
-    .yellow-text { 
-        background-image: linear-gradient(to right, #d8af0a, #8d6102); 
-    }
-    
-    .gray-text { 
-        background-image: linear-gradient(to right, #7e848f, #4a4f58); 
-    }
-
     /* Responsive adjustments */
     @media (max-width: 1024px) {
         .flex-col.lg\:flex-row {
             flex-direction: column;
         }
-        .w-full.lg\:w-1\/2 {
+        .w-full.lg\:w-3\/5, .w-full.lg\:w-2\/5 {
             width: 100%;
         }
     }
@@ -176,58 +154,7 @@
         .status-box {
             padding: 8px;
         }
-        .status-title {
-            font-size: 12px;
-        }
-        .status-text {
-            font-size: 18px;
-        }
     }
 </style>
 
 @endsection
-
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script>
-document.addEventListener("DOMContentLoaded", function () {
-    const ctx = document.getElementById('myChart').getContext('2d');
-
-    const labels = ["Working Hours", "Earned Hours", "Overtime Balance"];
-    const data = [
-        {{ $cto->working_hours_applied }},
-        {{ $cto->earned_hours }},
-        {{ $cto->user->overtime_balance }}
-    ];
-
-    new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: labels,
-            datasets: [{
-                label: 'Hours Overview',
-                data: data,
-                backgroundColor: ['#3b82f6', '#f97316', '#10b981'],
-                borderColor: ['#1e40af', '#c2410c', '#065f46'],
-                borderWidth: 1
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-                y: { 
-                    beginAtZero: true,
-                    ticks: {
-                        precision: 0
-                    }
-                }
-            },
-            plugins: {
-                legend: {
-                    position: 'top',
-                }
-            }
-        }
-    });
-});
-</script>

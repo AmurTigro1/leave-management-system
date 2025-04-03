@@ -64,6 +64,11 @@ class User extends Authenticatable
         return $this->hasMany(CompensatoryTimeLog::class);
     }
 
+    public function timeManagement()
+    {
+        return $this->hasMany(TimeManagement::class);
+    }
+
     public function redirectToDashboard()
     {
         $user = Auth::user();

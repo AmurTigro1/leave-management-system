@@ -34,8 +34,8 @@
                         <div class="mt-3 text-center sm:text-left">
                             <label class="text-gray-700 font-semibold text-xs sm:text-sm">Profile Picture</label>
                             <input type="file" name="profile_image" id="profile_image-{{ $user->id }}" 
-                            class="mt-2 w-full sm:w-48 border p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
-                            accept="image/*" onchange="previewImage(event, {{ $user->id }})">                        
+                            class="mt-2 w-full sm:w-48 border p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400" 
+                            accept="image/*">
                         </div>
                     </div>
                 </div>
@@ -135,19 +135,6 @@
 
             // Remove error messages
             document.querySelectorAll('.text-red-500').forEach(el => el.remove());
-        }
-    }
-    function previewImage(event, userId) {
-        const file = event.target.files[0]; // Get the selected file
-        const reader = new FileReader(); // Create a FileReader object
-        const imagePreview = document.getElementById('profilePreview-' + userId); // Get the image preview element
-
-        reader.onload = function(e) {
-            imagePreview.src = e.target.result; // Update the image source with the file data
-        };
-
-        if (file) {
-            reader.readAsDataURL(file); // Read the file as a data URL (base64 encoded)
         }
     }
 </script>

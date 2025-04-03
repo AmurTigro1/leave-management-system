@@ -8,6 +8,7 @@ use App\Models\OvertimeRequest;
 use App\Models\HRSupervisor;
 use App\Models\Leave;
 use App\Models\User;
+use App\Models\TimeManagement;
 use Illuminate\Validation\ValidationException;
 use PDF;
 use Illuminate\Support\Facades\Storage;
@@ -346,9 +347,30 @@ public function cancel($id)
     $leave->status = 'cancelled';
     $leave->save();
 
-    return redirect()->back()->with('success', 'Leave request has been cancelled and balance restored.');
-}
+    notify()->success('Leave request has been cancelled and balance restored.');
+    return redirect()->back();
+    }
 
+    public function cancelCTO($id)
+    {
+        $CTO = OvertimeRequest::findOrFail($id);
+        
+        if ($CTO->status == 'cancelled') {
+            notify()->warning('CTO request is already cancelled.');
+            return redirect()->back();
+        }
+
+        $user = Auth::user();
+
+        $user->increment('overtime_balance', $CTO->working_hours_applied);
+
+        $CTO->status = 'cancelled';
+        $CTO->save();
+
+        notify()->success('CTO request has been cancelled and balance restored.');
+
+        return redirect()->back();
+    }
 
 public function restore($id)
 {
@@ -364,7 +386,28 @@ public function restore($id)
 
     $leave->save();
 
-    return redirect()->back()->with('success', 'Leave request has been restored and balance deducted.');
+    notify()->success('Leave request has been restored and balance deducted.');
+    return redirect()->back();
+}   
+
+public function restoreCTO($id)
+{
+    $CTO = OvertimeRequest::findOrFail($id);
+    $user = Auth::user();
+
+    if ($CTO->status !== 'cancelled') {
+        notify()->warning('This CTO request is not cancelled and cannot be restored.');
+        return redirect()->back();
+    }
+
+    $user->decrement('overtime_balance', $CTO->working_hours_applied);
+
+    $CTO->status = 'pending'; 
+    $CTO->save();
+
+    notify()->success('CTO request has been restored and balance deducted.');
+
+    return redirect()->back();
 }
 
 private function restoreLeaveBalance($user, $leave)

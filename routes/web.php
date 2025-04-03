@@ -8,6 +8,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\SupervisorController;
 use App\Http\Controllers\HRSupervisorController;
 use App\Http\Controllers\OvertimeRequestController;
+use App\Http\Controllers\TimeManagementController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\CocLogController;
 use Illuminate\Support\Facades\Route;
@@ -141,10 +142,8 @@ Route::middleware('auth')->group(function () {
         Route::post('/admin/overtime-request/store', [AdminController::class, 'storeCTO'])->name('admin_overtime_request.store');
         Route::get('/admin/coc-logs/', [CocLogController::class, 'indexAdmin'])->name('coc_logs.admin');
 
-        Route::post('/notifications/admin-mark-as-read', [AdminController::class, 'markAsRead'])->name('admin.notifications.markAsRead');
-        Route::delete('/notifications/admin-delete/{id}', [AdminController::class, 'delete'])->name('admin.notifications.delete');
-        Route::delete('/notifications/admin-delete-all', [AdminController::class, 'deleteAll'])->name('admin.notifications.deleteAll');
-
+        Route::get('/admins/modal', [AdminController::class, 'showAdminsModal'])->name('admins.modal');
+        Route::get('/admin/employees', [AdminController::class, 'onLeave'])->name('admin.on_leave');
     });
 
 
@@ -175,7 +174,11 @@ Route::middleware('auth')->group(function () {
         Route::delete('/notifications/delete-all', [EmployeeController::class, 'deleteAll'])->name('notifications.deleteAll');
 
         Route::get('/employee/calendar', [EmployeeController::class, 'calendar'])->name('employee.holiday.calendar');
+        Route::get('/time-management', [TimeManagementController::class, 'timeManagement'])->name('employee.time');
+        Route::post('/time-management', [TimeManagementController::class, 'store'])->name('time.management.store');
+        Route::delete('/time-management/{id}', [TimeManagementController::class, 'destroy'])->name('time.management.destroy');
 
+        
         //CTO
         Route::get('/cto/dashboard', [OvertimeRequestController::class, 'dashboard'])->name('cto.dashboard');
         Route::get('/overtime-request', [OvertimeRequestController::class, 'index'])->name('cto.overtime_request');

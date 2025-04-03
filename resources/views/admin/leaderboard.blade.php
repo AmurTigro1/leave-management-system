@@ -52,7 +52,7 @@
     <div class="text-center mt-4 sm:mt-6">
         <button 
             class="bg-black text-white px-4 py-1.5 sm:px-6 sm:py-2 rounded-lg text-xs sm:text-sm font-semibold hover:bg-gray-800"
-            hx-get="{{ route('users.modal') }}"
+            hx-get="{{ route('admins.modal') }}"
             hx-target="#modal-content"
             hx-trigger="click">
             View everyone
