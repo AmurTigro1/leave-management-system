@@ -235,7 +235,7 @@
             </div>
             <div class="bottom-part">
                 <p class="leave-info2">6.C NUMBER OF WORKING DAYS APPLIED FOR</p>
-                <p class="fill-in">_______<span class="underline">{{ $leave->days_applied}} Working days</span>_______</p>
+                <p class="fill-in">_______<span class="underline">{{ $leave->days_applied }} day{{ $leave->days_applied > 1 ? 's' : '' }}</span>_______</p> 
                 <p class="inclusive">INCLUSIVE DATES</p>
                 <p class="fill-in-2"><span class="underline">{{ \Carbon\Carbon::parse($leave->start_date)->format('F d, Y') }} - {{ \Carbon\Carbon::parse($leave->end_date)->format('F d, Y') }}</span></p>
             </div>

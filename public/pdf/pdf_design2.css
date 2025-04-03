@@ -110,6 +110,10 @@
     width: 18%;
     height: 20px;
 }
+.image-check {
+    margin-left: 20px;
+    margin-top: 3px;
+}
 .approved {
     margin-top: -17px;
     margin-left: 75px;
@@ -133,6 +137,11 @@
     margin-left: 190px;
 }
 .line {
+    margin-left: 75px;
+    margin-top: 10px;
+    text-decoration: underline;
+}
+.line-empty {
     margin-left: 75px;
     margin-top: 10px;
 }

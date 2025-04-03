@@ -23,37 +23,54 @@
             <div class="right-side">
                <div class="align-left">
                     <div class="start">
-                        <p>Name </p> <div class="info"><span class="underline">{{ $overtime->user->first_name}} {{ strtoupper(substr($overtime->user->middle_name, 0, 1)) }}. {{ $overtime->user->last_name}}</span>________________________</div>
-                        <p>Signature </p> <div class="info2">______________________________________</div>
-                        <p>Position </p> <div class="info3"><span class="underline">{{ $overtime->user->position}}</span>_________________________</div>
-                        <p>Office/Division </p> </p> <div class="info4"><span class="underline">{{ $overtime->user->department}}</span>__________________________</div>
-                        <p>Date of Filing </p> <div class="info5"><span class="underline">{{ \Carbon\Carbon::parse($overtime->date_filed)->format('F d, Y') }}</span>_______________________</div>
-                        <p>No. of working hours applied for </p> <div class="info6">__________<span class="underline">{{ $overtime->working_hours_applied}}</span>___________</div>
+                        <p>Name </p> <div class="info"><span class="underline">{{ $overtime->user->first_name}} {{ strtoupper(substr($overtime->user->middle_name, 0, 1)) }}. {{ $overtime->user->last_name}}</span>_____________________</div>
+                        <p>Signature </p> <div class="info2">___________________________________</div>
+                        <p>Position </p> <div class="info3"><span class="underline">{{ $overtime->user->position}}</span>_____________________________</div>
+                        <p>Office/Division </p> </p> <div class="info4"><span class="underline">{{ $overtime->user->department}}</span>___________________</div>
+                        <p>Date of Filing </p> <div class="info5"><span class="underline">{{ \Carbon\Carbon::parse($overtime->date_filed)->format('F d, Y') }}</span>_____________________</div>
+                        <p>No. of working hours applied for </p> <div class="info6">__<span class="underline">{{ $overtime->working_hours_applied}} hours</span>___________</div>
                         <p>Inclusive Date/s </p> <div class="info7"><span class="underline">{{ \Carbon\Carbon::parse($overtime->inclusive_date_start)->format('F d, Y') }} - {{ \Carbon\Carbon::parse($overtime->inclusive_date_end)->format('F d, Y') }}</span>_______</div>
                     </div>
                     <div class="middle">
                         <p class="cert">CERTIFICATION OF COMPENSATORY CREDITS (COC)</p>
-                        <p class="as-of">As of _______<span class="underline">{{ \Carbon\Carbon::parse($overtime->date_filed)->format('F') }}</span>_______, 20<span class="underline">{{ \Carbon\Carbon::parse($overtime->date_filed)->format('y') }}</span>.</p>
+                        <p class="as-of">As of _______<span class="underline">{{ \Carbon\Carbon::parse($overtime->date_filed)->format('F') }}, {{ \Carbon\Carbon::parse($overtime->date_filed)->format('d') }}</span>_______, 20<span class="underline">{{ \Carbon\Carbon::parse($overtime->date_filed)->format('y') }}</span>.</p>
                         <p class="sub">(Month)</p>
-                        <p class="num">Number of hours earned: ____________<span class="underline">{{ $overtime->earned_hours}}</span>______________</p>
+                        <p class="num">Number of hours earned: _________<span class="underline">{{ $overtime->earned_hours}} hours</span>__________</p>
                     </div>
                     <div class="end">
                         <p class="certified">CERTIFIED BY:</p>
                         <p class="hr">____<span class="underline">{{ $hr->first_name }} {{ strtoupper(substr($hr->middle_name, 0, 1)) }}. {{ $hr->last_name }}</span>____</p>
                         <p class="official">(Authorized Official/Head of Office)</p>
-                        <p>Prepared by: _____________________________________</p>
+                        <p>Prepared by: ___________________________________</p>
                         <p class="admin">(Designated Admin/Attendance Officer)</p>
-                        <p>Date Issued: _____________________________________</p>
-                        <p>Valid Until: _______________________________________</p>
+                        <p>Date Issued: ___________________________________</p>
+                        <p>Valid Until: _____________________________________</p>
                     </div>
                </div>
             </div>
             <div class="left-side">
                 <div class="align-left">
                     <p>ACTION ON APPLICATION</p>
-                    <div class="checkbox"></div><p class="approved">Approved for</p> <div class="days">_______<span class="underline">{{ $overtime->approved_days}}</span>_______ day/s</div>
-                    <div class="checkbox2"></div><p class="disapproved">Disapproved due to</p> <div class="reason">__________<span class="underline">{{ $overtime->disapproval_reason}}</span>_______ </div>
-                    <div class="line">__________________________________</div>
+                    <div class="checkbox">
+                        @if($overtime->status == 'approved')
+                            <img src="{{ public_path('img/check.jpg') }}" width="23" height="15" class="image-check">  
+                        @endif  
+                    </div><p class="approved">Approved for</p> <div class="days">_______<span class="underline">{{ $overtime->approved_days}}</span>_______ day/s</div>
+                    <div class="checkbox2">
+                        @if($overtime->status == 'rejected')
+                            <img src="{{ public_path('img/check.jpg') }}" width="23" height="15" class="image-check">  
+                        @endif  
+                    </div>
+                        @if($overtime->status == 'rejected')
+                        <p class="disapproved">Disapproved due to</p> <div class="reason"><span class="underline">{{ Str::limit($overtime->disapproval_reason, 20, '-') }}</span> </div>
+                            @php
+                                $remainingReason = Str::substr($overtime->disapproval_reason, 23);
+                            @endphp
+                        <div class="line">{{ Str::limit($remainingReason, 46, '-') }}</div>
+                        @else
+                            <p class="disapproved">Disapproved due to</p> <div class="reason">_________________</div>
+                        <div class="line-empty">__________________________________</div>
+                        @endif
                     <br>
                     <p class="supervisor"><span class="underline">{{ $supervisor->first_name }} {{ strtoupper(substr($supervisor->middle_name, 0, 1)) }}. {{ $supervisor->last_name }}</span></p>
                     <p class="official">(Authorized Official/Head of Office)</p>
@@ -82,11 +99,11 @@
                     </thead>
                     <tbody>
                         <tr>
-                            <td>2 hours</td>
-                            <td>March 19 2025</td>
-                            <td>1 hours</td>
-                            <td>1 hours</td>
-                            <td>Not good</td>
+                            <td>{{ $overtime->earned_hours}} hours</td>
+                            <td>{{ \Carbon\Carbon::parse($overtime->date_filed)->format('F d, Y') }}</td>
+                            <td>{{ $overtime->working_hours_applied}} hours</td>
+                            <td>{{ $overtime->user->overtime_balance - $overtime->working_hours_applied}} hours</td>
+                            <td></td>
                         </tr>
                         <tr>
                             <td><div class="empty"></div></td>
