@@ -484,10 +484,10 @@
 
         // ✅ Leave messages
         const leaveMessages = {
-            "Vacation Leave": "Vacation Leave must be filed at least <strong>5 calendar days in advance</strong>.",
-            "Special Privilege Leave": "Special Privilege Leave must be filed at least <strong>7 calendar days prior</strong>, except for emergencies.",
+            "Vacation Leave": "Vacation Leave must be filed at least <strong>5 days in advance</strong>.",
+            "Special Privilege Leave": "Special Privilege Leave must be filed at least <strong>7 days prior</strong>, except for emergencies.",
             "Solo Parent Leave": "Solo Parent Leave must be filed <strong>5 days in advance</strong>. For emergencies, file as soon as possible.",
-            "Special Leave Benefits for Women Leave": "Special Leave Benefits for Women must be filed <strong>5 calendar days ahead</strong>",
+            "Special Leave Benefits for Women Leave": "Special Leave Benefits for Women must be filed <strong>5 days ahead</strong>",
             "Sick Leave": "Sick Leave exceeding 5 days or filed in advance requires a <strong>medical certificate</strong>.",
             "Maternity Leave": "Maternity Leave requires proof of pregnancy, such as <strong>ultrasound or doctor's certificate</strong>.",
             "Paternity Leave": "Paternity Leave requires proof of child's delivery, such as <strong>birth certificate</strong> or medical certificate.",
@@ -563,11 +563,11 @@
             const daysUntilStart = Math.floor((start - today) / (1000 * 60 * 60 * 24));
 
             // ✅ Show file upload only for Sick Leave exceeding 5 days or filed in advance
-            if (selectedType === 'Sick Leave' && (daysRequested > 5 || daysUntilStart > 0)) {
-                fileUploadSection.classList.remove('hidden');
-            } else {
-                fileUploadSection.classList.add('hidden');
-            }
+            // if (selectedType === 'Sick Leave' && (daysRequested > 5 || daysUntilStart > 0)) {
+            //     fileUploadSection.classList.remove('hidden');
+            // } else {
+            //     fileUploadSection.classList.add('hidden');
+            // }
         }
 
         // ✅ Hide success and error messages after timeout

@@ -30,13 +30,13 @@ class UpdateLeaveBalance extends Command
                $users = User::all();
 
                foreach ($users as $user) {
-                   $user->vacation_leave_balance += 2.5;
-                   $user->sick_leave_balance += 2.5;
+                   $user->vacation_leave_balance += 1.5;
+                   $user->sick_leave_balance += 1.5;
                    $user->save();
                }
        
                // ✅ Log the result
-               Log::info('Leave balances updated by 2.5 days for all users.');
+               Log::info('Leave balances updated by 1.5 days for all users.');
        
                $this->info('Leave balances successfully updated.');
            

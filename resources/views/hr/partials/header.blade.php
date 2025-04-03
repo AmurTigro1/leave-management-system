@@ -30,45 +30,45 @@
                 </div>
             
                 <div class="relative">
-                    <!-- Bell Icon Button -->
-                    <button id="notification-button" class="p-2 rounded-full bg-gray-100 relative">
+                    <!-- Bell Icon Button for HR -->
+                    <button id="hr-notification-button" class="p-2 rounded-full bg-gray-100 relative">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6 text-gray-700">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14V10a6 6 0 10-12 0v4c0 .728-.195 1.414-.595 2L4 17h5m6 0a3 3 0 01-6 0"/>
                         </svg>
                 
                         @if(auth()->user()->unreadNotifications->count() > 0)
-                            <span id="notification-badge" class="absolute -top-1 -right-1 bg-red-500 text-white px-2 py-0.5 text-xs rounded-full">
+                            <span id="hr-notification-badge" class="absolute -top-1 -right-1 bg-red-500 text-white px-2 py-0.5 text-xs rounded-full">
                                 {{ auth()->user()->unreadNotifications->count() }}
                             </span>
                         @endif
                     </button>
                 
-                    <!-- Notification Dropdown -->
-                    <div id="notification-container" class="absolute right-0 bg-white shadow-lg rounded-xl border border-gray-200 p-4 mt-2 w-64 hidden z-10">
-                        <h3 class="text-gray-700 font-semibold mb-2">Notifications</h3>
+                    <!-- Notification Dropdown for HR -->
+                    <div id="hr-notification-container" class="absolute right-0 bg-white shadow-lg rounded-xl border border-gray-200 p-4 mt-2 w-64 hidden z-10">
+                        <h3 class="text-gray-700 font-semibold mb-2">HR Notifications</h3>
                 
                         @forelse(auth()->user()->notifications as $notification)
                             <div class="notification-item p-2 rounded mb-2 bg-gray-200 flex justify-between items-center" data-id="{{ $notification->id }}">
-                                <span class="text-xs font-bold">{{ $notification->data['message'] ?? 'New Notification' }}</span>
+                                <span class="text-xs">
+                                    {!! Str::of($notification->data['message'] ?? 'New Notification')
+                                        ->replace('approved', '<span class="text-green-500">approved</span>') 
+                                        ->replace('rejected', '<span class="text-red-500">rejected</span>') !!}
+                                </span>
                                 <button class="delete-notification text-red-500 text-xs px-1" data-id="{{ $notification->id }}">
                                     ✖
                                 </button>
                             </div>
                         @empty
                             <p class="text-gray-500 text-sm">No new notifications.</p>
-                            <hr>
                         @endforelse
                 
                         <div class="mt-3 flex gap-2 justify-between">
-                            <button id="mark-all-as-read" class="text-gray-500 text-xs">
-                                Mark all as read
-                            </button>
-                            <button id="delete-all-notifications" class="text-gray-500 text-xs">
-                                Delete All
-                            </button>
+                            <button id="hr-mark-all-as-read" class="text-gray-500 text-xs">Mark all as read</button>
+                            <button id="hr-delete-all-notifications" class="text-gray-500 text-xs">Delete All</button>
                         </div>
                     </div>
                 </div>
+                
             </div>
             
             @if (Auth::check())
@@ -166,11 +166,11 @@
         const modal = document.getElementById("logoutModal");
         const openModalBtn = document.getElementById("openModal");
         const closeModalBtn = document.getElementById("closeModal");
-        const notificationButton = document.getElementById("notification-button");
-        const notificationContainer = document.getElementById("notification-container");
-        const markAsReadButton = document.getElementById("mark-all-as-read");
-        const deleteAllButton = document.getElementById("delete-all-notifications");
-        const notificationBadge = document.getElementById("notification-badge");
+        const hrNotificationButton = document.getElementById("hr-notification-button");
+        const hrNotificationContainer = document.getElementById("hr-notification-container");
+        const hrMarkAsReadButton = document.getElementById("hr-mark-all-as-read");
+        const hrDeleteAllButton = document.getElementById("hr-delete-all-notifications");
+        const hrNotificationBadge = document.getElementById("hr-notification-badge");
 
         // Dropdown menu toggle
         dropdownBtn.addEventListener("click", (e) => {
@@ -199,83 +199,85 @@
             if (e.target === modal) modal.classList.add("hidden");
         });
 
-        // Toggle the notification dropdown
-        notificationButton.addEventListener("click", function (e) {
-            e.stopPropagation();
-            notificationContainer.classList.toggle("hidden");
-        });
 
-        // Mark all notifications as read
-        markAsReadButton.addEventListener("click", function () {
-            fetch("{{ route('notifications.markAsRead') }}", {
-                method: "POST",
-                headers: {
-                    "X-CSRF-TOKEN": "{{ csrf_token() }}",
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({})
-            })
+        hrNotificationButton.addEventListener("click", function () {
+        hrNotificationContainer.classList.toggle("hidden");
+    });
+
+    hrMarkAsReadButton.addEventListener("click", function () {
+        fetch("{{ route('hr.notifications.markAsRead') }}", {
+            method: "POST",
+            headers: {
+                "X-CSRF-TOKEN": "{{ csrf_token() }}",
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({})
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                document.querySelectorAll(".notification-item").forEach(item => {
+                    item.classList.remove("bg-gray-200");
+                    item.classList.add("bg-white");
+                });
+
+                if (hrNotificationBadge) {
+                    hrNotificationBadge.style.display = "none";
+                }
+            }
+        })
+        .catch(error => console.error("Error:", error));
+    });
+
+    document.querySelectorAll(".delete-notification").forEach(button => {
+        button.addEventListener("click", function () {
+            let notificationId = this.getAttribute("data-id");
+
+            fetch(`/notifications/hr-delete/${notificationId}`, {
+    method: 'DELETE',
+    headers: {
+        "X-CSRF-TOKEN": "{{ csrf_token() }}",  // Make sure this is being passed
+        "Content-Type": "application/json"
+    },
+})
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    document.querySelectorAll(".notification-item").forEach(item => {
-                        item.classList.remove("bg-gray-200");
-                        item.classList.add("bg-white");
-                    });
-
-                    if (notificationBadge) {
-                        notificationBadge.style.display = "none";
-                    }
+                    document.querySelector(`[data-id="${notificationId}"]`).remove();
                 }
             })
             .catch(error => console.error("Error:", error));
         });
+    });
 
-        // Delete a single notification
-        document.querySelectorAll(".delete-notification").forEach(button => {
-            button.addEventListener("click", function () {
-                let notificationId = this.getAttribute("data-id");
+    hrDeleteAllButton.addEventListener("click", function () {
+        fetch("{{ route('hr.notifications.deleteAll') }}", {
+            method: "DELETE",
+            headers: {
+                "X-CSRF-TOKEN": "{{ csrf_token() }}",
+                "Content-Type": "application/json",
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                document.querySelectorAll(".notification-item").forEach(item => {
+                    item.remove();
+                });
 
-                fetch(`/notifications/delete/${notificationId}`, {
-                    method: "DELETE",
-                    headers: {
-                        "X-CSRF-TOKEN": "{{ csrf_token() }}",
-                        "Content-Type": "application/json",
-                    },
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        document.querySelector(`[data-id="${notificationId}"]`).remove();
-                    }
-                })
-                .catch(error => console.error("Error:", error));
-            });
-        });
-
-        // Delete all notifications
-        deleteAllButton.addEventListener("click", function () {
-            fetch("{{ route('notifications.deleteAll') }}", {
-                method: "DELETE",
-                headers: {
-                    "X-CSRF-TOKEN": "{{ csrf_token() }}",
-                    "Content-Type": "application/json",
+                if (hrNotificationBadge) {
+                    hrNotificationBadge.style.display = "none";
                 }
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    document.querySelectorAll(".notification-item").forEach(item => {
-                        item.remove();
-                    });
+            }
+        })
+        .catch(error => console.error("Error:", error));
+    });
 
-                    if (notificationBadge) {
-                        notificationBadge.style.display = "none";
-                    }
-                }
-            })
-            .catch(error => console.error("Error:", error));
-        });
+    document.addEventListener("click", function (event) {
+        if (!hrNotificationButton.contains(event.target) && !hrNotificationContainer.contains(event.target)) {
+            hrNotificationContainer.classList.add("hidden");
+        }
+    });
 
         // Close notification dropdown when clicking outside
         document.addEventListener("click", function (event) {

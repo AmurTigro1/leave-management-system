@@ -28,45 +28,45 @@
                 </div>
             
                 <div class="relative">
-                    <!-- Bell Icon Button -->
-                    <button id="notification-button" class="p-2 rounded-full bg-gray-100 relative">
+                    <!-- Bell Icon Button for Admin -->
+                    <button id="admin-notification-button" class="p-2 rounded-full bg-gray-100 relative">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6 text-gray-700">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14V10a6 6 0 10-12 0v4c0 .728-.195 1.414-.595 2L4 17h5m6 0a3 3 0 01-6 0"/>
                         </svg>
                 
                         @if(auth()->user()->unreadNotifications->count() > 0)
-                            <span id="notification-badge" class="absolute -top-1 -right-1 bg-red-500 text-white px-2 py-0.5 text-xs rounded-full">
+                            <span id="admin-notification-badge" class="absolute -top-1 -right-1 bg-red-500 text-white px-2 py-0.5 text-xs rounded-full">
                                 {{ auth()->user()->unreadNotifications->count() }}
                             </span>
                         @endif
                     </button>
                 
-                    <!-- Notification Dropdown -->
-                    <div id="notification-container" class="absolute right-0 bg-white shadow-lg rounded-xl border border-gray-200 p-4 mt-2 w-64 hidden z-10">
-                        <h3 class="text-gray-700 font-semibold mb-2">Notifications</h3>
+                    <!-- Notification Dropdown for Admin -->
+                    <div id="admin-notification-container" class="absolute right-0 bg-white shadow-lg rounded-xl border border-gray-200 p-4 mt-2 w-64 hidden z-10">
+                        <h3 class="text-gray-700 font-semibold mb-2">Admin Notifications</h3>
                 
                         @forelse(auth()->user()->notifications as $notification)
                             <div class="notification-item p-2 rounded mb-2 bg-gray-200 flex justify-between items-center" data-id="{{ $notification->id }}">
-                                <span class="text-xs font-bold">{{ $notification->data['message'] ?? 'New Notification' }}</span>
+                                <span class="text-xs">
+                                    {!! Str::of($notification->data['message'] ?? 'New Notification')
+                                        ->replace('approved', '<span class="text-green-500">approved</span>') 
+                                        ->replace('rejected', '<span class="text-red-500">rejected</span>') !!}
+                                </span>
                                 <button class="delete-notification text-red-500 text-xs px-1" data-id="{{ $notification->id }}">
                                     ✖
                                 </button>
                             </div>
                         @empty
                             <p class="text-gray-500 text-sm">No new notifications.</p>
-                            <hr>
                         @endforelse
                 
                         <div class="mt-3 flex gap-2 justify-between">
-                            <button id="mark-all-as-read" class="text-gray-500 text-xs">
-                                Mark all as read
-                            </button>
-                            <button id="delete-all-notifications" class="text-gray-500 text-xs">
-                                Delete All
-                            </button>
+                            <button id="admin-mark-all-as-read" class="text-gray-500 text-xs">Mark all as read</button>
+                            <button id="admin-delete-all-notifications" class="text-gray-500 text-xs">Delete All</button>
                         </div>
                     </div>
                 </div>
+                
             </div>
             
             @if (Auth::check())
@@ -171,7 +171,7 @@
         </div>
     </div>
 </div>
-
+<meta name="csrf-token" content="{{ csrf_token() }}">
 
 <script>
     document.addEventListener("DOMContentLoaded", () => {
@@ -208,4 +208,92 @@
             if (e.target === modal) modal.classList.add("hidden");
         });
     });
+
+    document.addEventListener("DOMContentLoaded", function () {
+    const adminNotificationButton = document.getElementById("admin-notification-button");
+    const adminNotificationContainer = document.getElementById("admin-notification-container");
+    const adminMarkAsReadButton = document.getElementById("admin-mark-all-as-read");
+    const adminDeleteAllButton = document.getElementById("admin-delete-all-notifications");
+    const adminNotificationBadge = document.getElementById("admin-notification-badge");
+
+    adminNotificationButton.addEventListener("click", function () {
+        adminNotificationContainer.classList.toggle("hidden");
+    });
+
+    adminMarkAsReadButton.addEventListener("click", function () {
+        fetch("{{ route('admin.notifications.markAsRead') }}", {
+            method: "POST",
+            headers: {
+                "X-CSRF-TOKEN": "{{ csrf_token() }}",
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({})
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                document.querySelectorAll(".notification-item").forEach(item => {
+                    item.classList.remove("bg-gray-200");
+                    item.classList.add("bg-white");
+                });
+
+                if (adminNotificationBadge) {
+                    adminNotificationBadge.style.display = "none";
+                }
+            }
+        })
+        .catch(error => console.error("Error:", error));
+    });
+
+    document.querySelectorAll(".delete-notification").forEach(button => {
+        button.addEventListener("click", function () {
+            let notificationId = this.getAttribute("data-id");
+            fetch(`/notifications/admin-delete/${notificationId}`, {
+    method: 'DELETE',
+    headers: {
+        "X-CSRF-TOKEN": "{{ csrf_token() }}",  // Make sure this is being passed
+        "Content-Type": "application/json"
+    },
+})
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    document.querySelector(`[data-id="${notificationId}"]`).remove();
+                }
+            })
+            .catch(error => console.error("Error:", error));
+        });
+    });
+
+    adminDeleteAllButton.addEventListener("click", function () {
+        fetch("{{ route('admin.notifications.deleteAll') }}", {
+            method: "DELETE",
+            headers: {
+                "X-CSRF-TOKEN": "{{ csrf_token() }}",
+                "Content-Type": "application/json",
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                document.querySelectorAll(".notification-item").forEach(item => {
+                    item.remove();
+                });
+
+                if (adminNotificationBadge) {
+                    adminNotificationBadge.style.display = "none";
+                }
+            }
+        })
+        .catch(error => console.error("Error:", error));
+    });
+
+    document.addEventListener("click", function (event) {
+        if (!adminNotificationButton.contains(event.target) && !adminNotificationContainer.contains(event.target)) {
+            adminNotificationContainer.classList.add("hidden");
+        }
+    });
+});
+
 </script>
+

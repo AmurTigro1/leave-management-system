@@ -9,6 +9,7 @@ class Leave extends Model
     protected $fillable = ['user_id', 'start_date', 'end_date', 'reason', 'signature' , 'leave_type', 'leave_details', 'abroad_details', 'status', 'days_applied', 'commutation', 'salary_file', 'date_filing', 'disapproval_reason',
     'approved_days_with_pay',
     'approved_days_without_pay',
+    'others',
     'hr_officer_id',
     'hr_status',
     'leave_files',

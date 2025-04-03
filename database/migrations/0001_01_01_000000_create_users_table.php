@@ -21,8 +21,8 @@ return new class extends Migration
             $table->string('department');
             $table->string('position');
             $table->string('email')->unique();
-            $table->decimal('vacation_leave_balance', 8, 2)->default(2.5); //days
-            $table->decimal('sick_leave_balance', 8, 2)->default(2.5); //days
+            $table->decimal('vacation_leave_balance', 8, 2)->default(1.5); //days
+            $table->decimal('sick_leave_balance', 8, 2)->default(1.5); //days
             $table->integer('maternity_leave')->default(105); //days
             $table->integer('paternity_leave')->default(7); //days
             $table->integer('solo_parent_leave')->default(7); //days

@@ -563,11 +563,11 @@
             const daysUntilStart = Math.floor((start - today) / (1000 * 60 * 60 * 24));
 
             // ✅ Show file upload only for Sick Leave exceeding 5 days or filed in advance
-            if (selectedType === 'Sick Leave' && (daysRequested > 5 || daysUntilStart > 0)) {
-                fileUploadSection.classList.remove('hidden');
-            } else {
-                fileUploadSection.classList.add('hidden');
-            }
+            // if (selectedType === 'Sick Leave' && (daysRequested > 5 || daysUntilStart > 0)) {
+            //     fileUploadSection.classList.remove('hidden');
+            // } else {
+            //     fileUploadSection.classList.add('hidden');
+            // }
         }
 
         // ✅ Hide success and error messages after timeout
