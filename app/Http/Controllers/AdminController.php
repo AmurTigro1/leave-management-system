@@ -330,15 +330,40 @@ class AdminController extends Controller
 
     public function storeCTO(Request $request)
     {
+        $user = auth()->user();
+        $overtimeBalance = $user->overtime_balance;
+
+        $ctoHoursMap = [
+            'halfday_morning' => 4,
+            'halfday_afternoon' => 4,
+            'wholeday' => 8,
+        ];
+
+        if ($request->cto_type !== 'none') {
+            $request->merge(['working_hours_applied' => $ctoHoursMap[$request->cto_type]]);
+        }
+
         $request->validate([
             'inclusive_dates' => 'required|string',
-            'working_hours_applied' => 'required|integer|min:4',
+            'cto_type' => 'nullable|in:none,halfday_morning,halfday_afternoon,wholeday',
+            'working_hours_applied' => [
+                'required_without:cto_type',
+                'integer',
+                'min:4',
+                function ($attribute, $value, $fail) {
+                    if ($value % 4 !== 0) {
+                        $fail("The $attribute must be a multiple of 4.");
+                    }
+                },
+                function ($attribute, $value, $fail) use ($overtimeBalance) {
+                    if ($value > $overtimeBalance) {
+                        $fail("You cannot apply more than your available COC balance.");
+                    }
+                }
+            ],
         ]);
 
-        // Convert the comma-separated dates string to an array
         $datesArray = explode(', ', $request->inclusive_dates);
-        
-        // Optionally, you might want to validate each date
         foreach ($datesArray as $date) {
             if (!strtotime($date)) {
                 return back()->withErrors(['inclusive_dates' => 'Invalid date format detected']);
@@ -349,10 +374,12 @@ class AdminController extends Controller
             'user_id' => auth()->id(),
             'date_filed' => now(),
             'working_hours_applied' => $request->working_hours_applied,
-            'inclusive_dates' => $request->inclusive_dates, // Store as comma-separated string
-            'admin_status' => 'pending', // Goes to admin first
-            'hr_status' => 'pending', // HR reviews only after admin approval
+            'inclusive_dates' => $request->inclusive_dates,
+            'admin_status' => 'pending', 
+            'hr_status' => 'pending', 
         ]);
+        
+        $user->decrement('overtime_balance', $request->working_hours_applied);
 
         notify()->success('Overtime request submitted successfully! Pending admin review.');
         return redirect()->back();

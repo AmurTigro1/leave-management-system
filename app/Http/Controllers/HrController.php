@@ -353,13 +353,40 @@ class HrController extends Controller
 
     public function storeCTO(Request $request)
     {
+        $user = auth()->user();
+        $overtimeBalance = $user->overtime_balance;
+
+        $ctoHoursMap = [
+            'halfday_morning' => 4,
+            'halfday_afternoon' => 4,
+            'wholeday' => 8,
+        ];
+
+        if ($request->cto_type !== 'none') {
+            $request->merge(['working_hours_applied' => $ctoHoursMap[$request->cto_type]]);
+        }
+
         $request->validate([
             'inclusive_dates' => 'required|string',
-            'working_hours_applied' => 'required|integer|min:4',
+            'cto_type' => 'nullable|in:none,halfday_morning,halfday_afternoon,wholeday',
+            'working_hours_applied' => [
+                'required_without:cto_type',
+                'integer',
+                'min:4',
+                function ($attribute, $value, $fail) {
+                    if ($value % 4 !== 0) {
+                        $fail("The $attribute must be a multiple of 4.");
+                    }
+                },
+                function ($attribute, $value, $fail) use ($overtimeBalance) {
+                    if ($value > $overtimeBalance) {
+                        $fail("You cannot apply more than your available COC balance.");
+                    }
+                }
+            ],
         ]);
 
         $datesArray = explode(', ', $request->inclusive_dates);
-        
         foreach ($datesArray as $date) {
             if (!strtotime($date)) {
                 return back()->withErrors(['inclusive_dates' => 'Invalid date format detected']);
@@ -374,6 +401,8 @@ class HrController extends Controller
             'admin_status' => 'pending', 
             'hr_status' => 'pending', 
         ]);
+        
+        $user->decrement('overtime_balance', $request->working_hours_applied);
 
         notify()->success('Overtime request submitted successfully! Pending admin review.');
         return redirect()->back();

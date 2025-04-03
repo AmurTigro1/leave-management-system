@@ -151,7 +151,7 @@ document.addEventListener('alpine:init', () => {
 
         isAppliedDate(day) {
             const date = new Date(this.year, this.month, day);
-            const dateString = ${this.year}-${String(this.month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')};
+            const dateString = `${this.year}-${String(this.month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
             
             return this.appliedDates.some(applied => {
                 const datesArray = applied.inclusive_dates.split(', ');
@@ -162,10 +162,10 @@ document.addEventListener('alpine:init', () => {
 
         isHoliday(day) {
             const date = new Date(this.year, this.month, day);
-            const dateString = ${this.year}-${String(this.month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')};
+            const dateString = `${this.year}-${String(this.month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
             return this.holidays.some(holiday => {
                 const holidayDate = new Date(holiday.date);
-                return dateString === ${holidayDate.getFullYear()}-${String(holidayDate.getMonth() + 1).padStart(2, '0')}-${String(holidayDate.getDate()).padStart(2, '0')};
+                return dateString === `${holidayDate.getFullYear()}-${String(holidayDate.getMonth() + 1).padStart(2, '0')}-${String(holidayDate.getDate()).padStart(2, '0')}`;
             });
         },
 
@@ -253,8 +253,8 @@ document.addEventListener('alpine:init', () => {
                 let first = Math.min(...this.selectedDays);
                 let last = Math.max(...this.selectedDays);
 
-                this.firstSelectedDate = ${this.year}-${String(this.month + 1).padStart(2, '0')}-${String(first).padStart(2, '0')};
-                this.lastSelectedDate = ${this.year}-${String(this.month + 1).padStart(2, '0')}-${String(last).padStart(2, '0')};
+                this.firstSelectedDate = `${this.year}-${String(this.month + 1).padStart(2, '0')}-${String(first).padStart(2, '0')}`;
+                this.lastSelectedDate = `${this.year}-${String(this.month + 1).padStart(2, '0')}-${String(last).padStart(2, '0')}`;
             } else {
                 this.firstSelectedDate = null;
                 this.lastSelectedDate = null;
@@ -262,7 +262,7 @@ document.addEventListener('alpine:init', () => {
         },
 
         get selectedDates() {
-            return this.selectedDays.map(day => ${this.monthNames[this.month]} ${day}).join(", ");
+            return this.selectedDays.map(day => `${this.monthNames[this.month]} ${day}`).join(", ");
         },
 
         setModalDates() {
@@ -278,7 +278,7 @@ document.addEventListener('alpine:init', () => {
             document.getElementById('inclusive_dates').value = formattedDates;
             
             const originalFormatDates = this.selectedDays.map(day => {
-                return ${this.year}-${String(this.month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')};
+                return `${this.year}-${String(this.month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
             }).join(', ');
             
             const existingHidden = document.querySelector('input[name="inclusive_dates_original"]');
@@ -303,7 +303,7 @@ document.addEventListener('alpine:init', () => {
             const alertContainer = document.getElementById("alert-container");
             const alertElement = document.createElement("div");
 
-            alertElement.className = alert alert-${type} alert-dismissible fade show;
+            alertElement.className = `alert alert-${type} alert-dismissible fade show`;
             alertElement.role = "alert";
             alertElement.innerHTML = `
                 <strong>Notice!</strong> ${message}
