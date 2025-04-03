@@ -102,7 +102,7 @@ Route::middleware('auth')->group(function () {
 
         Route::get('/check-existing-roles', [UserController::class, 'checkExistingRoles'])->name('check.existing.roles');
         Route::post('/swap-roles', [UserController::class, 'swapRoles'])->name('swap.roles');
-
+        Route::get('/hr/users/modal', [HrController::class, 'showHrModal'])->name('hr.users.modal');
         //Notification
         Route::post('/notifications/hr-mark-as-read', [HRController::class, 'markAsRead'])->name('hr.notifications.markAsRead');
         Route::delete('/notifications/hr-delete/{id}', [HRController::class, 'delete'])->name('hr.notifications.delete');
@@ -144,6 +144,13 @@ Route::middleware('auth')->group(function () {
 
         Route::get('/admins/modal', [AdminController::class, 'showAdminsModal'])->name('admins.modal');
         Route::get('/admin/employees', [AdminController::class, 'onLeave'])->name('admin.on_leave');
+
+        Route::get('/admins/modal', [AdminController::class, 'showAdminsModal'])->name('admins.modal');
+        Route::get('/admin/employees', [AdminController::class, 'onLeave'])->name('admin.on_leave');
+
+        Route::post('/notifications/admin-mark-as-read', [AdminController::class, 'markAsRead'])->name('admin.notifications.markAsRead');
+        Route::delete('/notifications/admin-delete/{id}', [AdminController::class, 'delete'])->name('admin.notifications.delete');
+        Route::delete('/notifications/admin-delete-all', [AdminController::class, 'deleteAll'])->name('admin.notifications.deleteAll');
     });
 
 

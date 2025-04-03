@@ -27,12 +27,27 @@
                         <input type="date" name="date_filed" value="{{ old('date_filed', date('Y-m-d')) }}" class="w-full border border-gray-300 p-2 sm:p-3 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" readonly>
                     </div>
                     <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">CTO Type (Optional)</label>
+                        <select name="cto_type" id="cto_type" 
+                                class="w-full border border-gray-300 p-2 sm:p-3 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
+                            <option value="none" selected>None</option>
+                            <option value="halfday_morning">Half-Day (Morning)</option>
+                            <option value="halfday_afternoon">Half-Day (Afternoon)</option>
+                            <option value="wholeday">Whole Day</option>
+                        </select>
+                    </div>
+                    
+                    <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Working Hours Applied</label>
                         <input type="number" name="working_hours_applied" value="{{ old('working_hours_applied') }}" min="4" max="{{Auth::user()->overtime_balance || 0}}" class="w-full border border-gray-300 p-2 sm:p-3 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
+                        <input type="number" name="working_hours_applied" id="working_hours_applied" 
+                               value="{{ old('working_hours_applied') }}" min="1" 
+                               class="w-full border border-gray-300 p-2 sm:p-3 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
                         @error('working_hours_applied')
                             <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                         @enderror
                     </div>
+                    
                     <div class="sm:col-span-2">
                         <label class="block text-sm font-medium text-gray-700 mb-1">Selected Dates</label>
                         <input type="text" name="inclusive_dates" id="inclusive_dates" value="{{ old('inclusive_dates') }}" 
@@ -68,15 +83,28 @@
 
             // Reset validation errors
             document.querySelectorAll('.error-message').forEach(el => el.remove());
+            document.querySelector('input[name="working_hours_applied"]').value = "";
+            
+            let errorMessage = document.querySelector('input[name="working_hours_applied"] + p.text-red-500');
+            if (errorMessage) {
+                errorMessage.remove();
+            }
         }
     }
+    document.getElementById("cto_type").addEventListener("change", function () {
+        let workingHoursField = document.getElementById("working_hours_applied");
 
     document.getElementById("is_driver").addEventListener("change", function () {
         let distanceField = document.getElementById("distanceField");
         if (this.checked) {
             distanceField.classList.remove("hidden"); // Show distance input
+        if (this.value === "halfday_morning" || this.value === "halfday_afternoon") {
+            workingHoursField.value = 4;
+        } else if (this.value === "wholeday") {
+            workingHoursField.value = 8;
         } else {
             distanceField.classList.add("hidden"); // Hide distance input
+            workingHoursField.value = "";
         }
     });
 </script>

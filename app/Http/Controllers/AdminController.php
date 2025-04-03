@@ -1023,4 +1023,42 @@ public function ctoreview(Request $request, OvertimeRequest $cto)
 
         return view('admin.partials.admins-modal', compact('employees'));
     }
+
+    public function markAsRead()
+    {
+        $user = auth()->user();
+
+        if ($user) {
+            $user->unreadNotifications->markAsRead();
+        }
+
+        return response()->json(['success' => true, 'message' => 'Notifications marked as read.']);
+    }
+
+    public function delete($id)
+    {
+        $user = Auth::user();
+
+        if ($user) {
+            $notification = $user->notifications()->find($id);
+            if ($notification) {
+                $notification->delete();
+                return response()->json(['success' => true, 'message' => 'Notification deleted.']);
+            }
+        }
+
+        return response()->json(['success' => false, 'message' => 'Notification not found.']);
+    }
+
+    public function deleteAll()
+    {
+        $user = Auth::user();
+
+        if ($user) {
+            $user->notifications()->delete();
+            return response()->json(['success' => true, 'message' => 'All notifications deleted.']);
+        }
+
+        return response()->json(['success' => false, 'message' => 'No notifications found.']);
+    }
 }
