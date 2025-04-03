@@ -93,8 +93,10 @@ Route::middleware('auth')->group(function () {
         Route::put('/hr/user/{id}', [UserController::class, 'update'])->name('hr.users.update');
         Route::delete('/hr/user/{id}', [UserController::class, 'destroy'])->name('hr.users.destroy');
 
-        Route::get('/check-existing-roles', [UserController::class, 'checkExistingRoles'])->name('check.existing.roles');
-        Route::post('/swap-roles', [UserController::class, 'swapRoles'])->name('swap.roles');
+        // Route::get('/check-existing-roles', [UserController::class, 'checkExistingRoles'])->name('check.existing.roles');
+        // Route::post('/swap-roles', [UserController::class, 'swapRoles'])->name('swap.roles');
+
+        Route::get('/hr/users/modal', [HrController::class, 'showHrModal'])->name('hr.users.modal');
         
     });
 

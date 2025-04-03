@@ -19,12 +19,10 @@
                 <h2 class="font-bold text-sm md:text-lg">Select Overtime Dates</h2>
             </div>
 
-            <!-- Calendar Section -->
             <div x-data="calendar()" 
                 class="mt-4 select-none p-2 md:p-4 rounded-lg shadow-lg border"
                 style="background-image: url('/img/Background.png'); background-size: cover; background-position: center;">
                 
-                <!-- Calendar Header -->
                 <div class="flex justify-between space-x-4 items-center mb-2">
                     <button @click="prevMonth()" 
                         class="px-2 py-1 md:px-3 md:py-1 bg-gray-200 rounded hover:bg-gray-300 text-xs md:text-sm">
@@ -37,13 +35,11 @@
                     </button>
                 </div>
 
-                <!-- Week Days -->
                 <div class="grid grid-cols-7 text-center font-bold mb-2 text-white text-lg md:text-md lg:text-xl">
                     <span>Sun</span> <span>Mon</span> <span>Tue</span> <span>Wed</span>
                     <span>Thu</span> <span>Fri</span> <span>Sat</span>
                 </div>
 
-                <!-- Days Grid -->
                 <div class="grid grid-cols-7 text-center text-white font-bold gap-[1px] md:gap-1">
                     <template x-for="blankDay in blankDays">
                         <div class="py-1"></div>
@@ -68,12 +64,10 @@
                     </template>                                    
                 </div>
 
-                <!-- Selected Dates -->
                 <div class="mt-2 text-center min-h-[100px]">
                     <p class="text-white text-xs md:text-sm" x-show="selectedDays.length">
                         Selected Dates: <span x-text="selectedDates"></span>
                     </p>
-                    <!-- Buttons Section -->
                     <div class="mt-2 space-x-2 flex flex-wrap justify-center">
                         @include('hr.modals.request', ['otModal' => $overtimereq])
                         <button 
@@ -118,8 +112,8 @@ document.addEventListener('alpine:init', () => {
         isRemoving: false,
         firstSelectedDate: null,
         lastSelectedDate: null,
-        appliedDates: @json($appliedDates), // Pass applied dates from backend
-        holidays: @json($holidays), // Pass holidays from backend
+        appliedDates: @json($appliedDates),
+        holidays: @json($holidays), 
 
         init() {
             this.calculateDays();
@@ -134,9 +128,16 @@ document.addEventListener('alpine:init', () => {
         },
 
         isPastDate(day) {
-            let date = new Date(this.year, this.month, day);
+            let today = new Date();
+            let selectedDate = new Date(this.year, this.month, day);
 
-            // Check if the date is in the past
+            let diffInTime = selectedDate.getTime() - today.getTime();
+            let diffInDays = Math.ceil(diffInTime / (1000 * 3600 * 24));
+
+            if (diffInDays < 2) {
+                return true;
+            }
+
             if (
                 this.year < this.currentYear ||
                 (this.year === this.currentYear && this.month < this.currentMonth) ||
@@ -145,7 +146,6 @@ document.addEventListener('alpine:init', () => {
                 return true;
             }
 
-            // Check if the date is within any of the applied date ranges
             return this.isAppliedDate(day);
         },
 
@@ -154,10 +154,8 @@ document.addEventListener('alpine:init', () => {
             const dateString = `${this.year}-${String(this.month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
             
             return this.appliedDates.some(applied => {
-                // Split the comma-separated dates into an array
                 const datesArray = applied.inclusive_dates.split(', ');
                 
-                // Check if any of the dates match the current date
                 return datesArray.some(d => d === dateString);
             });
         },
@@ -213,7 +211,6 @@ document.addEventListener('alpine:init', () => {
             } else {
                 if (!this.selectedDays.includes(day)) {
                     if (this.selectedDays.length >= 5) {
-                        // Do not show an alert here; just block the selection
                         return;
                     }
                     this.selectedDays.push(day);
@@ -241,7 +238,7 @@ document.addEventListener('alpine:init', () => {
                                 window.location.href = "/cto-limit-warning";
                                 return;
                             }
-                            this.cancelSelection(); // Ensure cancelSelection is properly triggered
+                            this.cancelSelection(); 
                             return;
                         }
                     } else {
@@ -269,7 +266,6 @@ document.addEventListener('alpine:init', () => {
         },
 
         setModalDates() {
-            // Format the selected dates in a user-friendly way
             const formattedDates = this.selectedDays.map(day => {
                 const date = new Date(this.year, this.month, day);
                 return date.toLocaleDateString('en-US', { 
@@ -279,19 +275,15 @@ document.addEventListener('alpine:init', () => {
                 });
             }).join(', ');
             
-            // Set the formatted dates in the visible input
             document.getElementById('inclusive_dates').value = formattedDates;
             
-            // Create a hidden input with the original format for submission
             const originalFormatDates = this.selectedDays.map(day => {
                 return `${this.year}-${String(this.month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
             }).join(', ');
             
-            // Remove any existing hidden input
             const existingHidden = document.querySelector('input[name="inclusive_dates_original"]');
             if (existingHidden) existingHidden.remove();
             
-            // Create new hidden input
             const hiddenInput = document.createElement('input');
             hiddenInput.type = 'hidden';
             hiddenInput.name = 'inclusive_dates';
@@ -301,8 +293,8 @@ document.addEventListener('alpine:init', () => {
 
         cancelSelection() {
             this.selectedDays = [];
-            this.isDragging = false; // Ensure dragging is reset
-            this.isRemoving = false; // Reset removing flag
+            this.isDragging = false;
+            this.isRemoving = false; 
             this.updateInclusiveDates();
         }
     }));
@@ -322,7 +314,6 @@ document.addEventListener('alpine:init', () => {
 
             alertContainer.appendChild(alertElement);
 
-            // Auto-dismiss after 3 seconds
             setTimeout(() => {
                 alertElement.classList.remove("show");
                 alertElement.classList.add("fade");

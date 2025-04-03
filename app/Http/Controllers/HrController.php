@@ -957,4 +957,24 @@ class HrController extends Controller
         
         return view('hr.users', compact('users'));
     }
+
+    public function showHrModal()
+    {
+        $employees = User::with(['leaves' => function ($query) {
+            $query->where('status', 'approved')
+                  ->whereMonth('start_date', now()->month) 
+                  ->whereYear('start_date', now()->year);
+        }])
+        ->orderBy('last_name', 'asc')  
+        ->get();
+        $employees->each(function ($employee) {
+            $employee->total_absences = $employee->leaves->sum(function ($leave) {
+                return \Carbon\Carbon::parse($leave->start_date)
+                        ->diffInDays(\Carbon\Carbon::parse($leave->end_date)) + 1;
+            });
+        });
+        $employees = $employees->sortBy('total_absences');
+
+        return view('hr.partials.hr-modal', compact('employees'));
+    }
 }

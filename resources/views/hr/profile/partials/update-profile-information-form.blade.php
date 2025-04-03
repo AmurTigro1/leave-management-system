@@ -6,8 +6,8 @@
 
 <div class="w-full p-3 rounded-xl shadow-md">
     <!-- Banner Image -->
-    <div class="bg-[url('/public/img/office-image.jpg')] bg-cover bg-center bg-no-repeat min-h-[250px] md:min-h-[450px] w-full rounded-lg overflow-hidden">
-    </div>      
+    <div class="bg-[url('/public/img/Background.png')] bg-cover bg-center bg-no-repeat min-h-[200px] sm:min-h-[300px] md:min-h-[400px] w-full rounded-lg overflow-hidden"></div>     
+          
 
     <!-- Profile Section -->
     <div class="relative flex flex-col items-center md:flex-row md:items-start mt-[-60px] md:mt-[-100px] px-4">
