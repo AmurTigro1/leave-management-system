@@ -61,7 +61,7 @@ class EmployeeController extends Controller
                         ->diffInDays(\Carbon\Carbon::parse($leave->end_date)) + 1;
             });
         });
-        $employees = $employees->sortBy('total_absences')->take(10);
+        $employees = $employees->sortBy('total_absences')->take(10)->values();
         return view('employee.leaderboard', compact('employees'));
     }
     
@@ -72,19 +72,23 @@ class EmployeeController extends Controller
             $query->where('status', 'approved')
                   ->whereMonth('start_date', now()->month) 
                   ->whereYear('start_date', now()->year);
-        }])
-        ->orderBy('last_name', 'asc')  
-        ->get();
+        }])->get();
+    
+        // Calculate total absences for each employee
         $employees->each(function ($employee) {
             $employee->total_absences = $employee->leaves->sum(function ($leave) {
                 return \Carbon\Carbon::parse($leave->start_date)
                         ->diffInDays(\Carbon\Carbon::parse($leave->end_date)) + 1;
             });
         });
-        $employees = $employees->sortBy('total_absences');
-
+    
+        $employees = $employees
+                        ->sortBy(['total_absences', 'last_name'])
+                        ->values();
+    
         return view('employee.partials.users-modal', compact('employees'));
     }
+    
 
     public function loginLmsCto() {
         return view('main_resources.logins.lms_cto_login');

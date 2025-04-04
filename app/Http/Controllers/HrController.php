@@ -1072,7 +1072,7 @@ public function deleteLeave($id) {
                         ->diffInDays(\Carbon\Carbon::parse($leave->end_date)) + 1;
             });
         });
-        $employees = $employees->sortBy('total_absences')->take(5);
+        $employees = $employees->sortBy('total_absences')->take(10)->values();
         return view('hr.leaderboard', compact('employees'));
     }
 
@@ -1091,7 +1091,9 @@ public function deleteLeave($id) {
                         ->diffInDays(\Carbon\Carbon::parse($leave->end_date)) + 1;
             });
         });
-        $employees = $employees->sortBy('total_absences');
+        $employees = $employees
+        ->sortBy(['total_absences', 'last_name'])
+        ->values();
 
         return view('hr.partials.hr-modal', compact('employees'));
     }

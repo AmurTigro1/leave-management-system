@@ -935,7 +935,7 @@ public function ctoreview(Request $request, OvertimeRequest $cto)
                         ->diffInDays(\Carbon\Carbon::parse($leave->end_date)) + 1;
             });
         });
-        $employees = $employees->sortBy('total_absences')->take(5);
+        $employees = $employees->sortBy('total_absences')->take(10)->values();
         return view('admin.leaderboard', compact('employees'));
     }
 
@@ -1046,7 +1046,9 @@ public function ctoreview(Request $request, OvertimeRequest $cto)
                         ->diffInDays(\Carbon\Carbon::parse($leave->end_date)) + 1;
             });
         });
-        $employees = $employees->sortBy('total_absences');
+        $employees = $employees
+        ->sortBy(['total_absences', 'last_name']) 
+        ->values();
 
         return view('admin.partials.admins-modal', compact('employees'));
     }
