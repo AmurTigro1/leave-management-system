@@ -116,6 +116,11 @@
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-auto" viewBox="0 0 20 20" fill="currentColor">
                             <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
                         </svg>
+                        @if($pendingRequestsCount > 0)
+                        <span class="bg-red-500 text-white text-xs font-semibold rounded-full px-2 py-1">
+                            {{ $pendingRequestsCount }}
+                        </span>
+                    @endif
                     </label>
                 
                     <div class="absolute left-0 top-full hidden peer-checked:flex flex-col w-48 mt-1 bg-white border border-gray-300 rounded-md shadow-lg z-10">
