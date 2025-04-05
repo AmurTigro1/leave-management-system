@@ -123,49 +123,71 @@
 <script>
    function timeCalculator() {
     return {
-        checkIn: null,
-        breakOut: null,
-        breakIn: null,
-        checkOut: null,
-        totalHours: '',
-        lateMinutes: '',
-
+        checkIn: null, // Stores the check-in time
+        breakOut: null, // Stores break-out time
+        breakIn: null, // Stores break-in time
+        checkOut: null, // Stores check-out time
+        totalHours: '', // Stores total worked hours
+        lateMinutes: '', // Stores late minutes
+        
+        // Main function to calculate time
         calculateTime() {
-            const expectedCheckIn = new Date(`1970-01-01T07:00:00`);
-            const expectedBreakIn = new Date(`1970-01-01T12:30:00`);
+    const currentDay = new Date().getDay(); // Get the current day (0 = Sunday, 1 = Monday, etc.)
 
-            let totalMinutesWorked = 0;
-            let lateMinutesTotal = 0;
+    // Default expected check-in and check-out times
+    let expectedCheckIn = new Date(`1970-01-01T09:00:00`); // 9:00 AM by default (for Tuesday to Friday)
+    let expectedCheckOut = new Date(`1970-01-01T18:00:00`); // 6:00 PM by default (for Tuesday to Friday)
 
-            const checkInTime = this.checkIn ? new Date(`1970-01-01T${this.checkIn}:00`) : null;
-            const breakOutTime = this.breakOut ? new Date(`1970-01-01T${this.breakOut}:00`) : null;
-            const breakInTime = this.breakIn ? new Date(`1970-01-01T${this.breakIn}:00`) : null;
-            const checkOutTime = this.checkOut ? new Date(`1970-01-01T${this.checkOut}:00`) : null;
+    // Adjust for Monday (8:00 AM check-in and 5:00 PM check-out)
+    if (currentDay === 1) {
+        expectedCheckIn = new Date(`1970-01-01T08:00:00`); // 8:00 AM on Monday
+        expectedCheckOut = new Date(`1970-01-01T17:00:00`); // 5:00 PM on Monday
+    }
 
-            if (checkInTime && checkOutTime) {
-                totalMinutesWorked = (checkOutTime - checkInTime) / 60000;
-                if (breakOutTime && breakInTime) {
-                    totalMinutesWorked -= (breakInTime - breakOutTime) / 60000;
-                }
-            } 
-            else if (checkInTime && !checkOutTime) {
-                totalMinutesWorked = 240; // Assume half-day if only check-in
-                if (breakOutTime) totalMinutesWorked += 30; // Assume 30 mins more if Break-Out exists
-                if (breakInTime) totalMinutesWorked += 30; // Assume 30 more mins if Break-In exists
-            }
+    let totalMinutesWorked = 0; // Total minutes worked during the day
+    let lateMinutesTotal = 0; // Total late minutes
 
-            // Late Computation
-            if (checkInTime && checkInTime > expectedCheckIn) {
-                lateMinutesTotal += (checkInTime - expectedCheckIn) / 60000;
-            }
-            if (breakInTime && breakInTime > expectedBreakIn) {
-                lateMinutesTotal += (breakInTime - expectedBreakIn) / 60000;
-            }
+    // Convert input times to Date objects for easier calculation
+    const checkInTime = this.checkIn ? new Date(`1970-01-01T${this.checkIn}:00`) : null;
+    const breakOutTime = this.breakOut ? new Date(`1970-01-01T${this.breakOut}:00`) : null;
+    const breakInTime = this.breakIn ? new Date(`1970-01-01T${this.breakIn}:00`) : null;
+    const checkOutTime = this.checkOut ? new Date(`1970-01-01T${this.checkOut}:00`) : null;
 
-            this.totalHours = Math.floor(totalMinutesWorked / 60); 
-            this.lateMinutes = Math.floor(lateMinutesTotal);
+    // Calculate total minutes worked if check-in and check-out times are provided
+    if (checkInTime && checkOutTime) {
+        totalMinutesWorked = (checkOutTime - checkInTime) / 60000; // Convert milliseconds to minutes
+
+        // Subtract break time (if break-out and break-in times are provided)
+        if (breakOutTime && breakInTime) {
+            totalMinutesWorked -= (breakInTime - breakOutTime) / 60000; // Subtract break duration in minutes
         }
+    } 
+    else if (checkInTime && !checkOutTime) {
+        // If the check-out time is missing, assume half-day work (240 minutes)
+        totalMinutesWorked = 240;
+        if (breakOutTime) totalMinutesWorked += 30; // Add break-out time if provided
+        if (breakInTime) totalMinutesWorked += 30; // Add break-in time if provided
+    }
+
+    // Calculate late minutes if the employee checks in later than the expected check-in time
+    if (checkInTime && checkInTime > expectedCheckIn) {
+        lateMinutesTotal += (checkInTime - expectedCheckIn) / 60000; // Convert milliseconds to minutes
+    }
+
+    // Calculate late minutes for break-in (if the break-in is later than the expected check-out time)
+    if (breakInTime && breakInTime > expectedCheckOut) {
+        lateMinutesTotal += (breakInTime - expectedCheckOut) / 60000; // Convert milliseconds to minutes
+    }
+
+    // Store the total hours worked (rounded down to nearest whole number)
+    this.totalHours = Math.floor(totalMinutesWorked / 60); // Convert minutes to hours
+
+    // Store the total late minutes (rounded down to nearest whole number)
+    this.lateMinutes = Math.floor(lateMinutesTotal); // Convert late minutes to whole number
+}
+
     };
 }
+
 
     </script>
