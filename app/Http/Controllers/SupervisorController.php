@@ -7,6 +7,7 @@ use App\Http\Requests\EmailUpdateRequest;
 use App\Models\Leave;
 use App\Models\User;
 use Carbon\Carbon;
+use App\Models\YearlyHoliday;
 use Barryvdh\DomPDF\Facade\Pdf;
 use App\Models\HRSupervisor;
 use App\Models\OvertimeRequest;
@@ -240,26 +241,21 @@ class SupervisorController extends Controller
         $month = $request->query('month', now()->month);
         $today = now()->toDateString(); 
     
-        // Fetch employees whose birthday falls in the selected month
-        $birthdays = User::whereMonth('birthday', $month)->get();
+        $birthdays = User::whereMonth('birthday', $month)
+        ->orderByRaw('DAY(birthday) ASC')
+        ->get();
     
-        // Get employees who are on approved leave this month (but only if their leave has not yet ended)
         $teamLeaves = Leave::whereMonth('start_date', $month)
                             ->where('status', 'approved')
-                            ->where('end_date', '>=', $today) // Ensures leave is still ongoing
-                            ->with('user') // Ensures the user object is available
+                            ->where('end_date', '>=', $today)
+                            ->with('user')
                             ->get();
-                            
-        $month = request()->input('month', now()->month); // Get month from request or default to current
-        $year = now()->year; // Define the year variable
-        $monthPadded = str_pad($month, 2, '0', STR_PAD_LEFT); // Ensure 2-digit month (01-12)
+        $monthPadded = str_pad($month, 2, '0', STR_PAD_LEFT); 
+        $year = now()->year;
         
         $overtimeRequests = OvertimeRequest::where('status', 'approved')
-            ->where(function($query) use ($monthPadded, $year) {
-                $query->where('inclusive_dates', 'LIKE', "{$year}-{$monthPadded}-%") // Starts with date
-                        ->orWhere('inclusive_dates', 'LIKE', "%, {$year}-{$monthPadded}-%"); // Contains date
-            })
-            ->orderBy('inclusive_dates', 'asc')
+            ->where('inclusive_dates', 'LIKE', "%-{$monthPadded}-%")
+            ->where('inclusive_dates', 'LIKE', "{$year}-%")
             ->get();
         return view('supervisor.on_leave', compact('teamLeaves', 'birthdays', 'month', 'overtimeRequests'));
     }
@@ -272,26 +268,93 @@ class SupervisorController extends Controller
                   ->whereYear('start_date', now()->year);
         }])->get();
     
-        // Calculate total absences correctly
         $employees->each(function ($employee) {
             $employee->total_absences = $employee->leaves->sum(function ($leave) {
                 return \Carbon\Carbon::parse($leave->start_date)
                         ->diffInDays(\Carbon\Carbon::parse($leave->end_date)) + 1;
             });
         });
-        $employees = $employees->sortBy('total_absences')->take(5);
+        $employees = $employees->sortBy('total_absences')->take(10)->values();
         return view('supervisor.leaderboard', compact('employees'));
     }
 
-    public function holiday() {
-        $holidays = Holiday::orderBy('date')->get()->map(function ($holiday) {
-            $holiday->day = Carbon::parse($holiday->date)->format('d'); // Example: 01
-            $holiday->month = Carbon::parse($holiday->date)->format('M'); // Example: Jan
-            $holiday->day_name = Carbon::parse($holiday->date)->format('D'); // Example: Mon
-            return $holiday;
+    public function holiday(Request $request)
+    {
+        $selectedYear = (int) $request->input('year', date('Y'));  // Cast year to integer
+    
+        // Get holidays for the selected year
+        $holidays = YearlyHoliday::whereYear('date', $selectedYear)
+            ->orWhere('repeats_annually', true)
+            ->orderBy('date')
+            ->get()
+            ->map(function ($holiday) use ($selectedYear) {
+                // Ensure repeating holidays use the selected year
+                if ($holiday->repeats_annually) {
+                    $date = Carbon::parse($holiday->date);
+    
+                    // Force cast to integer to avoid the Carbon::setUnit() error
+                    $holiday->date = Carbon::create((int) $selectedYear, (int) $date->month, (int) $date->day)->format('Y-m-d');
+                }
+                return $holiday;
+            });
+    
+        // Group holidays by month
+        $groupedHolidays = $holidays->groupBy(function ($item) {
+            return Carbon::parse($item->date)->format('F Y');
         });
-        return view('supervisor.holiday-calendar', compact('holidays'));
+    
+        // Prepare data for calendar view
+        $calendarData = $this->prepareCalendarData($holidays, $selectedYear);
+    
+        return view('supervisor.holiday-calendar', compact(
+            'groupedHolidays',
+            'calendarData',
+            'selectedYear',
+        ));
     }
+
+    protected function prepareCalendarData($holidays, $year)
+{
+    $months = [];
+
+    for ($month = 1; $month <= 12; $month++) {
+        // Cast year and month to integers to avoid Carbon errors
+        $year = (int) $year;
+        $month = (int) $month;
+
+        $date = Carbon::create($year, $month, 1);
+        $daysInMonth = $date->daysInMonth;
+
+        $monthData = [
+            'name' => $date->format('F'),
+            'year' => $year,
+            'days' => []
+        ];
+
+        // Filter holidays for this month
+        $monthHolidays = $holidays->filter(function ($holiday) use ($month) {
+            return (int) Carbon::parse($holiday->date)->month === $month;
+        });
+
+        for ($day = 1; $day <= $daysInMonth; $day++) {
+            $currentDate = Carbon::create($year, $month, $day);
+
+            $dayHolidays = $monthHolidays->filter(function ($holiday) use ($day) {
+                return (int) Carbon::parse($holiday->date)->day === $day;
+            });
+
+            $monthData['days'][$day] = [
+                'date' => $currentDate,
+                'holidays' => $dayHolidays,
+                'isWeekend' => $currentDate->isWeekend()
+            ];
+        }
+
+        $months[$month] = $monthData;
+    }
+
+    return $months;
+}
 
     public function viewPdf($id)
     {
@@ -317,5 +380,63 @@ class SupervisorController extends Controller
         
         return $pdf->stream( $overtime->user->last_name . ', '. $overtime->user->first_name . '- CTO Request' . '.pdf');
 
+    }
+
+    public function markAsRead()
+    {
+        $user = auth()->user();
+
+        if ($user) {
+            $user->unreadNotifications->markAsRead();
+        }
+
+        return response()->json(['success' => true, 'message' => 'Notifications marked as read.']);
+    }
+
+    public function delete($id)
+    {
+        $notification = auth()->user()->notifications()->find($id);
+    
+        if ($notification) {
+            $notification->delete();
+            return response()->json(['success' => true]);
+        }
+    
+        return response()->json(['success' => false, 'message' => 'Notification not found']);
+    }
+    
+
+    public function deleteAll()
+    {
+        $user = Auth::user();
+
+        if ($user) {
+            $user->notifications()->delete();
+            return response()->json(['success' => true, 'message' => 'All notifications deleted.']);
+        }
+
+        return response()->json(['success' => false, 'message' => 'No notifications found.']);
+    }
+
+    public function showSupervisorModal()
+    {
+        $employees = User::with(['leaves' => function ($query) {
+            $query->where('status', 'approved')
+                  ->whereMonth('start_date', now()->month) 
+                  ->whereYear('start_date', now()->year);
+        }])
+        ->orderBy('last_name', 'asc')  
+        ->get();
+        $employees->each(function ($employee) {
+            $employee->total_absences = $employee->leaves->sum(function ($leave) {
+                return \Carbon\Carbon::parse($leave->start_date)
+                        ->diffInDays(\Carbon\Carbon::parse($leave->end_date)) + 1;
+            });
+        });
+        $employees = $employees
+        ->sortBy(['total_absences', 'last_name'])
+        ->values();
+
+        return view('supervisor.partials.supervisor-modal', compact('employees'));
     }
 }

@@ -40,6 +40,12 @@ Route::middleware('auth')->group(function () {
         
         Route::get('/supervisor-leave/view/{id}', [SupervisorController::class, 'viewPdf'])->name('supervisor.leave.viewPdf');
         Route::get('/supervisor-cto/view/{id}', [SupervisorController::class, 'ctoviewPdf'])->name('supervisor.cto.viewPdf');
+
+        Route::post('/notifications/supervisor-mark-as-read', [SupervisorController::class, 'markAsRead'])->name('supervisor.notifications.markAsRead');
+        Route::delete('/notifications/supervisor-delete/{id}', [SupervisorController::class, 'delete'])->name('supervisor.notifications.delete');
+        Route::delete('/notifications/supervisor-delete-all', [SupervisorController::class, 'deleteAll'])->name('supervisor.notifications.deleteAll');
+
+        Route::get('/supervisor/users/modal', [SupervisorController::class, 'showSupervisorModal'])->name('supervisor.users.modal');
         // Route::get('/supervisor/requests', [SupervisorController::class, 'requests'])->name('supervisor.requests');
     });
 

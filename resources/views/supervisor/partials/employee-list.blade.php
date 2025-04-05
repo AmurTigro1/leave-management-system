@@ -18,9 +18,28 @@
                         <td class="py-3 px-4 border-b border-gray-200 text-sm text-gray-700">{{ $employee->first_name }} {{ $employee->last_name }}</td>
                         <td class="py-3 px-4 border-b border-gray-200">
                             @if ($employee->profile_image)
-                                <img src="{{ asset('storage/profile_images/' . $employee->profile_image) }}" class="w-10 h-10 rounded-full object-cover">
+                            @php
+                                $profileImage = null;
+
+                                if ($employee->profile_image) {
+                                    $imagePath1 = 'storage/profile_images/' . $employee->profile_image;
+                                    $imagePath2 = 'storage/profile_pictures/' . $employee->profile_image;
+
+                                    if (file_exists(public_path($imagePath1))) {
+                                        $profileImage = asset($imagePath1);
+                                    } elseif (file_exists(public_path($imagePath2))) {
+                                        $profileImage = asset($imagePath2);
+                                    }
+                                }
+                            @endphp
+
+                            <img src="{{ $profileImage ?? asset('img/default-avatar.png') }}" 
+                                class="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover flex-shrink-0" 
+                                alt="{{ $employee->name }}">
                             @else
-                                <img src="{{ asset('img/default-avatar.png') }}" alt="" class="w-10 h-10 rounded-full object-cover">
+                                <img src="{{ asset('img/default-avatar.png') }}" 
+                                     alt="" 
+                                     class="w-8 h-8 sm:w-10 sm:h-10 rounded-full object-cover">
                             @endif
                         </td>
                         @if($employee->vacation_leave_balance)

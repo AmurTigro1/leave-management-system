@@ -6,8 +6,8 @@
 
 <div class="w-full p-3 rounded-xl shadow-md">
         <!-- Back Button with Animation -->
-        <div class="bg-[url('/public/img/office-image.jpg')] bg-cover bg-center bg-no-repeat min-h-[400px] md:min-h-[450px] w-full rounded-lg overflow-hidden">
-        </div>      
+        <div class="bg-[url('/public/img/Background.png')] bg-cover bg-center bg-no-repeat min-h-[200px] sm:min-h-[300px] md:min-h-[400px] w-full rounded-lg overflow-hidden"></div>     
+         
           
     <!-- Profile Image & Upload -->
     <div class="relative w-32 h-32 ml-6 mt-[-100px]">

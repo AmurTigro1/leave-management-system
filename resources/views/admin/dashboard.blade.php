@@ -1,6 +1,11 @@
 @extends('layouts.admin.sidebar-header')
 
 @section('content')
+
+<div class="fixed top-4 right-4 z-[9999]">
+    <x-notify::notify />
+</div>
+
 <div class="max-w-7xl mx-auto  space-y-6 animate-fade-in">
     <h2 class="text-2xl font-bold">Application Verification</h2>
     <div class="container mx-auto px-4">
@@ -70,3 +75,4 @@
 </style>
 
 @endsection
+@notifyCss

@@ -29,8 +29,30 @@
           <div class="flex justify-between items-center border-b pb-3 mb-3">
             <div class="flex items-center gap-3">
               <div class="w-12 h-12 rounded-full overflow-hidden border border-gray-300">
-                <img src="{{ $leave->user->profile_image ? asset('storage/profile_images/' . $leave->user->profile_image) : asset('img/default-avatar.png') }}" 
-                class="w-12 h-12 rounded-full object-cover" alt="{{ $leave->user->name }}">
+                @if ($leave->user->profile_image)
+                                    @php
+                                        $profileImage = null;
+
+                                        if ($leave->user->profile_image) {
+                                            $imagePath1 = 'storage/profile_images/' . $leave->user->profile_image;
+                                            $imagePath2 = 'storage/profile_pictures/' . $leave->user->profile_image;
+
+                                            if (file_exists(public_path($imagePath1))) {
+                                                $profileImage = asset($imagePath1);
+                                            } elseif (file_exists(public_path($imagePath2))) {
+                                                $profileImage = asset($imagePath2);
+                                            }
+                                        }
+                                    @endphp
+
+                                    <img src="{{ $profileImage ?? asset('img/default-avatar.png') }}" 
+                                    class="w-12 h-12 rounded-full object-cover" 
+                                        alt="{{ $leave->user->name }}">
+                                    @else
+                                        <img src="{{ asset('img/default-avatar.png') }}" 
+                                            alt="" 
+                                            class="w-12 h-12 rounded-full object-cover" >
+                                    @endif
               </div>
               <div>
                 <p class="text-md font-semibold text-gray-800">{{ $leave->user->first_name }} {{ $leave->user->last_name }}</p>
@@ -75,8 +97,30 @@
           <div class="flex justify-between items-center border-b pb-3 mb-3">
             <div class="flex items-center gap-3">
               <div class="w-12 h-12 rounded-full overflow-hidden border border-gray-300">
-                <img src="{{ $cto->user->profile_image ? asset('storage/profile_images/' . $cto->user->profile_image) : asset('img/default-avatar.png') }}" 
-                class="w-12 h-12 rounded-full object-cover" alt="{{ $cto->user->name }}">
+                @if ($cto->user->profile_image)
+                                    @php
+                                        $profileImage = null;
+
+                                        if ($cto->user->profile_image) {
+                                            $imagePath1 = 'storage/profile_images/' . $cto->user->profile_image;
+                                            $imagePath2 = 'storage/profile_pictures/' . $cto->user->profile_image;
+
+                                            if (file_exists(public_path($imagePath1))) {
+                                                $profileImage = asset($imagePath1);
+                                            } elseif (file_exists(public_path($imagePath2))) {
+                                                $profileImage = asset($imagePath2);
+                                            }
+                                        }
+                                    @endphp
+
+                                    <img src="{{ $profileImage ?? asset('img/default-avatar.png') }}" 
+                                    class="w-12 h-12 rounded-full object-cover" 
+                                        alt="{{ $cto->user->name }}">
+                                    @else
+                                        <img src="{{ asset('img/default-avatar.png') }}" 
+                                            alt="" 
+                                            class="w-12 h-12 rounded-full object-cover" >
+                                    @endif
               </div>
               <div>
                 <p class="text-md font-semibold text-gray-800">{{ $cto->user->first_name }} {{ $cto->user->last_name }}</p>

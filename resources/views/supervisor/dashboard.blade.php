@@ -1,6 +1,10 @@
 @extends('layouts.supervisor.sidebar-header')
 
 @section('content')
+<div class="fixed top-4 right-4 z-[9999]">
+    <x-notify::notify />
+</div>
+
 <div class="container mx-auto p-6 animate-fade-in">
     <h2 class="text-2xl font-bold mb-4">Application Management</h2>
 
@@ -150,3 +154,4 @@
 </style>
 @endsection
 
+@notifyCss

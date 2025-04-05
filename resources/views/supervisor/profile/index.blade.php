@@ -106,215 +106,172 @@
         </div>
     </div>
 </div>
-<div class="bg-white rounded-lg shadow-md p-6 mt-4">
-    <h3 class="text-2xl font-semibold text-gray-800 mb-6">Leave and Overtime Distribution</h3>
+<div class="bg-white rounded-lg shadow-md p-4 sm:p-6 mt-4">
+    <h3 class="text-xl sm:text-2xl font-semibold text-gray-800 mb-4 sm:mb-6">Leave and COC Distribution</h3>
     
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
         <!-- Leave Balance Section -->
-        <div class="bg-gray-50 p-6 rounded-lg">
-            <h3 class="text-xl font-semibold text-gray-700 mb-4">Leave Balance</h3>
-            <div class="space-y-3">
-                <div class="flex justify-between text-sm text-gray-600">
-                    <span>Vacation:</span>
-                    @if($user->vacation_leave_balance)
-                        <span>{{ $user->vacation_leave_balance }} day(s)</span>
-                    @else
-                        <span>0 day(s)</span>
-                    @endif
+        <div class="bg-gray-50 p-4 sm:p-6 rounded-lg">
+            <h3 class="text-lg sm:text-xl font-semibold text-gray-700 mb-3 sm:mb-4">Leave Balance</h3>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <!-- Vacation Leave -->
+                <div class="flex justify-between items-center bg-white p-2 rounded shadow-sm">
+                    <span class="text-sm sm:text-base text-gray-600">Vacation:</span>
+                    <span class="font-medium text-gray-600">
+                        {{ $user->vacation_leave_balance ?? 0 }} 
+                        {{ Str::plural('day', $user->vacation_leave_balance ?? 0) }}
+                    </span>
                 </div>
-                <div class="flex justify-between text-sm text-gray-600">
-                    <span>Sick:</span>
-                    @if($user->sick_leave_balance)
-                        <span>{{ $user->sick_leave_balance }} day(s)</span>
-                    @else
-                        <span>0 day(s)</span>
-                    @endif
+
+                <!-- Mandatory Leave Notice -->
+                @if(($user->total_annual_vacation_leave - $user->vacation_leave_balance) < 5)
+                <div class="bg-yellow-100 text-yellow-800 p-2 rounded mt-2 text-sm flex items-center border-l-4 border-yellow-500">
+                    <svg class="w-5 h-5 mr-2 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M12 8h.01M12 18h.01M12 20h.01"></path>
+                    </svg>
+                    <span>
+                        <strong>Mandatory Leave Reminder:</strong> You must use at least <strong>5 vacation leave days</strong> this year.  
+                        Unused days will be <strong>forfeited after December 31st</strong>.  
+                        You have used <strong>{{ $user->total_annual_vacation_leave - $user->vacation_leave_balance }}</strong> day(s) so far.
+                    </span>
                 </div>
-                <div class="flex justify-between text-sm text-gray-600">
-                    <span>Maternity Leave:</span>
-                    @if($user->maternity_leave)
-                        <span>{{ $user->maternity_leave }} day(s)</span>
-                    @else
-                        <span>0 day(s)</span>
-                    @endif
+                @endif
+       
+                <!-- Sick Leave -->
+                <div class="flex justify-between items-center bg-white p-2 rounded shadow-sm">
+                    <span class="text-sm sm:text-base text-gray-600">Sick:</span>
+                    <span class="font-medium text-gray-600">
+                        {{ $user->sick_leave_balance ?? 0 }} 
+                        {{ Str::plural('day', $user->sick_leave_balance ?? 0) }}
+                    </span>
+                    
                 </div>
-                <div class="flex justify-between text-sm text-gray-600">
-                    <span>Paternity Leave:</span>
-                    @if($user->paternity_leave)
-                        <span>{{ $user->paternity_leave }} day(s)</span>
-                    @else
-                        <span>0 day(s)</span>
-                    @endif
+                
+                <!-- Maternity Leave -->
+                <div class="flex justify-between items-center bg-white p-2 rounded shadow-sm">
+                    <span class="text-sm sm:text-base text-gray-600">Maternity:</span>
+                    <span class="font-medium text-gray-600">
+                        {{ $user->maternity_leave ?? 0 }} 
+                        {{ Str::plural('day', $user->maternity_leave ?? 0) }}
+                    </span>
+                    
                 </div>
-                <div class="flex justify-between text-sm text-gray-600">
-                    <span>Solo Parent Leave:</span>
-                    @if($user->solo_parent_leave)
-                        <span>{{ $user->solo_parent_leave }} day(s)</span>
-                    @else
-                        <span>0 day(s)</span>
-                    @endif
+                
+                <!-- Paternity Leave -->
+                <div class="flex justify-between items-center bg-white p-2 rounded shadow-sm">
+                    <span class="text-sm sm:text-base text-gray-600">Paternity:</span>
+                    <span class="font-medium text-gray-600">
+                        {{ $user->paternity_leave ?? 0 }} 
+                        {{ Str::plural('day', $user->paternity_leave ?? 0) }}
+                    </span> 
                 </div>
-                <div class="flex justify-between text-sm text-gray-600">
-                    <span>Study Leave:</span>
-                    @if($user->study_leave)
-                        <span>{{ $user->study_leave }} day(s)</span>
-                    @else
-                        <span>0 day(s)</span>
-                    @endif
+                <!-- Paternity Leave -->
+                <div class="flex justify-between items-center bg-white p-2 rounded shadow-sm">
+                    <span class="text-sm sm:text-base text-gray-600">Special Privilege Leave:</span>
+                    <span class="font-medium text-gray-600">
+                        {{ $user->special_privilege_leave ?? 0 }} 
+                        {{ Str::plural('day', $user->special_privilege_leave ?? 0) }}
+                    </span> 
                 </div>
-                <div class="flex justify-between text-sm text-gray-600">
-                    <span>VAWC Leave:</span>
-                    @if($user->vawc_leave)
-                        <span>{{ $user->vawc_leave}} day(s)</span>
-                    @else
-                        <span>0 day(s)</span>
-                    @endif
-                </div> 
-                <div class="flex justify-between text-sm text-gray-600">
-                    <span>Rehabilitation Leave:</span>
-                    @if($user->rehabilitation_leave)
-                        <span>{{ $user->rehabilitation_leave }} day(s)</span>
-                    @else
-                        <span>0 day(s)</span>
-                    @endif
+
+                <!-- Solo Parent Leave -->
+                <div class="flex justify-between items-center bg-white p-2 rounded shadow-sm">
+                    <span class="text-sm sm:text-base text-gray-600">Solo Parent:</span>
+                    <span class="font-medium text-gray-600">
+                        {{ $user->solo_parent_leave ?? 0 }} 
+                        {{ Str::plural('day', $user->solo_parent_leave ?? 0) }}
+                    </span>
+                    
                 </div>
-                <div class="flex justify-between text-sm text-gray-600">
-                    <span>Special Leave Benefit:</span>
-                    @if($user->special_leave_benefit)
-                        <span>{{ $user->special_leave_benefit }} day(s)</span>
-                    @else
-                        <span>0 day(s)</span>
-                    @endif
+                
+                <!-- Study Leave -->
+                <div class="flex justify-between items-center bg-white p-2 rounded shadow-sm">
+                    <span class="text-sm sm:text-base text-gray-600">Study:</span>
+                    <span class="font-medium text-gray-600">
+                        {{ $user->study_leave ?? 0 }} 
+                        {{ Str::plural('day', $user->study_leave ?? 0) }}
+                    </span>
+                    
                 </div>
-                <div class="flex justify-between text-sm text-gray-600">
-                    <span>Special Emergency Leave:</span>
-                    @if($user->special_emergency_leave)
-                        <span>{{ $user->special_emergency_leave }} day(s)</span>
-                    @else
-                        <span>0 day(s)</span>
-                    @endif
+                
+                <!-- VAWC Leave -->
+                <div class="flex justify-between items-center bg-white p-2 rounded shadow-sm">
+                    <span class="text-sm sm:text-base text-gray-600">VAWC:</span>
+                    <span class="font-medium text-gray-600">
+                        {{ $user->vawc_leave ?? 0 }} 
+                        {{ Str::plural('day', $user->vawc_leave ?? 0) }}
+                    </span>
+                    
+                </div>
+                
+                <!-- Rehabilitation Leave -->
+                <div class="flex justify-between items-center bg-white p-2 rounded shadow-sm">
+                    <span class="text-sm sm:text-base text-gray-600">Rehabilitation:</span>
+                    <span class="font-medium text-gray-600">
+                        {{ $user->rehabilitation_leave ?? 0 }} 
+                        {{ Str::plural('day', $user->rehabilitation_leave ?? 0) }}
+                    </span>
+                    
+                </div>
+                
+                <!-- Special Leave Benefit -->
+                <div class="flex justify-between items-center bg-white p-2 rounded shadow-sm">
+                    <span class="text-sm sm:text-base text-gray-600">Special Benefits :</span>
+                    <span class="font-medium text-gray-600">
+                        {{ $user->special_leave_benefit ?? 0 }} 
+                        {{ Str::plural('day', $user->special_leave_benefit ?? 0) }}
+                    </span>
+                    
+                </div>
+                
+                <!-- Special Emergency Leave -->
+                <div class="flex justify-between items-center bg-white p-2 rounded shadow-sm">
+                    <span class="text-sm sm:text-base text-gray-600">Emergency:</span>
+                    <span class="font-medium text-gray-600">
+                        {{ $user->special_emergency_leave ?? 0 }} 
+                        {{ Str::plural('day', $user->special_emergency_leave ?? 0) }}
+                    </span>
+                    
                 </div>
             </div>
-            <!-- Total Leave & Overtime Balance Section -->
-        <div class="bg-gray-50 mt-4 rounded-lg">
-            <h3 class="text-xl font-semibold text-gray-700 mb-4">Total Leave & Overtime Balance</h3>
-            <div class="space-y-3">
-                <div class="flex justify-between text-sm text-gray-600">
-                    <span>Leave Available:</span>
-                    @if($user->leave_balance)
-                        <span>{{ $user->leave_balance }} day(s)</span>
-                    @else
-                        <span>0 day(s)</span>
-                    @endif
-                </div>
-                <div class="flex justify-between text-sm text-gray-600">
-                    <span>Overtime Available:</span>
-                    @if($user->overtime_balance)
-                        <span>{{ $user->overtime_balance }} hour(s)</span>
-                    @else
-                        <span>0 hour(s)</span>
-                    @endif
+            
+            <!-- Total Leave & COC Balance -->
+            <div class="mt-4 bg-white p-4 rounded-lg shadow-sm">
+                <h3 class="text-lg sm:text-xl font-semibold text-gray-700 mb-3">Total Balance</h3>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div class="flex justify-between items-center bg-blue-50 p-2 rounded">
+                        <span class="text-sm sm:text-base text-gray-700">Leave Available:</span>
+                        <span class="font-medium text-blue-600">{{ $user->leave_balance ?? 0 }} day(s)</span>
+                    </div>
+                    <div class="flex justify-between items-center bg-blue-50 p-2 rounded">
+                        <span class="text-sm sm:text-base text-gray-700">COC Available:</span>
+                        <span class="font-medium text-blue-600">{{ $user->overtime_balance ?? 0 }} hour(s)</span>
+                    </div>
                 </div>
             </div>
         </div>
+        
+        <!-- Graph Section -->
+        <div class="bg-gray-50 p-4 sm:p-6 rounded-lg">
+            <h3 class="text-lg sm:text-xl font-semibold text-gray-700 mb-3 sm:mb-4">Leave Distribution</h3>
+            <div class="w-full h-64 sm:h-80">
+                <canvas id="leaveGraph" class="w-full h-full"></canvas>
+            </div>
         </div>
-         <!-- Graph Section -->
-    <div class="mt-8">
-        <h3 class="text-xl font-semibold text-gray-700 mb-4">Leave Distribution Graph</h3>
-        <div class="bg-gray-50 p-6 rounded-lg">
-            <canvas id="leaveGraph" class="w-full h-64 shadow-md"></canvas>
-        </div>
-    </div>
     </div>
 </div>
+
 <!-- Include Chart.js -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    const ctx = document.getElementById('leaveGraph').getContext('2d');
-    const leaveGraph = new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: [
-                'Vacation', 'Sick', 'Maternity', 'Paternity', 'Solo Parent', 
-                'Study', 'VAWC', 'Rehabilitation', 'Special Leave Benefit', 
-                'Special Emergency', 'Overtime Available', 'Leave Available'
-            ],
-            datasets: [{
-                label: 'Days',
-                data: [
-                    {{ $user->vacation_leave_balance }}, 
-                    {{ $user->sick_leave_balance }}, 
-                    {{ $user->maternity_leave }}, 
-                    {{ $user->paternity_leave }}, 
-                    {{ $user->solo_parent_leave }}, 
-                    {{ $user->study_leave }}, 
-                    {{ $user->vawc_leave }}, 
-                    {{ $user->rehabilitation_leave }}, 
-                    {{ $user->special_leave_benifit }}, 
-                    {{ $user->special_emergency_leave }}, 
-                    {{ $user->overtime_balance }}, 
-                    {{ $user->leave_balance }}
-                ],
-                backgroundColor: [
-                    '#22c55e', '#eab308', '#3b82f6', '#a855f7', '#f97316', 
-                    '#14b8a6', '#ef4444', '#8b5cf6', '#64748b', '#f43f5e', 
-                    '#6b7280', '#4b5563'
-                ],
-                borderColor: [
-                    '#16a34a', '#ca8a04', '#2563eb', '#9333ea', '#ea580c', 
-                    '#0d9488', '#dc2626', '#7c3aed', '#475569', '#e11d48', 
-                    '#4b5563', '#374151'
-                ],
-                borderWidth: 1
-            }]
-        },
-        options: {
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    title: {
-                        display: true,
-                        text: 'Days'
-                    }
-                },
-                x: {
-                    title: {
-                        display: true,
-                        text: 'Leave Types'
-                    }
-                }
-            },
-            plugins: {
-                legend: {
-                    display: false
-                },
-                tooltip: {
-                    enabled: true
-                }
-            }
-        }
-    });
-</script>
-
-<!-- script -->
-<script>
-    document.getElementById("profile_image").onchange = function(event) {
-        let reader = new FileReader();
-        reader.onload = function() {
-            document.getElementById("profile-preview").src = reader.result;
-        };
-        reader.readAsDataURL(event.target.files[0]);
-    };
     document.addEventListener("DOMContentLoaded", function() {
+        // Profile image upload handling
         const fileInput = document.getElementById("profile_image");
         const updateButton = document.getElementById("update-button");
         const previewImage = document.getElementById("profile-preview");
 
         fileInput.addEventListener("change", function(event) {
-            // Show update button when a file is selected
             updateButton.classList.remove("hidden");
-
-            // Preview the selected image
             const reader = new FileReader();
             reader.onload = function() {
                 previewImage.src = reader.result;
@@ -323,16 +280,85 @@
                 reader.readAsDataURL(event.target.files[0]);
             }
         });
+
+        // Chart initialization
+        const ctx = document.getElementById('leaveGraph').getContext('2d');
+        const leaveGraph = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: [
+                    'Vacation', 'Sick', 'Maternity', 'Paternity', 'Solo Parent', 
+                    'Study', 'VAWC', 'Rehabilitation', 'Special Benefit', 
+                    'Emergency', 'COC', 'Leave'
+                ],
+                datasets: [{
+                    label: 'Days',
+                    data: [
+                        {{ $user->vacation_leave_balance ?? 0 }}, 
+                        {{ $user->sick_leave_balance ?? 0 }}, 
+                        {{ $user->maternity_leave ?? 0 }}, 
+                        {{ $user->paternity_leave ?? 0 }}, 
+                        {{ $user->special_privilege_leave ?? 0 }}, 
+                        {{ $user->solo_parent_leave ?? 0 }}, 
+                        {{ $user->study_leave ?? 0 }}, 
+                        {{ $user->vawc_leave ?? 0 }}, 
+                        {{ $user->rehabilitation_leave ?? 0 }}, 
+                        {{ $user->special_leave_benefit ?? 0 }}, 
+                        {{ $user->special_emergency_leave ?? 0 }}, 
+                        {{ $user->overtime_balance ?? 0 }}, 
+                        {{ $user->leave_balance ?? 0 }}
+                    ],
+                    backgroundColor: [
+                        '#22c55e', '#eab308', '#3b82f6', '#a855f7', '#f97316', 
+                        '#14b8a6', '#ef4444', '#8b5cf6', '#64748b', '#f43f5e', 
+                        '#6b7280', '#4b5563'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Days/Hours'
+                        }
+                    },
+                    x: {
+                        ticks: {
+                            autoSkip: false,
+                            maxRotation: 45,
+                            minRotation: 45
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return context.parsed.y + (context.dataIndex >= 10 ? ' hours' : ' days');
+                            }
+                        }
+                    }
+                }
+            }
+        });
     });
 </script>
 @endsection
+
 <style>
     .animate-fade-in {
-    animation: fadeIn 0.8s ease-in-out;
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-}
+        animation: fadeIn 0.5s ease-out;
+    }
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
 </style>

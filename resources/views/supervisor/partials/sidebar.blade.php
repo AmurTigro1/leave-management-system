@@ -17,19 +17,24 @@ class="min-h-screen flex z-[1000]">
     :class="isSidebarOpen ? 'w-64' : 'w-0 opacity-0'" 
     class="bg-white border-r border-gray-300 rounded-lg transition-all duration-300 ease-in-out h-screen flex flex-col fixed overflow-hidden"
 >
-    <div class="relative p-4 flex items-center justify-between bg-gray-50 border border-b-gray-200">
-        <div class="flex items-center space-x-3" x-show="isSidebarOpen" x-transition>
-            <img src="/img/dilg-main.png" alt="DILG LOGO" class="w-12 h-12">
-            <h1 class="text-md font-semibold">DILG-BOHOL PROVINCE</h1>
+<div class="flex items-center justify-between px-4 py-4">
+    <div class="flex items-center space-x-4">
+        <div class="w-12 h-12 rounded-full overflow-hidden bg-gray-700">
+            <img src="/img/dilg-main.png" class="w-full h-full object-cover">
         </div>
-        <button 
-            @click="isSidebarOpen = false" 
-            class="text-gray-500 hover:text-gray-700 focus:outline-none">
-            <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-            </svg>
-        </button>
+        <div>
+            <h1 class="text-black text-md font-semibold">LMS & CTO SYSTEM</h1>
+            <p class="text-black text-sm">DILG BOHOL</p>
+        </div>
     </div>
+
+    <!-- Close Button (Only in Mobile) -->
+    <button @click="sidebarOpen = false" class="lg:hidden text-gray-300 hover:text-white">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+    </button>
+</div>
 
     <div x-show="isSidebarOpen" x-transition class="flex-1 p-4 space-y-2 text-gray-600 bg-gray-50">
         <!-- Dashboard Link -->
