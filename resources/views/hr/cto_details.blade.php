@@ -97,8 +97,30 @@
         <!-- Right Side: Processing Steps -->
         <div class="bg-white shadow-xl rounded-lg p-6 w-full lg:w-2/5 h-full min-h-[865px] flex flex-col">
             <div class="flex justify-center items-center">
-                <img src="{{ $cto->user->profile_image ? asset('storage/profile_images/' . $cto->user->profile_image) : asset('img/default-avatar.png') }}" 
-                     class="w-[400px] h-[400px] object-cover" alt="{{ $cto->user->name }}">
+                @if ($cto->user->profile_image)
+                @php
+                    $profileImage = null;
+
+                    if ($cto->user->profile_image) {
+                        $imagePath1 = 'storage/profile_images/' . $cto->user->profile_image;
+                        $imagePath2 = 'storage/profile_pictures/' . $cto->user->profile_image;
+
+                        if (file_exists(public_path($imagePath1))) {
+                            $profileImage = asset($imagePath1);
+                        } elseif (file_exists(public_path($imagePath2))) {
+                            $profileImage = asset($imagePath2);
+                        }
+                    }
+                @endphp
+
+                <img src="{{ $profileImage ?? asset('img/default-avatar.png') }}" 
+                    class="w-[400px] h-[400px] object-cover"
+                    alt="{{ $cto->user->name }}">
+                @else
+                    <img src="{{ asset('img/default-avatar.png') }}" 
+                        alt="" 
+                        class="w-[400px] h-[400px] object-cover">
+                @endif
             </div>
 
             <p class="font-semibold mt-4 text-gray-500">Employee: {{ $cto->user->first_name}} {{ strtoupper(substr($cto->user->middle_name, 0, 1)) }}. {{ $cto->user->last_name}}</p>

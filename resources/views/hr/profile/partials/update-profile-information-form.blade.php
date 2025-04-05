@@ -14,9 +14,14 @@
         <!-- Profile Image & Upload -->
         <div class="relative w-24 h-24 md:w-32 md:h-32">
             <div class="relative group w-full h-full">
-                <img id="profile-preview"
-                    src="{{ auth()->user()->profile_image ? asset('storage/profile_images/' . auth()->user()->profile_image) : asset('img/default-avatar.png') }}"
-                    class="w-full h-full rounded-full object-cover border-4 border-gray-300 shadow-md cursor-pointer">
+                <img id="profile-preview" src="{{ 
+                    $user->profile_image && file_exists(storage_path('app/public/profile_images/' . $user->profile_image)) 
+                        ? asset('storage/profile_images/' . $user->profile_image) 
+                        : ($user->profile_image && file_exists(storage_path('app/public/profile_pictures/' . $user->profile_pictures)) 
+                            ? asset('storage/profile_pictures/' . $user->profile_image) 
+                            : asset('img/default-avatar.png')) 
+                }}" 
+                class="w-full h-full rounded-full object-cover border-4 border-gray-300 shadow-md cursor-pointer" alt="{{ $user->name }}">
                 <label for="profile_image" 
                     class="absolute inset-0 bg-black bg-opacity-50 rounded-full opacity-0 group-hover:opacity-100 flex justify-center items-center transition-opacity duration-300 cursor-pointer">
                     <span class="text-white text-xs md:text-sm font-medium">Change Image</span>

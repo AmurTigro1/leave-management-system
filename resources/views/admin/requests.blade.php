@@ -26,15 +26,33 @@
                                 </svg>
                                 <span class="bg-yellow-500 text-white py-1 px-3 rounded-full text-sm">{{ $leave->status}}</span>
                             </div>
-                            <a href="{{ route('admin.leave_details', ['id' => $leave->id]) }}" class="text-blue-600 text-sm sm:text-base">View Request</a>
                         </div>
                         
-                        <div class="flex flex-col sm:flex-row items-start gap-4">
+                        <div class="flex flex-col sm:flex-row items-end gap-4">
                             <div class="flex-shrink-0">
                                 @if ($leave->user->profile_image)
-                                <img src="{{ asset('storage/profile_images/' . $leave->user->profile_image) }}" class="w-16 h-16 sm:w-20 sm:h-20 rounded-full object-cover">
+                                @php
+                                    $profileImage = null;
+
+                                    if ($leave->user->profile_image) {
+                                        $imagePath1 = 'storage/profile_images/' . $leave->user->profile_image;
+                                        $imagePath2 = 'storage/profile_pictures/' . $leave->user->profile_image;
+
+                                        if (file_exists(public_path($imagePath1))) {
+                                            $profileImage = asset($imagePath1);
+                                        } elseif (file_exists(public_path($imagePath2))) {
+                                            $profileImage = asset($imagePath2);
+                                        }
+                                    }
+                                @endphp
+
+                                <img src="{{ $profileImage ?? asset('img/default-avatar.png') }}" 
+                                    class="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover flex-shrink-0" 
+                                    alt="{{ $leave->user->name }}">
                                 @else
-                                    <img src="{{ asset('img/default-avatar.png') }}" alt="Default avatar" class="w-16 h-16 sm:w-20 sm:h-20 rounded-full object-cover">
+                                    <img src="{{ asset('img/default-avatar.png') }}" 
+                                        alt="" 
+                                        class="w-8 h-8 sm:w-10 sm:h-10 rounded-full object-cover">
                                 @endif
                             </div>
                             <div class="flex-grow">
@@ -44,6 +62,7 @@
                                 <p class="text-gray-600 text-xs sm:text-sm mb-1">Leave Type: {{ $leave->leave_type }}</p>
                                 <p class="text-gray-600 text-xs sm:text-sm">Duration: <span class="font-semibold">{{ $leave->days_applied }} days</span></p>
                             </div>
+                             <a href="{{ route('admin.leave_details', ['id' => $leave->id]) }}" class="text-blue-600 text-sm sm:text-base">View Request</a>
                         </div>
                     </div>
                     @endforeach
@@ -71,16 +90,34 @@
                                 </svg>
                                 <span class="bg-yellow-500 text-white py-1 px-3 rounded-full text-sm">{{ $cto->status}}</span>
                             </div>
-                            <a href="{{ route('admin.cto_details', ['id' => $cto->id]) }}" class="text-blue-600 text-sm sm:text-base">View Request</a>
                         </div>
                         
-                        <div class="flex flex-col sm:flex-row items-start gap-4">
+                        <div class="flex flex-col sm:flex-row items-end gap-4">
                             <div class="flex-shrink-0">
                                 @if ($cto->user->profile_image)
-                                <img src="{{ asset('storage/profile_images/' . $cto->user->profile_image) }}" class="w-16 h-16 sm:w-20 sm:h-20 rounded-full object-cover">
-                                @else
-                                    <img src="{{ asset('img/default-avatar.png') }}" alt="Default avatar" class="w-16 h-16 sm:w-20 sm:h-20 rounded-full object-cover">
-                                @endif
+                                    @php
+                                        $profileImage = null;
+
+                                        if ($cto->user->profile_image) {
+                                            $imagePath1 = 'storage/profile_images/' . $cto->user->profile_image;
+                                            $imagePath2 = 'storage/profile_pictures/' . $cto->user->profile_image;
+
+                                            if (file_exists(public_path($imagePath1))) {
+                                                $profileImage = asset($imagePath1);
+                                            } elseif (file_exists(public_path($imagePath2))) {
+                                                $profileImage = asset($imagePath2);
+                                            }
+                                        }
+                                    @endphp
+
+                                    <img src="{{ $profileImage ?? asset('img/default-avatar.png') }}" 
+                                        class="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover flex-shrink-0" 
+                                        alt="{{ $cto->user->name }}">
+                                    @else
+                                        <img src="{{ asset('img/default-avatar.png') }}" 
+                                            alt="" 
+                                            class="w-8 h-8 sm:w-10 sm:h-10 rounded-full object-cover">
+                                    @endif
                             </div>
                             <div class="flex-grow">
                                 <h3 class="text-sm sm:text-base font-semibold text-gray-900 mb-1 uppercase">
@@ -89,6 +126,7 @@
                                 <p class="text-gray-600 text-xs sm:text-sm mb-1">Working Hours: {{ $cto->working_hours_applied }} hours</p>
                                 <p class="text-gray-600 text-xs sm:text-sm">Duration: <span class="font-semibold">{{ round(\Carbon\Carbon::parse($cto->inclusive_date_start)->diffInDays(\Carbon\Carbon::parse($cto->inclusive_date_end)) + 1) }} days</span></p>
                             </div>
+                            <a href="{{ route('admin.cto_details', ['id' => $cto->id]) }}" class="text-blue-600 text-sm sm:text-base">View Request</a>
                         </div>
                     </div>
                     @endforeach
