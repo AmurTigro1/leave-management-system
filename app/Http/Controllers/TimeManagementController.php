@@ -13,7 +13,7 @@ class TimeManagementController extends Controller
 {
     public function timeManagement()
 {
-    $records = TimeManagement::orderBy('created_at', 'desc')->get();
+    $records = TimeManagement::orderBy('date', 'desc')->get();
     $users = User::all();
 
     // Group records by month
@@ -121,6 +121,66 @@ public function destroy($id)
 
     notify()->success('Record deleted successfully!');
     return redirect()->back();
+}
+
+public function edit($id)
+{
+    $record = TimeManagement::findOrFail($id);
+    return response()->json($record);
+}
+
+
+public function update(Request $request, $id)
+{
+    // Find the record
+    $record = TimeManagement::findOrFail($id);
+
+    // Validate the form data
+    $request->validate([
+        'date' => 'required|date',
+        'check_in' => 'nullable|date_format:H:i',
+        'break_out' => 'nullable|date_format:H:i',
+        'break_in' => 'nullable|date_format:H:i',
+        'check_out' => 'nullable|date_format:H:i',
+    ]);
+
+    // Calculate hours worked and late minutes
+    $checkIn = $request->check_in ? Carbon::parse($request->check_in) : null;
+    $checkOut = $request->check_out ? Carbon::parse($request->check_out) : null;
+
+    $totalMinutesWorked = 0;
+    $lateMinutes = 0;
+
+    if ($checkIn && $checkOut) {
+        $totalMinutesWorked = $checkIn->diffInMinutes($checkOut);
+        // Deduct break time if break times are provided
+        $breakOut = $request->break_out ? Carbon::parse($request->break_out) : null;
+        $breakIn = $request->break_in ? Carbon::parse($request->break_in) : null;
+        if ($breakOut && $breakIn) {
+            $totalMinutesWorked -= $breakOut->diffInMinutes($breakIn);
+        }
+    }
+
+    // Calculate late minutes
+    $expectedCheckIn = Carbon::createFromTime(9, 0);  // Assume 9 AM check-in time
+    if ($checkIn && $checkIn->greaterThan($expectedCheckIn)) {
+        $lateMinutes = $expectedCheckIn->diffInMinutes($checkIn);
+    }
+
+    // Update the record
+    $record->update([
+        'date' => $request->date,
+        'check_in' => $request->check_in,
+        'break_out' => $request->break_out,
+        'break_in' => $request->break_in,
+        'check_out' => $request->check_out,
+        'total_hours' => floor($totalMinutesWorked / 60),
+        'total_late_absences' => $lateMinutes,
+    ]);
+
+    // Redirect back with a success message
+    notify()->success('Time Record updated successfully!');
+    return redirect()->route('time-management.index');
 }
 
 

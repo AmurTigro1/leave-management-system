@@ -63,7 +63,7 @@
                                     
                                     <td>
                                         <div class="flex justify-center gap-4 items-center">
-                                            <button class="text-blue-600 font-semibold">Edit</button>
+                                            <button class="text-blue-600 font-semibold" onclick="openEditModal({{ $record->id }})">Edit</button>
                                             <form action="{{ route('time.management.destroy', $record->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this record?');">
                                                 @csrf
                                                 @method('DELETE')
@@ -71,6 +71,7 @@
                                             </form>
                                         </div>
                                     </td>
+                                    
                                 </tr>
 
                                 @php
@@ -137,6 +138,57 @@
             </div>
         </div>
     </div>
+
+     <!-- Modal Structure -->
+     <div id="editModal" class="fixed inset-0 bg-gray-900 bg-opacity-50 hidden flex justify-center items-center z-50">
+        <div class="bg-white p-6 rounded-lg w-[34%]">
+            <h3 class="text-lg font-semibold mb-4 border-b pb-3">Edit Time Record</h3>
+            <form id="editForm" action="" method="POST" onsubmit="calculateAndSave(event)">
+                @csrf
+                <input type="hidden" id="recordId" name="id">
+                <div class="mb-4">
+                    <label for="date" class="block">Date</label>
+                    <input type="date" id="date" name="date" class="w-full px-4 py-2 border rounded" required>
+                </div>
+                <div class="flex justify-between items-center gap-4">
+                    <div class="mb-4 w-full">
+                        <label for="check_in" class="block">Check In</label>
+                        <input type="time" id="check_in" name="check_in" class="w-full px-4 py-2 border rounded" required>
+                    </div>
+                    <div class="mb-4 w-full">
+                        <label for="break_out" class="block">Break Out</label>
+                        <input type="time" id="break_out" name="break_out" class="w-full px-4 py-2 border rounded">
+                    </div>
+                </div>
+                <div class="flex justify-between items-center gap-4">
+                    <div class="mb-4 w-full">
+                        <label for="break_in" class="block">Break In</label>
+                        <input type="time" id="break_in" name="break_in" class="w-full px-4 py-2 border rounded">
+                    </div>
+                    <div class="mb-4 w-full">
+                        <label for="check_out" class="block">Check Out</label>
+                        <input type="time" id="check_out" name="check_out" class="w-full px-4 py-2 border rounded" required>
+                    </div>
+                </div>
+                <!-- Total Hours and Total Late/Absences -->
+                <div class="mb-4">
+                    <label for="total_hours" class="block">Total Hours</label>
+                    <input type="text" id="total_hours" name="total_hours" class="w-full px-4 py-2 border rounded bg-gray-100" readonly>
+                </div>
+                <div class="mb-4">
+                    <label for="total_late_absences" class="block">Total Late/Absences</label>
+                    <input type="text" id="total_late_absences" name="total_late_absences" class="w-full px-4 py-2 border rounded bg-gray-100" readonly>
+                </div>
+                <input type="hidden" name="_method" value="PUT">
+                <div class="flex justify-end">
+                    <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-md mr-2">Save</button>
+                    <button type="button" onclick="closeModal()" class="px-4 py-2 border rounded-md text-gray-700">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+
 @endsection
 
 <script>
@@ -191,4 +243,53 @@
             }
         };
     }
+
+    function openEditModal(recordId) {
+    fetch(`/time-management/${recordId}/edit`)
+        .then(response => response.json())
+        .then(record => {
+            // Populate the modal form with record data
+            document.getElementById('recordId').value = record.id;
+            document.getElementById('date').value = record.date;
+            document.getElementById('check_in').value = record.check_in;
+            document.getElementById('break_out').value = record.break_out;
+            document.getElementById('break_in').value = record.break_in;
+            document.getElementById('check_out').value = record.check_out;
+
+            // Call the time calculator to update total hours and late/absences
+            timeCalculator().calculateTime();
+
+            // Populate the calculated fields
+            document.getElementById('total_hours').value = record.total_hours;
+            document.getElementById('total_late_absences').value = record.total_late_absences;
+
+            // Set the form action URL for updating the record
+            document.getElementById('editForm').action = `/time-management/${record.id}`;
+
+            // Show the modal
+            document.getElementById('editModal').classList.remove('hidden');
+        })
+        .catch(error => console.error('Error fetching record:', error));
+}
+
+
+function closeModal() {
+    // Hide the modal
+    document.getElementById('editModal').classList.add('hidden');
+}
+
+
+// Dummy function to simulate record fetching (replace with actual data fetching)
+function getRecordById(recordId) {
+    // Replace with actual logic to fetch record data (via AJAX or something else)
+    return {
+        id: recordId,
+        date: '2025-04-06',
+        check_in: '09:00',
+        break_out: '12:00',
+        break_in: '12:30',
+        check_out: '18:00'
+    };
+}
+
 </script>
