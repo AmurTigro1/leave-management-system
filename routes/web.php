@@ -125,9 +125,9 @@ Route::middleware('auth')->group(function () {
         Route::get('/admin/employees', [AdminController::class, 'onLeave'])->name('admin.on_leave');
         Route::get('/admin/leaderboard', [AdminController::class, 'leaderboard'])->name('admin.leaderboard');
         Route::get('admin/requests', [AdminController::class, 'requests'])->name('admin.requests');
-        Route::get('/admin/my-requests', [AdminController::class, 'myRequests'])->name('admin.my_requests');
-        Route::get('/admin/my-requests/edit/{id}', [AdminController::class, 'editLeave'])->name('admin.leave_edit');
-        Route::put('/admin/my-requests/update/{id}', [AdminController::class, 'updateLeave'])->name('admin.leave_update');
+        Route::get('/admin/my-leave-requests', [AdminController::class, 'myRequests'])->name('admin.my_requests');
+        Route::get('/admin/my-leave-requests/edit/{id}', [AdminController::class, 'editLeave'])->name('admin.leave_edit');
+        Route::put('/admin/my-leave-requests/update/{id}', [AdminController::class, 'updateLeave'])->name('admin.leave_update');
         Route::post('/admin/leaves/{id}/cancel', [AdminController::class, 'cancel'])->name('admin.leave_cancel');
         Route::post('/admin/leaves/{id}/restore', [AdminController::class, 'restore'])->name('admin.leave_restore');
         Route::delete('/admin/my-requests/delete/{id}', [AdminController::class, 'deleteLeave'])->name('admin.leave_delete');

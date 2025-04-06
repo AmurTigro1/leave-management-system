@@ -907,16 +907,14 @@ public function deleteLeave($id) {
     
         $leave->update($updateData);
         $user->save();
-        
-        notify()->success('CTO application reviewed by HR.');
-    
+            
         $user->notify(new LeaveStatusNotification($leave, 
-        "Your leave request has been <span class='" . 
-        ($leave->status === 'approved' ? 'text-green-500' : 'text-red-500') . "'>" . 
-        $leave->status . "</span> by the HR.", 
-        $leave, 
-        'leave' 
-    ));
+            "Your leave request has been <span class='" . 
+            ($leave->status === 'approved' ? 'text-green-500' : 'text-red-500') . "'>" . 
+            $leave->status . "</span> by the HR.", 
+            $leave, 
+            'leave' 
+        ));
      
         notify()->success('Leave application reviewed successfully!');
         return redirect()->route('hr.requests');
@@ -977,9 +975,16 @@ public function deleteLeave($id) {
             'hr_officer_id' => Auth::id(),
         ]);
 
-        $cto->user->notify(new LeaveStatusNotification($cto, "Your overtime request has been approved by the HR."));
+        $cto->user->notify(new LeaveStatusNotification($cto, 
+            "Your CTO request has been <span class='" . 
+            ($cto->status === 'approved' ? 'text-green-500' : 'text-red-500') . "'>" . 
+            $cto->status . "</span> by the HR.", 
+            $cto, 
+            'leave' 
+        ));
+
         notify()->success('CTO application reviewed by HR.');
-        return Redirect::route('hr.requests');
+        return redirect()->route('hr.requests');
     }
 
         public function generateLeaveReport($leaveId)

@@ -80,19 +80,6 @@
                         </a>
                     </div>
                 </div>
-        
-                {{-- <a href="{{ route('admin.requests') }}" class="hover:bg-gray-200 flex items-center p-2 space-x-2 rounded-md {{ request()->routeIs('admin.requests', 'admin.leave_details', 'admin.cto_details') ? 'bg-white shadow-lg' : 'text-gray-500' }}">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 6.75h12M8.25 12h12m-12 5.25h12M3.75 6.75h.007v.008H3.75V6.75Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0ZM3.75 12h.007v.008H3.75V12Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm-.375 5.25h.007v.008H3.75v-.008Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" />
-                      </svg>
-                      
-                    <span>List of Request</span>
-                    @if($pendingRequestsCount > 0)
-                    <span class="bg-red-500 text-white text-xs font-semibold rounded-full px-2 py-1">
-                        {{ $pendingRequestsCount }}
-                    </span>
-                @endif
-                </a>   --}}
 
                 <div class="relative">
                     <input type="checkbox" id="dropdown-toggle2" class="peer hidden">
@@ -114,7 +101,10 @@
                 
                     <div class="absolute left-0 top-full hidden peer-checked:flex flex-col w-48 mt-1 bg-white border border-gray-300 rounded-md shadow-lg z-10">
                         <a href="{{ route('admin.my_requests') }}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">
-                            My Requests
+                            My Leave Requests
+                        </a>
+                        <a href="{{ route('admin.my_requests') }}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">
+                            My CTO Requests
                         </a>
                         <a href="{{ route('admin.requests') }}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">
                             Pending Requests

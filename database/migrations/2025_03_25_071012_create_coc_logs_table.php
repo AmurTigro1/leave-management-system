@@ -14,10 +14,11 @@ return new class extends Migration
         Schema::create('coc_logs', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->foreignId('created_by')->constrained('users')->after('user_id');
+            $table->foreignId('created_by')->constrained('users')->onDelete('cascade');
             $table->string('activity_name');
             $table->string('activity_date');
             $table->integer('coc_earned');
+            $table->integer('consumed')->default(0);
             $table->string('issuance');
             $table->timestamp('expires_at')->nullable();
             $table->boolean('is_expired')->default(false);

@@ -30,14 +30,11 @@ class OvertimeRequestController extends Controller
     {
         $user_id = Auth::id();
 
-        // Get user overtime requests
         $overtimes = OvertimeRequest::where('user_id', $user_id)->latest()->get();
 
-        // Calculate total applied & earned hours
         $totalAppliedHours = OvertimeRequest::where('user_id', $user_id)->sum('working_hours_applied');
         $totalEarnedHours = OvertimeRequest::where('user_id', $user_id)->sum('earned_hours');
 
-        // Count pending requests
         $pendingRequests = OvertimeRequest::where('user_id', $user_id)->where('earned_hours', 0)->count();
 
         return view('CTO.dashboard', compact('overtimes', 'totalAppliedHours', 'totalEarnedHours', 'pendingRequests'));
@@ -96,6 +93,25 @@ class OvertimeRequestController extends Controller
         
         $user->decrement('overtime_balance', $request->working_hours_applied);
 
+        $remaining = $request->working_hours_applied;
+
+        $logs = $user->cocLogs()
+            ->where('coc_earned', '>', 0)
+            ->orderBy('expires_at', 'asc')
+            ->get();
+        
+        foreach ($logs as $log) {
+            if ($remaining <= 0) break;
+        
+            if ($log->coc_earned >= $remaining) {
+                $log->decrement('coc_earned', $remaining);
+                $remaining = 0;
+            } else {
+                $remaining -= $log->coc_earned;
+                $log->decrement('coc_earned', $log->coc_earned);
+            }
+        }
+        
         notify()->success('Overtime request submitted successfully! Pending admin review.');
         return redirect()->back();
     }
@@ -108,7 +124,7 @@ class OvertimeRequestController extends Controller
     }
 
     public function show($id) {
-        $overtime = OvertimeRequest::findOrFail($id); // Fetch the leave request by ID
+        $overtime = OvertimeRequest::findOrFail($id);
     
         return view('CTO.overtime_show', compact('overtime'));
     }
@@ -160,7 +176,6 @@ class OvertimeRequestController extends Controller
 
     public function updateOvertime(Request $request, $id)
     {
-        // Validate the form input
         $request->validate([
             'inclusive_dates' => 'required|string',
             'working_hours_applied' => 'required|integer|min:1',
@@ -168,7 +183,6 @@ class OvertimeRequestController extends Controller
     
         $overtime = OvertimeRequest::findOrFail($id);
     
-        // Update overtime details
         $overtime->update([
             'inclusive_dates' => $request->inclusive_dates,
             'working_hours_applied' => $request->working_hours_applied,
@@ -178,8 +192,16 @@ class OvertimeRequestController extends Controller
         return redirect()->back();
     }
 
-    public function deleteOvertime($id) {
-        OvertimeRequest::findOrFail($id)->delete();
-        return redirect()->back()->with('success', 'Overtime request deleted successfully.');
-    }
+    public function deleteOvertime($id)
+    {
+        $request = OvertimeRequest::findOrFail($id);
+    
+        $user = $request->user; 
+        $user->overtime_balance += $request->working_hours_applied; 
+        $user->save();
+    
+        $request->delete();
+    
+        return redirect()->back()->with('success', 'CTO request deleted and balance restored.');
+    } 
 }

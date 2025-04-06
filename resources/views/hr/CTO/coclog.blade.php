@@ -1,7 +1,6 @@
 @extends('layouts.hr.sidebar-header')
 
 @section('content')
-    <!-- Top-Right Header - Mobile Adjusted -->
     <div class="fixed top-4 right-4 z-[9999] sm:top-6 sm:right-6">
         <x-notify::notify />
     </div>
@@ -9,7 +8,6 @@
     <div class="container mx-auto px-3 sm:px-4 py-4 sm:py-6 animate-fade-in">
         @notifyJs
         <div class="bg-white rounded-lg sm:rounded-xl shadow-md overflow-hidden">
-            <!-- Card Header - Stacked on Mobile -->
             <div class="p-4 sm:p-6 border-b border-gray-200">
                 <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
                     <h2 class="text-lg sm:text-xl font-bold flex items-center">
@@ -29,9 +27,7 @@
                 </div>
             </div>
 
-            <!-- Card Body - Responsive Table -->
             <div class="p-3 sm:p-6">
-                <!-- Mobile Cards View (for small screens) -->
                 <div class="sm:hidden space-y-4">
                     @foreach($cocLogs as $log)
                     @include('hr.CTO.modal.coclog_view', ['log' => $log])
@@ -46,7 +42,9 @@
                                     <div class="font-medium text-gray-900">
                                         {{ $log->user->first_name }} {{ $log->user->last_name }}
                                     </div>
-                                    <div class="text-xs text-blue-500">{{ $log->activity_name }}</div>
+                                    <div class="text-xs text-blue-500">
+                                        {{ $log->activity_name }}
+                                    </div>
                                 </div>
                             </div>
                             <div x-data="{ open: false }" class="relative">
@@ -57,7 +55,6 @@
                                 </button>
                                 <div x-show="open" @click.away="open = false" class="absolute right-0 mt-2 w-40 bg-white rounded-md shadow-lg z-50">
                                     <div class="py-1">
-                                        <button onclick="opencocViewModal()" class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">View</button>
                                         <button onclick="opencocUpdateModal()" class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Edit</button>
                                         <form action="{{ route('coc-logs.destroy', $log->id) }}" method="POST">
                                             @csrf
@@ -76,15 +73,29 @@
                             </div>
                             <div class="flex justify-between text-sm">
                                 <span class="text-gray-500">COC Earned:</span>
-                                <span class="font-medium">{{ $log->coc_earned }} hours</span>
+                                    @if($log->is_expired)
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
+                                        {{ $log->coc_earned }} hours
+                                    </span>
+                                @elseif($log->consumed)
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
+                                        {{ $log->coc_earned }} hours
+                                    </span>
+                                @else
+                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                    {{ $log->coc_earned }} hours
+                                </span>
+                                @endif
                             </div>
                             <div class="flex justify-between text-sm">
                                 <span class="text-gray-500">Status:</span>
                                 <span class="font-medium">
                                     @if($log->is_expired)
-                                        <span class="text-red-600">Expired</span>
+                                        <span class="badge px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">Expired</span>
+                                    @elseif($log->consumed)
+                                        <span class="badge px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">Used</span>
                                     @else
-                                        <span class="text-green-600">Active</span>
+                                        <span class="badge px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Active</span>
                                     @endif
                                 </span>
                             </div>
@@ -97,7 +108,6 @@
                     @endforeach
                 </div>
 
-                <!-- Desktop Table View (for medium screens and up) -->
                 <div class="hidden sm:block">
                     <div class="overflow-x-auto">
                         <table class="min-w-full bg-white border border-gray-200 text-xs sm:text-sm text-gray-700">
@@ -119,7 +129,6 @@
                                 @include('hr.CTO.modal.coclog_update', ['log' => $log])
 
                                 <tr class="hover:bg-gray-100 transition-colors duration-150 ease-in-out">
-                                    <!-- User Column -->
                                     <td class="px-2 sm:px-4 py-3 whitespace-nowrap">
                                         <div class="flex items-center">
                                             <div class="flex-shrink-0 h-8 w-8 sm:h-10 sm:w-10 bg-blue-500 rounded-full flex items-center justify-center text-white font-semibold text-xs sm:text-sm">
@@ -133,26 +142,32 @@
                                         </div>
                                     </td>
                                     
-                                    <!-- Activity Column -->
                                     <td class="px-2 sm:px-4 py-3 whitespace-nowrap">
-                                        <div class="text-xs sm:text-sm text-gray-900 truncate max-w-[120px] sm:max-w-none">
+                                        <div class="text-xs sm:text-sm text-gray-900 truncate max-w-[120px] sm:max-w-none ">
                                             {{ $log->activity_name }}
                                         </div>
-                                    </td>
+                                    </td>                                    
                                     
-                                    <!-- Date Column -->
                                     <td class="px-2 sm:px-4 py-3 whitespace-nowrap text-xs sm:text-sm text-gray-500">
                                         {{ $log->activity_date }}
                                     </td>
                                     
-                                    <!-- COC Earned Column -->
                                     <td class="px-2 sm:px-4 py-3 whitespace-nowrap">
+                                        @if($log->is_expired)
+                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
+                                                {{ $log->coc_earned }} hours
+                                            </span>
+                                        @elseif($log->consumed)
+                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
+                                                {{ $log->coc_earned }} hours
+                                            </span>
+                                        @else
                                         <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
                                             {{ $log->coc_earned }} hours
                                         </span>
+                                        @endif
                                     </td>
                                     
-                                    <!-- Issuance Column -->
                                     <td class="px-2 sm:px-4 py-3 whitespace-nowrap text-xs sm:text-sm text-gray-500">
                                         <div class="truncate max-w-[100px]">{{ $log->issuance }}</div>
                                     </td>
@@ -165,14 +180,15 @@
 
                                     <td class="px-2 sm:px-4 py-3 whitespace-nowrap">
                                         @if($log->is_expired)
-                                            <span class="badge bg-red-100 text-red-800">Expired</span>
+                                            <span class="badge px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">Expired</span>
+                                        @elseif($log->consumed)
+                                            <span class="badge px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">Used</span>
                                         @else
                                             <span class="badge px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Active</span>
                                         @endif
                                     </td>
                                     
                                     <td class="p-3 text-center relative">
-                                        <!-- Three-dot menu button -->
                                         <div x-data="{ open: false }" class="relative inline-block">
                                             <button @click="open = !open" 
                                                     class="text-gray-600 hover:text-gray-900 focus:outline-none">
@@ -183,13 +199,8 @@
                                                 </svg>
                                             </button>
                                     
-                                            <!-- Dropdown menu -->
                                             <div x-show="open" @click.away="open = false" 
                                             class="fixed transform -translate-x-1/2 mt-2 w-40 bg-white border rounded-lg shadow-lg z-50">
-                                                
-                                                <button onclick="opencocViewModal()" class="w-full block text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                                                    View
-                                                </button>
                                     
                                                 <button onclick="opencocUpdateModal()" class="w-full block text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                                                     Edit
@@ -214,7 +225,6 @@
                     </div>
                 </div>
 
-                <!-- Pagination - Stacked on Mobile -->
                 <div class="mt-4 sm:mt-6 flex flex-col sm:flex-row items-center justify-between gap-3">
                     <div class="text-xs sm:text-sm text-gray-500">
                         Showing <span class="font-medium">{{ $cocLogs->firstItem() }}</span> to <span class="font-medium">{{ $cocLogs->lastItem() }}</span> of <span class="font-medium">{{ $cocLogs->total() }}</span>
@@ -237,19 +247,16 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Responsive adjustments */
         @media (max-width: 640px) {
             .container {
                 padding-left: 0.5rem;
                 padding-right: 0.5rem;
             }
             
-            /* Mobile card styling */
             .bg-white.rounded-lg {
                 box-shadow: 0 1px 3px rgba(0,0,0,0.1);
             }
             
-            /* Ensure dropdown menus are visible on mobile */
             [x-cloak] { display: none !important; }
         }
     </style>
