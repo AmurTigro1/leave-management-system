@@ -52,11 +52,18 @@
                                     <td class="px-4 text-center py-3">{{ $record->break_out ? \Carbon\Carbon::createFromFormat('H:i:s', $record->break_out)->format('h:i A') : '-' }}</td>
                                     <td class="px-4 text-center py-3">{{ $record->break_in ? \Carbon\Carbon::createFromFormat('H:i:s', $record->break_in)->format('h:i A') : '-' }}</td>
                                     <td class="px-4 text-center py-3">{{ $record->check_out ? \Carbon\Carbon::createFromFormat('H:i:s', $record->check_out)->format('h:i A') : '-' }}</td>
-                                    <td class="px-4 text-center py-3">{{ $record->total_hours }} hours</td>
-                                    <td class="px-4 text-center py-3">{{ $record->total_late_absences }}</td>
+                                    <td class="px-4 text-center py-3">
+                                        {{ $record->total_hours }} 
+                                        {{ $record->total_hours == 1 ? 'hour' : 'hours' }}
+                                    </td>
+                                    <td class="px-4 text-center py-3">
+                                        {{ $record->total_late_absences }} 
+                                        {{ $record->total_late_absences == 1 ? 'minute' : 'minutes' }}
+                                    </td>
+                                    
                                     <td>
                                         <div class="flex justify-center gap-4 items-center">
-                                            <button class="text-blue-600 font-semibold">View | Edit</button>
+                                            <button class="text-blue-600 font-semibold">Edit</button>
                                             <form action="{{ route('time.management.destroy', $record->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this record?');">
                                                 @csrf
                                                 @method('DELETE')
