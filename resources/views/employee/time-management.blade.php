@@ -37,7 +37,7 @@
                                 <th class="py-2 px-4 border-b">Break In</th>
                                 <th class="py-2 px-4 border-b">Check Out</th>
                                 <th class="py-2 px-4 border-b">Total</th>
-                                <th class="py-2 px-4 border-b">Late/Absences</th>
+                                <th class="py-2 px-4 border-b">Late/Undertime</th>
                                 <th class="py-2 px-4 border-b">Action</th>
                             </tr>
                         </thead>
@@ -63,7 +63,7 @@
                                     
                                     <td>
                                         <div class="flex justify-center gap-4 items-center">
-                                            <button class="text-blue-600 font-semibold" onclick="openEditModal({{ $record->id }})">Edit</button>
+                                            {{-- <button class="text-blue-600 font-semibold" onclick="openEditModal({{ $record->id }})">Edit</button> --}}
                                             <form action="{{ route('time.management.destroy', $record->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this record?');">
                                                 @csrf
                                                 @method('DELETE')
@@ -83,12 +83,18 @@
 
                     <!-- Total Late/Absences for the Month -->
                     <div class="p-4 sm:p-6 bg-gray-50 mt-4">
-                        <h4 class="text-md font-bold">Total Late/Absences for {{ $month }}: {{ $totalLateAbsences }} minutes</h4>
+                        <h4 class="text-md font-bold">Total Late/Undertime for {{ $month }}: {{ $totalLateAbsences }} minutes</h4>
                     </div>
 
                 @endforeach
             </div>
         </div>
+
+        @if(empty($records))
+            <div class="text-center text-gray-500 mt-4">
+                Currently no time recorded
+            </div>
+        @endif
 
         <!-- MODAL -->
         <div x-show="open" x-data="timeTracking()" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
@@ -98,7 +104,14 @@
                     <button @click="open = false" class="text-gray-500 hover:text-gray-700">&times;</button>
                 </div>
 
-                <form action="{{ route('time.management.store') }}" method="POST" class="mt-4" x-data="timeCalculator()">
+                <select name="time_period" id="time-period-select" onchange="toggleForm()" class="rounded-lg w-[48%] mt-4">
+                    <option value="whole_day" selected>Whole day</option>
+                    <option value="morning">Morning</option>
+                    <option value="afternoon">Afternoon</option>
+                </select>
+                
+                <!-- Whole Day Form -->
+                <form action="{{ route('time.management.store') }}" method="POST" class="mt-4" id="whole-day-form" x-data="timeCalculator()">
                     @csrf
                     <div class="grid grid-cols-2 gap-4">
                         <div class="col-span-2">
@@ -126,7 +139,7 @@
                             <input type="text" name="total_hours" x-model="totalHours" class="mt-1 block w-full border rounded-md p-2 bg-gray-100" readonly>
                         </div>
                         <div class="col-span-2">
-                            <label class="block text-sm font-medium text-gray-700">Late/Absences</label>
+                            <label class="block text-sm font-medium text-gray-700">Late/Undertime</label>
                             <input type="text" name="total_late_absences" x-model="lateMinutes" class="mt-1 block w-full border rounded-md p-2 bg-gray-100" readonly>
                         </div>
                     </div>
@@ -134,13 +147,92 @@
                         <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-md">Save</button>
                         <button type="button" @click="open = false" class="px-4 py-2 border rounded-md text-gray-700">Cancel</button>
                     </div>
-                </form>                
+                </form>
+                
+                <!-- Morning Form -->
+                <form action="{{ route('morning-time.management.store') }}" method="POST" class="mt-4" id="morning-form">
+                    @csrf
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="col-span-2">
+                            <label class="block text-sm font-medium text-gray-700">Date</label>
+                            <input type="date" name="date" class="mt-1 block w-full border rounded-md p-2" required>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Check In</label>
+                            <input type="time" name="check_in" class="mt-1 block w-full border rounded-md p-2">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Break Out</label>
+                            <input type="time" name="break_out" class="mt-1 block w-full border rounded-md p-2">
+                        </div>
+                        <div class="col-span-2">
+                            <label class="block text-sm font-medium text-gray-700">Total Hours</label>
+                            <input type="number" name="total_hours" class="mt-1 block w-full border rounded-md p-2 bg-gray-100" required>
+                        </div>
+                        <div class="col-span-2">
+                            <label class="block text-sm font-medium text-gray-700">Late/Absences</label>
+                            <input type="number" name="total_late_absences" class="mt-1 block w-full border rounded-md p-2 bg-gray-100" required>
+                        </div>
+                    </div>
+                    <div class="mt-4 flex justify-end space-x-2">
+                        <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-md">Save</button>
+                        <button type="button" @click="open = false" class="px-4 py-2 border rounded-md text-gray-700">Cancel</button>
+                    </div>
+                </form>
+                
+                <!-- Afternoon Form -->
+                <form action="{{ route('afternoon-time.management.store') }}" method="POST" class="mt-4" id="afternoon-form">
+                    @csrf
+                    <!-- Hidden input for user_id -->
+                    <input type="hidden" name="user_id" value="{{ Auth::id() }}">
+                
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="col-span-2">
+                            <label class="block text-sm font-medium text-gray-700">Date</label>
+                            <input type="date" name="date" class="mt-1 block w-full border rounded-md p-2" required>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Break In</label>
+                            <input type="time" name="break_in" class="mt-1 block w-full border rounded-md p-2">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Check Out</label>
+                            <input type="time" name="check_out" class="mt-1 block w-full border rounded-md p-2">
+                        </div>
+                        <div class="col-span-2">
+                            <label class="block text-sm font-medium text-gray-700">Total Hours</label>
+                            <input type="number" name="total_hours" class="mt-1 block w-full border rounded-md p-2 bg-gray-100" required>
+                        </div>
+                        <div class="col-span-2">
+                            <label class="block text-sm font-medium text-gray-700">Late/Absences</label>
+                            <input type="number" name="total_late_absences" class="mt-1 block w-full border rounded-md p-2 bg-gray-100" required>
+                        </div>
+                    </div>
+                    <div class="mt-4 flex justify-end space-x-2">
+                        <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-md">Save</button>
+                        <button type="button" @click="open = false" class="px-4 py-2 border rounded-md text-gray-700">Cancel</button>
+                    </div>
+                </form>
+                
+                
+                <script>
+                    function toggleForm() {
+                        const timePeriod = document.getElementById('time-period-select').value;
+                        document.getElementById('whole-day-form').style.display = timePeriod === 'whole_day' ? 'block' : 'none';
+                        document.getElementById('morning-form').style.display = timePeriod === 'morning' ? 'block' : 'none';
+                        document.getElementById('afternoon-form').style.display = timePeriod === 'afternoon' ? 'block' : 'none';
+                    }
+                
+                    // Initial call to set the default display (Whole day)
+                    toggleForm();
+                </script>
+                
             </div>
         </div>
     </div>
 
      <!-- Modal Structure -->
-     <div id="editModal" class="fixed inset-0 bg-gray-900 bg-opacity-50 hidden flex justify-center items-center z-50">
+     {{-- <div id="editModal" class="fixed inset-0 bg-gray-900 bg-opacity-50 hidden flex justify-center items-center z-50">
         <div class="bg-white p-6 rounded-lg w-[34%]">
             <h3 class="text-lg font-semibold mb-4 border-b pb-3">Edit Time Record</h3>
             <form id="editForm" action="" method="POST" onsubmit="calculateAndSave(event)">
@@ -186,7 +278,7 @@
                 </div>
             </form>
         </div>
-    </div>
+    </div> --}}
     
 
 @endsection
@@ -251,33 +343,33 @@
 }
 
 
-    function openEditModal(recordId) {
-    fetch(`/time-management/${recordId}/edit`)
-        .then(response => response.json())
-        .then(record => {
-            // Populate the modal form with record data
-            document.getElementById('recordId').value = record.id;
-            document.getElementById('date').value = record.date;
-            document.getElementById('check_in').value = record.check_in;
-            document.getElementById('break_out').value = record.break_out;
-            document.getElementById('break_in').value = record.break_in;
-            document.getElementById('check_out').value = record.check_out;
+//     function openEditModal(recordId) {
+//     fetch(`/time-management/${recordId}/edit`)
+//         .then(response => response.json())
+//         .then(record => {
+//             // Populate the modal form with record data
+//             document.getElementById('recordId').value = record.id;
+//             document.getElementById('date').value = record.date;
+//             document.getElementById('check_in').value = record.check_in;
+//             document.getElementById('break_out').value = record.break_out;
+//             document.getElementById('break_in').value = record.break_in;
+//             document.getElementById('check_out').value = record.check_out;
 
-            // Call the time calculator to update total hours and late/absences
-            timeCalculator().calculateTime();
+//             // Call the time calculator to update total hours and late/absences
+//             timeCalculator().calculateTime();
 
-            // Populate the calculated fields
-            document.getElementById('total_hours').value = record.total_hours;
-            document.getElementById('total_late_absences').value = record.total_late_absences;
+//             // Populate the calculated fields
+//             document.getElementById('total_hours').value = record.total_hours;
+//             document.getElementById('total_late_absences').value = record.total_late_absences;
 
-            // Set the form action URL for updating the record
-            document.getElementById('editForm').action = `/time-management/${record.id}`;
+//             // Set the form action URL for updating the record
+//             document.getElementById('editForm').action = `/time-management/${record.id}`;
 
-            // Show the modal
-            document.getElementById('editModal').classList.remove('hidden');
-        })
-        .catch(error => console.error('Error fetching record:', error));
-}
+//             // Show the modal
+//             document.getElementById('editModal').classList.remove('hidden');
+//         })
+//         .catch(error => console.error('Error fetching record:', error));
+// }
 
 
 function closeModal() {
