@@ -112,6 +112,60 @@ public function store(Request $request)
     return redirect()->back()->with('success', '');
 }
 
+public function storeMorning(Request $request)
+    {
+        // Validate incoming request
+        $request->validate([
+            'date' => 'required|date',
+            'check_in' => 'required|date_format:H:i',
+            'break_out' => 'required|date_format:H:i',
+            'total_hours' => 'required|numeric',
+            'total_late_absences' => 'required|numeric',
+        ]);
+
+        // Store the data
+        TimeManagement::create([
+            'user_id' => Auth::id(),
+            'date' => $request->date,
+            'check_in' => $request->check_in,
+            'break_out' => $request->break_out,
+            'total_hours' => $request->total_hours,
+            'total_late_absences' => $request->total_late_absences,
+            'shift_type' => 'morning', // Additional field to differentiate between morning and afternoon
+        ]);
+
+        notify()->success('Time Recorded successfully!');
+        return redirect()->back();
+    }
+
+    // Store Afternoon Time
+    public function storeAfternoon(Request $request)
+{
+    // Validate incoming request
+    $request->validate([
+        'date' => 'required|date',
+        'break_in' => 'required|date_format:H:i',
+        'check_out' => 'required|date_format:H:i',
+        'total_hours' => 'required|numeric',
+        'total_late_absences' => 'required|numeric',
+    ]);
+
+    // Store the data
+    TimeManagement::create([
+        'user_id' => Auth::id(), // Set user_id from Auth
+        'date' => $request->date,
+        'break_in' => $request->break_in,
+        'check_out' => $request->check_out,
+        'total_hours' => $request->total_hours,
+        'total_late_absences' => $request->total_late_absences,
+        'shift_type' => 'afternoon', // Additional field to differentiate between morning and afternoon
+    ]);
+
+    notify()->success('Time Recorded successfully!');
+    return redirect()->back();
+}
+
+
 
 
 public function destroy($id)

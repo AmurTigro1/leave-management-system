@@ -194,7 +194,9 @@ Route::middleware('auth')->group(function () {
         Route::delete('/time-management/{id}', [TimeManagementController::class, 'destroy'])->name('time.management.destroy');
         Route::get('/time-management/{id}/edit', [TimeManagementController::class, 'edit']);
         Route::put('/time-management/{id}', [TimeManagementController::class, 'update'])->name('time.management.update');
-        
+        Route::post('/morning-time', [TimeManagementController::class, 'storeMorning'])->name('morning-time.management.store');
+        Route::post('/afternoon-time', [TimeManagementController::class, 'storeAfternoon'])->name('afternoon-time.management.store');
+
         //CTO
         Route::get('/cto/dashboard', [OvertimeRequestController::class, 'dashboard'])->name('cto.dashboard');
         Route::get('/overtime-request', [OvertimeRequestController::class, 'index'])->name('cto.overtime_request');
