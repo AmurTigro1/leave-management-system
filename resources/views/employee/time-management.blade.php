@@ -232,7 +232,7 @@
     </div>
 
      <!-- Modal Structure -->
-     <div id="editModal" class="fixed inset-0 bg-gray-900 bg-opacity-50 hidden flex justify-center items-center z-50">
+     {{-- <div id="editModal" class="fixed inset-0 bg-gray-900 bg-opacity-50 hidden flex justify-center items-center z-50">
         <div class="bg-white p-6 rounded-lg w-[34%]">
             <h3 class="text-lg font-semibold mb-4 border-b pb-3">Edit Time Record</h3>
             <form id="editForm" action="" method="POST" onsubmit="calculateAndSave(event)">
@@ -278,7 +278,7 @@
                 </div>
             </form>
         </div>
-    </div>
+    </div> --}}
     
 
 @endsection
@@ -343,33 +343,33 @@
 }
 
 
-    function openEditModal(recordId) {
-    fetch(`/time-management/${recordId}/edit`)
-        .then(response => response.json())
-        .then(record => {
-            // Populate the modal form with record data
-            document.getElementById('recordId').value = record.id;
-            document.getElementById('date').value = record.date;
-            document.getElementById('check_in').value = record.check_in;
-            document.getElementById('break_out').value = record.break_out;
-            document.getElementById('break_in').value = record.break_in;
-            document.getElementById('check_out').value = record.check_out;
+//     function openEditModal(recordId) {
+//     fetch(`/time-management/${recordId}/edit`)
+//         .then(response => response.json())
+//         .then(record => {
+//             // Populate the modal form with record data
+//             document.getElementById('recordId').value = record.id;
+//             document.getElementById('date').value = record.date;
+//             document.getElementById('check_in').value = record.check_in;
+//             document.getElementById('break_out').value = record.break_out;
+//             document.getElementById('break_in').value = record.break_in;
+//             document.getElementById('check_out').value = record.check_out;
 
-            // Call the time calculator to update total hours and late/absences
-            timeCalculator().calculateTime();
+//             // Call the time calculator to update total hours and late/absences
+//             timeCalculator().calculateTime();
 
-            // Populate the calculated fields
-            document.getElementById('total_hours').value = record.total_hours;
-            document.getElementById('total_late_absences').value = record.total_late_absences;
+//             // Populate the calculated fields
+//             document.getElementById('total_hours').value = record.total_hours;
+//             document.getElementById('total_late_absences').value = record.total_late_absences;
 
-            // Set the form action URL for updating the record
-            document.getElementById('editForm').action = `/time-management/${record.id}`;
+//             // Set the form action URL for updating the record
+//             document.getElementById('editForm').action = `/time-management/${record.id}`;
 
-            // Show the modal
-            document.getElementById('editModal').classList.remove('hidden');
-        })
-        .catch(error => console.error('Error fetching record:', error));
-}
+//             // Show the modal
+//             document.getElementById('editModal').classList.remove('hidden');
+//         })
+//         .catch(error => console.error('Error fetching record:', error));
+// }
 
 
 function closeModal() {
