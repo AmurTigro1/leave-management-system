@@ -193,56 +193,63 @@
 
 <script>
     function timeCalculator() {
-        return {
-            checkIn: null,
-            breakOut: null,
-            breakIn: null,
-            checkOut: null,
-            totalHours: '',
-            lateMinutes: '',
-            
-            calculateTime() {
-                const currentDay = new Date().getDay();
-                let expectedCheckIn = new Date('1970-01-01T09:00:00');
-                let expectedCheckOut = new Date('1970-01-01T18:00:00');
+    return {
+        checkIn: null,
+        breakOut: null,
+        breakIn: null,
+        checkOut: null,
+        totalHours: '',
+        lateMinutes: '',
+        
+        calculateTime() {
+            const selectedDate = new Date(document.querySelector('input[name="date"]').value);
+            const currentDay = selectedDate.getDay(); // Get day based on selected date
 
-                if (currentDay === 1) {
-                    expectedCheckIn = new Date('1970-01-01T08:00:00');
-                    expectedCheckOut = new Date('1970-01-01T17:00:00');
-                }
+            // Set expected times based on the selected day
+            let expectedCheckIn = new Date(selectedDate.setHours(9, 0, 0, 0)); // 09:00 AM
+            let expectedCheckOut = new Date(selectedDate.setHours(18, 0, 0, 0)); // 06:00 PM
 
-                let totalMinutesWorked = 0;
-                let lateMinutesTotal = 0;
-
-                const checkInTime = this.checkIn ? new Date(`1970-01-01T${this.checkIn}:00`) : null;
-                const breakOutTime = this.breakOut ? new Date(`1970-01-01T${this.breakOut}:00`) : null;
-                const breakInTime = this.breakIn ? new Date(`1970-01-01T${this.breakIn}:00`) : null;
-                const checkOutTime = this.checkOut ? new Date(`1970-01-01T${this.checkOut}:00`) : null;
-
-                if (checkInTime && checkOutTime) {
-                    totalMinutesWorked = (checkOutTime - checkInTime) / 60000;
-                    if (breakOutTime && breakInTime) {
-                        totalMinutesWorked -= (breakInTime - breakOutTime) / 60000;
-                    }
-                } else if (checkInTime && !checkOutTime) {
-                    totalMinutesWorked = 240;
-                    if (breakOutTime) totalMinutesWorked += 30;
-                    if (breakInTime) totalMinutesWorked += 30;
-                }
-
-                if (checkInTime && checkInTime > expectedCheckIn) {
-                    lateMinutesTotal += (checkInTime - expectedCheckIn) / 60000;
-                }
-
-                if (breakInTime && breakInTime > expectedCheckOut) {
-                    lateMinutesTotal += (breakInTime - expectedCheckOut) / 60000;
-                }
-
-                this.totalHours = Math.floor(totalMinutesWorked / 60);
-                this.lateMinutes = Math.floor(lateMinutesTotal);
+            if (currentDay === 1) { // If it's Monday (1 in JavaScript's getDay())
+                expectedCheckIn = new Date(selectedDate.setHours(8, 0, 0, 0)); // 08:00 AM for Monday
+                expectedCheckOut = new Date(selectedDate.setHours(17, 0, 0, 0)); // 05:00 PM for Monday
             }
-        };
-    }
+
+            let totalMinutesWorked = 0;
+            let lateMinutesTotal = 0;
+
+            const checkInTime = this.checkIn ? new Date(`1970-01-01T${this.checkIn}:00`) : null;
+            const breakOutTime = this.breakOut ? new Date(`1970-01-01T${this.breakOut}:00`) : null;
+            const breakInTime = this.breakIn ? new Date(`1970-01-01T${this.breakIn}:00`) : null;
+            const checkOutTime = this.checkOut ? new Date(`1970-01-01T${this.checkOut}:00`) : null;
+
+            // Calculate worked minutes (subtract break time if applicable)
+            if (checkInTime && checkOutTime) {
+                totalMinutesWorked = (checkOutTime - checkInTime) / 60000;
+                if (breakOutTime && breakInTime) {
+                    totalMinutesWorked -= (breakInTime - breakOutTime) / 60000; // Subtract break time
+                }
+            } else if (checkInTime && !checkOutTime) {
+                totalMinutesWorked = 240; // Default work duration (4 hours)
+                if (breakOutTime) totalMinutesWorked += 30; // Break duration (30 minutes)
+                if (breakInTime) totalMinutesWorked += 30; // Break duration (30 minutes)
+            }
+
+            // Calculate lateness (compare actual check-in/check-out times to expected ones)
+            if (checkInTime && checkInTime > expectedCheckIn) {
+                lateMinutesTotal += (checkInTime - expectedCheckIn) / 60000; // Lateness in minutes
+            }
+
+            if (breakInTime && breakInTime > expectedCheckOut) {
+                lateMinutesTotal += (breakInTime - expectedCheckOut) / 60000; // Lateness in minutes
+            }
+
+            // Update the total hours and lateness in minutes
+            this.totalHours = Math.floor(totalMinutesWorked / 60);
+            this.lateMinutes = Math.floor(lateMinutesTotal);
+        }
+    };
+}
+
 
     function openEditModal(recordId) {
     fetch(`/time-management/${recordId}/edit`)
