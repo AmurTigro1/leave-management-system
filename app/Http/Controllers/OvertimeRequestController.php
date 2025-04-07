@@ -62,6 +62,7 @@ class OvertimeRequestController extends Controller
                 'required_without:cto_type',
                 'integer',
                 'min:4',
+                'multiple_of:4',
                 function ($attribute, $value, $fail) {
                     if ($value % 4 !== 0) {
                         $fail("The $attribute must be a multiple of 4.");
@@ -178,16 +179,30 @@ class OvertimeRequestController extends Controller
     {
         $request->validate([
             'inclusive_dates' => 'required|string',
-            'working_hours_applied' => 'required|integer|min:1',
+            'working_hours_applied' => 'required|integer|min:0|multiple_of:4',
         ]);
-    
+
         $overtime = OvertimeRequest::findOrFail($id);
-    
+        $user = Auth::user();
+
+        $oldHours = $overtime->working_hours_applied;
+        $newHours = $request->working_hours_applied;
+
+        $diff = $newHours - $oldHours;
+
+        if ($diff !== 0) {
+            if ($diff > 0) {
+                $user->decrement('overtime_balance', $diff);
+            } else {
+                $user->increment('overtime_balance', abs($diff));
+            }
+        }
+
         $overtime->update([
             'inclusive_dates' => $request->inclusive_dates,
-            'working_hours_applied' => $request->working_hours_applied,
+            'working_hours_applied' => $newHours,
         ]);
-        
+
         notify()->success('Overtime request updated successfully.');
         return redirect()->back();
     }

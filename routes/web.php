@@ -124,13 +124,22 @@ Route::middleware('auth')->group(function () {
         Route::get('/admin/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
         Route::get('/admin/employees', [AdminController::class, 'onLeave'])->name('admin.on_leave');
         Route::get('/admin/leaderboard', [AdminController::class, 'leaderboard'])->name('admin.leaderboard');
-        Route::get('admin/requests', [AdminController::class, 'requests'])->name('admin.requests');
+        Route::get('admin/leave-requests', [AdminController::class, 'requests'])->name('admin.requests');
         Route::get('/admin/my-leave-requests', [AdminController::class, 'myRequests'])->name('admin.my_requests');
         Route::get('/admin/my-leave-requests/edit/{id}', [AdminController::class, 'editLeave'])->name('admin.leave_edit');
         Route::put('/admin/my-leave-requests/update/{id}', [AdminController::class, 'updateLeave'])->name('admin.leave_update');
         Route::post('/admin/leaves/{id}/cancel', [AdminController::class, 'cancel'])->name('admin.leave_cancel');
         Route::post('/admin/leaves/{id}/restore', [AdminController::class, 'restore'])->name('admin.leave_restore');
-        Route::delete('/admin/my-requests/delete/{id}', [AdminController::class, 'deleteLeave'])->name('admin.leave_delete');
+        Route::delete('/admin/my-leave-requests/delete/{id}', [AdminController::class, 'deleteLeave'])->name('admin.leave_delete');
+
+        Route::get('admin/cto-requests', [AdminController::class, 'ctoRequests'])->name('admin.cto_requests');
+        Route::get('/admin/my-CTO-requests/{id}', [AdminController::class, 'myCtoRequests'])->name('admin.my_cto_requests');
+        Route::put('/admin/my-CTO-requests/update/{id}', [AdminController::class, 'updateCTO'])->name('admin.cto_update');
+        Route::post('/admin/CTO/{id}/cancel', [AdminController::class, 'cancelCTO'])->name('admin.cto_cancel');
+        Route::post('/admin/CTO/{id}/restore', [AdminController::class, 'restoreCTO'])->name('admin.cto_restore');
+        Route::delete('/admin/my-CTO-requests/delete/{id}', [AdminController::class, 'deleteCTO'])->name('admin.cto_delete');
+        Route::get('/admin-CTO/view/{id}', [AdminController::class, 'viewCtoPdf'])->name('admin.overtime.viewPdf');
+
         Route::get('/admin/details/{id}', [AdminController::class, 'show'])->name('admin.leave_show');
         Route::get('/admin-leave/view/{id}', [AdminController::class, 'viewPdf'])->name('admin.leave.viewPdf');
         Route::post('/leave/{leave}/admin-review', [AdminController::class, 'review'])->name('leave.admin-review');

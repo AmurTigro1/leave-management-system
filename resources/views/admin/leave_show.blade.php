@@ -2,7 +2,6 @@
 
 @section('content')
 <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden animate-fade-in">
-    <!-- Header Section -->
     <div class="bg-gradient-to-r from-blue-50 to-indigo-50 px-6 py-5 border-b border-gray-200">
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div class="flex items-center space-x-4">
@@ -29,9 +28,7 @@
         </div>
     </div>
 
-    <!-- Main Content -->
     <div class="p-6 space-y-6">
-        <!-- Status Badge -->
         <div class="flex justify-between items-center">
             <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold 
                 {{ $leave->status == 'approved' ? 'bg-green-100 text-green-800' : 
@@ -43,15 +40,12 @@
             </span>
         </div>
 
-        <!-- Key Information Cards -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <!-- Leave Type Card -->
             <div class="bg-gray-50 p-4 rounded-lg border border-gray-100">
                 <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Leave Type</p>
                 <p class="mt-1 text-lg font-medium text-gray-900">{{ $leave->leave_type }}</p>
             </div>
             
-            <!-- Date Range Card -->
             <div class="bg-gray-50 p-4 rounded-lg border border-gray-100">
                 <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Date Range</p>
                 <p class="mt-1 text-lg font-medium text-gray-900">
@@ -83,9 +77,7 @@
             </div>
         </div>
 
-        <!-- Detailed Information -->
         <div class="space-y-4">
-            <!-- Leave Details Section -->
             <div class="bg-white p-5 rounded-lg border border-gray-100 shadow-xs">
                 <h3 class="text-lg font-semibold text-gray-800 mb-3">Leave Details</h3>
                 @php $details = json_decode($leave->leave_details, true); @endphp
@@ -103,28 +95,24 @@
                 @endif
             </div>
 
-            <!-- Reason Section -->
             <div class="bg-white p-5 rounded-lg border border-gray-100 shadow-xs">
                 <h3 class="text-lg font-semibold text-gray-800 mb-3">Reason</h3>
                 <p class="text-gray-700">{{ $leave->reason ?? 'No reason provided.' }}</p>
             </div>
 
             @if($leave->status === 'rejected')
-                <!-- Disapproval Reason Section -->
                 <div class="bg-red-50 p-5 rounded-lg border border-red-100">
                     <h3 class="text-lg font-semibold text-red-800 mb-3">Disapproval Reason</h3>
                     <p class="text-red-700">{{ $leave->disapproval_reason ?: 'No disapproval reason provided.' }}</p>
                 </div>
             @endif
 
-            <!-- Additional Information Section -->
             <div class="bg-white p-5 rounded-lg border border-gray-100 shadow-xs">
                 <h3 class="text-lg font-semibold text-gray-800 mb-3">Additional Information</h3>
                 <p class="text-gray-700">{{ $leave->others ?: 'No additional information provided.' }}</p>
             </div>
         </div>
 
-        <!-- HR Contact Card -->
         <div class="bg-indigo-50 p-5 rounded-lg border border-indigo-100">
             <div class="flex items-start">
                 <div class="flex-shrink-0 p-2 bg-indigo-100 rounded-lg">
@@ -135,12 +123,6 @@
                 <div class="ml-4">
                     <h3 class="text-lg font-semibold text-indigo-800">Need help with your leave request?</h3>
                     <p class="mt-1 text-indigo-700">Contact our HR department for any questions or assistance regarding your leave.</p>
-                    {{-- <a href="#" class="mt-2 inline-flex items-center text-indigo-600 font-medium hover:underline transition duration-200 text-sm">
-                        Contact HR
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                        </svg>
-                    </a> --}}
                 </div>
             </div>
         </div>
@@ -148,7 +130,6 @@
 </div>
 @endsection
 
-<!-- Custom CSS -->
 <style>
     .animate-fade-in {
         animation: fadeIn 0.5s ease-out;

@@ -21,7 +21,6 @@
         class="fixed inset-y-0 left-0 z-30 w-64 text-white shadow-lg transition-transform duration-300 ease-in-out 
         lg:translate-x-0 lg:static lg:inset-0 ">
         <aside class="w-64 bg-gray-50 h-screen shadow-md fixed">
-            <!-- Header Section -->
             <div class="flex items-center justify-between px-4 py-4">
                 <div class="flex items-center space-x-4">
                     <div class="w-12 h-12 rounded-full overflow-hidden bg-gray-700">
@@ -33,7 +32,6 @@
                     </div>
                 </div>
 
-                <!-- Close Button (Only in Mobile) -->
                 <button @click="sidebarOpen = false" class="lg:hidden text-gray-300 hover:text-white">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
@@ -41,7 +39,6 @@
                 </button>
             </div>
 
-            <!-- Navigation Links -->
             <nav class="mt-6 space-y-2 m-4 text-gray-600">
                 <a href="{{ route('admin.dashboard') }}" class="hover:bg-gray-200 flex items-center p-2 space-x-2 rounded-md {{ request()->routeIs('admin.dashboard') ? 'bg-white shadow-lg' : 'text-gray-500' }}">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
@@ -103,7 +100,7 @@
                         <a href="{{ route('admin.my_requests') }}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">
                             My Leave Requests
                         </a>
-                        <a href="{{ route('admin.my_requests') }}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">
+                        <a href="{{ route('admin.cto_requests') }}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">
                             My CTO Requests
                         </a>
                         <a href="{{ route('admin.requests') }}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">
@@ -149,7 +146,6 @@
         const dropdownToggle1 = document.getElementById('dropdown-toggle1');
         const dropdownToggle2 = document.getElementById('dropdown-toggle2');
 
-        // Close dropdown 2 when dropdown 1 is opened
         if (dropdownToggle1) {
             dropdownToggle1.addEventListener('change', function () {
                 if (this.checked && dropdownToggle2) {
@@ -158,7 +154,6 @@
             });
         }
 
-        // Close dropdown 1 when dropdown 2 is opened
         if (dropdownToggle2) {
             dropdownToggle2.addEventListener('change', function () {
                 if (this.checked && dropdownToggle1) {
@@ -167,7 +162,6 @@
             });
         }
 
-        // Close dropdowns when clicking outside
         document.addEventListener('click', function (event) {
             if (dropdownToggle1) {
                 const isClickInsideDropdown1 = event.target.closest('.relative') === document.querySelector('#dropdown-toggle1')?.closest('.relative');
@@ -185,4 +179,3 @@
         });
     });
 </script>
-

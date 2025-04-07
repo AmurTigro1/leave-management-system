@@ -1,10 +1,10 @@
-@extends('layouts.sidebar-header')
+@extends('layouts.admin.sidebar-header')
 
 @section('content')
-@include('CTO.modals.delete_request', ['overtime' => $overtime])
-@include('CTO.modals.cancel_request', ['overtime' => $overtime])
-@include('CTO.modals.restore_request', ['overtime' => $overtime])
-@include('CTO.modals.edit', ['overtime' => $overtime])
+@include('admin.CTO.modal.my_cto_edit', ['overtime' => $overtime])
+@include('admin.CTO.modal.admin_cto_cancel_request', ['overtime' => $overtime])
+@include('admin.CTO.modal.admin_cto_restore_request', ['overtime' => $overtime])
+@include('admin.CTO.modal.admin_cto_delete_request', ['overtime' => $overtime])
 <x-notify::notify />
 
 <div class="animate-fade-in">
@@ -59,26 +59,28 @@
                 
                 <div class="mt-3 pt-2 border-t">
                     <div class="flex space-x-2">
-                        <a href="{{ route('cto.overtime_show', ['id' => $overtime->id]) }}" 
+                        <a href="{{ route('admin.my_cto_requests', ['id' => $overtime->id]) }}" 
                            class="text-xs bg-blue-100 text-blue-600 px-2 py-1 rounded hover:bg-blue-200">
                             View
                         </a>
-                        
-                        <button onclick="opencocRequestUpdateModal()" class="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded hover:bg-gray-200">
+
+                        <button onclick="openmyCocRequestModal()" class="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded hover:bg-gray-200">
                             Edit
                         </button>
                         @if($overtime->status === 'pending')
-                        <button type="button" onclick="openCancelCtoModal({{ $overtime->id }})"
-                                class="text-xs bg-yellow-100 text-yellow-600 px-2 py-1 rounded hover:bg-yellow-200">
-                            Cancel
+                        <button type="button" onclick="openCancelCtoModal({{ $overtime->id }})" 
+                            class="text-xs bg-yellow-100 text-yellow-600 px-2 py-1 rounded hover:bg-yellow-200">
+                        Cancel
                         </button>
+
                         @elseif($overtime->status === 'cancelled')
                         <button type="button" onclick="openRestoreCtoModal({{ $overtime->id }})"
                             class="text-xs bg-green-100 text-green-600 px-2 py-1 rounded hover:bg-green-200">
                             Restore
                         </button>
                         @endif
-                        <button type="button" onclick="openDeleteOvertimeModal({{ $overtime->id }})" class="text-xs bg-red-100 text-red-600 px-2 py-1 rounded hover:bg-red-200">
+                        <button type="button" onclick="openDeleteCtoModal({{ $overtime->id }})" 
+                                class="text-xs bg-red-100 text-red-600 px-2 py-1 rounded hover:bg-red-200">
                             Delete
                         </button>
                     </div>
@@ -146,12 +148,11 @@
                                             </svg>
                                         </button>
                                 
-                                        <!-- Dropdown menu -->
                                         <div x-show="open" @click.away="open = false" 
                                         class="fixed transform -translate-x-1/2 mt-2 w-40 bg-white border rounded-lg shadow-lg z-50">
                                             @if($overtime->status === 'cancelled')
                                                 @if($overtime->status === 'pending')
-                                                    <button type="button" onclick="openCancelCtoModal({{ $overtime->id }})"
+                                                    <button type="button" onclick="openCancelCtoModal({{ $overtime->id }})" 
                                                             class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                                                         Cancel Request
                                                     </button>
@@ -162,31 +163,34 @@
                                                     </button>
                                                 @endif
                                     
-                                                <button type="button" onclick="openDeleteOvertimeModal({{ $overtime->id }})" class="block w-full text-left px-4 py-2 text-sm text-red-700 hover:bg-red-100">
+                                                <button type="button" onclick="openDeleteCtoModal({{ $overtime->id }})" 
+                                                        class="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-100">
                                                     Delete
                                                 </button>
                                             @else
-                                            <a href="{{ route('cto.overtime_show', ['id' => $overtime->id]) }}" 
-                                            class="block text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                            <a href="{{ route('admin.my_cto_requests', ['id' => $overtime->id]) }}" 
+                                               class="block text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                                                 View
                                             </a>
 
-                                            <button onclick="opencocRequestUpdateModal()" class="w-full block text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                            <button onclick="openmyCocRequestModal()" class="w-full block text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                                                 Edit
                                             </button>
 
                                             @if($overtime->status === 'pending')
-                                                    <button type="button" onclick="openCancelCtoModal({{ $overtime->id }})" class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                                                        Cancel Request
-                                                    </button>
-                                                    @elseif($overtime->status === 'cancelled')
-                                                    <button type="button" onclick="openRestoreCtoModal({{ $overtime->id }})"
+                                                <button type="button" onclick="openCancelCtoModal({{ $overtime->id }})" 
                                                         class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                                                        Restore Request
-                                                    </button>
+                                                    Cancel Request
+                                                </button>
+                                                @elseif($overtime->status === 'cancelled')
+                                                <button type="button" onclick="openRestoreCtoModal({{ $overtime->id }})" 
+                                                        class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                                    Restore Request
+                                                </button>
                                                 @endif
                                     
-                                                <button type="button" onclick="openDeleteOvertimeModal({{ $overtime->id }})" class="block w-full text-left px-4 py-2 text-sm text-red-700 hover:bg-red-100">
+                                                <button type="button" onclick="openDeleteCtoModal({{ $overtime->id }})" 
+                                                        class="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-100">
                                                     Delete
                                                 </button>
                                             @endif
@@ -212,6 +216,21 @@
 </div>
 
 <script>
+    function deleteOvertime(id) {
+        if (confirm("Are you sure you want to delete this overtime request?")) {
+            fetch(`/overtime/delete/${id}`, {
+                method: 'DELETE',
+                headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' }
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert(data.message);
+                location.reload();
+            })
+            .catch(error => console.error('Error:', error));
+        }
+    }
+    
     const successMessage = document.getElementById('success-message');
     if (successMessage) {
         setTimeout(() => {

@@ -170,7 +170,6 @@ class EmployeeController extends Controller
                 $today = Carbon::now();
                 $advanceDaysRequired = $advanceFilingRules[$leaveType] ?? 0;
     
-                // Only validate based on the required advance filing days
                 if ($advanceDaysRequired > 0) {
                     $minStartDate = $today->copy()->addDays($advanceDaysRequired);
                     
@@ -838,10 +837,8 @@ private function deductLeaveBalance($user, $leave)
 {
     $leave = Leave::findOrFail($id);
 
-    // Initialize today date
     $today = Carbon::now();
 
-    // Initialize $days_applied, calculate the days between start_date and end_date
     $startDate = Carbon::parse($request->start_date);
     $endDate = Carbon::parse($request->end_date);
     $days_applied = $startDate->diffInDays($endDate) + 1;  // Add 1 to include the start day

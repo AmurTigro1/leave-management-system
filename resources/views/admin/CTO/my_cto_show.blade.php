@@ -1,11 +1,11 @@
-@extends('layouts.sidebar-header')
+@extends('layouts.admin.sidebar-header')
 
 @section('content')
 <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden animate-fade-in">
     <div class="bg-gradient-to-r from-blue-50 to-indigo-50 px-6 py-5 border-b border-gray-200">
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div class="flex items-center space-x-4">
-                <a href="{{ route('cto.overtime_list') }}" class="p-2 rounded-full bg-white shadow-sm hover:bg-gray-50 transition duration-200">
+                <a href="{{ route('admin.cto_requests') }}" class="p-2 rounded-full bg-white shadow-sm hover:bg-gray-50 transition duration-200">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                     </svg>
@@ -17,7 +17,7 @@
             </div>
             
             <div class="flex space-x-3">
-                <a href="{{ route('overtime.viewPdf', $overtime->id) }}" target="_blank" 
+                <a href="{{ route('admin.overtime.viewPdf', $overtime->id) }}" target="_blank" 
                     class="flex items-center px-4 py-2 bg-white border border-gray-300 rounded-lg shadow-xs hover:bg-gray-50 transition duration-200 text-sm font-medium text-gray-700">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10" />

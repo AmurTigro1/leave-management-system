@@ -39,16 +39,13 @@ class AdminController extends Controller
     
         $employees = $query->paginate(10)->withQueryString();
     
-        // If it's an AJAX request, return only the partial view
         if ($request->ajax()) {
             return view('admin.partials.employee-list', compact('employees'))->render();
         }
     
     
-        // Get pending leave requests
         $pendingLeaves = Leave::where('status', 'pending')->get();
     
-        // Statistics Data
         $totalEmployees = User::count();
         $totalPendingLeaves = Leave::where('admin_status', 'pending')->count();
         $totalApprovedLeaves = Leave::where('admin_status', 'approved')->count();
@@ -57,7 +54,6 @@ class AdminController extends Controller
         $totalPendingOvertime = OvertimeRequest::where('status', 'pending')->count();
         $totalRejectedOvertime = OvertimeRequest::where('status', 'rejected')->count();
     
-        // Data for Chart.js
         $leaveStats = [
             'Pending' => $totalPendingLeaves,
             'Approved' => $totalApprovedLeaves,
@@ -149,7 +145,6 @@ class AdminController extends Controller
                 $today = Carbon::now();
                 $advanceDaysRequired = $advanceFilingRules[$leaveType] ?? 0;
     
-                // Only validate based on the required advance filing days
                 if ($advanceDaysRequired > 0) {
                     $minStartDate = $today->copy()->addDays($advanceDaysRequired);
                     
@@ -350,6 +345,7 @@ class AdminController extends Controller
                 'required_without:cto_type',
                 'integer',
                 'min:4',
+                'multiple_of:4',
                 function ($attribute, $value, $fail) {
                     if ($value % 4 !== 0) {
                         $fail("The $attribute must be a multiple of 4.");
@@ -391,7 +387,6 @@ class AdminController extends Controller
             abort(403, 'Unauthorized access.');
         }
     
-        // Get leave applications waiting for supervisor approval
         $leaveApplications = Leave::where('admin_status', 'pending')
         ->orderBy('created_at', 'desc') 
         ->paginate(9); 
@@ -432,6 +427,18 @@ class AdminController extends Controller
         $pdf = PDF::loadView('pdf.leave_details', compact('leave', 'supervisor', 'hr', 'officials'));
         
         return $pdf->stream('leave_request_' . $leave->id . '.pdf');
+    }
+
+    public function viewCtoPdf($id)
+    {
+        $overtime = OvertimeRequest::findOrFail($id);
+
+        $supervisor = User::where('role', 'supervisor')->first();
+        $hr = User::where('role', 'hr')->first();
+        
+        $pdf = PDF::loadView('pdf.overtime_details', compact('overtime', 'supervisor', 'hr'));
+        
+        return $pdf->stream('overtime_request_' . $overtime->id . '.pdf');
     }
 
     public function cancel($id)
@@ -648,13 +655,11 @@ public function updateLeave(Request $request, $id, YearlyHolidayService $yearlyH
 {
 $leave = Leave::findOrFail($id);
 
-// Initialize today date
 $today = Carbon::now();
 
-// Initialize $days_applied, calculate the days between start_date and end_date
 $startDate = Carbon::parse($request->start_date);
 $endDate = Carbon::parse($request->end_date);
-$days_applied = $startDate->diffInDays($endDate) + 1;  // Add 1 to include the start day
+$days_applied = $startDate->diffInDays($endDate) + 1;
 
 $leaveValidationRules = [];
 
@@ -724,7 +729,6 @@ $request->validate(array_merge([
             $today = Carbon::now();
             $advanceDaysRequired = $advanceFilingRules[$leaveType] ?? 0;
 
-            // Only validate based on the required advance filing days
             if ($advanceDaysRequired > 0) {
                 $minStartDate = $today->copy()->addDays($advanceDaysRequired);
 
@@ -745,10 +749,6 @@ $request->validate(array_merge([
 
 $user = Auth::user();
 
-// Recalculate leave days (same as the store method)
-// Other logic remains the same...
-
-// Handle leave files (if new files are uploaded)
 $leaveFiles = [];
 if ($request->hasFile('leave_files')) {
     foreach ($request->file('leave_files') as $file) {
@@ -759,10 +759,6 @@ if ($request->hasFile('leave_files')) {
 
 $leaveDetails = [];
 
-// Populate leave details based on leave type
-// Same logic as in store function...
-
-// Update the leave record
 $leave->update([
     'leave_type' => $request->leave_type,
     'leave_details' => json_encode($leaveDetails),
@@ -774,7 +770,7 @@ $leave->update([
     'reason' => $request->reason,
     'signature' => $request->signature,
     'leave_files' => json_encode($leaveFiles),
-    'status' => 'pending',  // Can be modified based on the requirements
+    'status' => 'pending',
 ]);
 
 notify()->success('Leave request updated successfully!');
@@ -789,20 +785,17 @@ public function deleteLeave($id) {
     public function review(Request $request, Leave $leave)
 {
     $request->validate([
-        'admin_status' => 'required|in:Approved,Rejected', // Ensures correct input
+        'admin_status' => 'required|in:Approved,Rejected',
         'disapproval_reason' => 'nullable|string',
     ]);
 
-    // Convert status to lowercase for consistency
-    $admin_status = strtolower($request->admin_status); // "Approved" -> "approved", "Rejected" -> "rejected"
+    $admin_status = strtolower($request->admin_status);
 
-    // Determine the new status based on admin_status
     $status = ($admin_status === 'rejected') ? 'rejected' : $leave->status;
 
-    // Update leave record
     $leave->update([
-        'admin_status' => $admin_status, // Update HR status
-        'status' => $status, // Also update overall status if rejected
+        'admin_status' => $admin_status,
+        'status' => $status,
         'disapproval_reason' => $request->disapproval_reason,
         'admin_id' => Auth::id(),
     ]);
@@ -814,17 +807,11 @@ public function deleteLeave($id) {
 public function ctoreview(Request $request, OvertimeRequest $cto)
 {
     $request->validate([
-        'admin_status' => 'required|in:Ready for Review,Rejected', // Ensures correct input
-        // 'disapproval_reason' => 'nullable|string',
+        'admin_status' => 'required|in:Ready for Review,Rejected',
     ]);
 
-    // Convert status to lowercase for consistency
-    $admin_status = strtolower($request->admin_status); // "Approved" -> "approved", "Rejected" -> "rejected"
+    $admin_status = strtolower($request->admin_status); 
 
-    // Determine the new status based on admin_status
-    // $status = ($admin_status === 'rejected') ? 'rejected' : $cto->status;
-
-    // Update leave record
     $cto->update([
         'admin_status' => $admin_status, // Update HR status
         // 'status' => $status, // Also update overall status if rejected
@@ -924,11 +911,10 @@ public function ctoreview(Request $request, OvertimeRequest $cto)
     {
         $employees = User::with(['leaves' => function ($query) {
             $query->where('status', 'approved')
-                  ->whereMonth('start_date', now()->month) // Ensure it's within the month
+                  ->whereMonth('start_date', now()->month)
                   ->whereYear('start_date', now()->year);
         }])->get();
     
-        // Calculate total absences correctly
         $employees->each(function ($employee) {
             $employee->total_absences = $employee->leaves->sum(function ($leave) {
                 return \Carbon\Carbon::parse($leave->start_date)
@@ -941,30 +927,25 @@ public function ctoreview(Request $request, OvertimeRequest $cto)
 
     public function holiday(Request $request)
     {
-        $selectedYear = (int) $request->input('year', date('Y'));  // Cast year to integer
+        $selectedYear = (int) $request->input('year', date('Y')); 
     
-        // Get holidays for the selected year
         $holidays = YearlyHoliday::whereYear('date', $selectedYear)
             ->orWhere('repeats_annually', true)
             ->orderBy('date')
             ->get()
             ->map(function ($holiday) use ($selectedYear) {
-                // Ensure repeating holidays use the selected year
                 if ($holiday->repeats_annually) {
                     $date = Carbon::parse($holiday->date);
     
-                    // Force cast to integer to avoid the Carbon::setUnit() error
                     $holiday->date = Carbon::create((int) $selectedYear, (int) $date->month, (int) $date->day)->format('Y-m-d');
                 }
                 return $holiday;
             });
     
-        // Group holidays by month
         $groupedHolidays = $holidays->groupBy(function ($item) {
             return Carbon::parse($item->date)->format('F Y');
         });
     
-        // Prepare data for calendar view
         $calendarData = $this->prepareCalendarData($holidays, $selectedYear);
     
         return view('admin.holiday-calendar', compact(
@@ -979,7 +960,6 @@ public function ctoreview(Request $request, OvertimeRequest $cto)
     $months = [];
 
     for ($month = 1; $month <= 12; $month++) {
-        // Cast year and month to integers to avoid Carbon errors
         $year = (int) $year;
         $month = (int) $month;
 
@@ -992,7 +972,6 @@ public function ctoreview(Request $request, OvertimeRequest $cto)
             'days' => []
         ];
 
-        // Filter holidays for this month
         $monthHolidays = $holidays->filter(function ($holiday) use ($month) {
             return (int) Carbon::parse($holiday->date)->month === $month;
         });
@@ -1089,5 +1068,105 @@ public function ctoreview(Request $request, OvertimeRequest $cto)
         }
 
         return response()->json(['success' => false, 'message' => 'No notifications found.']);
+    }
+
+    public function ctoRequests()
+    {
+        $overtimereq = OvertimeRequest::where('user_id', Auth::id())->latest()->paginate(10);
+        $overtime = OvertimeRequest::where('user_id', Auth::id())->first();
+        return view('admin.CTO.my_cto_list', compact('overtimereq', 'overtime'));
+    }
+
+    public function myCtoRequests($id) {
+        $overtime = OvertimeRequest::findOrFail($id);
+    
+        return view('admin.CTO.my_cto_show', compact('overtime'));
+    }
+
+    public function updateCTO(Request $request, $id)
+    {
+        $request->validate([
+            'inclusive_dates' => 'required|string',
+            'working_hours_applied' => 'required|integer|min:0|multiple_of:4',
+        ]);
+
+        $overtime = OvertimeRequest::findOrFail($id);
+        $user = Auth::user();
+
+        $oldHours = $overtime->working_hours_applied;
+        $newHours = $request->working_hours_applied;
+
+        $diff = $newHours - $oldHours;
+
+        if ($diff !== 0) {
+            if ($diff > 0) {
+                $user->decrement('overtime_balance', $diff);
+            } else {
+                $user->increment('overtime_balance', abs($diff));
+            }
+        }
+
+        $overtime->update([
+            'inclusive_dates' => $request->inclusive_dates,
+            'working_hours_applied' => $newHours,
+        ]);
+
+        notify()->success('Overtime request updated successfully.');
+        return redirect()->back();
+    }
+
+    public function deleteCTO($id)
+    {
+        $request = OvertimeRequest::findOrFail($id);
+    
+        $user = $request->user; 
+        $user->overtime_balance += $request->working_hours_applied; 
+        $user->save();
+    
+        $request->delete();
+        
+        notify()->success('CTO request deleted successfully and balance restored.');
+        return redirect()->back();
+    } 
+
+    public function cancelCTO($id)
+    {
+        $CTO = OvertimeRequest::findOrFail($id);
+        
+        if ($CTO->status == 'cancelled') {
+            notify()->warning('CTO request is already cancelled.');
+            return redirect()->back();
+        }
+
+        $user = Auth::user();
+
+        $user->increment('overtime_balance', $CTO->working_hours_applied);
+
+        $CTO->status = 'cancelled';
+        $CTO->save();
+
+        notify()->success('CTO request has been cancelled and balance restored.');
+
+        return redirect()->back();
+    }
+
+    public function restoreCTO($id)
+    {
+        $CTO = OvertimeRequest::findOrFail($id);
+        $user = Auth::user();
+
+        if ($CTO->status !== 'cancelled') {
+            notify()->warning('This CTO request is not cancelled and cannot be restored.');
+            return redirect()->back();
+        }
+
+        $user->decrement('overtime_balance', $CTO->working_hours_applied);
+
+        $CTO->status = 'pending'; 
+        $CTO->save();
+
+        notify()->success('CTO request has been restored and balance deducted.');
+
+        return redirect()->back();
     }
 }

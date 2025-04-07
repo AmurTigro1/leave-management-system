@@ -70,13 +70,6 @@
                                 </button>
                             @endif
                         </td>
-                        {{-- <form action="" method="POST">
-                            @csrf
-                            <button type="submit" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-xs font-medium rounded-md shadow transition">
-                                Delete
-                            </button>
-                        </form> --}}
-                        {{-- {{ route('overtime.review', $OT->id) }} --}}
                     </tr>
                     @endforeach
                 </tbody>

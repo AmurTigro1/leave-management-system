@@ -1,22 +1,12 @@
 @extends('layouts.sidebar-header')
 @section('content')
 
+<x-notify::notify />
+
 <div class="animate-fade-in">
     <div class="bg-white shadow-md rounded-lg p-6">
-        <!-- Leave Request List -->
-        @if(session('success'))
-<div class="bg-green-100 text-green-800 p-4 rounded-lg shadow-md mb-4">
-    <strong>Success:</strong> {{ session('success') }}
-</div>
-@endif
-@if ($errors->any())
-    <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4" role="alert">
-        <strong>Error:</strong> {{ $errors->first('error') }}
-    </div>
-@endif
 
-
-    <h3 class="text-2xl font-bold mb-3 text-gray-800">Your Leave Requests</h3>
+        <h3 class="text-2xl font-bold mb-3 text-gray-800">Your Leave Requests</h3>
     
     
         <table class="w-full border-collapse">
@@ -34,6 +24,9 @@
             </thead>
             <tbody>
                 @foreach ($leaves as $leave)
+                @include('employee.leave modal.cancel_leavel_request', ['leave' => $leave])
+                @include('employee.leave modal.restore_leave_request', ['leave' => $leave])
+                @include('employee.leave modal.delete_leave_request', ['leave' => $leave])
                     <tr class="border-b even:bg-gray-50 hover:bg-gray-100 transition">
                         <td class="p-3 font-medium text-gray-800">{{ $leave->leave_type }}</td>
                         <td class="p-3">
@@ -101,36 +94,24 @@
 
                                     <!-- Hide "Cancel Request" if already cancelled -->
                                     @if($leave->status !== 'cancelled')
-                                        <form action="{{ route('employee.leave_cancel', $leave->id) }}" method="POST" class="w-full">
-                                            @csrf
-                                            <button type="submit" 
-                                                    onclick="return confirm('Are you sure you want to cancel this leave request?')"
-                                                    class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                                                Cancel Request
-                                            </button>
-                                        </form>
+                                        <button type="button"
+                                                onclick="openCancelLeaveModal({{ $leave->id }})"
+                                                class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                            Cancel Request
+                                        </button>
                                     @endif
+
 
                                     @if($leave->status === 'cancelled')
-                                        <form action="{{ route('employee.leave_restore', $leave->id) }}" method="POST" class="w-full">
-                                            @csrf
-                                            <button type="submit" 
-                                                onclick="return confirm('Do you want to restore this canceled request?')"
-                                                class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                                                Restore Request
-                                            </button>
-                                        </form>
-                                    @endif
-
-                                    <form action="{{ route('employee.leave_delete', $leave->id) }}" method="POST" class="w-full">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" 
-                                                onclick="return confirm('Are you sure you want to delete this leave request?')"
-                                                class="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-100">
-                                            Delete
+                                        <button type="button" onclick="openRestoreLeaveModal({{ $leave->id }})" 
+                                            class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                            Restore Request
                                         </button>
-                                    </form>
+                                    @endif
+                                    <button  type="button" onclick="openDeleteLeaveModal({{ $leave->id }})" 
+                                            class="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-100">
+                                        Delete
+                                    </button>
                                 </div>
                             </div>
                         </td>                        
