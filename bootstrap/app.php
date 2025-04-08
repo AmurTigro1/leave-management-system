@@ -30,7 +30,6 @@ return Application::configure(basePath: dirname(__DIR__))
     ->booting(function (Application $app) {
         $schedule = $app->make(Schedule::class);
 
-        // Schedule multiple commands
         // $schedule->command('holidays:fetch')->monthly();
         // $schedule->command('leave:reset-yearly')->yearly();
         $schedule->command('leave:forfeit-unused-mandatory')->yearlyOn(12, 31, '23:59');

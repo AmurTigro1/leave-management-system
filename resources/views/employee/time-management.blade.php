@@ -96,6 +96,22 @@
                 @endforeach
             </div>
             <div class="p-4 sm:p-6 border-t border-gray-200">
+            <!-- Success Message -->
+        @if(session('success'))
+        <div x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 3000)" class="p-4 mb-4 text-green-700 bg-green-100 border border-green-500 rounded">
+            {{ session('success') }}
+        </div>
+    @endif
+    
+    @if($errors->any())
+        <div x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 3000)" class="p-4 mb-4 text-red-700 bg-red-100 border border-red-500 rounded">
+            <ul>
+                @foreach($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
             <h2 class="text-lg sm:text-xl font-bold flex items-center">
                 Leave Logs
             </h2>
