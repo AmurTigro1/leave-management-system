@@ -94,7 +94,7 @@
                             <td>{{ $overtime->earned_hours}} hours</td>
                             <td>{{ \Carbon\Carbon::parse($overtime->date_filed)->format('F d, Y') }}</td>
                             <td>{{ $overtime->working_hours_applied}} hours</td>
-                            <td>{{ $overtime->user->overtime_balance - $overtime->working_hours_applied}} hours</td>
+                            <td>{{ $overtime->user->overtime_balance }} hours</td>
                             <td></td>
                         </tr>
                         <tr>
