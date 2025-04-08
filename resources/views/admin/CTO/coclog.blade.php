@@ -1,10 +1,13 @@
 @extends('layouts.admin.sidebar-header')
 @section('content')
+@include('admin.CTO.modal.coclog_view', ['cocLogs' => $cocLogs])
+@include('admin.CTO.modal.coclog_create', ['users' => $users])
+
     <div class="fixed top-4 right-4 z-[9999] sm:top-6 sm:right-6">
         <x-notify::notify />
     </div>
     
-    <div class="container mx-auto px-3 sm:px-4 py-4 sm:py-6 animate-fade-in">
+    <div class="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 animate-fade-in">
         @notifyJs
         <div class="bg-white rounded-lg sm:rounded-xl shadow-md overflow-hidden">
             <div class="p-4 sm:p-6 border-b border-gray-200">
@@ -16,7 +19,6 @@
                         </svg>
                         COC Logs Management
                     </h2>
-                    @include('hr.CTO.modal.coclog_create', ['users' => $users])
                     <button onclick="opencocCreateLogsModal()" class="inline-flex items-center justify-center px-3 sm:px-4 py-2 bg-blue-600 text-white text-sm sm:text-base rounded-md font-medium hover:bg-blue-700 transition duration-150 ease-in-out">
                         <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                             <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd"></path>
@@ -27,203 +29,106 @@
             </div>
 
             <div class="p-3 sm:p-6">
-                <div class="sm:hidden space-y-4">
-                    @foreach($cocLogs as $log)
-                    @include('hr.CTO.modal.coclog_view', ['log' => $log])
-                    @include('hr.CTO.modal.coclog_update', ['log' => $log])
-                    <div class="bg-white rounded-lg shadow p-4 border border-gray-200">
-                        <div class="flex items-center justify-between">
-                            <div class="flex items-center space-x-3">
-                                <div class="flex-shrink-0 h-10 w-10 bg-blue-500 rounded-full flex items-center justify-center text-white">
-                                    {{ substr($log->user->first_name, 0, 1) }}
-                                </div>
-                                <div>
-                                    <div class="font-medium text-gray-900">
-                                        {{ $log->user->first_name }} {{ $log->user->last_name }}
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Employee</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Activity</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">COC Earned</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created By</th>
+                                <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            @foreach($cocLogs as $log)
+                            @include('admin.CTO.modal.coclog_update', ['log' => $log])
+                            <tr class="hover:bg-gray-50">
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="flex items-center">
+                                        <div class="flex-shrink-0 h-10 w-10 bg-blue-500 rounded-full flex items-center justify-center text-white">
+                                            {{ substr($log->user->first_name, 0, 1) }}
+                                        </div>
+                                        <div class="ml-4">
+                                            <div class="text-sm font-medium text-gray-900">
+                                                {{ $log->user->first_name }} {{ $log->user->last_name }}
+                                            </div>
+                                            <div class="text-xs text-gray-500">{{ $log->user->position ?? 'N/A' }}</div>
+                                        </div>
                                     </div>
-                                    <div class="text-xs text-blue-500">
-                                        {{ $log->activity_name }}
-                                    </div>
-                                </div>
-                            </div>
-                            <div x-data="{ open: false }" class="relative">
-                                <button @click="open = !open" class="text-gray-500 hover:text-gray-700">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"></path>
-                                    </svg>
-                                </button>
-                                <div x-show="open" @click.away="open = false" class="absolute right-0 mt-2 w-40 bg-white rounded-md shadow-lg z-50">
-                                    <div class="py-1">
-                                        <button onclick="opencocUpdateModal()" class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Edit</button>
-                                        <form action="{{ route('coc-logs.destroy', $log->id) }}" method="POST">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" onclick="return confirm('Are you sure you want to delete this COC log?')" class="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-100">Delete</button>
-                                        </form>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="mt-3 pt-3 border-t border-gray-200 space-y-2">
-                            <div class="flex justify-between text-sm">
-                                <span class="text-gray-500">Date:</span>
-                                <span class="font-medium">{{ $log->activity_date }}</span>
-                            </div>
-                            <div class="flex justify-between text-sm">
-                                <span class="text-gray-500">COC Earned:</span>
+                                </td>
+                                
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-blue-500">{{ $log->activity_name }}</div>
+                                </td>
+                                
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900">{{ $log->activity_date }}</div>
+                                </td>
+                                
+                                <td class="px-6 py-4 whitespace-nowrap">
                                     @if($log->is_expired)
-                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
-                                        {{ $log->coc_earned }} hours
-                                    </span>
-                                @elseif($log->consumed)
-                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
-                                        {{ $log->coc_earned }} hours
-                                    </span>
-                                @else
-                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                                    {{ $log->coc_earned }} hours
-                                </span>
-                                @endif
-                            </div>
-                            <div class="flex justify-between text-sm">
-                                <span class="text-gray-500">Status:</span>
-                                <span class="font-medium">
-                                    @if($log->is_expired)
-                                        <span class="badge px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">Expired</span>
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
+                                            {{ $log->coc_earned }} hours
+                                        </span>
                                     @elseif($log->consumed)
-                                        <span class="badge px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">Used</span>
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
+                                            {{ $log->coc_earned }} hours
+                                        </span>
                                     @else
-                                        <span class="badge px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Active</span>
-                                    @endif
-                                </span>
-                            </div>
-                            <div class="flex justify-between text-sm">
-                                <span class="text-gray-500">Created By:</span>
-                                <span class="font-medium">{{ $log->creator->first_name }} {{ $log->creator->last_name }}</span>
-                            </div>
-                        </div>
-                    </div>
-                    @endforeach
-                </div>
-
-                <div class="hidden sm:block">
-                    <div class="overflow-x-auto">
-                        <table class="min-w-full bg-white border border-gray-200 text-xs sm:text-sm text-gray-700">
-                            <thead class="bg-gray-50 text-gray-700 font-semibold">
-                                <tr>
-                                    <th scope="col" class="py-2 px-2 sm:px-4 border-b text-left">User</th>
-                                    <th scope="col" class="py-2 px-2 sm:px-4 border-b text-left">Activity</th>
-                                    <th scope="col" class="py-2 px-2 sm:px-4 border-b text-left">Date</th>
-                                    <th scope="col" class="py-2 px-2 sm:px-4 border-b text-left">COC</th>
-                                    <th scope="col" class="py-2 px-2 sm:px-4 border-b text-left">Issuance</th>
-                                    <th scope="col" class="py-2 px-2 sm:px-4 border-b text-left">Author</th>
-                                    <th scope="col" class="py-2 px-2 sm:px-4 border-b text-left">COC Status</th>
-                                    <th scope="col" class="py-2 px-2 sm:px-4 border-b text-center">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody class="bg-white divide-y divide-gray-200">
-                                @foreach($cocLogs as $log)
-                                @include('hr.CTO.modal.coclog_view', ['log' => $log])
-                                @include('hr.CTO.modal.coclog_update', ['log' => $log])
-
-                                <tr class="hover:bg-gray-100 transition-colors duration-150 ease-in-out">
-                                    <td class="px-2 sm:px-4 py-3 whitespace-nowrap">
-                                        <div class="flex items-center">
-                                            <div class="flex-shrink-0 h-8 w-8 sm:h-10 sm:w-10 bg-blue-500 rounded-full flex items-center justify-center text-white font-semibold text-xs sm:text-sm">
-                                                {{ substr($log->user->first_name, 0, 1) }}
-                                            </div>
-                                            <div class="ml-2 sm:ml-4">
-                                                <div class="text-xs sm:text-sm font-medium text-gray-900 truncate max-w-[100px] sm:max-w-none">
-                                                    {{ $log->user->first_name }} {{ $log->user->last_name }}
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    
-                                    <td class="px-2 sm:px-4 py-3 whitespace-nowrap">
-                                        <div class="text-xs sm:text-sm text-gray-900 truncate max-w-[120px] sm:max-w-none ">
-                                            {{ $log->activity_name }}
-                                        </div>
-                                    </td>                                    
-                                    
-                                    <td class="px-2 sm:px-4 py-3 whitespace-nowrap text-xs sm:text-sm text-gray-500">
-                                        {{ $log->activity_date }}
-                                    </td>
-                                    
-                                    <td class="px-2 sm:px-4 py-3 whitespace-nowrap">
-                                        @if($log->is_expired)
-                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
-                                                {{ $log->coc_earned }} hours
-                                            </span>
-                                        @elseif($log->consumed)
-                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
-                                                {{ $log->coc_earned }} hours
-                                            </span>
-                                        @else
                                         <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
                                             {{ $log->coc_earned }} hours
                                         </span>
-                                        @endif
-                                    </td>
-                                    
-                                    <td class="px-2 sm:px-4 py-3 whitespace-nowrap text-xs sm:text-sm text-gray-500">
-                                        <div class="truncate max-w-[100px]">{{ $log->issuance }}</div>
-                                    </td>
-                                    
-                                    <td class="px-2 sm:px-4 py-3 whitespace-nowrap">
-                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                                            {{ $log->creator->first_name }} {{ $log->creator->last_name }} on {{ $log->created_at->format('M d, Y') }}
-                                        </span>
-                                    </td>
-
-                                    <td class="px-2 sm:px-4 py-3 whitespace-nowrap">
-                                        @if($log->is_expired)
-                                            <span class="badge px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">Expired</span>
-                                        @elseif($log->consumed)
-                                            <span class="badge px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">Used</span>
-                                        @else
-                                            <span class="badge px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Active</span>
-                                        @endif
-                                    </td>
-                                    
-                                    <td class="p-3 text-center relative">
-                                        <div x-data="{ open: false }" class="relative inline-block">
-                                            <button @click="open = !open" 
-                                                    class="text-gray-600 hover:text-gray-900 focus:outline-none">
-                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" 
-                                                    viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" 
-                                                          d="M12 6h.01M12 12h.01M12 18h.01" />
+                                    @endif
+                                </td>
+                                
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    @if($log->is_expired)
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">Expired</span>
+                                    @elseif($log->consumed)
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">Used</span>
+                                    @else
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Active</span>
+                                    @endif
+                                </td>
+                                
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900">{{ $log->creator->first_name }} {{ $log->creator->last_name }}</div>
+                                </td>
+                                
+                                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                    <div class="space-x-2">
+                                        <button onclick="opencocUpdateModal()" 
+                                                class="inline-flex items-center px-3 py-1.5 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 h-8">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                            </svg>
+                                            Edit
+                                        </button>
+                                        
+                                        <form action="{{ route('coc-logs.destroy', $log->id) }}" method="POST" class="inline h-8">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" 
+                                                    onclick="return confirm('Are you sure you want to delete this COC log?')" 
+                                                    class="inline-flex items-center px-3 py-1.5 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 h-8">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                                                 </svg>
+                                                Delete
                                             </button>
-                                    
-                                            <div x-show="open" @click.away="open = false" 
-                                            class="fixed transform -translate-x-1/2 mt-2 w-40 bg-white border rounded-lg shadow-lg z-50">
-                                    
-                                                <button onclick="opencocUpdateModal()" class="w-full block text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                                                    Edit
-                                                </button>
-                                    
-                                                <form action="{{ route('coc-logs.destroy', $log->id) }}" method="POST" class="w-full">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit" 
-                                                            onclick="return confirm('Are you sure you want to delete this leave request?')"
-                                                            class="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-100">
-                                                        Delete
-                                                    </button>
-                                                </form>
-                                            </div>
-                                        </div>
-                                    </td>  
-                                </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
                 </div>
-
+            
+                <!-- Pagination -->
                 <div class="mt-4 sm:mt-6 flex flex-col sm:flex-row items-center justify-between gap-3">
                     <div class="text-xs sm:text-sm text-gray-500">
                         Showing <span class="font-medium">{{ $cocLogs->firstItem() }}</span> to <span class="font-medium">{{ $cocLogs->lastItem() }}</span> of <span class="font-medium">{{ $cocLogs->total() }}</span>
@@ -235,29 +140,29 @@
             </div>
         </div>
     </div>
-
-    <style>
-        .animate-fade-in {
-            animation: fadeIn 0.5s ease-in-out;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        @media (max-width: 640px) {
-            .container {
-                padding-left: 0.5rem;
-                padding-right: 0.5rem;
-            }
-            
-            .bg-white.rounded-lg {
-                box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-            }
-            
-            [x-cloak] { display: none !important; }
-        }
-    </style>
 @endsection
+
+<style>
+    .animate-fade-in {
+        animation: fadeIn 0.5s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 640px) {
+        .container {
+            padding-left: 0.5rem;
+            padding-right: 0.5rem;
+        }
+        
+        .bg-white.rounded-lg {
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        [x-cloak] { display: none !important; }
+    }
+</style>
 @notifyCss

@@ -125,7 +125,10 @@
                 
                     <div class="absolute left-0 top-full hidden peer-checked:flex flex-col w-48 mt-1 bg-white border border-gray-300 rounded-md shadow-lg z-10">
                         <a href="{{ route('hr.my_requests') }}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">
-                            My Requests
+                            My Leave Requests
+                        </a>
+                        <a href="{{ route('hr.cto_requests') }}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">
+                            My CTO Requests
                         </a>
                         <a href="{{ route('hr.requests') }}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">
                             Pending Requests

@@ -66,7 +66,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/hr-leave/view/{id}', [HrController::class, 'viewPdf'])->name('hr.leave.viewPdf');
         Route::get('/hr/cto/details/{id}', [HrController::class, 'showcto'])->name('hr.cto_details');
         Route::post('/cto/{cto}/hr-review', [HrController::class, 'ctoreview'])->name('cto.hr-review');
-        Route::get('/hr-overtime/view/{id}', [HrController::class, 'ctoviewPdf'])->name('hr.overtime.viewPdf');
+        Route::get('/hr-overtime/view/{id}', [HrController::class, 'viewCtoPdf'])->name('hr.overtime.viewPdf');
         Route::get('/hr/calendar', [HrController::class, 'calendar'])->name('hr.holiday.calendar');
         Route::get('hr/holidays', [HrController::class, 'holiday'])->name('hr.holidays.index');
         Route::get('hr/holidays/create', [HrController::class, 'create'])->name('hr.holidays.create');
@@ -113,6 +113,14 @@ Route::middleware('auth')->group(function () {
         Route::post('/notifications/hr-mark-as-read', [HRController::class, 'markAsRead'])->name('hr.notifications.markAsRead');
         Route::delete('/notifications/hr-delete/{id}', [HRController::class, 'delete'])->name('hr.notifications.delete');
         Route::delete('/notifications/hr-delete-all', [HRController::class, 'deleteAll'])->name('hr.notifications.deleteAll');
+
+        Route::get('hr/cto-requests', [HrController::class, 'ctoRequests'])->name('hr.cto_requests');
+        Route::get('/hr/my-CTO-requests/{id}', [HrController::class, 'myCtoRequests'])->name('hr.my_cto_requests');
+        Route::put('/hr/my-CTO-requests/update/{id}', [HrController::class, 'updateCTO'])->name('hr.cto_update');
+        Route::post('/hr/CTO/{id}/cancel', [HrController::class, 'cancelCTO'])->name('hr.cto_cancel');
+        Route::post('/hr/CTO/{id}/restore', [HrController::class, 'restoreCTO'])->name('hr.cto_restore');
+        Route::delete('/hr/my-CTO-requests/delete/{id}', [HrController::class, 'deleteCTO'])->name('hr.cto_delete');
+        Route::get('/hr-CTO/view/{id}', [HrController::class, 'viewCtoPdf'])->name('hr.overtime.viewPdf');
 
         Route::get('/check-existing-roles', [UserController::class, 'checkExistingRoles'])->name('check.existing.roles');
         Route::post('/swap-roles', [UserController::class, 'swapRoles'])->name('swap.roles');

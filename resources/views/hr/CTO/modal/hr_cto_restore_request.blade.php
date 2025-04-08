@@ -21,7 +21,7 @@
             </div>
 
             <div class="p-6">
-                <form action="{{ route('admin.cto_restore', $overtime->id) }}" method="POST">
+                <form action="{{ route('hr.cto_restore', $overtime->id) }}" method="POST">
                     @csrf
                     <p class="text-gray-700 text-sm mb-6">
                         Are you sure you want to restore this CTO request?
