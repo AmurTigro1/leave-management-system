@@ -1,10 +1,10 @@
-@extends('layouts.admin.sidebar-header')
+@extends('layouts.hr.sidebar-header')
 
 @section('content')
-@include('admin.CTO.modal.my_cto_edit', ['overtime' => $overtime])
-@include('admin.CTO.modal.admin_cto_cancel_request', ['overtime' => $overtime])
-@include('admin.CTO.modal.admin_cto_restore_request', ['overtime' => $overtime])
-@include('admin.CTO.modal.admin_cto_delete_request', ['overtime' => $overtime])
+@include('hr.CTO.modal.my_cto_edit', ['overtime' => $overtime])
+@include('hr.CTO.modal.hr_cto_cancel_request', ['overtime' => $overtime])
+@include('hr.CTO.modal.hr_cto_restore_request', ['overtime' => $overtime])
+@include('hr.CTO.modal.hr_cto_delete_request', ['overtime' => $overtime])
 <x-notify::notify />
 
 <div class="animate-fade-in">
@@ -57,12 +57,12 @@
                 
                 <div class="mt-3 pt-2 border-t">
                     <div class="flex space-x-2">
-                        <a href="{{ route('admin.my_cto_requests', ['id' => $overtime->id]) }}" 
+                        <a href="{{ route('hr.my_cto_requests', ['id' => $overtime->id]) }}" 
                            class="text-xs bg-blue-100 text-blue-600 px-2 py-1 rounded hover:bg-blue-200">
                             View
                         </a>
 
-                        <button onclick="openmyCocRequestModal()" class="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded hover:bg-gray-200">
+                        <button onclick="openmyCtoEditModal()" class="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded hover:bg-gray-200">
                             Edit
                         </button>
                         @if($overtime->status === 'pending')
@@ -164,12 +164,12 @@
                                                     Delete
                                                 </button>
                                             @else
-                                            <a href="{{ route('admin.my_cto_requests', ['id' => $overtime->id]) }}" 
+                                            <a href="{{ route('hr.my_cto_requests', ['id' => $overtime->id]) }}" 
                                                class="block text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                                                 View
                                             </a>
 
-                                            <button onclick="openmyCocRequestModal()" class="w-full block text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                            <button onclick="openmyCtoEditModal()" class="w-full block text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                                                 Edit
                                             </button>
 

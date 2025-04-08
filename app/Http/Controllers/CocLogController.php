@@ -27,16 +27,14 @@ class CocLogController extends Controller
     public function indexAdmin()
     {
         $cocLogs = CocLog::where('is_expired', false)
-            ->join('users', 'coc_logs.user_id', '=', 'users.id') 
-            ->orderBy('coc_logs.expires_at', 'asc') 
             ->with(['user', 'creator'])
-            ->select('coc_logs.*')
+            ->orderBy('expires_at', 'asc') 
             ->paginate(10);
-    
-        $users = User::get();
-    
+
+        $users = User::all();
+
         return view('admin.CTO.coclog', compact('cocLogs', 'users'));
-    }      
+    }
 
     public function showHRCocLogs($id)
     {

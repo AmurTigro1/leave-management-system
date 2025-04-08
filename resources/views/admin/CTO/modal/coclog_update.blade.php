@@ -1,7 +1,5 @@
-<div id="cocUpdateModal" class="hidden fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center px-4 z-[9999] overflow-auto" onclick="closecocUpdateModal(event)">
-    @isset($log)
+<div id="cocUpdateModal" class="hidden fixed inset-0 bg-gray-900 bg-opacity-50 z-[9999] flex items-center justify-center px-4 overflow-y-auto">
     <div class="w-full max-w-2xl mx-4 bg-white shadow-xl rounded-lg p-6 relative max-h-[70vh] overflow-y-auto" onclick="event.stopPropagation()">
-        <!-- Modal Header -->
         <div class="text-center border-b pb-4">
             <h3 class="text-2xl font-bold text-gray-900">
                 Update COC Log for <span class="text-green-500">{{ $log->user->first_name }} {{ $log->user->last_name }}</span>
@@ -11,7 +9,6 @@
             </p>
         </div>
 
-        <!-- Form Section -->
         <form action="{{ route('coc-logs.update', $log->id) }}" method="POST">
             @csrf
             @method('PUT')
@@ -48,7 +45,6 @@
                 </div>
             </div>
 
-            <!-- Buttons -->
             <div class="mt-8 flex justify-end space-x-3">
                 <button type="button" onclick="closecocUpdateModal()" 
                         class="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 transition">
@@ -61,7 +57,6 @@
             </div>
         </form>
     </div>
-    @endisset
 </div>
 
 <script>
@@ -72,14 +67,11 @@
     function closecocUpdateModal(event) {
         const modal = document.getElementById("cocUpdateModal");
 
-        // Close only if clicking outside or clicking cancel
         if (!event || event.target === modal) {
             modal.classList.add("hidden");
 
-            // Reset form inputs
             document.getElementById("cocLogsForm").reset();
 
-            // Remove error messages
             document.querySelectorAll('.text-red-500').forEach(el => el.remove());
         }
     }

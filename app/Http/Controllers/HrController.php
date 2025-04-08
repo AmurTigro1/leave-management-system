@@ -1399,4 +1399,104 @@ public function deleteLeave($id) {
 
         return response()->json(['success' => false, 'message' => 'No notifications found.']);
     }
+
+    public function ctoRequests()
+    {
+        $overtimereq = OvertimeRequest::where('user_id', Auth::id())->latest()->paginate(10);
+        $overtime = OvertimeRequest::where('user_id', Auth::id())->first();
+        return view('hr.CTO.my_cto_list', compact('overtimereq', 'overtime'));
+    }
+
+    public function myCtoRequests($id) {
+        $overtime = OvertimeRequest::findOrFail($id);
+    
+        return view('hr.CTO.my_cto_show', compact('overtime'));
+    }
+
+    public function updateCTO(Request $request, $id)
+    {
+        $request->validate([
+            'inclusive_dates' => 'required|string',
+            'working_hours_applied' => 'required|integer|min:0|multiple_of:4',
+        ]);
+
+        $overtime = OvertimeRequest::findOrFail($id);
+        $user = Auth::user();
+
+        $oldHours = $overtime->working_hours_applied;
+        $newHours = $request->working_hours_applied;
+
+        $diff = $newHours - $oldHours;
+
+        if ($diff !== 0) {
+            if ($diff > 0) {
+                $user->decrement('overtime_balance', $diff);
+            } else {
+                $user->increment('overtime_balance', abs($diff));
+            }
+        }
+
+        $overtime->update([
+            'inclusive_dates' => $request->inclusive_dates,
+            'working_hours_applied' => $newHours,
+        ]);
+
+        notify()->success('Overtime request updated successfully.');
+        return redirect()->back();
+    }
+
+    public function deleteCTO($id)
+    {
+        $request = OvertimeRequest::findOrFail($id);
+    
+        $user = $request->user; 
+        $user->overtime_balance += $request->working_hours_applied; 
+        $user->save();
+    
+        $request->delete();
+        
+        notify()->success('CTO request deleted successfully and balance restored.');
+        return redirect()->back();
+    } 
+
+    public function cancelCTO($id)
+    {
+        $CTO = OvertimeRequest::findOrFail($id);
+        
+        if ($CTO->status == 'cancelled') {
+            notify()->warning('CTO request is already cancelled.');
+            return redirect()->back();
+        }
+
+        $user = Auth::user();
+
+        $user->increment('overtime_balance', $CTO->working_hours_applied);
+
+        $CTO->status = 'cancelled';
+        $CTO->save();
+
+        notify()->success('CTO request has been cancelled and balance restored.');
+
+        return redirect()->back();
+    }
+
+    public function restoreCTO($id)
+    {
+        $CTO = OvertimeRequest::findOrFail($id);
+        $user = Auth::user();
+
+        if ($CTO->status !== 'cancelled') {
+            notify()->warning('This CTO request is not cancelled and cannot be restored.');
+            return redirect()->back();
+        }
+
+        $user->decrement('overtime_balance', $CTO->working_hours_applied);
+
+        $CTO->status = 'pending'; 
+        $CTO->save();
+
+        notify()->success('CTO request has been restored and balance deducted.');
+
+        return redirect()->back();
+    }
 }
