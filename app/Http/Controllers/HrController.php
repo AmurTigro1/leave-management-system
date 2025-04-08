@@ -1210,17 +1210,18 @@ public function deleteLeave($id) {
         return $pdf->stream('leave_request_' . $leave->id . '.pdf');
     }
 
-    public function ctoviewPdf($id)
-    {
-        $overtime = OvertimeRequest::findOrFail($id);
+    public function viewCtoPdf($id)
+{
+    $overtime = OvertimeRequest::findOrFail($id);
 
-        $supervisor = User::where('role', 'supervisor')->first();
-        $hr = User::where('role', 'hr')->first();
-        
-        $pdf = PDF::loadView('pdf.overtime_details', compact('overtime', 'supervisor', 'hr'));
-        
-        return $pdf->stream('overtime_request_' . $overtime->id . '.pdf');
-    }
+    $supervisor = User::where('role', 'supervisor')->first();
+    $hr = User::where('role', 'hr')->first();
+
+    $pdf = PDF::loadView('pdf.overtime_details', compact('overtime', 'supervisor', 'hr'));
+    
+    return $pdf->stream('overtime_request_' . $overtime->id . '.pdf');
+}
+
 
     public function create()
     {

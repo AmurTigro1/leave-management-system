@@ -66,7 +66,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/hr-leave/view/{id}', [HrController::class, 'viewPdf'])->name('hr.leave.viewPdf');
         Route::get('/hr/cto/details/{id}', [HrController::class, 'showcto'])->name('hr.cto_details');
         Route::post('/cto/{cto}/hr-review', [HrController::class, 'ctoreview'])->name('cto.hr-review');
-        Route::get('/hr-overtime/view/{id}', [HrController::class, 'ctoviewPdf'])->name('hr.overtime.viewPdf');
+        Route::get('/hr-overtime/view/{id}', [HrController::class, 'viewCtoPdf'])->name('hr.overtime.viewPdf');
         Route::get('/hr/calendar', [HrController::class, 'calendar'])->name('hr.holiday.calendar');
         Route::get('hr/holidays', [HrController::class, 'holiday'])->name('hr.holidays.index');
         Route::get('hr/holidays/create', [HrController::class, 'create'])->name('hr.holidays.create');
