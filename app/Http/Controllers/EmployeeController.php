@@ -9,6 +9,7 @@ use App\Models\HRSupervisor;
 use App\Models\Leave;
 use App\Models\User;
 use App\Models\TimeManagement;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 use PDF;
 use Illuminate\Support\Facades\Storage;
@@ -613,9 +614,15 @@ private function deductLeaveBalance($user, $leave)
     public function profile() {
         $user = Auth::user();
     
-        return view('employee.profile.index', [
-            'user' => $user,
-        ]);
+        $usedVacationLeave = DB::table('leaves')
+        ->where('user_id', $user->id)
+        ->where('leave_type', 'vacation')
+        ->where('status', 'approved')
+        ->selectRaw('SUM(DATEDIFF(end_date, start_date) + 1) as total')
+        ->value('total') ?? 0;
+
+        return view('employee.profile.index', compact('user', 'usedVacationLeave'));
+
     }
     
     public function profile_edit(Request $request): View

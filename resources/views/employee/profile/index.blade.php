@@ -136,7 +136,8 @@
                     <span>
                         <strong>Mandatory Leave Reminder:</strong> You must use at least <strong>5 vacation leave days</strong> this year.  
                         Unused days will be <strong>forfeited after December 31st</strong>.  
-                        You have used <strong>{{ $user->total_annual_vacation_leave - $user->vacation_leave_balance }}</strong> day(s) so far.
+                        You have used <strong>{{ $usedVacationLeave }}</strong> day(s) so far.
+                        day(s) so far.
                     </span>
                 </div>
                 @endif
