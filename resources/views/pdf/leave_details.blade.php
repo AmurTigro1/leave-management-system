@@ -332,37 +332,6 @@
                         @endif
                     </span>For Approval
                 </p>
-                @if($leave->hr_status == 'rejected') 
-                    <p class="info2">
-                        <span class="commutation-checkbox">
-                            
-                                <img src="{{ public_path('img/check.jpg') }}" width="18" height="10">
-                            
-                        </span>For disapproval due to 
-                        <span class="underline">{{ Str::limit($leave->disapproval_reason, 23, '-') }}</span>
-                    </p>
-                
-                    @php
-                        $remainingReason = Str::substr($leave->disapproval_reason, 23);
-                    @endphp
-                    
-                    <p class="last-line">
-                        <span class="underline">{{ Str::limit($remainingReason, 46, '-') }}</span>
-                    </p>
-                    @php
-                        $remainingReason = Str::substr($remainingReason, 46);
-                    @endphp
-                    <p class="last-line">
-                        <span class="underline">{{ Str::limit($remainingReason, 46, '-') }}</span>
-                    </p>
-                    @php
-                        $remainingReason = Str::substr($remainingReason, 46);
-                    @endphp
-                    
-                    <p class="last-line">
-                        <span class="underline">{{ Str::limit($remainingReason, 46, '...') }}</span>
-                    </p>   
-                @else
                 <p class="info2">
                     <span class="commutation-checkbox">
                         @if($leave->hr_status == 'rejected') 
@@ -373,7 +342,6 @@
                 <p class="last-line">____________________________________</p>
                 <p class="last-line">____________________________________</p>
                 <p class="last-line">____________________________________</p>
-                @endif     
                  
                 @if($leave->days_applied > 10)
                     @foreach ($officials as $official)       

@@ -61,16 +61,8 @@
                             <img src="{{ public_path('img/check.jpg') }}" width="23" height="15" class="image-check">  
                         @endif  
                     </div>
-                        @if($overtime->status == 'rejected')
-                        <p class="disapproved">Disapproved due to</p> <div class="reason"><span class="underline">{{ Str::limit($overtime->disapproval_reason, 20, '-') }}</span> </div>
-                            @php
-                                $remainingReason = Str::substr($overtime->disapproval_reason, 23);
-                            @endphp
-                        <div class="line">{{ Str::limit($remainingReason, 46, '-') }}</div>
-                        @else
-                            <p class="disapproved">Disapproved due to</p> <div class="reason">_________________</div>
+                        <p class="disapproved">Disapproved due to</p> <div class="reason">_________________</div>
                         <div class="line-empty">__________________________________</div>
-                        @endif
                     <br>
                     <p class="supervisor"><span class="underline">{{ $supervisor->first_name }} {{ strtoupper(substr($supervisor->middle_name, 0, 1)) }}. {{ $supervisor->last_name }}</span></p>
                     <p class="official">(Authorized Official/Head of Office)</p>
