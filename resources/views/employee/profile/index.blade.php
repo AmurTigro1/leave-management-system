@@ -291,7 +291,7 @@
             type: 'bar',
             data: {
                 labels: [
-                    'Vacation', 'Sick', 'Maternity', 'Paternity', 'Solo Parent', 
+                    'Vacation', 'Sick', 'Maternity', 'Paternity', 'Special Privilege Leave', 'Solo Parent', 
                     'Study', 'VAWC', 'Rehabilitation', 'Special Benefit', 
                     'Emergency', 'COC',
                 ],
