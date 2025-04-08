@@ -9,5 +9,11 @@ class MonthlySummary extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['month', 'total_absences'];
+    protected $fillable = ['month', 'total_absences', 'user_id'];
+
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }

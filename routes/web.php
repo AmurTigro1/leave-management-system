@@ -201,6 +201,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/time-management', [TimeManagementController::class, 'timeManagement'])->name('employee.time');
         Route::post('/time-management', [TimeManagementController::class, 'store'])->name('time.management.store');
         Route::delete('/time-management/{id}', [TimeManagementController::class, 'destroy'])->name('time.management.destroy');
+        Route::delete('/leave-logs/{id}', [TimeManagementController::class, 'deleteLeaveLog'])->name('leave-logs.delete');
         Route::get('/time-management/{id}/edit', [TimeManagementController::class, 'edit']);
         Route::put('/time-management/{id}', [TimeManagementController::class, 'update'])->name('time.management.update');
         Route::post('/morning-time', [TimeManagementController::class, 'storeMorning'])->name('morning-time.management.store');

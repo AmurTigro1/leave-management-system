@@ -90,7 +90,11 @@ class User extends Authenticatable
     {
         return $this->hasMany(CocLog::class);
     }
-
+    public function leaveLogs()
+    {
+        return $this->hasMany(LeaveLog::class);
+    }
+    
     /**
      * The attributes that should be hidden for serialization.
      *

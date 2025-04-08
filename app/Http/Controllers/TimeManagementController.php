@@ -2,40 +2,53 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\LeaveLog;
 use Illuminate\Http\Request;
 use App\Models\TimeManagement;
 use App\Models\MonthlySummary;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class TimeManagementController extends Controller
 {
     public function timeManagement()
-{
-    $records = TimeManagement::orderBy('date', 'desc')->get();
-    $users = User::all();
-
-    // Group records by month
-    $monthlyRecords = $records->groupBy(function ($record) {
-        return Carbon::parse($record->date)->format('F Y'); // Example: "March 2024"
-    });
-
-    // Calculate absences per month
-    $monthlyAbsences = [];
-    foreach ($monthlyRecords as $month => $records) {
-        $absences = $records->where('check_in', null)->count(); // Count days without check-in
-        $monthlyAbsences[$month] = $absences;
-
-        // Save to database (assuming a MonthlySummary table exists)
-        MonthlySummary::updateOrCreate(
-            ['month' => $month],
-            ['total_absences' => $absences]
-        );
+    {
+        $user = auth()->user(); // Get current logged-in user
+    
+        // Get only records for the current user
+        $records = TimeManagement::where('user_id', $user->id)
+            ->orderBy('date', 'desc')
+            ->get();
+    
+        // Group records by month
+        $monthlyRecords = $records->groupBy(function ($record) {
+            return Carbon::parse($record->date)->format('F Y'); // e.g., "March 2024"
+        });
+    
+        $monthlyAbsences = [];
+    
+        foreach ($monthlyRecords as $month => $userRecords) {
+            $absences = $userRecords->whereNull('check_in')->count();
+            $totalLateMinutes = $userRecords->sum('total_late_absences');
+    
+            // For display only — don’t update summary in user view
+            $monthlyAbsences[$month] = [
+                'absences' => $absences,
+                'late_minutes' => $totalLateMinutes,
+                'leave_deducted' => 0
+            ];
+        }
+    
+        // You can also fetch the user's leave log history here (optional)
+        $leaveLogs = $user->leaveLogs()->latest()->get(); // if you’ve set up the relationship
+    
+        return view('employee.time-management', compact('monthlyRecords', 'monthlyAbsences', 'user', 'leaveLogs'));
     }
-
-    return view('employee.time-management', compact('monthlyRecords', 'users', 'monthlyAbsences'));
-}
+    
+    
+    
 
 public function store(Request $request)
 {
@@ -237,5 +250,16 @@ public function update(Request $request, $id)
     return redirect()->route('time-management.index');
 }
 
+public function deleteLeaveLog($id)
+{
+    $log = LeaveLog::find($id);
+
+    if ($log) {
+        $log->delete();
+        return redirect()->back()->with('success', 'Leave log deleted.');
+    }
+
+    return redirect()->back()->with('error', 'Leave log not found.');
+}
 
 }

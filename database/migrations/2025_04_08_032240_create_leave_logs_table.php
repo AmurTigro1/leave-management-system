@@ -11,13 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('monthly_summaries', function (Blueprint $table) {
+        Schema::create('leave_logs', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('user_id');
-            $table->string('month'); // e.g., "March 2025"
-            $table->integer('total_absences')->default(0);
-            $table->integer('total_late_minutes')->default(0);
-            $table->decimal('leave_deduction', 5, 2)->default(0);
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->decimal('change_amount', 8, 2); 
+            $table->decimal('new_balance', 8, 2);  
+            $table->string('reason')->nullable();
+            $table->date('effective_date');     
             $table->timestamps();
         });
     }
@@ -27,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('monthly_summaries');
+        Schema::dropIfExists('leave_logs');
     }
 };

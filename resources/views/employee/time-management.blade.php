@@ -82,12 +82,56 @@
                     </table>
 
                     <!-- Total Late/Absences for the Month -->
-                    <div class="p-4 sm:p-6 bg-gray-50 mt-4">
-                        <h4 class="text-md font-bold">Total Late/Undertime for {{ $month }}: {{ $totalLateAbsences }} minutes</h4>
+                    <div class="flex justify-end">
+                    <div class="sm:p-6">
+                        {{-- <h4 class="text-md font-bold">Total Late/Undertime for {{ $month }}: {{ $totalLateAbsences }} minutes</h4>
+                        <h3 class="font-bold text-lg">Time Tracking Summary</h3> --}}
+                        <p class="text-sm">
+                          <span class="font-semibold">Total Late/Undertime for {{ now()->format('F Y') }}</span>:
+                          <span class="text-red-600 font-bold">{{ $totalLateAbsences }} minutes</span>
+                        </p>
                     </div>
+                </div>
 
                 @endforeach
             </div>
+            <div class="p-4 sm:p-6 border-t border-gray-200">
+            <h2 class="text-lg sm:text-xl font-bold flex items-center">
+                Leave Logs
+            </h2>
+        </div>
+
+            <table class="min-w-full bg-white border border-gray-200 text-xs sm:text-sm text-gray-700 mb-6">
+                <thead class="bg-gray-50 text-gray-700 font-semibold">
+                  <tr>
+                      <th class="p-2 text-left">Date</th>
+                      <th class="p-2 text-left">Deduction</th>
+                      <th class="p-2 text-left">New Balance</th>
+                      <th class="p-2 text-left">Reason</th>
+                      <th class="p-2 text-left">Action</th>
+                  </tr>
+              </thead>
+              <tbody>
+                  @foreach($user->leaveLogs()->orderByDesc('created_at')->get() as $log)
+                      <tr>
+                          <td class="p-2">{{ $log->effective_date }}</td>
+                          <td class="p-2">{{ $log->change_amount }}</td>
+                          <td class="p-2">{{ $log->new_balance }}</td>
+                          <td class="p-2">{{ $log->reason }}</td>
+                          <td class="p-2">
+                              <form method="POST" action="{{ route('leave-logs.delete', $log->id) }}" onsubmit="return confirm('Are you sure you want to delete this log?');">
+                                  @csrf
+                                  @method('DELETE')
+                                  <button type="submit" class="text-red-500 hover:underline">Delete</button>
+                              </form>
+                              
+                          </td>
+                          
+                      </tr>
+                  @endforeach
+              </tbody>
+          </table>
+          
         </div>
 
         @if(empty($records))
