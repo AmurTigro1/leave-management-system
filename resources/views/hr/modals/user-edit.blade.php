@@ -1,5 +1,5 @@
 <div id="userEditModal" class="hidden fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center px-4 z-[9999] overflow-auto" onclick="closeuserEditModal(event)">
-    <div class="bg-white w-full sm:w-[90%] md:w-[80%] lg:w-[60%] xl:w-[50%] h-[750px] max-w-3xl rounded-2xl shadow-2xl p-4 sm:p-6 relative transition-all transform scale-95 hover:scale-100 text-sm">
+    <div class="bg-white w-full sm:w-[90%] md:w-[80%] lg:w-[60%] xl:w-[50%] h-[750px] max-w-3xl rounded-2xl shadow-2xl p-4 sm:p-6 relative transition-all transform scale-95 text-sm">
         
         <button type="button" onclick="closeuserEditModal()" class="absolute top-4 right-4 text-gray-500 hover:text-gray-800 text-2xl">&times;</button>
 

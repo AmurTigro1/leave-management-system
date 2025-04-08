@@ -1,5 +1,5 @@
 <div id="userModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex justify-center items-center z-[9999]">
-    <div class="bg-white w-full sm:w-[90%] md:w-[80%] lg:w-[60%] xl:w-[50%] h-[750px] overflow-y-auto max-w-3xl rounded-2xl shadow-2xl p-4 sm:p-6 relative transition-all transform scale-95 hover:scale-100 text-sm">
+    <div class="bg-white w-full sm:w-[90%] md:w-[80%] lg:w-[60%] xl:w-[50%] h-[750px] overflow-y-auto max-w-3xl rounded-2xl shadow-2xl p-4 sm:p-6 relative transition-all transform scale-95 text-sm">
 
         <button id="closeModalBtn" class="absolute top-4 right-4 text-gray-500 hover:text-gray-800 text-2xl">&times;</button>
 
