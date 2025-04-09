@@ -6,6 +6,153 @@
     </div>
     @notifyJs
 
+    <!-- Help Icon -->
+<div class="relative">
+    <button id="helpBtn" class="text-blue-600 text-2xl">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+            <path stroke-linecap="round" stroke-linejoin="round" d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z" />
+          </svg>          
+    </button>
+</div>
+
+<!-- Modal -->
+<div id="helpModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-[10000] hidden">
+    <div class="bg-white rounded-lg shadow-lg w-1/3 p-6">
+        <div class="flex justify-between items-center">
+            <h3 class="text-xl font-semibold text-gray-800">Help Guide</h3>
+            <button id="closeModalBtn" class="text-gray-600 hover:text-gray-800 focus:outline-none">
+               Close
+            </button>
+        </div>
+        <div class="mt-4">
+            <p><strong>How to use:</strong></p>
+            <ul class="list-disc pl-5 text-sm">
+                <li>Click on <span class="text-blue-600 font-semibold">'Create New'</span> to add a new user.</li>
+                <li>Use the search bar to filter users by name, email, or position.</li>
+                <li>Export the user list as a PDF by clicking the <span class="text-red-600 font-semibold">'Export to PDF'</span> button.</li>
+            </ul>
+        </div>
+        <div class="mt-4">
+            <p><strong>HR and Supervisor Concern:</strong></p>
+            <ul class="list-disc pl-5 text-sm">
+                <li>The <span class="text-green-700 font-semibold">HR</span> cannot delete itself and the Supervisor if there's no other user using their role since it needs at least 1 record to uphold the role.
+                </li>
+                <li>The <span class="text-green-700 font-semibold">HR</span> cannot assign itself to any other role if there's no other user using the role of <span class="text-green-700 font-semibold">HR</span> - only when the <span class="text-green-700 font-semibold">HR</span> assigned a new user to the role of <span class="text-green-700 font-semibold">HR</span> can they or the new user assign the current <span class="text-green-700 font-semibold">HR</span> to any other role.
+                </li>
+                <li>The <span class="text-green-700 font-semibold">HR</span> can only assign 2 users for supervisor and hr roles since the role involves important matter of handling requests.</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript for Modal Behavior -->
+<script>
+    // Get modal and buttons
+    const helpBtn = document.getElementById('helpBtn');
+    const helpModal = document.getElementById('helpModal');
+    const closeModalBtn = document.getElementById('closeModalBtn');
+
+    // Open the modal when the help icon is clicked
+    helpBtn.addEventListener('click', function() {
+        helpModal.classList.remove('hidden');
+    });
+
+    // Close the modal when the close button is clicked
+    closeModalBtn.addEventListener('click', function() {
+        helpModal.classList.add('hidden');
+    });
+
+    // Optionally close the modal when clicking outside of it
+    window.addEventListener('click', function(event) {
+        if (event.target === helpModal) {
+            helpModal.classList.add('hidden');
+        }
+    });
+</script>
+
+    @if(session('error'))
+    <div class="bg-red-100 border-l-4 border-red-500 text-red-800 p-4 rounded-lg mb-4">
+        <strong>Note:</strong> 
+        {{ session('error') }}
+
+        @if(session('role') == 'hr')
+            @php
+                // Fetch the current HR users from the database, ordered by the most recent first
+                $currentHrUsers = App\Models\User::where('role', 'hr')->orderBy('updated_at', 'desc')->get();
+            @endphp
+            @if($currentHrUsers->count() > 0)
+                <div class="mt-4">
+                    <p class="font-semibold text-lg text-gray-800">Current HR Users:</p>
+                    <div class="space-y-4 mt-4">
+                        @foreach($currentHrUsers as $index => $hr)
+                            <div class="flex items-center space-x-4 p-4 bg-white shadow rounded-lg">
+                                <div class="flex-shrink-0">
+                                    <img src="{{ 
+                                        $hr->profile_image && file_exists(storage_path('app/public/profile_images/' . $hr->profile_image)) 
+                                            ? asset('storage/profile_images/' . $hr->profile_image) 
+                                            : ($hr->profile_image && file_exists(storage_path('app/public/profile_pictures/' . $hr->profile_pictures)) 
+                                                ? asset('storage/profile_pictures/' . $hr->profile_image) 
+                                                : asset('img/default-avatar.png')) 
+                                    }}" 
+                                    class="h-12 w-12 rounded-full object-cover" alt="{{ $hr->name }}">
+                                </div>
+                                <div class="flex-1">
+                                    <p class="font-semibold text-gray-800">{{ $hr->name }}</p>
+                                    <p class="text-sm text-gray-600">{{ $hr->email }}</p>
+                                </div>
+
+                                @if($index === 0 )
+                                    <span class="px-3 py-1 text-xs font-bold text-white bg-blue-500 rounded-full">Latest Added</span>
+                                @elseif($index === $currentHrUsers->count() - 1)
+                                    <span class="px-3 py-1 text-xs font-bold text-white bg-green-500 rounded-full">Current (Displayed in the PDF File)</span>
+                                @endif
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+            @endif
+        @elseif(session('role') == 'supervisor')
+            @php
+                // Fetch the current Supervisor users from the database, ordered by the most recent first
+                $currentSupervisorUsers = App\Models\User::where('role', 'supervisor')->orderBy('updated_at', 'desc')->get();
+            @endphp
+            @if($currentSupervisorUsers->count() > 0)
+                <div class="mt-4">
+                    <p class="font-semibold text-lg text-gray-800">Current Supervisors:</p>
+                    <div class="space-y-4 mt-4">
+                        @foreach($currentSupervisorUsers as $index => $supervisor)
+                            <div class="flex items-center space-x-4 p-4 bg-white shadow rounded-lg">
+                                <div class="flex-shrink-0">
+                                    <img src="{{ 
+                                        $supervisor->profile_image && file_exists(storage_path('app/public/profile_images/' . $supervisor->profile_image)) 
+                                            ? asset('storage/profile_images/' . $supervisor->profile_image) 
+                                            : ($supervisor->profile_image && file_exists(storage_path('app/public/profile_pictures/' . $supervisor->profile_pictures)) 
+                                                ? asset('storage/profile_pictures/' . $supervisor->profile_image) 
+                                                : asset('img/default-avatar.png')) 
+                                    }}" 
+                                    class="h-12 w-12 rounded-full object-cover" alt="{{ $supervisor->name }}">
+                                </div>
+                                <div class="flex-1">
+                                    <p class="font-semibold text-gray-800">{{ $supervisor->name }}</p>
+                                    <p class="text-sm text-gray-600">{{ $supervisor->email }}</p>
+                                </div>
+
+                                @if($index === 0)
+                                    <span class="px-3 py-1 text-xs font-bold text-white bg-blue-500 rounded-full">Latest Added</span>
+                                @elseif($index === $currentSupervisorUsers->count() - 1)
+                                    <span class="px-3 py-1 text-xs font-bold text-white bg-green-500 rounded-full">Current</span>
+                                @endif
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+            @endif
+        @endif
+    </div>
+@endif
+
+
+
 <div class="container mx-auto px-4 py-6 animate-fade-in">
     <div class="bg-white rounded-xl shadow-md overflow-hidden">
         <div class="p-6 border-b border-gray-200">
@@ -80,7 +227,90 @@
 
         <div id="employee-results" class="overflow-x-auto">
             @include('hr.partials.user-list', ['users' => $users])
-        </div>
+        </div> 
+    </div>
+    <div class="py-2 px-4 rounded-lg shadow-lg">
+        @php
+            // Fetch the current HR users from the database, ordered by the most recent first
+            $currentHrUsers = App\Models\User::where('role', 'hr')->orderBy('updated_at', 'desc')->get();
+        @endphp
+
+        @if($currentHrUsers->count() == 2)
+            <h1 class="px-4 mt-4 text-gray-500">The PDF File requires only 1 <span class="text-green-600 font-semibold">HR</span> user hence one must be assigned to other roles available (Employee, Admin)</h1>
+        @endif
+        @if($currentHrUsers->count() > 0)
+            <div class="mt-4 px-4">
+                <p class="font-semibold text-lg text-gray-800">Current HR Users:</p>
+                <div class="space-y-4 mt-4">
+                    @foreach($currentHrUsers as $index => $hr)
+                        <div class="flex items-center space-x-4 p-4 bg-white shadow rounded-lg">
+                            <div class="flex-shrink-0">
+                                <img src="{{ 
+                                    $hr->profile_image && file_exists(storage_path('app/public/profile_images/' . $hr->profile_image)) 
+                                        ? asset('storage/profile_images/' . $hr->profile_image) 
+                                        : ($hr->profile_image && file_exists(storage_path('app/public/profile_pictures/' . $hr->profile_pictures)) 
+                                            ? asset('storage/profile_pictures/' . $hr->profile_image) 
+                                            : asset('img/default-avatar.png')) 
+                                }}" 
+                                class="h-12 w-12 rounded-full object-cover" alt="{{ $hr->name }}">
+                            </div>
+                            <div class="flex-1">
+                                <p class="font-semibold text-gray-800">{{ $hr->name }}</p>
+                                <p class="text-sm text-blue-600">{{ $hr->email }}</p>
+                            </div>
+
+                            @if($index === 0 )
+                                <span class="px-3 py-1 text-xs font-bold text-white bg-blue-500 rounded-full">Latest Added</span>
+                            @elseif($index === $currentHrUsers->count() - 1)
+                                <span class="px-3 py-1 text-xs font-bold text-white bg-green-500 rounded-full">Current</span>
+                            @endif
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+        @endif
+    </div>
+    <div class="py-2 px-4 rounded-lg shadow-lg"> 
+        @php
+            // Fetch the current Supervisor users from the database, ordered by the most recent first
+            $currentSupervisorUsers = App\Models\User::where('role', 'supervisor')->orderBy('updated_at', 'desc')->get();
+        @endphp
+
+        @if($currentSupervisorUsers->count() == 2)
+            <h1 class="px-4 mt-4 text-gray-500">The PDF File requires only 1 <span class="text-green-600 font-semibold">Supervisor</span> user hence one must be assigned to other roles available (Employee, Admin)</h1>
+        @endif
+
+        @if($currentSupervisorUsers->count() > 0)
+            <div class="mt-4 px-4">
+                <p class="font-semibold text-lg text-gray-800">Current Supervisors:</p>
+                <div class="space-y-4 mt-4">
+                    @foreach($currentSupervisorUsers as $index => $supervisor)
+                        <div class="flex items-center space-x-4 p-4 bg-white shadow rounded-lg">
+                            <div class="flex-shrink-0">
+                                <img src="{{ 
+                                    $supervisor->profile_image && file_exists(storage_path('app/public/profile_images/' . $supervisor->profile_image)) 
+                                        ? asset('storage/profile_images/' . $supervisor->profile_image) 
+                                        : ($supervisor->profile_image && file_exists(storage_path('app/public/profile_pictures/' . $supervisor->profile_pictures)) 
+                                            ? asset('storage/profile_pictures/' . $supervisor->profile_image) 
+                                            : asset('img/default-avatar.png')) 
+                                }}" 
+                                class="h-12 w-12 rounded-full object-cover" alt="{{ $supervisor->name }}">
+                            </div>
+                            <div class="flex-1">
+                                <p class="font-semibold text-gray-800">{{ $supervisor->name }}</p>
+                                <p class="text-sm text-blue-600">{{ $supervisor->email }}</p>
+                            </div>
+
+                            @if($index === 0)
+                                <span class="px-3 py-1 text-xs font-bold text-white bg-blue-500 rounded-full">Latest Added</span>
+                            @elseif($index === $currentSupervisorUsers->count() - 1)
+                                <span class="px-3 py-1 text-xs font-bold text-white bg-green-500 rounded-full">Current</span>
+                            @endif
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+        @endif
     </div>
 </div>
 <script>

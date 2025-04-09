@@ -56,18 +56,23 @@
                                     <div class="flex justify-between items-center space-x-2">
                                         <!-- Pass the individual user to the modal -->
                                         @include('hr.modals.user-edit', ['user' => $user]) 
-                                        <button onclick="openuserEditModal({{ $user->id }})" id="openModal-{{ $user->id }}" class="block w-full text-left px-4 py-2 text-sm text-white bg-blue-500 hover:bg-blue-600 rounded-lg">
+                                        <button onclick="openuserEditModal({{ $user->id }})" id="openModal-{{ $user->id }}" class="block w-full text-left px-4 py-2 text-sm text-blue-500">
                                             View | Edit
                                         </button>
-                                        <form action="{{ route('hr.users.destroy', $user->id) }}" method="POST" class="w-full">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" 
-                                                    onclick="return confirm('Are you sure you want to delete this user?')"
-                                                    class="block w-full text-white p-2 mt-3 text-sm hover:bg-red-600 bg-red-500 rounded-lg">
-                                                Delete
-                                            </button>
-                                        </form>   
+                                        @php
+                                            $supervisorCount = App\Models\User::where('role', 'supervisor')->count();
+                                        @endphp
+                                        @if(auth()->user()->id !== $user->id && $user->role !== 'supervisor' || $supervisorCount > 1)
+                                            <form action="{{ route('hr.users.destroy', $user->id) }}" method="POST" class="w-full">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" 
+                                                        onclick="return confirm('Are you sure you want to delete this user?')"
+                                                        class="block w-full text-red-500 p-2 mt-3 text-sm">
+                                                    Delete
+                                                </button>
+                                            </form>
+                                        @endif
                                     </div>
                                 </td>
                             </tr>

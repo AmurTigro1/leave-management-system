@@ -97,7 +97,7 @@
                         <label class="block text-xs text-gray-700 font-semibold">Role</label>
                         <select name="role" id="role" class="w-full border rounded-lg focus:ring-2 focus:ring-blue-400 p-2 text-xs sm:text-sm" required>
                             <option value="">Select Role</option>
-                            <option value="employee">Employee</option>
+                            <option value="employee" selected>Employee</option>
                             <option value="admin">Admin</option>
                             {{-- <option value="hr">HR</option>
                             <option value="supervisor">Supervisor</option> --}}

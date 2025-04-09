@@ -76,6 +76,34 @@ public function update(Request $request, $id)
         'role' => 'required|in:employee,admin,hr,supervisor',
     ]);
 
+    if ($request->role != $user->role) {
+        // Check if the user is trying to change the current HR user role to something else
+        if ($user->role === 'hr' && User::where('role', 'hr')->count() === 1) {
+            return back()->with('error', 'You cannot change your current role of HR. Please make a new account and assign the role to HR or select an existing user and change the role to HR to allow the changes to your role');
+        }
+    }
+
+    if ($request->role != $user->role) {
+        // Check if the user is trying to change the current HR user role to something else
+        if ($user->role === 'supervisor' && User::where('role', 'supervisor')->count() === 1) {
+            return back()->with('error', 'You cannot change the role of the current Supervsior. Please make a new account and assign the role to Supervisor or select an existing user and change the role to Supervisor to allow the changes');
+        }
+    }
+
+    if ($request->role === 'hr' && User::where('role', 'hr')->count() >= 2) {
+        return back()->with([
+            'error' => 'You cannot add more than two HR users.',
+            'role' => 'hr'
+        ]);
+    }
+
+    if ($request->role === 'supervisor' && User::where('role', 'supervisor')->count() >= 2) {
+        return back()->with([
+            'error' => 'You cannot add more than two Supervisors.',
+            'role' => 'supervisor'
+        ]);
+    }
+
     // Handle file upload
     if ($request->hasFile('profile_image')) {
         $file = $request->file('profile_image');
