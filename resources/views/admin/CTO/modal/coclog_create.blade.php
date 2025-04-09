@@ -1,99 +1,136 @@
-<div id="cocCreateLogsModal" class="{{ $errors->any() ? '' : 'hidden' }} fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center px-4 z-[9999] overflow-auto" onclick="closecocCreateLogsModal(event)">
-    <div class="w-full max-w-2xl mx-4 bg-white shadow-xl rounded-lg p-4 md:p-4 relative max-h-70vh] overflow-y-auto" onclick="event.stopPropagation()">
-        <!-- Modal Header -->
-        <div class="text-center border-b pb-4">
-            <h3 class="text-2xl font-bold text-gray-900">Create New COC Logs</h3>
+<div id="cocCreateLogsModal" class="{{ $errors->any() ? '' : 'hidden' }} fixed inset-0 bg-gray-900/70 z-[9999] flex items-center justify-center p-4" onclick="closecocCreateLogsModal(event)">
+    
+    <div class="w-full max-w-2xl mx-4 bg-white shadow-2xl rounded-xl overflow-hidden"
+         onclick="event.stopPropagation()">
+        <div class="bg-gradient-to-r from-blue-600 to-blue-500 px-6 py-4">
+            <div class="flex items-center justify-between">
+                <h3 class="text-xl font-bold text-white">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                    </svg>
+                    Create New COC Log
+                </h3>
+                <button onclick="closecocCreateLogsModal(event)" class="text-white/80 hover:text-white">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
         </div>
 
-        <!-- Form Section -->
-        <form id="cocLogsForm" action="{{ route('coc-logs.store') }}" method="POST" class="mt-6 space-y-6">
-            @csrf
+        <div class="p-6 max-h-[65vh] overflow-y-auto">
+            <form id="cocLogsForm" action="{{ route('coc-logs.store') }}" method="POST" class="space-y-6">
+                @csrf
 
-            <!-- Employee Information -->
-            <div class="">
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Select Employee</label>
-                    <select name="user_id" id="user_id" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md">
-                        <option value="">Select User</option>
-                        @foreach($users as $user)
-                            <option value="{{ $user->id }}">{{ $user->first_name }} {{$user->last_name}}</option>
-                        @endforeach
-                    </select>
-                </div>
-            </div>
-
-            <div class="border-t pt-6 space-y-5">
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Activity Name</label>
-                    <input type="text" name="activity_name" value="{{old('activity_name')}}" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md">
-                    @error('activity_name')
-                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                    @enderror
-                </div>
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+                <div class="bg-blue-50 p-4 rounded-lg border border-blue-100">
+                    <h4 class="text-sm font-medium text-blue-800 mb-3 flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                        </svg>
+                        Employee Information
+                    </h4>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Activity Date</label>
-                        <input type="text" name="activity_date" value="{{ old('activity_date')}}" class="w-full border border-gray-300 p-2 sm:p-3 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
-                        @error('activity_date')
-                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                        @enderror
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">COC earned</label>
-                        <input type="number" name="coc_earned" value="{{ old('coc_earned') }}" min="4" class="w-full border border-gray-300 p-2 sm:p-3 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
-                        @error('coc_earned')
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Select Employee*</label>
+                        <select name="user_id" id="user_id" required
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
+                            <option value="">Select User</option>
+                            @foreach($users as $user)
+                                <option value="{{ $user->id }}" {{ old('user_id') == $user->id ? 'selected' : '' }}>
+                                    {{ $user->first_name }} {{ $user->last_name }}
+                                </option>
+                            @endforeach
+                        </select>
+                        @error('user_id')
                             <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                         @enderror
                     </div>
                 </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Issuance</label>
-                    <input type="text" name="issuance" value="{{old('issuance')}}" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md">
+
+                <div class="bg-blue-50 p-4 rounded-lg border border-blue-100">
+                    <h4 class="text-sm font-medium text-blue-800 mb-3 flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                        </svg>
+                        Activity Information
+                    </h4>
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Activity Name*</label>
+                            <input type="text" name="activity_name" value="{{ old('activity_name') }}" required
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
+                            @error('activity_name')
+                                <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                            @enderror
+                        </div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Activity Date*</label>
+                                <input type="text" name="activity_date" value="{{ old('activity_date') }}" required
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
+                                @error('activity_date')
+                                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                                @enderror
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">COC Earned (hours)*</label>
+                                <input type="number" name="coc_earned" value="{{ old('coc_earned', 4) }}" min="4" step="0.5" required
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
+                                @error('coc_earned')
+                                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                                @enderror
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                    <h4 class="text-sm font-medium text-gray-700 mb-3 flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                        Issuance Details
+                    </h4>
+                    <textarea name="issuance" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">{{ old('issuance') }}</textarea>
                     @error('issuance')
                         <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                     @enderror
                 </div>
-            </div>
 
-            <!-- Buttons -->
-            <div class="mt-8 flex flex-col sm:flex-row justify-end space-y-4 sm:space-y-0 sm:space-x-4">
-                <button type="button" onclick="closecocCreateLogsModal()" class="bg-gray-500 hover:bg-gray-600 px-4 py-2 sm:py-2 text-white rounded-lg transition duration-300">
-                    Cancel
-                </button>
-                <button type="submit" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 sm:py-2 text-white font-semibold rounded-lg transition duration-300">
-                    Submit Request
-                </button>
-            </div>
-        </form>
+                <div class="mt-6 pt-4 border-t border-gray-200 flex flex-col sm:flex-row justify-end space-y-3 sm:space-y-0 sm:space-x-3">
+                    <button type="button" onclick="closecocCreateLogsModal(event)" 
+                            class="px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50">
+                        Cancel
+                    </button>
+                    <button type="submit" 
+                            class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                        </svg>
+                        Create COC Log
+                    </button>
+                </div>
+            </form>
+        </div>
     </div>
 </div>
 
 <script>
     function opencocCreateLogsModal() {
-        document.getElementById("cocCreateLogsModal").classList.remove("hidden");
+        const modal = document.getElementById('cocCreateLogsModal');
+        modal.classList.remove("hidden");
+        document.body.classList.add("overflow-hidden");
     }
 
     function closecocCreateLogsModal(event) {
-        const modal = document.getElementById("cocCreateLogsModal");
-
-        // Close only if clicking outside or clicking cancel
-        if (!event || event.target === modal) {
-            modal.classList.add("hidden");
-
-            // Reset form inputs
-            document.getElementById("cocLogsForm").reset();
-
-            // Remove error messages
-            document.querySelectorAll('.text-red-500').forEach(el => el.remove());
-        }
+        event.stopPropagation();
+        const modal = document.getElementById('cocCreateLogsModal');
+        modal.classList.add("hidden");
+        document.body.classList.remove("overflow-hidden");
+        
+        document.getElementById('cocLogsForm').reset();
+        
+        document.querySelectorAll('.text-red-500').forEach(el => el.remove());
     }
-
-    document.getElementById("is_driver").addEventListener("change", function () {
-        let distanceField = document.getElementById("distanceField");
-        if (this.checked) {
-            distanceField.classList.remove("hidden"); // Show distance input
-        } else {
-            distanceField.classList.add("hidden"); // Hide distance input
-        }
-    });
 </script>

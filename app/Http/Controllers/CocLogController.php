@@ -28,7 +28,7 @@ class CocLogController extends Controller
     {
         $cocLogs = CocLog::where('is_expired', false)
             ->with(['user', 'creator'])
-            ->orderBy('expires_at', 'asc') 
+            ->orderBy('expires_at', 'desc') 
             ->paginate(10);
 
         $users = User::all();
@@ -54,18 +54,26 @@ class CocLogController extends Controller
             'user_id' => 'required|exists:users,id',
             'activity_name' => 'required|string|max:255',
             'activity_date' => 'required|string',
-            'coc_earned' => 'required|integer|min:0',
+            'coc_earned' => 'required|integer|min:0|multiple_of:4',
             'issuance' => 'required|string|max:255',
         ]);
 
         $validated['created_by'] = auth()->id();
+        
+        // Log timezone information for debugging
+        \Log::info('Creating COC log', [
+            'current_time' => now()->format('Y-m-d H:i:s'),
+            'timezone' => config('app.timezone'),
+            'calculated_expiration' => now()->startOfDay()->addYear()->format('Y-m-d H:i:s')
+        ]);
 
-        $user = User::findOrFail($validated['user_id']);
-        $cocLog = $user->cocLogs()->create($validated);
-        $user->increment('overtime_balance', $validated['coc_earned']);
-
-        \Log::info('Sending notification to user:', ['user_id' => $user->id]);
-        $user->notifyNow(new CocLogCreatedNotification($cocLog));
+        DB::transaction(function () use ($validated) {
+            $user = User::findOrFail($validated['user_id']);
+            $cocLog = $user->cocLogs()->create($validated);
+            $user->increment('overtime_balance', $validated['coc_earned']);
+            
+            $user->notifyNow(new CocLogCreatedNotification($cocLog));
+        });
 
         notify()->success('COC Log created successfully.');
         return redirect()->back();
@@ -73,18 +81,38 @@ class CocLogController extends Controller
 
     public function update(Request $request, CocLog $cocLog)
     {
-        $originalCoc = $cocLog->coc_earned;
-        
-        $cocLog->update($request->all());
-        
-        $difference = $cocLog->coc_earned - $originalCoc;
-        
-        if ($difference != 0) {
-            $cocLog->user()->increment('overtime_balance', $difference);
+        if ($cocLog->consumed || $cocLog->is_expired) {
+            notify()->error('Cannot modify COC log - it has already been ' . 
+                        ($cocLog->consumed ? 'used' : 'expired'));
+            return redirect()->back();
         }
-        
-        notify()->success('COC Log for ' . $cocLog->user->last_name . ' updated successfully. ' . 
-                        ($difference != 0 ? 'Balance adjusted by ' . $difference . ' hours.' : ''));
+
+        $validated = $request->validate([
+            'activity_name' => 'required|string|max:255',
+            'activity_date' => 'required|date',
+            'coc_earned' => 'required|numeric|min:0|multiple_of:4',
+            'issuance' => 'nullable|string'
+        ]);
+
+        $originalCoc = $cocLog->coc_earned;
+        $difference = 0;
+
+        DB::transaction(function () use ($cocLog, $validated, &$difference, $originalCoc) {
+            $cocLog->update($validated);
+
+            $difference = $cocLog->coc_earned - $originalCoc;
+            if ($difference != 0) {
+                $cocLog->user()->increment('overtime_balance', $difference);
+            }
+        });
+
+        $message = 'COC Log updated successfully';
+        if ($difference != 0) {
+            $message .= ' - Balance adjusted by ' . abs($difference) . ' hour(s) ' . 
+                    ($difference > 0 ? 'added' : 'deducted');
+        }
+
+        notify()->success($message);
         return redirect()->back();
     }
 

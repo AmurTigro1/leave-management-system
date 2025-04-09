@@ -20,7 +20,7 @@ return new class extends Migration
             $table->integer('coc_earned');
             $table->integer('consumed')->default(0);
             $table->string('issuance');
-            $table->timestamp('expires_at')->nullable();
+            $table->dateTime('expires_at')->nullable();
             $table->boolean('is_expired')->default(false);
             $table->timestamps();
         });
