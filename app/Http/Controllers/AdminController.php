@@ -1095,8 +1095,12 @@ public function ctoreview(Request $request, OvertimeRequest $cto)
 
         $oldHours = $overtime->working_hours_applied;
         $newHours = $request->working_hours_applied;
-
         $diff = $newHours - $oldHours;
+
+        if ($diff > 0 && $diff > $user->overtime_balance) {
+            notify()->error('You do not have enough available COC balance to increase the hours.');
+            return redirect()->back()->withInput();
+        }
 
         if ($diff !== 0) {
             if ($diff > 0) {

@@ -16,6 +16,9 @@
     </div>
 @endif
 
+@include('admin.modals.leave_cancel_request', ['leaves' => $leaves])
+@include('admin.modals.leave_delete_request', ['leaves' => $leaves])
+@include('admin.modals.leave_restore_request', ['leaves' => $leaves])
 
     <h3 class="text-2xl font-bold mb-3 text-gray-800">Your Leave Requests</h3>
     
@@ -102,36 +105,14 @@
 
                                     <!-- Hide "Cancel Request" if already cancelled -->
                                     @if($leave->status !== 'cancelled')
-                                        <form action="{{ route('admin.leave_cancel', $leave->id) }}" method="POST" class="w-full">
-                                            @csrf
-                                            <button type="submit" 
-                                                    onclick="return confirm('Are you sure you want to cancel this leave request?')"
-                                                    class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                                                Cancel Request
-                                            </button>
-                                        </form>
+                                        <button type="button" onclick="openCancelLeaveModal({{$leave->id}})" class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Cancel Request</button>
                                     @endif
 
                                     @if($leave->status === 'cancelled')
-                                        <form action="{{ route('admin.leave_restore', $leave->id) }}" method="POST" class="w-full">
-                                            @csrf
-                                            <button type="submit" 
-                                                onclick="return confirm('Do you want to restore this canceled request?')"
-                                                class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                                                Restore Request
-                                            </button>
-                                        </form>
+                                        <button type="submit" onclick="openRestoreLeaveModal({{$leave->id}})" class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Restore Request</button>
                                     @endif
 
-                                    <form action="{{ route('admin.leave_delete', $leave->id) }}" method="POST" class="w-full">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" 
-                                                onclick="return confirm('Are you sure you want to delete this leave request?')"
-                                                class="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-100">
-                                            Delete
-                                        </button>
-                                    </form>
+                                    <button type="button" onclick="openDeleteLeaveModal({{$leave->id}})" class="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-100">Delete</button>
                                 </div>
                             </div>
                         </td>                        

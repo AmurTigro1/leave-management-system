@@ -50,9 +50,7 @@
                 
                 <div class="mt-2 text-sm text-gray-600">
                     <p class="font-medium">Dates:</p>
-                    <ul class="list-disc list-inside pl-2">
-                        {{$overtime->inclusive_dates}}
-                    </ul>
+                    {{ \Carbon\Carbon::parse($overtime->inclusive_dates)->format('M d, Y') }}
                 </div>
                 
                 <div class="mt-3 pt-2 border-t">
@@ -105,9 +103,7 @@
                                 <td class="p-3 text-gray-700 whitespace-nowrap">{{ \Carbon\Carbon::parse($overtime->date_filed)->format('M d, Y') }}</td>
                                 <td class="p-3 text-gray-700">{{ $overtime->working_hours_applied}} hours</td>
                                 <td class="p-3 text-gray-700 text-xs">
-                                    <ul class="list-disc list-inside">
-                                        {{$overtime->inclusive_dates}}
-                                    </ul>
+                                    {{ \Carbon\Carbon::parse($overtime->inclusive_dates)->format('M d, Y') }}
                                 </td>
                                 <td class="p-3 whitespace-nowrap">
                                     @php
@@ -211,22 +207,7 @@
     </div>
 </div>
 
-<script>
-    function deleteOvertime(id) {
-        if (confirm("Are you sure you want to delete this overtime request?")) {
-            fetch(`/overtime/delete/${id}`, {
-                method: 'DELETE',
-                headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' }
-            })
-            .then(response => response.json())
-            .then(data => {
-                alert(data.message);
-                location.reload();
-            })
-            .catch(error => console.error('Error:', error));
-        }
-    }
-    
+<script>    
     const successMessage = document.getElementById('success-message');
     if (successMessage) {
         setTimeout(() => {
