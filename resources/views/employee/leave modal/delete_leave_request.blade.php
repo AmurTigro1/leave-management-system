@@ -1,11 +1,11 @@
-<!-- Delete Leave Modal -->
+@foreach($leaves as $leave)
 <div id="deleteLeaveModal{{ $leave->id }}" class="hidden fixed inset-0 bg-gray-900/50 backdrop-blur-sm flex items-center justify-center p-4 z-[9999] overflow-y-auto">
     <div class="w-full max-w-md bg-white rounded-xl shadow-2xl overflow-hidden" onclick="event.stopPropagation()">
         <div class="bg-gradient-to-r from-red-600 to-rose-700 px-6 py-5">
             <div class="flex items-center justify-between">
                 <div>
                     <h3 class="text-xl font-bold text-white">
-                        Delete Leave Request
+                        Delete Leave Request #{{ $leave->id }}
                     </h3>
                     <p class="text-red-100 text-sm mt-1">
                         Are you sure you want to delete this leave request? This action cannot be undone.
@@ -42,6 +42,7 @@
         </div>
     </div>
 </div>
+@endforeach
 
 <script>
 function openDeleteLeaveModal(leaveId) {

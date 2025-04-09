@@ -1,12 +1,11 @@
-<!-- Cancel CTO Modal -->
-@if($overtime)
+@foreach($overtimereq as $overtime)
     <div id="cancelCtoModal{{ $overtime->id }}" class="hidden fixed inset-0 bg-gray-900/50 backdrop-blur-sm flex items-center justify-center p-4 z-[9999] overflow-y-auto">
         <div class="w-full max-w-md bg-white rounded-xl shadow-2xl overflow-hidden" onclick="event.stopPropagation()">
             <div class="bg-gradient-to-r from-yellow-500 to-amber-600 px-6 py-5">
                 <div class="flex items-center justify-between">
                     <div>
                         <h3 class="text-xl font-bold text-white">
-                            Cancel CTO Request
+                            Cancel CTO Request #{{ $overtime->id }}
                         </h3>
                         <p class="text-yellow-100 text-sm mt-1">
                             Are you sure you want to cancel this CTO request?
@@ -42,7 +41,7 @@
             </div>
         </div>
     </div>
-@endif
+@endforeach
 
 
 <script>

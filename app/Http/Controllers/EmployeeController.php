@@ -588,12 +588,6 @@ private function deductLeaveBalance($user, $leave)
 
 
     public function showRequests() {
-        // $holidays = Holiday::orderBy('date')->get()->map(function ($holiday) {
-        //     $holiday->day = Carbon::parse($holiday->date)->format('d'); 
-        //     $holiday->month = Carbon::parse($holiday->date)->format('M'); 
-        //     $holiday->day_name = Carbon::parse($holiday->date)->format('D'); 
-        //     return $holiday;
-        // });
         $user = auth()->user();
     
         if (!$user) {

@@ -1,4 +1,3 @@
-<!-- Restore CTO Modal -->
 @if($overtime)
     <div id="restoreCtoModal{{ $overtime->id }}" class="hidden fixed inset-0 bg-gray-900/50 backdrop-blur-sm flex items-center justify-center p-4 z-[9999] overflow-y-auto">
         <div class="w-full max-w-md bg-white rounded-xl shadow-2xl overflow-hidden" onclick="event.stopPropagation()">
@@ -6,7 +5,7 @@
                 <div class="flex items-center justify-between">
                     <div>
                         <h3 class="text-xl font-bold text-white">
-                            Restore CTO Request
+                            Restore CTO Request #{{ $overtime->id }}  
                         </h3>
                         <p class="text-green-100 text-sm mt-1">
                             Are you sure you want to restore this canceled CTO request?

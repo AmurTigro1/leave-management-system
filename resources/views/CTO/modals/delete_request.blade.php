@@ -1,12 +1,11 @@
-@if($overtime)
-    <!-- Delete Overtime Modal -->
+@foreach($overtimereq as $overtime)
     <div id="deleteOvertimeModal{{ $overtime->id }}" class="hidden fixed inset-0 bg-gray-900/50 backdrop-blur-sm flex items-center justify-center p-4 z-[9999] overflow-y-auto">
         <div class="w-full max-w-md bg-white rounded-xl shadow-2xl overflow-hidden" onclick="event.stopPropagation()">
             <div class="bg-gradient-to-r from-red-600 to-rose-700 px-6 py-5">
                 <div class="flex items-center justify-between">
                     <div>
                         <h3 class="text-xl font-bold text-white">
-                            Confirm Deletion
+                            Confirm Deletion #{{ $overtime->id }}
                         </h3>
                         <p class="text-rose-100 text-sm mt-1">
                             Are you sure you want to delete this overtime request?
@@ -44,7 +43,7 @@
             </div>
         </div>
     </div>
-@endif
+@endforeach
 
 
 <script>

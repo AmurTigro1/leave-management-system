@@ -40,7 +40,7 @@
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">COC earned</label>
-                        <input type="number" name="coc_earned" value="{{ old('coc_earned') }}" min="4" max="{{Auth::user()->overtime_balance || 0}}" class="w-full border border-gray-300 p-2 sm:p-3 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
+                        <input type="number" name="coc_earned" value="{{ old('coc_earned') }}" min="4" class="w-full border border-gray-300 p-2 sm:p-3 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
                         @error('coc_earned')
                             <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                         @enderror

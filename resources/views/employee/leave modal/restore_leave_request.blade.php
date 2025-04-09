@@ -1,11 +1,11 @@
-<!-- Restore Leave Modal -->
+@foreach($leaves as $leave)
 <div id="restoreLeaveModal{{ $leave->id }}" class="hidden fixed inset-0 bg-gray-900/50 backdrop-blur-sm flex items-center justify-center p-4 z-[9999] overflow-y-auto">
     <div class="w-full max-w-md bg-white rounded-xl shadow-2xl overflow-hidden" onclick="event.stopPropagation()">
         <div class="bg-gradient-to-r from-green-500 to-emerald-600 px-6 py-5">
             <div class="flex items-center justify-between">
                 <div>
                     <h3 class="text-xl font-bold text-white">
-                        Restore Leave Request
+                        Restore Leave Request #{{ $leave->id }}
                     </h3>
                     <p class="text-green-100 text-sm mt-1">
                         Are you sure you want to restore this canceled leave request?
@@ -41,6 +41,7 @@
         </div>
     </div>
 </div>
+@endforeach
 
 <script>
 function openRestoreLeaveModal(leaveId) {
