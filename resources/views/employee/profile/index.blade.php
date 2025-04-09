@@ -128,20 +128,28 @@
                 </div>
 
                 <!-- Mandatory Leave Notice -->
-                @if(($user->total_annual_vacation_leave - $user->vacation_leave_balance) < 5)
-                <div class="bg-yellow-100 text-yellow-800 p-2 rounded mt-2 text-sm flex items-center border-l-4 border-yellow-500">
-                    <svg class="w-5 h-5 mr-2 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M12 8h.01M12 18h.01M12 20h.01"></path>
-                    </svg>
-                    <span>
-                        <strong>Mandatory Leave Reminder:</strong> You must use at least <strong>5 vacation leave days</strong> this year.  
-                        Unused days will be <strong>forfeited after December 31st</strong>.  
-                        You have used <strong>{{ $usedVacationLeave }}</strong> day(s) so far.
-                        day(s) so far.
-                    </span>
-                </div>
+                @if($remainingLeaveDays <= 0)
+                    <div class="bg-green-100 text-green-800 p-3 rounded mt-3 text-sm flex items-center border-l-4 border-green-500">
+                        <svg class="w-5 h-5 mr-2 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M12 8h.01M12 18h.01M12 20h.01"></path>
+                        </svg>
+                        <span>
+                            <strong>Mandatory Leave Reminder:</strong> You have used all of your <strong>5 mandatory leave days</strong> for this year. 
+                            Keep in mind that unused leave days will be forfeited after December 31st.
+                        </span>
+                    </div>
+                @elseif($remainingLeaveDays > 0)
+                    <div class="bg-yellow-100 text-yellow-800 p-3 rounded mt-3 text-sm flex items-center border-l-4 border-yellow-500">
+                        <svg class="w-5 h-5 mr-2 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M12 8h.01M12 18h.01M12 20h.01"></path>
+                        </svg>
+                        <span>
+                            <strong>Mandatory Leave Reminder:</strong> You still have <strong>{{ $remainingLeaveDays }}</strong> mandatory leave day(s) remaining for this year. 
+                            Unused leave days will be forfeited after December 31st.
+                        </span>
+                    </div>
                 @endif
-       
+
                 <!-- Sick Leave -->
                 <div class="flex justify-between items-center bg-white p-2 rounded shadow-sm">
                     <span class="text-sm sm:text-base text-gray-600">Sick:</span>

@@ -1,8 +1,10 @@
 <?php
 
 namespace App\Console\Commands;
+use App\Models\Leave;
 use App\Models\User;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Log;
 
 class ForfeitMandatoryLeave extends Command
 {
@@ -11,7 +13,7 @@ class ForfeitMandatoryLeave extends Command
      *
      * @var string
      */
-    protected $signature = 'leave:forfeit-unused-mandatory';
+    protected $signature = 'forfeit-mandatory';
 
     /**
      * The console command description.
@@ -25,20 +27,20 @@ class ForfeitMandatoryLeave extends Command
      */
     public function handle()
     {
-        $users = User::where('vacation_leave_balance', '>', 0)->get();
-
-        foreach ($users as $user) {
-            $initialLeave = $user->total_annual_vacation_leave; // Example: 10 days
-            $usedLeave = $initialLeave - $user->vacation_leave_balance;
-
-            if ($usedLeave < 5) {
-                // Ensure at least 5 days are used
-                $leaveToForfeit = 5 - $usedLeave;
-                $user->vacation_leave_balance = max(0, $user->vacation_leave_balance - $leaveToForfeit);
+        foreach (User::all() as $user) {
+            $mandatoryUsed = Leave::where('user_id', $user->id)
+                ->where('leave_type', 'Mandatory Leave')
+                ->whereYear('start_date', now()->year)
+                ->where('status', 'approved')
+                ->sum('days_applied');
+        
+            $toForfeit = max(0, 5 - $mandatoryUsed);
+        
+            if ($toForfeit > 0) {
+                $user->vacation_leave_balance -= $toForfeit;
                 $user->save();
             }
         }
-
-        $this->info('Mandatory vacation leave rule enforced.');
-    }
+    } 
+    
 }

@@ -318,6 +318,23 @@ class EmployeeController extends Controller
         }
     }
 
+    // Track how many days of Mandatory Leave already taken this year
+    if ($request->leave_type === 'Mandatory Leave') {
+        $currentYear = Carbon::now()->year;
+        
+        $mandatoryLeaveUsed = Leave::where('user_id', $user->id)
+            ->where('leave_type', 'Mandatory Leave')
+            ->whereYear('start_date', $currentYear)
+            ->whereIn('status', ['approved', 'pending']) // optionally include only 'approved'
+            ->sum('days_applied');
+
+        $remainingMandatoryLeave = 5 - $mandatoryLeaveUsed;
+
+        if ($daysApplied > $remainingMandatoryLeave) {
+            return redirect()->back()->withErrors(['end_date' => 'You have exceeded the 5-day Mandatory Leave for the year.']);
+        }
+    }
+
     Leave::create([
         'user_id' => auth()->id(),
         'leave_type' => $request->leave_type,
@@ -607,17 +624,23 @@ private function deductLeaveBalance($user, $leave)
     
     public function profile() {
         $user = Auth::user();
+        $currentYear = date('Y');
+        
+        // Calculate the used mandatory leave days
+        $usedMandatoryLeaveDays = Leave::where('user_id', $user->id)
+            ->where('leave_type', 'Mandatory Leave')
+            ->whereYear('start_date', $currentYear)
+            ->where('status', 'approved') // Only count approved leaves
+            ->sum('days_applied');
     
-        $usedVacationLeave = DB::table('leaves')
-        ->where('user_id', $user->id)
-        ->where('leave_type', 'vacation')
-        ->where('status', 'approved')
-        ->selectRaw('SUM(DATEDIFF(end_date, start_date) + 1) as total')
-        ->value('total') ?? 0;
-
-        return view('employee.profile.index', compact('user', 'usedVacationLeave'));
-
+        // Check if all mandatory leave is used
+        $mandatoryLeaveDays = 5; // Assuming the employee is required to take 5 days
+        $remainingLeaveDays = $mandatoryLeaveDays - $usedMandatoryLeaveDays;
+    
+        // Pass data to the view
+        return view('employee.profile.index', compact('user', 'usedMandatoryLeaveDays', 'remainingLeaveDays'));
     }
+    
     
     public function profile_edit(Request $request): View
     {
