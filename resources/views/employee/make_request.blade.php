@@ -78,7 +78,7 @@
                         <option value="Rehabilitation Privilege">Rehabilitation Privilege (Sec. 55, Rule XVL, Omnibus Rules Implementing E.O. No. 292)</option>
                         <option value="Special Leave Benefits for Women Leave">Special Leave Benefits for Women (R>A. No. 9710/CSC MC No. 25, s. 2010))</option>
                         <option value="Special Emergency Leave">Special Emergency (Calamity) Leave (CSC MC No. 2, s. 2012, as amended)</option>
-                        <option value="Adoption Leave ">Adoption Leave (R.A. No. 8552)</option>
+                        {{-- <option value="Adoption Leave ">Adoption Leave (R.A. No. 8552)</option> --}}
                         {{-- <option value="Other Purposes">Other Purposes</option>
                         <option value="Others">Others</option>  --}}
                     </select>
