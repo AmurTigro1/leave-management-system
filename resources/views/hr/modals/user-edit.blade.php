@@ -1,7 +1,8 @@
-<div id="userEditModal" class="hidden fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center px-4 z-[9999] overflow-auto" onclick="closeuserEditModal(event)">
+@foreach($users as $user)
+<div id="userEditModal-{{ $user->id }}" class="hidden fixed inset-0 w-full h-full bg-gray-900 bg-opacity-50 flex items-center justify-center px-4 z-[9999] overflow-auto" onclick="closeuserEditModal(event, {{ $user->id }})">
     <div class="bg-white w-full sm:w-[90%] md:w-[80%] lg:w-[60%] xl:w-[50%] h-[750px] max-w-3xl rounded-2xl shadow-2xl p-4 sm:p-6 relative transition-all transform scale-95 text-sm">
         
-        <button type="button" onclick="closeuserEditModal()" class="absolute top-4 right-4 text-gray-500 hover:text-gray-800 text-2xl">&times;</button>
+        <button type="button" onclick="closeuserEditModal(event, {{ $user->id }})" class="absolute top-4 right-4 text-gray-500 hover:text-gray-800 text-2xl">&times;</button>
 
         <h2 class="text-xl sm:text-2xl md:text-3xl font-extrabold text-center text-gray-800">Update User Information</h2>
 
@@ -110,31 +111,32 @@
             </div>
 
             <div class="flex flex-col sm:flex-row justify-end items-center gap-2 sm:gap-4 mt-4">
-                <button type="submit" class="bg-blue-600 text-white py-2 sm:py-3 px-4 sm:px-6 rounded-lg shadow-md hover:shadow-lg transform hover:scale-105 transition-all w-full sm:w-auto">Save Changes</button>
-                <button type="button" onclick="closeuserEditModal()" class="bg-gray-500 text-white py-2 sm:py-3 px-4 sm:px-6 rounded-lg shadow-md hover:shadow-lg transform hover:scale-105 transition-all w-full sm:w-auto">Cancel</button>
+                <div class="flex flex-col sm:flex-row justify-end items-center gap-2 sm:gap-4 mt-4">
+                    <button type="submit" class="bg-blue-600 text-white py-2 sm:py-3 px-4 sm:px-6 rounded-lg shadow-md hover:shadow-lg transform hover:scale-105 transition-all w-full sm:w-auto">Save Changes</button>
+                    <button type="button" onclick="closeuserEditModal(event, {{ $user->id }})" class="bg-gray-500 text-white py-2 sm:py-3 px-4 sm:px-6 rounded-lg shadow-md hover:shadow-lg transform hover:scale-105 transition-all w-full sm:w-auto">Cancel</button>
+                </div>
             </div>
         </form>
     </div>
 </div>
-
+@endforeach
 
 <script>
-    function openuserEditModal() {
-        document.getElementById("userEditModal").classList.remove("hidden");
+    function openuserEditModal(userId) {
+        document.getElementById("userEditModal-" + userId).classList.remove("hidden");
     }
 
-    function closeuserEditModal(event) {
-        const modal = document.getElementById("userEditModal");
+    function closeuserEditModal(event, userId) {
+        const modal = document.getElementById("userEditModal-" + userId);
 
-        // Close only if clicking outside or clicking cancel
-        if (!event || event.target === modal) {
+        // Close modal if clicking outside the modal content (on the backdrop)
+        if (!event.target.closest(".bg-white")) {
             modal.classList.add("hidden");
-
-            // Reset form inputs
-            document.getElementById("cocLogsForm").reset();
-
-            // Remove error messages
-            document.querySelectorAll('.text-red-500').forEach(el => el.remove());
+        }
+        
+        // Close modal if clicking the cancel button or close icon
+        if (event.target && (event.target.classList.contains('absolute') || event.target.classList.contains('bg-gray-500'))) {
+            modal.classList.add("hidden");
         }
     }
 </script>

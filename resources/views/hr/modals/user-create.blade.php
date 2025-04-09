@@ -99,8 +99,8 @@
                             <option value="">Select Role</option>
                             <option value="employee">Employee</option>
                             <option value="admin">Admin</option>
-                            <option value="hr">HR</option>
-                            <option value="supervisor">Supervisor</option>
+                            {{-- <option value="hr">HR</option>
+                            <option value="supervisor">Supervisor</option> --}}
                         </select>
                     </div>
 
