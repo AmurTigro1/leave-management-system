@@ -3,9 +3,17 @@
 @section('content')
 <div class="container mx-auto px-4 py-6 animate-fade-in">
     <!-- Back Button -->
-    <a href="{{ route('hr.requests') }}" class="inline-flex items-center text-blue-500 hover:underline transition duration-300 mb-4">
-        &larr; Back to Requests
-    </a>
+    <div class="flex justify-between items-center m-4">
+        <a href="{{ route('hr.requests') }}" class="inline-flex items-center text-blue-500 hover:underline transition duration-300">
+            &larr; Back to Requests
+        </a>
+        <div class="flex justify-end items-center">
+            <a href="{{ route('hr.cto.viewPdf', $cto->id) }}" target="_blank" 
+                class="bg-blue-600 text-white px-6 py-2 rounded-lg shadow-md hover:bg-blue-700 transition">
+                View & Download PDF
+            </a>
+        </div>
+    </div>
 
     <div class="flex flex-col lg:flex-row justify-between items-stretch gap-4">
         <!-- Left Side: Employee Request Details -->

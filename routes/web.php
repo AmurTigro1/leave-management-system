@@ -64,6 +64,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/hr/details/{id}', [HrController::class, 'show'])->name('hr.leave_show');
         Route::get('/leave/details/{id}', [HrController::class, 'showLeave'])->name('hr.leave_details');
         Route::get('/hr-leave/view/{id}', [HrController::class, 'viewPdf'])->name('hr.leave.viewPdf');
+        Route::get('/hr-cto/view/{id}', [HrController::class, 'viewCtoPdf'])->name('hr.cto.viewPdf');
         Route::get('/hr/cto/details/{id}', [HrController::class, 'showcto'])->name('hr.cto_details');
         Route::post('/cto/{cto}/hr-review', [HrController::class, 'ctoreview'])->name('cto.hr-review');
         Route::get('/hr-overtime/view/{id}', [HrController::class, 'viewCtoPdf'])->name('hr.overtime.viewPdf');
