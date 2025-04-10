@@ -104,7 +104,7 @@
                                 @if($index === 0 )
                                     <span class="px-3 py-1 text-xs font-bold text-white bg-blue-500 rounded-full">Latest Added</span>
                                 @elseif($index === $currentHrUsers->count() - 1)
-                                    <span class="px-3 py-1 text-xs font-bold text-white bg-green-500 rounded-full">Current (Displayed in the PDF File)</span>
+                                    <span class="px-3 py-1 text-xs font-bold text-white bg-green-500 rounded-full">Current</span>
                                 @endif
                             </div>
                         @endforeach
