@@ -90,6 +90,17 @@ Route::middleware('auth')->group(function () {
         Route::get('/hr/overtime-requests', [HrController::class, 'overtimeRequests'])->name('hr.overtime_requests');
         Route::get('/overtime/details/{id}', [HrController::class, 'showOvertime'])->name('hr.overtime_details');
 
+
+        //Time Management for HR
+        Route::get('hr/time-management', [TimeManagementController::class, 'hrTimeManagement'])->name('hr.time');
+        Route::post('hr/time-management', [TimeManagementController::class, 'hrStore'])->name('hr.time-management.store');
+        Route::delete('hr/time-management/{id}', [TimeManagementController::class, 'hrDestroy'])->name('hr.time-management.destroy');
+        Route::delete('hr/leave-logs/{id}', [TimeManagementController::class, 'hrDeleteLeaveLog'])->name('hr.leave-logs.delete');
+        Route::get('hr/time-management/{id}/edit', [TimeManagementController::class, 'hrEdit']);
+        Route::put('hr/time-management/{id}', [TimeManagementController::class, 'hrUpdate'])->name('hr.time-management.update');
+        Route::post('hr/morning-time', [TimeManagementController::class, 'hrStoreMorning'])->name('hr.morning-time.management.store');
+        Route::post('hr/afternoon-time', [TimeManagementController::class, 'hrStoreAfternoon'])->name('hr.afternoon-time.management.store');
+
         Route::post('/update-officer', [EmployeeController::class, 'updateOfficer'])->name('update.officer');
         Route::put('/hr-supervisor-info/{id}', [HRSupervisorController::class, 'update'])->name('hr-supervisor-info.update');
 
@@ -161,6 +172,16 @@ Route::middleware('auth')->group(function () {
         Route::patch('/admin-profile/update-email', [AdminController::class, 'updateEmail'])->name('admin-email.update'); 
         Route::get('/admin/holidays', [AdminController::class, 'holiday'])->name('admin.holiday.calendar');
 
+        //Time management for admin
+        Route::get('admin/time-management', [TimeManagementController::class, 'adminTimeManagement'])->name('admin.time');
+        Route::post('admin/time-management', [TimeManagementController::class, 'adminStore'])->name('admin.time-management.store');
+        Route::delete('admin/time-management/{id}', [TimeManagementController::class, 'adminDestroy'])->name('admin.time-management.destroy');
+        Route::delete('admin/leave-logs/{id}', [TimeManagementController::class, 'adminDeleteLeaveLog'])->name('admin.leave-logs.delete');
+        Route::get('admin/time-management/{id}/edit', [TimeManagementController::class, 'adminEdit']);
+        Route::put('admin/time-management/{id}', [TimeManagementController::class, 'adminUpdate'])->name('admin.time-management.update');
+        Route::post('admin/morning-time', [TimeManagementController::class, 'adminStoreMorning'])->name('admin.morning-time.management.store');
+        Route::post('admin/afternoon-time', [TimeManagementController::class, 'adminStoreAfternoon'])->name('admin.afternoon-time.management.store');
+
         Route::get('/admin/leave-request', [AdminController::class, 'makeLeaveRequest'])->name('admin.make_leave_request');
         Route::post('/admin/request-leave', [AdminController::class, 'storeLeave'])->name('admin-request.leave');
         Route::get('/admin/cto-request', [AdminController::class, 'makeCTORequest'])->name('admin.make_cto_request');
@@ -205,6 +226,7 @@ Route::middleware('auth')->group(function () {
         Route::delete('/notifications/delete/{id}', [EmployeeController::class, 'delete'])->name('notifications.delete');
         Route::delete('/notifications/delete-all', [EmployeeController::class, 'deleteAll'])->name('notifications.deleteAll');
 
+        //Time management for Employee
         Route::get('/employee/calendar', [EmployeeController::class, 'calendar'])->name('employee.holiday.calendar');
         Route::get('/time-management', [TimeManagementController::class, 'timeManagement'])->name('employee.time');
         Route::post('/time-management', [TimeManagementController::class, 'store'])->name('time.management.store');
