@@ -176,46 +176,45 @@
 
 <script>
     document.addEventListener("DOMContentLoaded", () => {
-        const dropdownBtn = document.getElementById("dropdown-btn");
-        const dropdownMenu = document.getElementById("dropdown-menu");
-        const modal = document.getElementById("logoutModal");
-        const openModalBtn = document.getElementById("openModal");
-        const closeModalBtn = document.getElementById("closeModal");
-        const hrNotificationButton = document.getElementById("hr-notification-button");
-        const hrNotificationContainer = document.getElementById("hr-notification-container");
-        const hrMarkAsReadButton = document.getElementById("hr-mark-all-as-read");
-        const hrDeleteAllButton = document.getElementById("hr-delete-all-notifications");
-        const hrNotificationBadge = document.getElementById("hr-notification-badge");
+    const dropdownBtn = document.getElementById("dropdown-btn");
+    const dropdownMenu = document.getElementById("dropdown-menu");
+    const modal = document.getElementById("logoutModal");
+    const openModalBtn = document.getElementById("openModal");
+    const closeModalBtn = document.getElementById("closeModal");
+    const hrNotificationButton = document.getElementById("hr-notification-button");
+    const hrNotificationContainer = document.getElementById("hr-notification-container");
+    const hrMarkAsReadButton = document.getElementById("hr-mark-all-as-read");
+    const hrDeleteAllButton = document.getElementById("hr-delete-all-notifications");
+    const hrNotificationBadge = document.getElementById("hr-notification-badge");
 
-        // Dropdown menu toggle
-        dropdownBtn.addEventListener("click", (e) => {
-            e.stopPropagation();
-            dropdownMenu.classList.toggle("hidden");
-        });
+    // Dropdown menu toggle
+    dropdownBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        dropdownMenu.classList.toggle("hidden");
+    });
 
-        document.addEventListener("click", () => {
-            if (!dropdownMenu.classList.contains("hidden")) {
-                dropdownMenu.classList.add("hidden");
-            }
-        });
+    document.addEventListener("click", () => {
+        if (!dropdownMenu.classList.contains("hidden")) {
+            dropdownMenu.classList.add("hidden");
+        }
+    });
 
-        // Open modal
-        openModalBtn.addEventListener("click", () => {
-            modal.classList.remove("hidden");
-        });
+    // Open modal
+    openModalBtn.addEventListener("click", () => {
+        modal.classList.remove("hidden");
+    });
 
-        // Close modal
-        closeModalBtn.addEventListener("click", () => {
-            modal.classList.add("hidden");
-        });
+    // Close modal
+    closeModalBtn.addEventListener("click", () => {
+        modal.classList.add("hidden");
+    });
 
-        // Close modal when clicking outside
-        window.addEventListener("click", (e) => {
-            if (e.target === modal) modal.classList.add("hidden");
-        });
+    // Close modal when clicking outside
+    window.addEventListener("click", (e) => {
+        if (e.target === modal) modal.classList.add("hidden");
+    });
 
-
-        hrNotificationButton.addEventListener("click", function () {
+    hrNotificationButton.addEventListener("click", function () {
         hrNotificationContainer.classList.toggle("hidden");
     });
 
@@ -249,12 +248,12 @@
             let notificationId = this.getAttribute("data-id");
 
             fetch(`/notifications/hr-delete/${notificationId}`, {
-    method: 'DELETE',
-    headers: {
-        "X-CSRF-TOKEN": "{{ csrf_token() }}",  // Make sure this is being passed
-        "Content-Type": "application/json"
-    },
-})
+                method: 'DELETE',
+                headers: {
+                    "X-CSRF-TOKEN": "{{ csrf_token() }}",
+                    "Content-Type": "application/json"
+                },
+            })
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
@@ -288,17 +287,11 @@
         .catch(error => console.error("Error:", error));
     });
 
+    // Close notification dropdown when clicking outside
     document.addEventListener("click", function (event) {
         if (!hrNotificationButton.contains(event.target) && !hrNotificationContainer.contains(event.target)) {
             hrNotificationContainer.classList.add("hidden");
         }
     });
-
-        // Close notification dropdown when clicking outside
-        document.addEventListener("click", function (event) {
-            if (!notificationButton.contains(event.target) && !notificationContainer.contains(event.target)) {
-                notificationContainer.classList.add("hidden");
-            }
-        });
-    });
+});
 </script>

@@ -1,4 +1,5 @@
-    <div id="deleteUserModaL{{ $user->id }}" class="hidden fixed inset-0 bg-gray-900/50 backdrop-blur-sm flex items-center justify-center p-4 z-[9999] overflow-y-auto">
+@foreach($users as $user)
+<div id="deleteUserModaL{{ $user->id }}" class="hidden fixed inset-0 bg-gray-900/50 backdrop-blur-sm flex items-center justify-center p-4 z-[9999] overflow-y-auto">
         <div class="w-full max-w-md bg-white rounded-xl shadow-2xl overflow-hidden" onclick="event.stopPropagation()">
             <div class="bg-gradient-to-r from-red-600 to-rose-700 px-6 py-5">
                 <div class="flex items-center justify-between">
@@ -42,10 +43,10 @@
             </div>
         </div>
     </div>
-
+@endforeach
 
 <script>
-    function opendeleteUserModaL(id) {
+    function openDeleteUserModal (id) {
         document.getElementById(`deleteUserModaL${id}`).classList.remove("hidden");
     }
 

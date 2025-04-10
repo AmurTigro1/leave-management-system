@@ -1,3 +1,5 @@
+@include('hr.modals.user_delete_request', ['users' => $users])
+
 <div class="p-3 sm:p-6">
     <!-- Mobile Cards (hidden on larger screens) -->
     <div class="sm:hidden space-y-4">
@@ -52,7 +54,6 @@
                         $supervisorCount = App\Models\User::where('role', 'supervisor')->count();
                     @endphp
                     @if(auth()->user()->id !== $user->id && $user->role !== 'supervisor' || $supervisorCount > 1)
-                        @include('hr.modals.user_delete_request', ['user' => $user])
                         <button type="button" onclick="openDeleteUserModal({{ $user->id }})" class="px-4 py-2 bg-red-500 text-white text-sm rounded hover:bg-red-600 transition w-full sm:w-auto">Delete</button>
                     @endif
                 </div>
@@ -142,7 +143,6 @@
                                         @endphp
                                         @if(auth()->user()->id !== $user->id && $user->role !== 'supervisor' || $supervisorCount > 1)
                                             <span class="text-gray-400">|</span>
-                                            @include('hr.modals.user_delete_request', ['user' => $user])
                                             <button type="button" onclick="openDeleteUserModal({{ $user->id }})" class="text-red-500 hover:text-red-700">Delete</button>
                                         @endif
                                     </div>
