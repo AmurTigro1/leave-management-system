@@ -1,5 +1,5 @@
 <!-- Restore CTO Modal -->
-@if($overtime)
+@foreach($overtimereq as $overtime)
     <div id="restoreCtoModal{{ $overtime->id }}" class="hidden fixed inset-0 bg-gray-900/50 backdrop-blur-sm flex items-center justify-center p-4 z-[9999] overflow-y-auto">
         <div class="w-full max-w-md bg-white rounded-xl shadow-2xl overflow-hidden" onclick="event.stopPropagation()">
             <div class="bg-gradient-to-r from-green-500 to-emerald-600 px-6 py-5">
@@ -42,7 +42,7 @@
             </div>
         </div>
     </div>
-@endif
+@endforeach
 
 <script>
 function openRestoreCtoModal(overtimeId) {

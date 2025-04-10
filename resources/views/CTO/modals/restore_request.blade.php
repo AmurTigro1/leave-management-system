@@ -6,7 +6,7 @@
                 <div class="flex items-center justify-between">
                     <div>
                         <h3 class="text-xl font-bold text-white">
-                            Restore CTO Request
+                            Restore CTO Request #{{ $overtime->id }}
                         </h3>
                         <p class="text-green-100 text-sm mt-1">
                             Confirm to restore this previously canceled request.

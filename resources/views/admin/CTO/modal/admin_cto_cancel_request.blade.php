@@ -45,22 +45,19 @@
 
 
 <script>
-function openCancelCtoModal(overtimeId) {
-    const modal = document.getElementById('cancelCtoModal' + overtimeId);
-    modal.classList.remove('hidden');
-}
+    function openCancelCtoModal(id) {
+        document.getElementById(`cancelCtoModal${id}`).classList.remove("hidden");
+    }
 
-function closeCancelCtoModal(overtimeId) {
-    const modal = document.getElementById('cancelCtoModal' + overtimeId);
-    modal.classList.add('hidden');
-}
+    function closeCancelCtoModal(id) {
+        document.getElementById(`cancelCtoModal${id}`).classList.add("hidden");
+    }
 
-document.addEventListener('click', function (event) {
-    const modalBackground = document.querySelectorAll('.bg-gray-900/50');
-    modalBackground.forEach(function (bg) {
-        if (event.target === bg) {
-            bg.classList.add('hidden');
-        }
+    document.addEventListener('click', function (event) {
+        document.querySelectorAll('[id^="cancelCtoModal"]').forEach(modal => {
+            if (!modal.classList.contains('hidden') && event.target === modal) {
+                modal.classList.add('hidden');
+            }
+        });
     });
-});
 </script>

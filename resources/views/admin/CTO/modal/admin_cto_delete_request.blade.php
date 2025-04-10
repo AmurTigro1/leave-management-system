@@ -56,10 +56,9 @@ function closeDeleteCtoModal(overtimeId) {
 }
 
 document.addEventListener('click', function (event) {
-    const modalBackground = document.querySelectorAll('.bg-gray-900/50');
-    modalBackground.forEach(function (bg) {
-        if (event.target === bg) {
-            bg.classList.add('hidden');
+    document.querySelectorAll('[id^="deleteOvertimeModal"]').forEach(modal => {
+        if (!modal.classList.contains('hidden') && event.target === modal) {
+            modal.classList.add('hidden');
         }
     });
 });
