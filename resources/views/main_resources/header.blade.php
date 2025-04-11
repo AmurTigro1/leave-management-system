@@ -1,4 +1,4 @@
-<header class="py-4">
+<header class="py-4 px-2">
     <div class="container mx-auto flex justify-between items-center text-center mb-2">
         <div class="text-blue-600 font-bold text-2xl">DILG CTO & LMS</div>
         
