@@ -61,7 +61,7 @@
             <div class="bg-gray-50 p-4 rounded-lg border border-gray-100">
                 <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Inclusive Date</p>
                 <p class="mt-1 text-lg font-medium text-gray-900">
-                    {{ \Carbon\Carbon::parse($overtime->inclusive_dates)->format('M d, Y') }}
+                    {{$overtime->inclusive_dates}}
                 </p>
             </div>
             
