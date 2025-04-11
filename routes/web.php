@@ -35,9 +35,9 @@ Route::middleware('auth')->group(function () {
         Route::get('/supervisor/profile-edit', [SupervisorController::class, 'profile_edit'])->name('supervisor.profile.partials.update-profile-information-form');
         Route::get('/supervisor/password-edit', [SupervisorController::class, 'password_edit'])->name('supervisor.profile.partials.update-password-form');
         Route::patch('/supervisor-profile/update-profile', [SupervisorController::class, 'updateProfile'])->name('supervisor-profile.update');
-        Route::patch('/supervisor-profile/update-email', [SupervisorController::class, 'updateEmail'])->name('supervisor-email.update'); 
+        Route::patch('/supervisor-profile/update-email', [SupervisorController::class, 'updateEmail'])->name('supervisor-email.update');
         Route::get('/supervisor/holidays', [SupervisorController::class, 'holiday'])->name('supervisor.holiday.calendar');
-        
+
         Route::get('/supervisor-leave/view/{id}', [SupervisorController::class, 'viewPdf'])->name('supervisor.leave.viewPdf');
         Route::get('/supervisor-cto/view/{id}', [SupervisorController::class, 'ctoviewPdf'])->name('supervisor.cto.viewPdf');
 
@@ -84,8 +84,8 @@ Route::middleware('auth')->group(function () {
         Route::get('/hr/profile-edit', [HrController::class, 'profile_edit'])->name('hr.profile.partials.update-profile-information-form');
         Route::get('/hr/password-edit', [HrController::class, 'password_edit'])->name('hr.profile.partials.update-password-form');
         Route::patch('/hr-profile/update-profile', [HrController::class, 'updateProfile'])->name('hr-profile.update');
-        Route::patch('/hr-profile/update-email', [HrController::class, 'updateEmail'])->name('hr-email.update'); 
-        
+        Route::patch('/hr-profile/update-email', [HrController::class, 'updateEmail'])->name('hr-email.update');
+
         Route::put('/overtime/{id}/approve', [HrController::class, 'approve'])->name('overtime.approve');
         Route::put('/overtime/{id}/reject', [HrController::class, 'reject'])->name('overtime.reject');
         Route::get('/hr/overtime-requests', [HrController::class, 'overtimeRequests'])->name('hr.overtime_requests');
@@ -132,11 +132,11 @@ Route::middleware('auth')->group(function () {
         Route::post('/hr/CTO/{id}/cancel', [HrController::class, 'cancelCTO'])->name('hr.cto_cancel');
         Route::post('/hr/CTO/{id}/restore', [HrController::class, 'restoreCTO'])->name('hr.cto_restore');
         Route::delete('/hr/my-CTO-requests/delete/{id}', [HrController::class, 'deleteCTO'])->name('hr.cto_delete');
-        Route::get('/hr-CTO/view/{id}', [HrController::class, 'viewCtoPdf'])->name('hr.overtime.viewPdf');
+        // Route::get('/hr-CTO/view/{id}', [HrController::class, 'viewCtoPdf'])->name('hr.overtime.viewPdf');
 
         Route::get('/check-existing-roles', [UserController::class, 'checkExistingRoles'])->name('check.existing.roles');
         Route::post('/swap-roles', [UserController::class, 'swapRoles'])->name('swap.roles');
-        
+
     });
 
     //Admin Assistant Route
@@ -170,7 +170,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/admin/profile-edit', [AdminController::class, 'profile_edit'])->name('admin.profile.partials.update-profile-information-form');
         Route::get('/admin/password-edit', [AdminController::class, 'password_edit'])->name('admin.profile.partials.update-password-form');
         Route::patch('/admin-profile/update-profile', [AdminController::class, 'updateProfile'])->name('admin-profile.update');
-        Route::patch('/admin-profile/update-email', [AdminController::class, 'updateEmail'])->name('admin-email.update'); 
+        Route::patch('/admin-profile/update-email', [AdminController::class, 'updateEmail'])->name('admin-email.update');
         Route::get('/admin/holidays', [AdminController::class, 'holiday'])->name('admin.holiday.calendar');
 
         //Time management for admin
@@ -219,7 +219,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/profile-edit', [EmployeeController::class, 'profile_edit'])->name('employee.profile.partials.update-profile-information-form');
         Route::get('/password-edit', [EmployeeController::class, 'password_edit'])->name('employee.profile.partials.update-password-form');
         Route::patch('/lms-profile/update-profile', [EmployeeController::class, 'updateProfile'])->name('employee-profile.update');
-        Route::patch('/lms-profile/update-email', [EmployeeController::class, 'updateEmail'])->name('employee-email.update');    
+        Route::patch('/lms-profile/update-email', [EmployeeController::class, 'updateEmail'])->name('employee-email.update');
         Route::get('/leave/view/{id}', [EmployeeController::class, 'viewPdf'])->name('leave.viewPdf');
         Route::get('/leaderboard', [EmployeeController::class, 'leaderboard'])->name('employee.leaderboard');
         Route::get('/users/modal', [EmployeeController::class, 'showUsersModal'])->name('users.modal');
@@ -260,7 +260,7 @@ Route::middleware('auth')->group(function () {
     });
 
     Route::get('/leave-calendar', action: [EmployeeController::class, 'showCalendar'])->name('leave.calendar');
-    Route::get('/api/leaves', [EmployeeController::class, 'getLeaves']); 
+    Route::get('/api/leaves', [EmployeeController::class, 'getLeaves']);
     Route::get('/api/overtimes', [EmployeeController::class, 'getOvertimes']);
 
     Route::get('/coc-logs/{id}', [CocLogController::class, 'showHRCocLogs'])->name('coc-logs.show');
