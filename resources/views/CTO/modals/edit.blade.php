@@ -59,10 +59,11 @@
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Inclusive Dates</label>
                             <input type="text" 
-                                   name="inclusive_dates" 
-                                   value="{{ $overtime->inclusive_dates ? \Carbon\Carbon::parse($overtime->inclusive_dates)->format('M j, Y') : 'N/A' }}" 
-                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
-                                   placeholder="Select date">
+                                name="inclusive_dates" 
+                                value="{{ optional(\Carbon\Carbon::parse($overtime->inclusive_dates))->format('M j, Y') ?? 'N/A' }}" 
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+                                placeholder="Select date">
+
                         </div>
                     </div>
 
