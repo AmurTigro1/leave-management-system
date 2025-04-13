@@ -1,24 +1,23 @@
 @extends('layouts.hr.sidebar-header')
     
 @section('content')
-<div class="fixed top-4 right-4 z-[9999]">
-    <x-notify::notify />
+<div class="fixed top-0 left-0 right-0 sm:left-auto sm:right-4 sm:top-4 z-[9999]">
+    <x-notify::notify class="w-full sm:w-auto" />
 </div>
 @notifyJs
-    <div class="max-w-6xl mx-auto p-6rounded-lg shadow-lg animate-fade-in">
-        <div class="text-center">
-            <div class="justify-center flex">
-                <img src="/img/dilg-main.png" alt="DILG Logo" class="h-[80px] w-[80px] mx-auto lg:mx-0 mb-4">
-            </div>
-            <div>
-                <p>Republic of the Philippines</p>
-                <h1 class="font-bold">DEPARTMENT OF THE INTERIOR AND LOCAL GOVERNMENT</h1>
-                <h1>Rajah Sikatuna Avenue, Dampas, City of Tagbilaran, Bohol</h1>
-            </div>
+<div class="max-w-6xl mx-auto p-4 sm:p-6 rounded-lg shadow-lg animate-fade-in">
+    <div class="text-center">
+        <div class="justify-center flex">
+            <img src="/img/dilg-main.png" alt="DILG Logo" class="h-[70px] w-[70px] sm:h-[80px] sm:w-[80px] mx-auto mb-4">
         </div>
-        <h2 class="text-2xl font-bold mb-4 text-center">Leave Request Form</h2>
+        <div>
+            <p class="text-sm sm:text-base">Republic of the Philippines</p>
+            <h1 class="font-bold text-lg sm:text-xl">DEPARTMENT OF THE INTERIOR AND LOCAL GOVERNMENT</h1>
+            <h1 class="text-sm sm:text-base">Rajah Sikatuna Avenue, Dampas, City of Tagbilaran, Bohol</h1>
+        </div>
+    </div>
+    <h2 class="text-xl sm:text-2xl font-bold mb-4 text-center">Leave Request Form</h2>
     
-        <!-- Success Message -->
         @if(session('success'))
         <div x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 3000)" class="p-4 mb-4 text-green-700 bg-green-100 border border-green-500 rounded">
             {{ session('success') }}
@@ -35,11 +34,9 @@
         </div>
     @endif
     
-        <!-- Leave Request Form -->
-        <form method="POST" action="{{ route('hr-request.leave') }}" class=" p-4 rounded-lg" enctype="multipart/form-data">
+        <form method="POST" action="{{ route('hr-request.leave') }}" class="p-3 sm:p-4 rounded-lg" enctype="multipart/form-data">
             @csrf
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <!-- Enhanced Info Message -->
             <div id="info_message" class="col-span-2 hidden">
                 <div class="p-4 bg-blue-50 border-l-4 border-blue-400 rounded-md shadow-sm">
                     <div class="flex items-start">
@@ -64,7 +61,7 @@
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700">Leave Type</label>
-                    <select name="leave_type" id="leave_type" class="mt-1 w-full p-2 border rounded" onchange="handleLeaveType()">
+                    <select name="leave_type" id="leave_type" class="mt-1 w-full p-2 border rounded-md text-sm sm:text-base focus:ring-blue-500 focus:border-blue-500">
                         <option value="">Select Leave Type</option>
                         <option value="Vacation Leave">Vacation Leave (Sec. 51, Rule XVI, Omnibus Rules Implementing E.O. No. 292)  </option>
                         <option value="Mandatory Leave">Mandatory/Forced Leave (Sec. 25, Rule XVL, Omnibus Rules Implementing E.O. No. 292)</option>
@@ -78,9 +75,6 @@
                         <option value="Rehabilitation Privilege">Rehabilitation Privilege (Sec. 55, Rule XVL, Omnibus Rules Implementing E.O. No. 292)</option>
                         <option value="Special Leave Benefits for Women Leave">Special Leave Benefits for Women (R>A. No. 9710/CSC MC No. 25, s. 2010))</option>
                         <option value="Special Emergency Leave">Special Emergency (Calamity) Leave (CSC MC No. 2, s. 2012, as amended)</option>
-                        {{-- <option value="Adoption Leave ">Adoption Leave (R.A. No. 8552)</option> --}}
-                        {{-- <option value="Other Purposes">Other Purposes</option>
-                        <option value="Others">Others</option>  --}}
                     </select>
                     @error('leave_type')
                     <p class="text-red-500 text-sm">{{ $message }}</p>
@@ -90,7 +84,6 @@
                 <div>
                     <label class="block text-sm font-medium text-gray-700">Signature (Optional)</label>
                     
-                    <!-- Preview container (hidden by default) -->
                     <div id="signature-preview-container" class="hidden">
                         <p class="text-sm text-gray-500 mb-1">Signature Preview:</p>
                         <div class="border border-gray-300 rounded-lg p-2 flex justify-center">
@@ -99,7 +92,6 @@
                         </div>
                     </div>
                     
-                    <!-- File input with better styling -->
                     <div class="flex items-center space-x-4">
                         <label class="flex flex-col items-center px-4 py-3 bg-white rounded-lg border border-gray-300 cursor-pointer hover:bg-gray-50">
                             <span class="text-sm font-medium text-gray-700">Choose File</span>
@@ -141,10 +133,6 @@
                     }
                 });
                 </script>
-                {{-- <div class="mb-4">
-                    <label class="block font-medium">Salary File</label>
-                    <input type="text" name="salary_file" class="w-full border p-2 rounded" required placeholder="Enter Salary File">
-                </div> --}}
 
                 <div>
                     <label class="block text-sm font-medium text-gray-700">Start of time-off</label>
@@ -180,7 +168,6 @@
                     }
                 }
                 
-                // Ensure that when selecting a start date, the end date updates if one-day leave is checked
                 document.getElementById("start_date").addEventListener("change", function() {
                     if (document.getElementById("one_day_leave").checked) {
                         document.getElementById("end_date").value = this.value;
@@ -200,16 +187,13 @@
                 </div>
                 <div class="mt-2">
                     <label class="block text-sm font-medium text-gray-700">Reason (Optional)</label>
-                    {{-- <input type="text" name="reason" class="mt-1 w-full p-2 border rounded"> --}}
                     <textarea name="reason" id="reason" cols="15" rows="5" class="mt-1 w-full p-2 border rounded" placeholder="Enter Reason"></textarea>
                 </div>
-                            <!-- File Upload for Required Documents -->
                             <div id="file_upload_section" class="hidden">
                                 <div>
                                     <label class="block text-gray-700 font-bold">Required Documents</label>
                                     <p class="text-sm text-gray-500">Upload multiple images or PDFs (max 5MB each)</p>
                                     
-                                    <!-- File upload area -->
                                     <div class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-blue-400 transition-colors cursor-pointer" id="dropzone">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
@@ -221,7 +205,6 @@
                                         <input type="file" name="leave_files[]" id="leave_files" multiple class="hidden" accept="image/*,.pdf">
                                     </div>
                                     
-                                    <!-- Selected files preview -->
                                     <div id="file-previews" class="mt-4 space-y-3 hidden">
                                         <p class="text-sm font-medium text-gray-700">Selected files:</p>
                                         <div id="preview-container" class="grid grid-cols-1 sm:grid-cols-2 gap-3"></div>
@@ -240,10 +223,8 @@
                                 const previewContainer = document.getElementById('preview-container');
                                 const filePreviewsSection = document.getElementById('file-previews');
                                 
-                                // Handle file selection
                                 fileInput.addEventListener('change', handleFiles);
                                 
-                                // Drag and drop functionality
                                 ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
                                     dropzone.addEventListener(eventName, preventDefaults, false);
                                 });
@@ -295,7 +276,6 @@
                                     const previewDiv = document.createElement('div');
                                     previewDiv.className = 'border border-gray-200 rounded-lg p-3 flex items-start space-x-3';
                                     
-                                    // File icon or preview
                                     const previewContent = document.createElement('div');
                                     previewContent.className = 'flex-shrink-0';
                                     
@@ -320,7 +300,6 @@
                                         previewContent.appendChild(iconDiv);
                                     }
                                     
-                                    // File info
                                     const fileInfo = document.createElement('div');
                                     fileInfo.className = 'flex-1 min-w-0';
                                     
@@ -332,7 +311,6 @@
                                     fileSize.className = 'text-xs text-gray-500';
                                     fileSize.textContent = formatFileSize(file.size);
                                     
-                                    // Remove button
                                     const removeBtn = document.createElement('button');
                                     removeBtn.type = 'button';
                                     removeBtn.className = 'text-red-500 hover:text-red-700';
@@ -360,8 +338,6 @@
                                 }
                                 
                                 function updateFileInput() {
-                                    // This would need more complex handling to actually remove files from the FileList
-                                    // In a real implementation, you might need to use a different approach
                                     console.log('Update file input logic would go here');
                                 }
                                 
@@ -376,7 +352,6 @@
                             </script>
             </div>      
             
-            <!-- Vacation Leave & Special Privilege Leave -->
             <div id="vacation_options" class="hidden">
                 <div class="mt-4">
                     <label>
@@ -399,7 +374,6 @@
                 </div>
             </div>
 
-            <!-- Sick Leave -->
             <div id="sick_leave_options" class="hidden">
                 <div class="mt-4">
                     <label>
@@ -423,7 +397,6 @@
             </div>
 
 
-   <!-- Study Leave -->
 <div id="study_leave_options" class="hidden">
     <label>
         <input type="checkbox" name="completion_masters" value="1"> Completion of Master's Degree
@@ -440,7 +413,6 @@
     @enderror
 </div>
 
-<!-- Other Purposes -->
 <div id="other_purposes_options" class="hidden">
     <label>
         <input type="checkbox" name="monetization" value="1"> Monetization of Leave Credits
@@ -482,7 +454,6 @@
         const fileUploadSection = document.getElementById('file_upload_section');
         const oneDayLeave = document.getElementById('one_day_leave');  
 
-        // ✅ Leave messages
         const leaveMessages = {
             "Vacation Leave": "Vacation Leave must be filed at least <strong>5 days in advance</strong>.",
             "Special Privilege Leave": "Special Privilege Leave must be filed at least <strong>7 days prior</strong>, except for emergencies.",
@@ -494,7 +465,6 @@
             "Mandatory Leave": "Mandatory Leave must be taken annually. Unused leave will be <strong>forfeited</strong> if not availed within the year."
         };
 
-        // ✅ Display leave-specific message
         function updateInfoMessage() {
             const selectedType = leaveType.value;
             if (leaveMessages[selectedType]) {
@@ -506,17 +476,14 @@
             }
         }
 
-        // ✅ Show/hide different leave sections
         function toggleOptions() {
             const selectedValue = leaveType.value;
 
-            // Hide all sections
             vacationOptions.classList.add("hidden");
             sickLeaveOptions.classList.add("hidden");
             studyLeaveOptions.classList.add("hidden");
             otherPurposesOptions.classList.add("hidden");
 
-            // Show the relevant section
             if (selectedValue === "Vacation Leave" || selectedValue === "Special Privilege Leave") {
                 vacationOptions.classList.remove("hidden");
             } else if (selectedValue === "Sick Leave") {
@@ -528,11 +495,9 @@
             }
         }
 
-        // ✅ Handle "One Day" checkbox and file upload visibility
         function toggleFileUpload() {
             const selectedType = leaveType.value;
 
-            // Sync end date with start date when "One Day" is checked
             if (oneDayLeave && oneDayLeave.checked) {
                 endDate.value = startDate.value;
                 endDate.readOnly = true;
@@ -540,13 +505,11 @@
                 endDate.readOnly = false;
             }
 
-            // Always show the file upload for Maternity and Paternity Leave
             if (selectedType === 'Maternity Leave' || selectedType === 'Paternity Leave') {
                 fileUploadSection.classList.remove('hidden');
                 return;
             }
 
-            // Hide the upload section if no date is selected
             if (!startDate.value || !endDate.value) {
                 fileUploadSection.classList.add('hidden');
                 return;
@@ -556,21 +519,11 @@
             const end = new Date(endDate.value);
             const today = new Date();
             
-            // Calculate the number of requested days
             const daysRequested = Math.ceil((end - start) / (1000 * 60 * 60 * 24)) + 1;
             
-            // Calculate how many days until the leave starts
             const daysUntilStart = Math.floor((start - today) / (1000 * 60 * 60 * 24));
-
-            // ✅ Show file upload only for Sick Leave exceeding 5 days or filed in advance
-            // if (selectedType === 'Sick Leave' && (daysRequested > 5 || daysUntilStart > 0)) {
-            //     fileUploadSection.classList.remove('hidden');
-            // } else {
-            //     fileUploadSection.classList.add('hidden');
-            // }
         }
 
-        // ✅ Hide success and error messages after timeout
         if (successMessage) {
             setTimeout(() => {
                 successMessage.style.display = 'none';
@@ -583,7 +536,6 @@
             }, 10000);
         }
 
-        // ✅ Event listeners
         leaveType.addEventListener("change", () => {
             toggleOptions();
             updateInfoMessage();
@@ -597,7 +549,6 @@
             oneDayLeave.addEventListener("change", toggleFileUpload);
         }
 
-        // ✅ Initialize on page load
         toggleOptions();
         updateInfoMessage();
         toggleFileUpload();

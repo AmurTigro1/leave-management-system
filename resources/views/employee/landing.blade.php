@@ -152,7 +152,9 @@
 
 <div>
     @include('main_resources.header')
-    <x-notify::notify />
+    <div class="fixed top-0 right-0 sm:top-4 sm:right-4 z-[9999]">
+        <x-notify::notify />
+    </div>
     @notifyJs
     
     <div class="landing-container">

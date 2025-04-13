@@ -1,54 +1,50 @@
 @extends('layouts.hr.sidebar-header')
 
 @section('content')
-    <!-- Top-Right Header -->
-    <div class="fixed top-4 right-4 z-[9999]">
-        <x-notify::notify />
-    </div>
-    @notifyJs
+<div class="fixed top-0 right-0 sm:top-4 sm:right-4 z-[9999]">
+    <x-notify::notify />
+</div>
+@notifyJs
+
 <div class="max-w-7xl mx-auto p-6 space-y-6 animate-fade-in">
-    <div class="container mx-auto px-4">
-        <!-- Leave & CTO Requests Summary -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div class="container mx-auto px-2 sm:px-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
             @foreach([['Leave Requests', $leaveStats], ['CTO Requests', $cocStats]] as [$title, $stats])
-                <div class="bg-white p-6 rounded-lg shadow-md flex flex-col h-full">
-                    <h2 class="text-xl md:text-2xl font-bold text-gray-800 mb-4">{{ $title }}</h2>
-                    <div class="grid grid-cols-3 gap-4 flex-grow">
+                <div class="bg-white p-4 sm:p-6 rounded-lg shadow-md flex flex-col h-full">
+                    <h2 class="text-lg sm:text-xl md:text-2xl font-bold text-gray-800 mb-3 sm:mb-4">{{ $title }}</h2>
+                    <div class="grid grid-cols-3 gap-2 sm:gap-4 flex-grow">
                         @foreach(['Pending' => 'yellow', 'Approved' => 'green', 'Rejected' => 'red'] as $status => $color)
-                            <div class="bg-{{ $color }}-100 p-4 md:p-6 rounded-lg shadow text-center flex flex-col justify-center min-h-[120px] md:min-h-[140px]">
-                                <h3 class="text-sm md:text-lg font-semibold text-gray-700">{{ $status }}</h3>
-                                <p class="text-2xl md:text-3xl font-bold text-{{ $color }}-600 mt-1">{{ $stats[$status] }}</p>
+                            <div class="bg-{{ $color }}-100 p-3 sm:p-4 md:p-6 rounded-lg shadow text-center flex flex-col justify-center min-h-[100px] sm:min-h-[120px] md:min-h-[140px]">
+                                <h3 class="text-xs sm:text-sm md:text-base font-semibold text-gray-700">{{ $status }}</h3>
+                                <p class="text-xl sm:text-2xl md:text-3xl font-bold text-{{ $color }}-600 mt-1">{{ $stats[$status] }}</p>
                             </div>
                         @endforeach
                     </div>
                 </div>
             @endforeach
         </div>
-    </div>
-
-    <!-- Total Employees Card -->
-    <div class="bg-white p-6 rounded-lg shadow-md text-center">
-        <h3 class="text-xl font-semibold text-gray-700 mb-2">Total Employees</h3>
-        <p class="text-6xl font-bold text-blue-600">{{ $totalEmployees }}</p>
-    </div>
-
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <!-- Leave Statistics Bar Chart -->
-        <div class="bg-white p-6 rounded-lg shadow-md">
-            <h3 class="text-xl font-semibold text-gray-700 mb-4">Leave Requests Overview</h3>
-            <div class="w-full h-64">
-                <canvas id="leaveChart"></canvas>
-            </div>
+    
+        <div class="bg-white p-4 sm:p-6 rounded-lg shadow-md text-center mt-4 sm:mt-6">
+            <h3 class="text-lg sm:text-xl font-semibold text-gray-700 mb-2">Total Employees</h3>
+            <p class="text-4xl sm:text-5xl md:text-6xl font-bold text-blue-600">{{ $totalEmployees }}</p>
         </div>
     
-        <!-- CTO / Overtime Requests Bar Chart -->
-        <div class="bg-white p-6 rounded-lg shadow-md">
-            <h3 class="text-xl font-semibold text-gray-700 mb-4">CTO / Overtime Requests Overview</h3>
-            <div class="w-full h-64">
-                <canvas id="ctoChart"></canvas>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mt-4 sm:mt-6">
+            <div class="bg-white p-4 sm:p-6 rounded-lg shadow-md">
+                <h3 class="text-lg sm:text-xl font-semibold text-gray-700 mb-3 sm:mb-4">Leave Requests Overview</h3>
+                <div class="w-full h-48 sm:h-64">
+                    <canvas id="leaveChart"></canvas>
+                </div>
             </div>
-        </div>        
-    </div>    
+        
+            <div class="bg-white p-4 sm:p-6 rounded-lg shadow-md">
+                <h3 class="text-lg sm:text-xl font-semibold text-gray-700 mb-3 sm:mb-4">CTO / Overtime Requests Overview</h3>
+                <div class="w-full h-48 sm:h-64">
+                    <canvas id="ctoChart"></canvas>
+                </div>
+            </div>        
+        </div>
+    </div>   
 
     <div class="flex items-center space-x-2 my-5" x-data="{ search: '' }">
         <input 
@@ -64,7 +60,6 @@
             Clear
         </button>
     </div>
-    <!-- Search Results -->
     <div id="employee-results">
         @include('hr.partials.employee-list', ['employees' => $employees])
     </div>
@@ -86,7 +81,6 @@
 </script>
 </div>
 
-<!-- Chart.js Script -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
     document.addEventListener("DOMContentLoaded", function() {
