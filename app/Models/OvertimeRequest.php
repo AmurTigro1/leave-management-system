@@ -12,6 +12,7 @@ class OvertimeRequest extends Model
         'user_id',
         'date_filed',
         'working_hours_applied',
+        'signature',
         'inclusive_dates',
         'approved_days',
         'disapproval_reason',

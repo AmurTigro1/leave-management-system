@@ -24,8 +24,16 @@
                <div class="align-left">
                     <div class="start">
                         <p>Name </p> <div class="info"><span class="underline">{{ $overtime->user->first_name}} {{ strtoupper(substr($overtime->user->middle_name, 0, 1)) }}. {{ $overtime->user->last_name}}</span>_____________________</div>
-                        <p>Signature </p> <div class="info2">___________________________________</div>
-                        <p>Position </p> <div class="info3"><span class="underline">{{ $overtime->user->position}}</span>_____________________________</div>
+                        <p>Signature </p> <div class="info2">
+                            @if($overtime->signature && file_exists(public_path($overtime->signature)))
+                                <div class="image-display">
+                                    <img src="{{ public_path($overtime->signature) }}" alt="Signature" style="width: 70px; height: 30px; margin-top: -10px; margin-left: 10px;">
+                                </div>
+                            @else
+                                ___________________________________
+                            @endif
+                        </div>
+                        <p class="position">Position </p> <div class="info3"><span class="underline">{{ $overtime->user->position}}</span>_____________________________</div>
                         <p>Office/Division </p> </p> <div class="info4"><span class="underline">{{ $overtime->user->department}}</span>___________________</div>
                         <p>Date of Filing </p> <div class="info5"><span class="underline">{{ \Carbon\Carbon::parse($overtime->date_filed)->format('F d, Y') }}</span>_____________________</div>
                         <p>No. of working hours applied for </p> <div class="info6">__<span class="underline">{{ $overtime->working_hours_applied}} hours</span>___________</div>

@@ -58,6 +58,7 @@ class OvertimeRequestController extends Controller
         $request->validate([
             'inclusive_dates' => 'required|string',
             'cto_type' => 'nullable|in:none,halfday_morning,halfday_afternoon,wholeday',
+            'signature' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
             'working_hours_applied' => [
                 'required_without:cto_type',
                 'integer',
@@ -83,10 +84,19 @@ class OvertimeRequestController extends Controller
             }
         }
 
+        $signaturePath = null;
+        if ($request->hasFile('signature')) {
+            $signatureFile = $request->file('signature');
+            $filename = time() . '_' . $signatureFile->getClientOriginalName();
+            $signatureFile->move(public_path('signatures'), $filename);
+            $signaturePath = 'signatures/' . $filename;
+        }
+
         OvertimeRequest::create([
             'user_id' => auth()->id(),
             'date_filed' => now(),
             'working_hours_applied' => $request->working_hours_applied,
+            'signature' => $signaturePath,
             'inclusive_dates' => $request->inclusive_dates,
             'admin_status' => 'pending', 
             'hr_status' => 'pending', 

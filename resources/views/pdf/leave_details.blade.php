@@ -268,7 +268,7 @@
                     <p class="fill-in2">
                         @if($leave->signature && file_exists(public_path($leave->signature)))
                             <div class="image-display">
-                                <img src="{{ public_path($leave->signature) }}" alt="Signature" style="width: 100px; height: auto; margin-top: -30px;">
+                                <img src="{{ public_path($leave->signature) }}" alt="Signature" style="width: 100px; height: 50px; margin-top: -40px;">
                             </div>
                         @else
                             ________________________________
