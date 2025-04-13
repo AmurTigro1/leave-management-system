@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->date('date_filed');
             $table->integer('working_hours_applied'); 
-            $table->string('signature')->nullable();
+            $table->string('signature');
             $table->text('inclusive_dates');
             $table->integer('approved_days')->nullable();
             $table->text('disapproval_reason')->nullable();

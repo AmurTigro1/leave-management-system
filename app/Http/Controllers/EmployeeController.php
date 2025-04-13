@@ -184,7 +184,7 @@ class EmployeeController extends Controller
         'reason' => 'nullable|string',
         'leave_files.*' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048', // Multiple files
         'days_applied' => 'required|integer|min:1',
-        'signature' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+        'signature' => 'required|image|mimes:jpeg,png,jpg|max:2048',
         'commutation' => 'required|boolean',
         'leave_details' => 'nullable|array', 
         'abroad_details' => 'nullable|string',

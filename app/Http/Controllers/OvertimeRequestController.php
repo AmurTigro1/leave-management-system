@@ -58,7 +58,7 @@ class OvertimeRequestController extends Controller
         $request->validate([
             'inclusive_dates' => 'required|string',
             'cto_type' => 'nullable|in:none,halfday_morning,halfday_afternoon,wholeday',
-            'signature' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'signature' => 'required|image|mimes:jpeg,png,jpg|max:2048',
             'working_hours_applied' => [
                 'required_without:cto_type',
                 'integer',

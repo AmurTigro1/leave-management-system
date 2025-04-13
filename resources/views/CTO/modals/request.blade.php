@@ -44,7 +44,7 @@
                     </div>
 
                     <div>
-                        <label class="block text-sm font-medium text-gray-700">Signature (Optional)</label>
+                        <label class="block text-sm font-medium text-gray-700">Signature <span class="text-red-600">(Required)</span></label>
                         
                         <!-- Preview container (hidden by default) -->
                         <div id="signature-preview-container" class="hidden">
@@ -64,6 +64,9 @@
                             <span id="file-name" class="text-sm text-gray-500">No file chosen</span>
                         </div>
                         <p class="text-xs text-gray-500">Supports JPG, PNG, or PDF (max 5MB)</p>
+                        @error('signature')
+                        <p class="text-red-500 text-sm">{{ $message }}</p>
+                        @enderror
                     </div>
                     
                     <script>
