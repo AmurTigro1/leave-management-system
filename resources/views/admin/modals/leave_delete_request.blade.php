@@ -35,7 +35,7 @@
                     </button>
                     <button type="submit"
                             class="px-5 py-2.5 bg-red-600 hover:bg-red-700 rounded-lg text-white font-medium transition duration-200 shadow-sm hover:shadow-md">
-                        Yes, Delete
+                        Confirm Delete
                     </button>
                 </div>
             </form>

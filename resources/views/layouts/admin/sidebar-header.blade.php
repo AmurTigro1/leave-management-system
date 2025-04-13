@@ -12,15 +12,31 @@
     <!-- Load Your Compiled JavaScript -->
     @vite('resources/js/app.js')
     @vite('resources/css/app.css')
+
+    <style>
+        @media (max-width: 640px) {
+            body {
+                font-size: 14px;
+            }
+            main {
+                padding: 0.75rem !important;
+            }
+        }
+        
+        html, body {
+            max-width: 100%;
+            overflow-x: hidden;
+        }
+    </style>
 </head>
 <body class="font-poppins h-screen overflow-hidden" x-data="{ sidebarOpen: false }">
     <div class="flex h-screen">
         @include('admin.partials.sidebar')
 
-        <div class="flex-1 flex flex-col min-h-screen">
+        <div class="flex-1 flex flex-col min-h-screen overflow-hidden">
             @include('admin.partials.header')
 
-            <main class="flex-1 p-6 overflow-y-auto">
+            <main class="flex-1 p-2 sm:p-4 md:p-6 overflow-y-auto min-w-0">
                 @yield('content')
             </main>
         </div>

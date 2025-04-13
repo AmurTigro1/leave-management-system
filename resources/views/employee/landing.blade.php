@@ -36,7 +36,9 @@
 
 <div>
     @include('main_resources.header')
-    <x-notify::notify />
+    <div class="fixed top-0 right-0 sm:top-4 sm:right-4 z-[9999]">
+        <x-notify::notify />
+    </div>
     @notifyJs
     <div class="mt-12 flex justify-between items-start gap-6 px-6 sm:px-10 md:px-16 lg:px-24">
         
