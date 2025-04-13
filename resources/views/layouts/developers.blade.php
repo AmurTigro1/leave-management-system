@@ -1,4 +1,4 @@
-<div id="teamModal" class="fixed inset-0 flex items-center justify-center bg-black/80 hidden z-[9999] p-4 backdrop-blur-sm">
+<div id="teamModal" class="fixed inset-0 flex items-center justify-center bg-black/80 hidden block sm:hidden z-[9999] p-4 backdrop-blur-sm">
     <div class="relative rounded-xl shadow-lg w-full max-w-md overflow-hidden bg-white border border-gray-200/80">
         <!-- Close Button -->
         <button onclick="closeTeamModal()" class="absolute top-3 right-3 z-10 text-gray-500 hover:text-red-500 transition-colors p-1 rounded-full bg-white/80 backdrop-blur-sm border border-gray-200/50 shadow-sm">
