@@ -5,7 +5,7 @@
             <p class="text-sm text-gray-500 mt-1">Fill out the form to submit your overtime request.</p>
         </div>
 
-        <form id="overtimeForm" action="{{ route('admin_overtime_request.store') }}" method="POST" class="mt-6 space-y-6">
+        <form id="overtimeForm" action="{{ route('admin_overtime_request.store') }}" method="POST" enctype="multipart/form-data" class="mt-6 space-y-6">
             @csrf
 
             <div class="">
@@ -42,6 +42,64 @@
                             <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                         @enderror
                     </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Signature <span class="text-red-600">(Required)</span></label>
+                        
+                        <!-- Preview container (hidden by default) -->
+                        <div id="signature-preview-container" class="hidden">
+                            <p class="text-sm text-gray-500 mb-1">Signature Preview:</p>
+                            <div class="border border-gray-300 rounded-lg p-2 flex justify-center">
+                                <img id="signature-preview" src="#" alt="Signature Preview" class="max-h-32 object-contain hidden"/>
+                                <p id="pdf-preview-message" class="text-sm text-gray-500 hidden">PDF file selected (preview not available)</p>
+                            </div>
+                        </div>
+                        
+                        <!-- File input with better styling -->
+                        <div class="flex items-center space-x-4">
+                            <label class="flex flex-col items-center px-4 py-3 bg-white rounded-lg border border-gray-300 cursor-pointer hover:bg-gray-50">
+                                <span class="text-sm font-medium text-gray-700">Choose File</span>
+                                <input type="file" name="signature" id="signature-upload" class="hidden" accept="image/*,.pdf">
+                            </label>
+                            <span id="file-name" class="text-sm text-gray-500">No file chosen</span>
+                        </div>
+                        <p class="text-xs text-gray-500">Supports JPG, PNG, or PDF (max 5MB)</p>
+                        @error('signature')
+                        <p class="text-red-500 text-sm">{{ $message }}</p>
+                        @enderror
+                    </div>
+                    
+                    <script>
+                    document.getElementById('signature-upload').addEventListener('change', function(e) {
+                        const file = e.target.files[0];
+                        const previewContainer = document.getElementById('signature-preview-container');
+                        const imgPreview = document.getElementById('signature-preview');
+                        const pdfMessage = document.getElementById('pdf-preview-message');
+                        const fileNameDisplay = document.getElementById('file-name');
+                        
+                        fileNameDisplay.textContent = file ? file.name : 'No file chosen';
+                        
+                        if (!file) {
+                            previewContainer.classList.add('hidden');
+                            return;
+                        }
+                        
+                        previewContainer.classList.remove('hidden');
+                        
+                        if (file.type.startsWith('image/')) {
+                            const reader = new FileReader();
+                            reader.onload = function(e) {
+                                imgPreview.src = e.target.result;
+                                imgPreview.classList.remove('hidden');
+                                pdfMessage.classList.add('hidden');
+                            }
+                            reader.readAsDataURL(file);
+                        } else if (file.type === 'application/pdf') {
+                            imgPreview.classList.add('hidden');
+                            pdfMessage.classList.remove('hidden');
+                        }
+                    });
+                    </script>
                     
                     <div class="sm:col-span-2">
                         <label class="block text-sm font-medium text-gray-700 mb-1">Selected Dates</label>

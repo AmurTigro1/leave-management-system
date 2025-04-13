@@ -186,6 +186,7 @@ class HrController extends Controller
             'reason' => 'nullable|string',
             'leave_files.*' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048', // Multiple files
             'days_applied' => 'required|integer|min:1',
+            'signature' => 'required|image|mimes:jpeg,png,jpg|max:2048',
             'commutation' => 'required|boolean',
             'leave_details' => 'nullable|array', 
             'abroad_details' => 'nullable|string',
@@ -320,21 +321,29 @@ class HrController extends Controller
             }
         }
     
-        Leave::create([
-            'user_id' => auth()->id(),
-            'leave_type' => $request->leave_type,
-            'leave_details' => json_encode($leaveDetails),
-            'start_date' => $request->start_date,
-            'end_date' => $request->end_date,
-            'salary_file' => $request->salary_file,
-            'days_applied' => $daysApplied,
-            'commutation' => $request->commutation,
-            'date_filing' => now(),
-            'reason' => $request->reason,
-            'signature' => $request->signature,
-            'leave_files' => json_encode($leaveFiles),
-            'status' => 'pending',
-        ]);
+        $signaturePath = null;
+    if ($request->hasFile('signature')) {
+        $signatureFile = $request->file('signature');
+        $filename = time() . '_' . $signatureFile->getClientOriginalName();
+        $signatureFile->move(public_path('signatures'), $filename);
+        $signaturePath = 'signatures/' . $filename;
+    }
+
+    Leave::create([
+        'user_id' => auth()->id(),
+        'leave_type' => $request->leave_type,
+        'leave_details' => json_encode($leaveDetails),
+        'start_date' => $request->start_date,
+        'end_date' => $request->end_date,
+        'salary_file' => $request->salary_file,
+        'days_applied' => $daysApplied,
+        'commutation' => $request->commutation,
+        'date_filing' => now(),
+        'reason' => $request->reason,
+        'signature' => $signaturePath,
+        'leave_files' => json_encode($leaveFiles),
+        'status' => 'pending',
+    ]);
     
         notify()->success('Leave request submitted successfully! It is now pending approval.');
         return redirect()->back();
@@ -369,6 +378,7 @@ class HrController extends Controller
         $request->validate([
             'inclusive_dates' => 'required|string',
             'cto_type' => 'nullable|in:none,halfday_morning,halfday_afternoon,wholeday',
+            'signature' => 'required|image|mimes:jpeg,png,jpg|max:2048',
             'working_hours_applied' => [
                 'required_without:cto_type',
                 'integer',
@@ -393,10 +403,19 @@ class HrController extends Controller
             }
         }
 
+        $signaturePath = null;
+        if ($request->hasFile('signature')) {
+            $signatureFile = $request->file('signature');
+            $filename = time() . '_' . $signatureFile->getClientOriginalName();
+            $signatureFile->move(public_path('signatures'), $filename);
+            $signaturePath = 'signatures/' . $filename;
+        }
+
         OvertimeRequest::create([
             'user_id' => auth()->id(),
             'date_filed' => now(),
             'working_hours_applied' => $request->working_hours_applied,
+            'signature' => $signaturePath,
             'inclusive_dates' => $request->inclusive_dates,
             'admin_status' => 'pending', 
             'hr_status' => 'pending', 

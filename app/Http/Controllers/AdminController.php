@@ -158,6 +158,7 @@ class AdminController extends Controller
         'reason' => 'nullable|string',
         'leave_files.*' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048', // Multiple files
         'days_applied' => 'required|integer|min:1',
+        'signature' => 'required|image|mimes:jpeg,png,jpg|max:2048',
         'commutation' => 'required|boolean',
         'leave_details' => 'nullable|array', 
         'abroad_details' => 'nullable|string',
@@ -292,6 +293,14 @@ class AdminController extends Controller
         }
     }
 
+    $signaturePath = null;
+    if ($request->hasFile('signature')) {
+        $signatureFile = $request->file('signature');
+        $filename = time() . '_' . $signatureFile->getClientOriginalName();
+        $signatureFile->move(public_path('signatures'), $filename);
+        $signaturePath = 'signatures/' . $filename;
+    }
+
     Leave::create([
         'user_id' => auth()->id(),
         'leave_type' => $request->leave_type,
@@ -303,7 +312,7 @@ class AdminController extends Controller
         'commutation' => $request->commutation,
         'date_filing' => now(),
         'reason' => $request->reason,
-        'signature' => $request->signature,
+        'signature' => $signaturePath,
         'leave_files' => json_encode($leaveFiles),
         'status' => 'pending',
     ]);
@@ -341,6 +350,7 @@ class AdminController extends Controller
         $request->validate([
             'inclusive_dates' => 'required|string',
             'cto_type' => 'nullable|in:none,halfday_morning,halfday_afternoon,wholeday',
+            'signature' => 'required|image|mimes:jpeg,png,jpg|max:2048',
             'working_hours_applied' => [
                 'required_without:cto_type',
                 'integer',
@@ -366,10 +376,19 @@ class AdminController extends Controller
             }
         }
 
+        $signaturePath = null;
+        if ($request->hasFile('signature')) {
+            $signatureFile = $request->file('signature');
+            $filename = time() . '_' . $signatureFile->getClientOriginalName();
+            $signatureFile->move(public_path('signatures'), $filename);
+            $signaturePath = 'signatures/' . $filename;
+        }
+
         OvertimeRequest::create([
             'user_id' => auth()->id(),
             'date_filed' => now(),
             'working_hours_applied' => $request->working_hours_applied,
+            'signature' => $signaturePath,
             'inclusive_dates' => $request->inclusive_dates,
             'admin_status' => 'pending', 
             'hr_status' => 'pending', 
