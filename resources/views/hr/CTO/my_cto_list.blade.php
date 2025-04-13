@@ -62,7 +62,7 @@
                             View
                         </a>
 
-                        <button onclick="openmyCtoEditModal()" class="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded hover:bg-gray-200">
+                        <button onclick="openmyCtoEditModal({{$overtime->id}})" class="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded hover:bg-gray-200">
                             Edit
                         </button>
                         @if($overtime->status === 'pending')
@@ -105,9 +105,7 @@
                                 <td class="p-3 text-gray-700 whitespace-nowrap">{{ \Carbon\Carbon::parse($overtime->date_filed)->format('M d, Y') }}</td>
                                 <td class="p-3 text-gray-700">{{ $overtime->working_hours_applied}} hours</td>
                                 <td class="p-3 text-gray-700 text-xs">
-                                    <ul class="list-disc list-inside">
-                                        {{$overtime->inclusive_dates}}
-                                    </ul>
+                                    {{$overtime->inclusive_dates}}
                                 </td>
                                 <td class="p-3 whitespace-nowrap">
                                     @php
@@ -169,7 +167,7 @@
                                                 View
                                             </a>
 
-                                            <button onclick="openmyCtoEditModal()" class="w-full block text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                            <button onclick="openmyCtoEditModal({{$overtime->id}})" class="w-full block text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                                                 Edit
                                             </button>
 

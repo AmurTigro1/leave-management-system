@@ -66,7 +66,7 @@
                             <div class="relative">
                                 <input type="text" 
                                        name="inclusive_dates" 
-                                       value="{{ $overtime->inclusive_dates ? \Carbon\Carbon::parse($overtime->inclusive_dates)->format('M j, Y') : '' }}" 
+                                       value="{{ $overtime->inclusive_dates }}" 
                                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200"
                                        placeholder="Select date"
                                        required>

@@ -50,7 +50,7 @@
                 
                 <div class="mt-2 text-sm text-gray-600">
                     <p class="font-medium">Dates:</p>
-                    {{ \Carbon\Carbon::parse($overtime->inclusive_dates)->format('M d, Y') }}
+                    {{$overtime->inclusive_dates}}
                 </div>
                 
                 <div class="mt-3 pt-2 border-t">
@@ -103,7 +103,7 @@
                                 <td class="p-3 text-gray-700 whitespace-nowrap">{{ \Carbon\Carbon::parse($overtime->date_filed)->format('M d, Y') }}</td>
                                 <td class="p-3 text-gray-700">{{ $overtime->working_hours_applied}} hours</td>
                                 <td class="p-3 text-gray-700 text-xs">
-                                    {{ \Carbon\Carbon::parse($overtime->inclusive_dates)->format('M d, Y') }}
+                                    {{$overtime->inclusive_dates}}
                                 </td>
                                 <td class="p-3 whitespace-nowrap">
                                     @php

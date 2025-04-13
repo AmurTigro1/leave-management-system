@@ -1,4 +1,5 @@
-<div id="myCtoEditModal" class="hidden fixed inset-0 bg-gray-900/50 backdrop-blur-sm flex items-center justify-center p-4 z-[9999]">
+@foreach($overtimereq as $overtime)
+<div id="myCtoEditModal{{$overtime->id}}" class="hidden fixed inset-0 bg-gray-900/50 backdrop-blur-sm flex items-center justify-center p-4 z-[9999]">
     <div class="w-full max-w-2xl bg-white rounded-xl shadow-2xl overflow-hidden transform transition-all duration-300 ease-out" onclick="event.stopPropagation()">
         
         @if ($overtime)
@@ -16,7 +17,7 @@
                             <span class="text-blue-100/90 text-sm">ID: #{{ $overtime->id }}</span>
                         </div>
                     </div>
-                    <button onclick="closemyCtoEditModal()" class="text-white/80 hover:text-white transition">
+                    <button onclick="closemyCtoEditModal({{$overtime->id}})" class="text-white/80 hover:text-white transition">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                         </svg>
@@ -66,7 +67,7 @@
                             <div class="relative">
                                 <input type="text" 
                                        name="inclusive_dates" 
-                                       value="{{ $overtime->inclusive_dates ? \Carbon\Carbon::parse($overtime->inclusive_dates)->format('M j, Y') : '' }}" 
+                                       value="{{ $overtime->inclusive_dates}}" 
                                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200"
                                        placeholder="Select date"
                                        required>
@@ -80,7 +81,7 @@
                     <!-- Modal Footer -->
                     <div class="mt-8 pt-5 border-t border-gray-200 flex flex-col sm:flex-row justify-end gap-3">
                         <button type="button" 
-                                onclick="closemyCtoEditModal()" 
+                                onclick="closemyCtoEditModal({{$overtime->id}})" 
                                 class="px-5 py-2.5 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition duration-200 font-medium order-2 sm:order-1">
                             Cancel
                         </button>
@@ -110,21 +111,22 @@
         @endif
     </div>
 </div> 
+@endforeach
 
 <script>
-    function openmyCtoEditModal() {
-        document.getElementById("myCtoEditModal").classList.remove("hidden");
+    function openmyCtoEditModal(id) {
+        document.getElementById(`myCtoEditModal${id}`).classList.remove("hidden");
     }
 
-    function closemyCtoEditModal(event) {
-        const modal = document.getElementById("myCtoEditModal");
-
-        if (!event || event.target === modal) {
-            modal.classList.add("hidden");
-
-            document.getElementById("cocLogsForm").reset();
-
-            document.querySelectorAll('.text-red-500').forEach(el => el.remove());
-        }
+    function closemyCtoEditModal(id) {
+        document.getElementById(`myCtoEditModal${id}`).classList.add("hidden");
     }
+
+    document.addEventListener('click', function (event) {
+        document.querySelectorAll('[id^="myCtoEditModal"]').forEach(modal => {
+            if (!modal.classList.contains('hidden') && event.target === modal) {
+                modal.classList.add('hidden');
+            }
+        });
+    });
 </script>

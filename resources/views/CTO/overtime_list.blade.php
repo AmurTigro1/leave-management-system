@@ -64,7 +64,7 @@
                             View
                         </a>
                         
-                        <button onclick="opencocRequestUpdateModal()" class="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded hover:bg-gray-200">
+                        <button onclick="opencocRequestUpdateModal({{$overtime->id}})" class="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded hover:bg-gray-200">
                             Edit
                         </button>
                         @if($overtime->status === 'pending')
@@ -171,7 +171,7 @@
                                                 View
                                             </a>
 
-                                            <button onclick="opencocRequestUpdateModal()" class="w-full block text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                            <button onclick="opencocRequestUpdateModal({{$overtime->id}})" class="w-full block text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                                                 Edit
                                             </button>
 
