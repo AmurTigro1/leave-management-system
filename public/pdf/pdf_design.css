@@ -54,12 +54,15 @@
         margin-top: -5px;
         margin-bottom: 5px;
     }
-    .head-body {
+    .overall-body {
         border: 1px solid black;
+    }
+    .head-body {
         font-size: 12px;
         border-bottom: none;
     }
     .first {
+        margin-left: 5px;
         margin-top: 0px;
     }
     .second {
@@ -68,7 +71,7 @@
     }
     .third {
         margin-top: -30px;
-        margin-left: 400px;
+        margin-left: 390px;
     }
     .fourth {
         margin-top: -30px;
@@ -84,20 +87,23 @@
     }
     .input-third {
         margin-top: -30px;
-        margin-left: 400px;
+        margin-left: 390px;
     }
     .input-fourth {
         margin-top: -30px;
         margin-left: 553px;
     }
     .head-middle-body {
-        margin-top: -12px;
         border: 1px solid black;
         font-size: 12px;
         border-bottom: none;
+        margin-top: -10px;
         padding-bottom: 5px;
+        border-left: none;
+        border-right: none;
     }
     .first2 {
+        margin-left: 5px;
         margin-top: 7px;
     }
     .second2 {
@@ -106,7 +112,7 @@
     }
     .third2 {
         margin-top: -26px;
-        margin-left: 400px;
+        margin-left: 390px;
     }
     .underline {
         text-decoration: underline;
@@ -123,10 +129,14 @@
         font-weight: bold;
         font-size: 13px;
     }
+    .new-class2 {
+        border: 1px solid black;
+        border-right: none;
+        border-left: none;
+    }
     .middle-part {
         font-size: 12px;
         width: 55%;
-        border: 1px solid black;
     }
     .checkbox {
         border: 2px solid black;
@@ -135,6 +145,7 @@
     }
     .leave-info {
         margin-top: 2px;
+        margin-left: 5px;
         font-size: 12px;
     }
     .info {
@@ -173,8 +184,8 @@
         font-size: 12px;
         margin-top: -390px;
         margin-left: 388px;
+        border-left: 1px solid black;
         width: 313px;
-        border: 1px solid black;
     }
     .leave-info2 {
         margin-top: 2px;
@@ -201,6 +212,9 @@
         width: 55%;
         padding-bottom: 1px;
         border: 1px solid black;
+        border-top: none;
+        border-left: none;
+        border-right: none;
     }
     .fill-in {
         margin-top: 0px;
@@ -228,7 +242,6 @@
     .last-part {
         font-size: 12px;
         width: 55%;
-        border: 1px solid black;
     }
     .last-part-info {
         margin-top: -10px;
@@ -255,6 +268,9 @@
         margin-left: 388px;
         width: 313px;
         border: 1px solid black;
+        border-right: none;
+        border-top: none;
+        border-bottom: none;
     }
     .last-line {
         margin-left: 27px;
@@ -267,7 +283,7 @@
     }
     .final-part {
         font-size: 12px;
-        border: 1px solid black;
+        border-top: 1px solid black;
     }
     .final-disapproval {
         margin-top: -26px;
