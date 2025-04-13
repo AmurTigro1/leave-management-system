@@ -265,8 +265,16 @@
                         </span>Requested
                     </p>
 
-                <p class="fill-in2">________________________________</p>
-                <p class="sign">(Signature of Application)</p>
+                    <p class="fill-in2">
+                        @if($leave->signature && file_exists(public_path($leave->signature)))
+                            <div class="image-display">
+                                <img src="{{ public_path($leave->signature) }}" alt="Signature" style="width: 100px; height: auto; margin-top: -30px;">
+                            </div>
+                        @else
+                            ________________________________
+                        @endif
+                    </p>
+                    <p class="sign">(Signature of Applicant)</p>                    
                 <span></span>
             </div>
             <div class="bottom-part2">

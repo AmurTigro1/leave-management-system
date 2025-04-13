@@ -184,6 +184,7 @@ class EmployeeController extends Controller
         'reason' => 'nullable|string',
         'leave_files.*' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048', // Multiple files
         'days_applied' => 'required|integer|min:1',
+        'signature' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         'commutation' => 'required|boolean',
         'leave_details' => 'nullable|array', 
         'abroad_details' => 'nullable|string',
@@ -335,6 +336,15 @@ class EmployeeController extends Controller
         }
     }
 
+    // Handle signature file upload (if present)
+    $signaturePath = null;
+    if ($request->hasFile('signature')) {
+        $signatureFile = $request->file('signature');
+        $filename = time() . '_' . $signatureFile->getClientOriginalName();
+        $signatureFile->move(public_path('signatures'), $filename);
+        $signaturePath = 'signatures/' . $filename;
+    }
+
     Leave::create([
         'user_id' => auth()->id(),
         'leave_type' => $request->leave_type,
@@ -346,10 +356,11 @@ class EmployeeController extends Controller
         'commutation' => $request->commutation,
         'date_filing' => now(),
         'reason' => $request->reason,
-        'signature' => $request->signature,
+        'signature' => $signaturePath,
         'leave_files' => json_encode($leaveFiles),
         'status' => 'pending',
     ]);
+
 
     notify()->success('Leave request submitted successfully! It is now pending approval.');
     return redirect()->back();
