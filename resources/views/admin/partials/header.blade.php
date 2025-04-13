@@ -1,9 +1,7 @@
 <header class="py-3 bg-gray-50 shadow-md w-full">
     <div class="container mx-auto max-w-7xl px-4 flex sm:flex-row justify-between space-y-3 sm:space-y-0">
-        <!-- Spacer for larger screens -->
         <div class="mr-52"></div>
 
-        <!-- Navigation Links -->
         <nav class="flex items-center space-x-6">
             <div class="flex flex-row text-gray-600 space-x-2">
                 <div class="sm:flex hidden text-gray-600 space-x-4">
@@ -28,7 +26,6 @@
                 </div>
             
                 <div class="relative">
-                    <!-- Bell Icon Button for Admin -->
                     <button id="admin-notification-button" class="p-2 rounded-full bg-gray-100 relative">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6 text-gray-700">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14V10a6 6 0 10-12 0v4c0 .728-.195 1.414-.595 2L4 17h5m6 0a3 3 0 01-6 0"/>
@@ -41,7 +38,6 @@
                         @endif
                     </button>
                 
-                    <!-- Notification Dropdown for Admin -->
                     <div id="admin-notification-container" class="absolute right-0 bg-white shadow-lg rounded-xl border border-gray-200 p-4 mt-2 w-64 hidden z-10">
                         <h3 class="text-gray-700 font-semibold mb-2">Admin Notifications</h3>
                 
@@ -70,14 +66,11 @@
             </div>
             
             @if (Auth::check())
-            <!-- Dropdown Menu -->
             <div class="relative">
                 <button id="dropdown-btn" class="flex items-center justify-between w-full px-4 rounded-lg transition-all duration-200 ease-in-out">
                     <div class="flex items-center justify-between p-2 rounded-lg">
                         
-                        <!-- Profile Section -->    
                         <div class="flex items-center space-x-4">
-                            <!-- Profile Image -->
                             <div class="w-10 h-10 rounded-full overflow-hidden bg-gray-100 flex items-center justify-center border-2 border-gray-200 hover:border-blue-300 transition-all duration-300">
                                 @php
                                     $profileImage = null;
@@ -103,19 +96,16 @@
                                 @endif
                             </div>
                     
-                            <!-- Username -->
                             <span class="text-gray-700 font-semibold text-sm hover:text-blue-600 transition-colors duration-300">
                                 {{ Auth::user()->first_name }}
                             </span>
                         </div>
                     </div>
-                    <!-- Dropdown Icon -->
                     <svg class="w-4 h-4 text-gray-500 ml-2" fill="currentColor" viewBox="0 0 20 20">
                         <path fill-rule="evenodd" d="M5.292 7.292a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 011.414 1.414l-4 4a1 1 0-1.414z" clip-rule="evenodd"></path>
                     </svg>
                 </button>
                 
-                <!-- Dropdown Menu -->
                 <div id="dropdown-menu" class="absolute hidden bg-white shadow-lg rounded-lg mt-2 w-44 right-0 z-50 border border-gray-200">
                     <ul class="py-2 text-gray-700 text-sm">
                         <li>
@@ -134,7 +124,6 @@
     </div>
 </header>
 
-<!-- Logout Confirmation Modal -->
 <div id="logoutModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden px-4 max-sm:m-10 z-[9999]">
     <div class="bg-white rounded-lg shadow-lg p-6 w-[90%] max-w-[450px]">
         <div class="flex justify-center">
@@ -145,7 +134,6 @@
             Select "Logout" below if you are ready to end your current session.
         </p>
 
-        <!-- Buttons -->
         <div class="mt-4 flex sm:flex-row justify-center gap-2">
             <div class="w-full sm:w-auto">
                 <button id="closeModal" class="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400 w-full sm:w-auto">
@@ -181,7 +169,6 @@
         const openModalBtn = document.getElementById("openModal");
         const closeModalBtn = document.getElementById("closeModal");
 
-        // Dropdown menu toggle
         dropdownBtn.addEventListener("click", (e) => {
             e.stopPropagation();
             dropdownMenu.classList.toggle("hidden");
@@ -193,17 +180,14 @@
             }
         });
 
-        // Open modal
         openModalBtn.addEventListener("click", () => {
             modal.classList.remove("hidden");
         });
 
-        // Close modal
         closeModalBtn.addEventListener("click", () => {
             modal.classList.add("hidden");
         });
 
-        // Close modal when clicking outside
         window.addEventListener("click", (e) => {
             if (e.target === modal) modal.classList.add("hidden");
         });
@@ -251,7 +235,7 @@
             fetch(`/notifications/admin-delete/${notificationId}`, {
     method: 'DELETE',
     headers: {
-        "X-CSRF-TOKEN": "{{ csrf_token() }}",  // Make sure this is being passed
+        "X-CSRF-TOKEN": "{{ csrf_token() }}",
         "Content-Type": "application/json"
     },
 })
@@ -294,6 +278,5 @@
         }
     });
 });
-
 </script>
 

@@ -9,9 +9,7 @@
         </div>
     </div>
 
-    <!-- Stats Cards - Responsive Grid -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6 mb-6 sm:mb-8">
-        <!-- Total Holidays Card -->
         <div class="bg-white p-4 sm:p-6 rounded-lg shadow-sm border border-gray-100">
             <div class="flex items-center justify-between">
                 <div>
@@ -26,7 +24,6 @@
             </div>
         </div>
 
-        <!-- Regular Holiday Card -->
         <div class="bg-white p-4 sm:p-6 rounded-lg shadow-sm border border-gray-100">
             <div class="flex items-center justify-between">
                 <div>
@@ -41,7 +38,6 @@
             </div>
         </div>
 
-        <!-- Special Non-Working Day Card -->
         <div class="bg-white p-4 sm:p-6 rounded-lg shadow-sm border border-gray-100">
             <div class="flex items-center justify-between">
                 <div>
@@ -58,7 +54,6 @@
             </div>
         </div>
 
-        <!-- National Holiday Card -->
         <div class="bg-white p-4 sm:p-6 rounded-lg shadow-sm border border-gray-100">
             <div class="flex items-center justify-between">
                 <div>
@@ -78,7 +73,6 @@
         </div>
     </div>
 
-    <!-- Calendar Overview Section -->
     <div class="bg-white rounded-lg sm:rounded-xl shadow-md overflow-hidden mb-6 sm:mb-8 border border-gray-100">
         <div class="bg-gradient-to-r from-blue-600 to-blue-500 px-4 sm:px-6 py-3 sm:py-4">
             <div class="flex items-center justify-between">
@@ -169,7 +163,6 @@
         </div>
     </div>
 
-    <!-- Holiday List Section -->
     <div class="bg-white rounded-lg sm:rounded-xl shadow-md overflow-hidden border border-gray-100">
         <div class="bg-gradient-to-r from-blue-600 to-blue-500 px-4 sm:px-6 py-3 sm:py-4">
             <h2 class="text-lg sm:text-xl font-semibold text-white">Holiday List</h2>
