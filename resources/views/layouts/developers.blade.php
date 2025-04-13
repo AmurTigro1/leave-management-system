@@ -13,30 +13,30 @@
                 <div class="container mx-auto px-2 sm:px-4">
                     <div class="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4 md:gap-5">
                         <a href="https://github.com/Binseaaa" target="_blank" class="relative bg-blue-50 border-2 border-blue-400 shadow-md rounded-xl sm:rounded-2xl overflow-hidden text-center p-3 sm:p-4 hover:shadow-lg transition-shadow">
-                            <img src="img/deguma.jpg" alt="Vm Deguma" class="w-20 h-20 sm:w-24 sm:h-24 mx-auto rounded-full mb-3 sm:mb-4 object-cover">
+                            <img src="{{ asset('img/deguma.jpg') }}" alt="Vm Deguma" class="w-20 h-20 sm:w-24 sm:h-24 mx-auto rounded-full mb-3 sm:mb-4 object-cover">
                             <h3 class="text-sm sm:text-base md:text-lg font-semibold">Vince Marie C. Deguma</h3>
                             <span class="absolute top-1 left-1 sm:top-2 sm:left-2 bg-blue-500 text-white text-xs font-semibold px-2 py-0.5 rounded-full">Main Developer</span>
                         </a>
 
                         <a href="https://github.com/AmurTigro1" target="_blank" class="relative bg-blue-50 border-2 border-blue-400 shadow-md rounded-xl sm:rounded-2xl overflow-hidden text-center p-3 sm:p-4">
-                            <img src="img/salera.jpg" alt="Josephen Stern S. Salera" class="w-20 h-20 sm:w-24 sm:h-24 mx-auto rounded-full mb-3 sm:mb-4 object-cover">
+                            <img src="{{asset('img/salera.jpg')}}" alt="Josephen Stern S. Salera" class="w-20 h-20 sm:w-24 sm:h-24 mx-auto rounded-full mb-3 sm:mb-4 object-cover">
                             <h3 class="text-sm sm:text-base md:text-lg font-semibold">Josephen Stern S. Salera</h3>
                             <span class="absolute top-1 left-1 sm:top-2 sm:left-2 bg-blue-500 text-white text-xs font-semibold px-2 py-0.5 rounded-full">Main Developer</span>
                         </a>
 
                         <a href="https://github.com/KairuDagaang" target="_blank" class="relative bg-blue-50 border-2 border-blue-400 shadow-md rounded-xl sm:rounded-2xl overflow-hidden text-center p-3 sm:p-4 hover:shadow-lg transition-shadow">
-                            <img src="img/daga-ang.jpg" alt="Kyle Christian Daga-ang" class="w-20 h-20 sm:w-24 sm:h-24 mx-auto rounded-full mb-3 sm:mb-4 object-cover">
+                        <img src="{{asset('img/daga-ang.jpg')}}" alt="Kyle Christian Daga-ang" class="w-20 h-20 sm:w-24 sm:h-24 mx-auto rounded-full mb-3 sm:mb-4 object-cover">
                             <h3 class="text-sm sm:text-base md:text-lg font-semibold">Kyle Christian Daga-ang</h3>
                             <span class="absolute top-1 left-1 sm:top-2 sm:left-2 bg-blue-500 text-white text-xs font-semibold px-2 py-0.5 rounded-full">Main Developer</span>
                         </a>
 
                         <a href="https://github.com/logic-zero" target="_blank" class="bg-white shadow-md rounded-xl sm:rounded-2xl overflow-hidden text-center p-3 sm:p-4">
-                            <img src="img/vistal.jpg" alt="Victor Vistal Jr." class="w-20 h-20 sm:w-24 sm:h-24 mx-auto rounded-full mb-3 sm:mb-4 object-cover">
+                            <img src="{{asset('img/vistal.jpg')}}" alt="Victor Vistal Jr." class="w-20 h-20 sm:w-24 sm:h-24 mx-auto rounded-full mb-3 sm:mb-4 object-cover">
                             <h3 class="text-sm sm:text-base md:text-lg font-semibold">Victor L. Vistal Jr.</h3>
                         </a>
 
                         <a href="https://github.com/Immanich" target="_blank" class="bg-white shadow-md rounded-xl sm:rounded-2xl overflow-hidden text-center p-3 sm:p-4">
-                            <img src="img/juanich.jpg" alt="Lord Immanuel Juanich" class="w-20 h-20 sm:w-24 sm:h-24 mx-auto rounded-full mb-3 sm:mb-4 object-cover">
+                            <img src="{{asset('img/juanich.jpg')}}" alt="Lord Immanuel Juanich" class="w-20 h-20 sm:w-24 sm:h-24 mx-auto rounded-full mb-3 sm:mb-4 object-cover">
                             <h3 class="text-sm sm:text-base md:text-lg font-semibold">Lord Immanuel Juanich</h3>
                         </a>
                     </div>
