@@ -13,7 +13,7 @@
             @foreach ($leaves as $leave)
             @include('employee.leave_modal.cancel_leavel_request', ['leave' => $leave])
             @include('employee.leave_modal.restore_leave_request', ['leave' => $leave])
-            @include('employee.leave_modal.delete_leave_request', ['leave' => $leave])
+            @include('employee.leavel_modal.delete_leave_request', ['leave' => $leave])
                 <div class="border rounded-lg p-4 hover:shadow-md transition">
                     <div class="flex justify-between items-start">
                         <div>
