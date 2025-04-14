@@ -2,10 +2,11 @@
 
 @section('content')
 
-<a href="{{ route('admin.requests') }}" class="inline-flex items-center text-blue-500 hover:underline transition duration-300">
+<a href="{{ route('admin.requests') }}" class="inline-flex items-center text-blue-500 hover:underline transition duration-300 mb-4">
     &larr; Back to Requests
 </a>
-<div class="flex justify-between items-start gap-4 h-full">
+
+<div class="hidden lg:flex justify-between items-start gap-4 h-full">
     <!-- Right side -->
     <div class="bg-white shadow-xl rounded-lg p-6 space-y-6 w-[60%] min-h-[865px] h-full">
         <h2 class="text-2xl font-bold">Leave Balances</h2>
@@ -192,6 +193,124 @@
         </div>
     </div>
 </div>
+
+<!-- Mobile View (only on small devices) -->
+<div class="block lg:hidden space-y-6 bg-white p-4 rounded-lg shadow animate-fade-in">
+    <div class="flex flex-col items-center">
+        @php
+            $profileImage = null;
+            $imagePath1 = 'storage/profile_images/' . $leave->user->profile_image;
+            $imagePath2 = 'storage/profile_pictures/' . $leave->user->profile_image;
+            if (file_exists(public_path($imagePath1))) {
+                $profileImage = asset($imagePath1);
+            } elseif (file_exists(public_path($imagePath2))) {
+                $profileImage = asset($imagePath2);
+            }
+        @endphp
+        <img src="{{ $profileImage ?? asset('img/default-avatar.png') }}"
+             class="w-32 h-32 object-cover rounded-full mb-2"
+             alt="{{ $leave->user->name }}">
+        <p class="font-semibold text-gray-500">Employee: {{ $leave->user->first_name }} {{ strtoupper(substr($leave->user->middle_name, 0, 1)) }}. {{ $leave->user->last_name }}</p>
+        <p class="text-gray-500 text-sm">Email: {{ $leave->user->email }}</p>
+        <p class="text-gray-500 text-sm mb-4">Position: {{ $leave->user->position }}</p>
+    </div>
+
+    <div class="space-y-2">
+        <h2 class="text-lg font-bold">Leave Balances</h2>
+        @php
+            $leaveTypes = [
+                'Vacation Leave' => $leave->user->vacation_leave_balance,
+                'Sick Leave' => $leave->user->sick_leave_balance,
+                'Maternity Leave' => $leave->user->maternity_leave,
+                'Paternity Leave' => $leave->user->paternity_leave,
+                'Solo Parent Leave' => $leave->user->solo_parent_leave,
+                'Study Leave' => $leave->user->study_leave,
+                'VAWC Leave' => $leave->user->vawc_leave,
+                'Rehabilitation Leave' => $leave->user->rehabilitation_leave,
+                'Special Leave Benefit' => $leave->user->special_leave_benefit,
+                'Special Emergency Leave' => $leave->user->special_emergency_leave,
+            ];
+        @endphp
+        <ul class="grid grid-cols-2 gap-2">
+            @foreach($leaveTypes as $type => $balance)
+                <li class="bg-blue-600 text-white rounded-lg text-xs text-center p-2">
+                    {{ $type }}<br>
+                    <span class="block bg-gray-200 text-black rounded mt-1">{{ $balance }} days</span>
+                </li>
+            @endforeach
+        </ul>
+    </div>
+
+    <div class="space-y-2">
+        <h2 class="text-lg font-bold">Application Request</h2>
+        <div class="bg-gray-300 text-black rounded p-2">
+            {{ \Carbon\Carbon::parse($leave->start_date)->format('F d, Y') }} - 
+            {{ \Carbon\Carbon::parse($leave->end_date)->format('F d, Y') }}
+        </div>
+        <div class="bg-gray-300 text-black rounded p-2">
+            Applied Days: {{ $leave->days_applied }}
+        </div>
+        <div class="bg-gray-300 text-black rounded p-2">
+            Type of Leave: {{ $leave->leave_type }}
+        </div>
+        <div class="bg-gray-300 text-black rounded p-2">
+            Commutation: {{ $leave->commutation ? 'Yes' : 'No' }}
+        </div>
+    </div>
+
+    @if(in_array($leave->leave_type, ['Sick Leave', 'Maternity Leave', 'Paternity Leave']))
+        <div>
+            <h3 class="font-semibold">Attached Documents</h3>
+            @php $leaveFiles = json_decode($leave->leave_files, true); @endphp
+            @if(!empty($leaveFiles))
+                <div class="flex gap-2 overflow-x-auto">
+                    @foreach($leaveFiles as $file)
+                        <img src="{{ asset('storage/' . $file) }}"
+                             onclick="openModal('{{ asset('storage/' . $file) }}')"
+                             class="w-20 h-20 object-cover rounded border cursor-pointer">
+                    @endforeach
+                </div>
+            @else
+                <p class="text-sm text-gray-500">No images available</p>
+            @endif
+        </div>
+    @endif
+
+    <div>
+        <h3 class="font-semibold">Details</h3>
+        <textarea readonly class="w-full p-2 rounded border text-sm bg-gray-50">{{ 
+            !empty($decodedDetails) ? (is_array($decodedDetails) ? implode(', ', $decodedDetails) : $decodedDetails) : 'None' 
+        }}</textarea>
+    </div>
+
+    <form action="{{ route('leave.admin-review', $leave->id) }}" method="POST" class="w-full">
+        @csrf
+        <button type="submit" name="admin_status" value="Approved" 
+                class="w-full py-2 bg-blue-600 text-white font-semibold rounded-lg">
+            Proceed to HR
+        </button>
+    </form>
+</div>
+
+<!-- Modal (Same across both views) -->
+<div id="imageModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex justify-center items-center z-[9999]" onclick="closeModal(event)">
+    <div class="bg-white p-4 rounded-lg relative" onclick="event.stopPropagation()">
+        <img id="modalImage" src="" class="w-[300px] sm:w-[600px] h-auto object-cover rounded-lg">
+    </div>
+</div>
+
+<script>
+    function openModal(imageSrc) {
+        document.getElementById('modalImage').src = imageSrc;
+        document.getElementById('imageModal').classList.remove('hidden');
+    }
+
+    function closeModal(event) {
+        if (event.target.id === 'imageModal') {
+            document.getElementById('imageModal').classList.add('hidden');
+        }
+    }
+</script>
 @endsection
 
 <style>
