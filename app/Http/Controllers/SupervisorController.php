@@ -7,6 +7,7 @@ use App\Http\Requests\EmailUpdateRequest;
 use App\Models\Leave;
 use App\Models\User;
 use Carbon\Carbon;
+use App\Models\VisitorLog;
 use App\Models\YearlyHoliday;
 use Barryvdh\DomPDF\Facade\Pdf;
 use App\Models\HRSupervisor;
@@ -64,8 +65,24 @@ class SupervisorController extends Controller
             'Approved' => $approvedCto,
             'Rejected' => $rejectedCto,
         ];
+
+        $selectedYear = $request->input('year', now()->year);
+
+        $rawData = VisitorLog::selectRaw('COUNT(*) as count, MONTH(visited_at) as month')
+        ->whereYear('visited_at', $selectedYear)
+        ->groupBy('month')
+        ->pluck('count', 'month');
+
+        // Create full 12 months so that empty months still show as 0
+        $months = collect(range(1, 12))->map(function ($month) {
+            return \Carbon\Carbon::create()->month($month)->format('F');
+        });
+
+        $visitorCounts = $months->map(function ($monthName, $index) use ($rawData) {
+            return $rawData->get($index + 1, 0); // +1 because Carbon months start at 1
+        });
     
-        return view('supervisor.dashboard', compact('totalUsers', 'approvedLeaves', 'pendingLeaves', 'rejectedLeaves', 'leaveStats', 'cocStats' , 'employees', 'search'));
+        return view('supervisor.dashboard', compact('totalUsers', 'approvedLeaves', 'pendingLeaves', 'rejectedLeaves', 'leaveStats', 'cocStats' , 'employees', 'search', 'months', 'visitorCounts', 'selectedYear'));
     }
     
     
