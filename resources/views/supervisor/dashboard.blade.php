@@ -1,108 +1,117 @@
 @extends('layouts.supervisor.sidebar-header')
 
 @section('content')
-<div class="fixed top-4 right-4 z-[9999]">
+<div class="fixed top-0 right-0 sm:top-4 sm:right-4 z-[9999]">
     <x-notify::notify />
 </div>
+@notifyJs
 
-<div class="container p-6 animate-fade-in">
-    <h2 class="text-2xl font-bold mb-4">Application Management</h2>
-
-    <div class="container mx-auto px-4">
-        <!-- Leave & CTO Requests Summary -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<div class="max-w-7xl mx-auto p-6 space-y-6 animate-fade-in">
+    <div class="container mx-auto px-2 sm:px-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
             @foreach([['Leave Requests', $leaveStats], ['CTO Requests', $cocStats]] as [$title, $stats])
-                <div class="bg-white p-6 rounded-lg shadow-md flex flex-col h-full">
-                    <h2 class="text-2xl font-bold text-gray-800 mb-4">{{ $title }}</h2>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 flex-grow">
+                <div class="bg-white p-4 sm:p-6 rounded-lg shadow-md flex flex-col h-full">
+                    <h2 class="text-lg sm:text-xl md:text-2xl font-bold text-gray-800 mb-3 sm:mb-4">{{ $title }}</h2>
+                    <div class="grid grid-cols-3 gap-2 sm:gap-4 flex-grow">
                         @foreach(['Pending' => 'yellow', 'Approved' => 'green', 'Rejected' => 'red'] as $status => $color)
-                            <div class="bg-{{ $color }}-100 p-6 rounded-lg shadow text-center flex flex-col justify-center min-h-[140px]">
-                                <h3 class="text-md sm:text-xl font-semibold text-gray-700">{{ $status }}</h3>
-                                <p class="text-3xl sm:text-4xl font-bold text-{{ $color }}-600">{{ $stats[$status] }}</p>
+                            <div class="bg-{{ $color }}-100 p-3 sm:p-4 md:p-6 rounded-lg shadow text-center flex flex-col justify-center min-h-[100px] sm:min-h-[120px] md:min-h-[140px]">
+                                <h3 class="text-xs sm:text-sm md:text-base font-semibold text-gray-700">{{ $status }}</h3>
+                                <p class="text-xl sm:text-2xl md:text-3xl font-bold text-{{ $color }}-600 mt-1">{{ $stats[$status] }}</p>
                             </div>
                         @endforeach
                     </div>
                 </div>
             @endforeach
         </div>
-    </div>    
-
-    <div class="bg-white p-6 rounded-lg shadow-md text-center mb-4">
-        <h3 class="text-xl font-semibold text-gray-700 mb-2">Total Employees</h3>
-        <p class="text-6xl font-bold text-blue-600">{{ $totalUsers }}</p>
-    </div>
-
-    <!-- Leave Statistics Bar Chart -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <!-- Leave Statistics Bar Chart -->
-        <div class="bg-white p-6 rounded-lg shadow-md">
-            <h3 class="text-xl font-semibold text-gray-700 mb-4">Leave Requests Overview</h3>
-            <div class="w-full h-64">
-                <canvas id="leaveChart"></canvas>
-            </div>
+    
+        <div class="bg-white p-4 sm:p-6 rounded-lg shadow-md text-center mt-4 sm:mt-6">
+            <h3 class="text-lg sm:text-xl font-semibold text-gray-700 mb-2">Total Employees</h3>
+            <p class="text-4xl sm:text-5xl md:text-6xl font-bold text-blue-600">{{ $totalEmployees }}</p>
         </div>
     
-        <!-- CTO / Overtime Requests Bar Chart -->
-        <div class="bg-white p-6 rounded-lg shadow-md">
-            <h3 class="text-xl font-semibold text-gray-700 mb-4">CTO / Overtime Requests Overview</h3>
-            <div class="w-full h-64">
-                <canvas id="ctoChart"></canvas>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mt-4 sm:mt-6">
+            <div class="bg-white p-4 sm:p-6 rounded-lg shadow-md">
+                <h3 class="text-lg sm:text-xl font-semibold text-gray-700 mb-3 sm:mb-4">Leave Requests Overview</h3>
+                <div class="w-full h-48 sm:h-64">
+                    <canvas id="leaveChart"></canvas>
+                </div>
             </div>
-        </div>        
-    </div>    
-
-    <div class="mt-4">
-        <form method="GET" action="{{ route('supervisor.dashboard') }}">
-            <label for="year" class="text-sm font-medium text-gray-700">Select Year:</label>
-            <select name="year" id="year" class="border rounded p-2 w-[10%]">
-                @foreach(range(now()->year, now()->year - 5) as $yr)
-                    <option value="{{ $yr }}" {{ request('year', now()->year) == $yr ? 'selected' : '' }}>
-                        {{ $yr }}
-                    </option>
-                @endforeach
-            </select>
-            <button type="submit" class="ml-2 bg-blue-500 text-white px-4 py-1 rounded">Apply</button>
-        </form>
         
-            <!-- Visitor Chart Section -->
-        <div class="bg-white p-6 rounded-lg shadow-md mt-6">
-            <h2 class="text-lg font-bold text-gray-800 mb-4">
-                Monthly Visitor Analytics for {{ $selectedYear }}
-            </h2>
-            
-            <canvas id="visitorChart" height="100"></canvas>
+            <div class="bg-white p-4 sm:p-6 rounded-lg shadow-md">
+                <h3 class="text-lg sm:text-xl font-semibold text-gray-700 mb-3 sm:mb-4">CTO / Overtime Requests Overview</h3>
+                <div class="w-full h-48 sm:h-64">
+                    <canvas id="ctoChart"></canvas>
+                </div>
+            </div>        
         </div>
-        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-        <script>
-            const ctx = document.getElementById('visitorChart').getContext('2d');
-            const visitorChart = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: {!! json_encode($months ?? []) !!},
-                    datasets: [{
-                        label: 'Visitors',
-                        data: {!! json_encode($visitorCounts ?? []) !!},
-                        backgroundColor: 'rgba(59, 130, 246, 0.5)', // blue-500
-                        borderColor: 'rgba(59, 130, 246, 1)',
-                        borderWidth: 1,
-                        borderRadius: 6
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            ticks: {
-                                precision: 0 // force whole numbers
+        
+        <div class="mt-4">
+            <form method="GET" action="{{ route('supervisor.dashboard') }}">
+                <label for="year" class="text-sm font-medium text-gray-700">Select Year:</label>
+                <select name="year" id="year" class="border rounded p-2 w-[30%] lg:w-[10%]">
+                    @foreach(range(now()->year, now()->year - 5) as $yr)
+                        <option value="{{ $yr }}" {{ request('year', now()->year) == $yr ? 'selected' : '' }}>
+                            {{ $yr }}
+                        </option>
+                    @endforeach
+                </select>
+                <button type="submit" class="ml-2 bg-blue-500 text-white px-4 py-1 rounded">Apply</button>
+            </form>
+            
+                <!-- Visitor Chart Section -->
+            <div class="bg-white p-6 rounded-lg shadow-md mt-6">
+                <h2 class="text-lg font-bold text-gray-800 mb-4">
+                    Monthly Visitor Analytics for {{ $selectedYear }}
+                </h2>
+                
+                <div class="overflow-x-auto w-full">
+                    <div style="min-width: 700px;"> <!-- Set a minimum width to fit all bars -->
+                        <canvas id="visitorChart" height="250"></canvas>
+                    </div>
+                </div>
+            </div>
+            <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+            <script>
+                const ctx = document.getElementById('visitorChart').getContext('2d');
+                const visitorChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: {!! json_encode($months ?? []) !!},
+                        datasets: [{
+                            label: 'Visitors',
+                            data: {!! json_encode($visitorCounts ?? []) !!},
+                            backgroundColor: 'rgba(59, 130, 246, 0.5)', // Tailwind blue-500
+                            borderColor: 'rgba(59, 130, 246, 1)',
+                            borderWidth: 1,
+                            borderRadius: 6
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false, // Important for mobile
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    precision: 0 // Force whole numbers
+                                }
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                labels: {
+                                    font: {
+                                        size: 12 // Better readability on mobile
+                                    }
+                                }
                             }
                         }
                     }
-                }
-            });
-        </script>
-    </div>
-    
+                });
+            </script>
+        </div>
+    </div>   
+
     <div class="flex items-center space-x-2 my-5" x-data="{ search: '' }">
         <input 
             type="text" 
@@ -117,12 +126,9 @@
             Clear
         </button>
     </div>
-
-    <!-- Search Results -->
     <div id="employee-results">
         @include('supervisor.partials.employee-list', ['employees' => $employees])
     </div>
-</div>
 </div>
 
 <script>
@@ -139,6 +145,7 @@
         .catch(error => console.error('Error:', error));
     }
 </script>
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
@@ -204,6 +211,6 @@
         to { opacity: 1; }
     }
 </style>
-@endsection
 
+@endsection
 @notifyCss

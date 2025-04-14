@@ -28,7 +28,7 @@ class SupervisorController extends Controller
     public function index(Request $request)
     {
         $search = $request->input('search');
-    
+
         $query = User::query();
     
         if ($search) {
@@ -42,28 +42,30 @@ class SupervisorController extends Controller
         $employees = $query->paginate(10)->withQueryString();
     
         if ($request->ajax()) {
-            // Return only the employee list as a partial view for AJAX requests
             return view('supervisor.partials.employee-list', compact('employees'))->render();
         }
     
-        $totalUsers = User::count();
-        $approvedLeaves = Leave::where('supervisor_status', 'approved')->count();
-        $pendingLeaves = Leave::where('status', 'waiting_for_supervisor')->count();
-        $rejectedLeaves = Leave::where('supervisor_status', 'rejected')->count();
-        $approvedCto = OvertimeRequest::where('supervisor_status', 'approved')->count();
-        $pendingCto = OvertimeRequest::where('supervisor_status', 'pending')->count();
-        $rejectedCto = OvertimeRequest::where('supervisor_status', 'rejected')->count();
+    
+        $pendingLeaves = Leave::where('admin_status', 'approved')->get();
+    
+        $totalEmployees = User::count();
+        $totalPendingLeaves = Leave::where('admin_status', 'approved')->count();
+        $totalApprovedLeaves = Leave::where('status', 'approved')->count();
+        $totalRejectedLeaves = Leave::where('status', 'rejected')->count();
+        $totalApprovedOvertime = OvertimeRequest::where('status', 'approved')->count();
+        $totalPendingOvertime = OvertimeRequest::where('status', 'pending')->count();
+        $totalRejectedOvertime = OvertimeRequest::where('status', 'rejected')->count();
     
         $leaveStats = [
-            'Pending' => $pendingLeaves,
-            'Approved' => $approvedLeaves,
-            'Rejected' => $rejectedLeaves,
+            'Pending' => $totalPendingLeaves,
+            'Approved' => $totalApprovedLeaves,
+            'Rejected' => $totalRejectedLeaves,
         ];
-
+    
         $cocStats = [
-            'Pending' => $pendingCto,
-            'Approved' => $approvedCto,
-            'Rejected' => $rejectedCto,
+            'Pending' => $totalPendingOvertime,
+            'Approved' => $totalApprovedOvertime,
+            'Rejected' => $totalRejectedOvertime,
         ];
 
         $selectedYear = $request->input('year', now()->year);
@@ -82,7 +84,7 @@ class SupervisorController extends Controller
             return $rawData->get($index + 1, 0); // +1 because Carbon months start at 1
         });
     
-        return view('supervisor.dashboard', compact('totalUsers', 'approvedLeaves', 'pendingLeaves', 'rejectedLeaves', 'leaveStats', 'cocStats' , 'employees', 'search', 'months', 'visitorCounts', 'selectedYear'));
+        return view('supervisor.dashboard', compact('employees', 'pendingLeaves', 'totalEmployees', 'leaveStats', 'cocStats', 'search', 'months', 'visitorCounts', 'selectedYear'));
     }
     
     

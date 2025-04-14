@@ -9,27 +9,68 @@
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/5.11.3/main.min.css">
-    <!-- Load Your Compiled JavaScript -->
     @vite('resources/js/app.js')
     @vite('resources/css/app.css')
+
+    <style>
+        @media (max-width: 640px) {
+            body {
+                font-size: 14px;
+            }
+            main {
+                padding: 0.75rem !important;
+            }
+        }
+        
+        html, body {
+            max-width: 100%;
+            overflow-x: hidden;
+        }
+    </style>
 </head>
-<body class="font-poppins h-screen overflow-hidden">
-    <div x-data="{ sidebarOpen: false }" class="flex h-screen">
-        <!-- Sidebar -->
+<body class="font-poppins h-screen overflow-hidden" x-data="{ sidebarOpen: false }">
+    <div class="flex h-screen">
         @include('supervisor.partials.sidebar')
 
-        <!-- Main Content -->
-        <div class="flex-1 flex flex-col h-screen">
-            <!-- Header -->
+        <div class="flex-1 flex flex-col min-h-screen overflow-hidden">
             @include('supervisor.partials.header')
 
-            <!-- Page Content (Scrollable Area) -->
-            <main class="flex-1 p-6 overflow-y-auto">
+            <main class="flex-1 p-2 sm:p-4 md:p-6 overflow-y-auto min-w-0">
                 @yield('content')
             </main>
+
+            @include('layouts.developers')
+    
+            <button data-modal-target="developersModal" data-modal-toggle="developersModal" type="button" class="fixed bottom-4 left-4 z-50 p-3 bg-white text-black rounded-full shadow-lg hover:bg-blue-700 hover:text-white">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                </svg>
+            </button>
         </div>
     </div>
 </body>
-
-
+<script>
+    document.querySelectorAll('[data-modal-toggle]').forEach(button => {
+        button.addEventListener('click', () => {
+        const modalId = button.getAttribute('data-modal-toggle');
+        const modal = document.getElementById(modalId);
+        if (modal) {
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+        });
+    });
+    
+    document.querySelectorAll('[data-modal-hide]').forEach(button => {
+        button.addEventListener('click', () => {
+        const modalId = button.getAttribute('data-modal-hide');
+        const modal = document.getElementById(modalId);
+        if (modal) {
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+        });
+    });
+    </script>
 </html>
