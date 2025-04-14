@@ -243,10 +243,10 @@
             <div class="mt-4 bg-white p-4 rounded-lg shadow-sm">
                 <h3 class="text-lg sm:text-xl font-semibold text-gray-700 mb-3">Total Balance</h3>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div class="flex justify-between items-center bg-blue-50 p-2 rounded">
+                    {{-- <div class="flex justify-between items-center bg-blue-50 p-2 rounded">
                         <span class="text-sm sm:text-base text-gray-700">Leave Available:</span>
                         <span class="font-medium text-blue-600">{{ $user->leave_balance ?? 0 }} day(s)</span>
-                    </div>
+                    </div> --}}
                     <div class="flex justify-between items-center bg-blue-50 p-2 rounded">
                         <span class="text-sm sm:text-base text-gray-700">COC Available:</span>
                         <span class="font-medium text-blue-600">{{ $user->overtime_balance ?? 0 }} hour(s)</span>

@@ -992,44 +992,39 @@ public function deleteLeave($id) {
             'disapproval_reason' => 'nullable|string',
         ]);
 
-        $hr_status = strtolower($request->hr_status); 
+        $hr_status = strtolower($request->hr_status);
+        $user = $cto->user;
+        $supervisor_status = $cto->supervisor_status;
+        $status = 'rejected';
 
         if ($hr_status === 'approved') {
-            $supervisor_status = 'approved';
-            $status = 'approved'; 
-
-            $user = $cto->user; 
-            $remainingHours = $cto->working_hours_applied; 
-
-            if ($user && $user->overtime_balance >= $remainingHours) {
+            if ($user && $user->overtime_balance >= $cto->working_hours_applied) {
+                $remainingHours = $cto->working_hours_applied;
 
                 $cocLogs = CocLog::where('user_id', $user->id)
                     ->where('is_expired', false)
-                    ->orderBy('created_at', 'asc') 
+                    ->orderBy('created_at', 'asc')
                     ->get();
 
                 foreach ($cocLogs as $cocLog) {
-                    if ($remainingHours <= 0) {
-                        break; 
-                    }
+                    if ($remainingHours <= 0) break;
 
                     if ($cocLog->coc_earned <= $remainingHours) {
                         $remainingHours -= $cocLog->coc_earned;
                         $cocLog->update(['is_expired' => true]);
                     } else {
-                        
                         $cocLog->decrement('coc_earned', $remainingHours);
                         $remainingHours = 0;
                     }
                 }
 
                 $user->decrement('overtime_balance', $cto->working_hours_applied);
+
+                $supervisor_status = 'approved';
+                $status = 'approved';
             } else {
                 return back()->withErrors(['overtime_balance' => 'User does not have enough overtime balance.']);
             }
-        } else {
-            $supervisor_status = $cto->supervisor_status; 
-            $status = 'rejected'; 
         }
 
         $cto->update([
@@ -1040,12 +1035,13 @@ public function deleteLeave($id) {
             'hr_officer_id' => Auth::id(),
         ]);
 
-        $cto->user->notify(new LeaveStatusNotification($cto, 
+        $cto->user->notify(new LeaveStatusNotification(
+            $cto,
             "Your CTO request has been <span class='" . 
-            ($cto->status === 'approved' ? 'text-green-500' : 'text-red-500') . "'>" . 
-            $cto->status . "</span> by the HR.", 
-            $cto, 
-            'leave' 
+            ($status === 'approved' ? 'text-green-500' : 'text-red-500') . "'>" . 
+            $status . "</span> by the HR.",
+            $cto,
+            'leave'
         ));
         $user = $cto->user; 
         $status = $cto->status;

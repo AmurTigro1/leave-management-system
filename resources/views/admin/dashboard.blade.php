@@ -32,55 +32,71 @@
         </div>
     </div>    
 
-    <form method="GET" action="{{ route('admin.dashboard') }}">
-        <label for="year" class="text-sm font-medium text-gray-700">Select Year:</label>
-        <select name="year" id="year" class="border rounded p-2 w-[10%]">
-            @foreach(range(now()->year, now()->year - 5) as $yr)
-                <option value="{{ $yr }}" {{ request('year', now()->year) == $yr ? 'selected' : '' }}>
-                    {{ $yr }}
-                </option>
-            @endforeach
-        </select>
-        <button type="submit" class="ml-2 bg-blue-500 text-white px-4 py-1 rounded">Apply</button>
-    </form>
-    
-        <!-- Visitor Chart Section -->
-    <div class="bg-white p-6 rounded-lg shadow-md mt-6">
-        <h2 class="text-lg font-bold text-gray-800 mb-4">
-            Monthly Visitor Analytics for {{ $selectedYear }}
-        </h2>
+    <div class="mt-4">
+        <form method="GET" action="{{ route('admin.dashboard') }}">
+            <label for="year" class="text-sm font-medium text-gray-700">Select Year:</label>
+            <select name="year" id="year" class="border rounded p-2 w-[30%] lg:w-[10%]">
+                @foreach(range(now()->year, now()->year - 5) as $yr)
+                    <option value="{{ $yr }}" {{ request('year', now()->year) == $yr ? 'selected' : '' }}>
+                        {{ $yr }}
+                    </option>
+                @endforeach
+            </select>
+            <button type="submit" class="ml-2 bg-blue-500 text-white px-4 py-1 rounded">Apply</button>
+        </form>
         
-        <canvas id="visitorChart" height="100"></canvas>
-    </div>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script>
-        const ctx = document.getElementById('visitorChart').getContext('2d');
-        const visitorChart = new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: {!! json_encode($months ?? []) !!},
-                datasets: [{
-                    label: 'Visitors',
-                    data: {!! json_encode($visitorCounts ?? []) !!},
-                    backgroundColor: 'rgba(59, 130, 246, 0.5)', // blue-500
-                    borderColor: 'rgba(59, 130, 246, 1)',
-                    borderWidth: 1,
-                    borderRadius: 6
-                }]
-            },
-            options: {
-                responsive: true,
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        ticks: {
-                            precision: 0 // force whole numbers
+            <!-- Visitor Chart Section -->
+        <div class="bg-white p-6 rounded-lg shadow-md mt-6">
+            <h2 class="text-lg font-bold text-gray-800 mb-4">
+                Monthly Visitor Analytics for {{ $selectedYear }}
+            </h2>
+            
+            <div class="overflow-x-auto w-full">
+                <div style="min-width: 700px;"> <!-- Set a minimum width to fit all bars -->
+                    <canvas id="visitorChart" height="250"></canvas>
+                </div>
+            </div>
+        </div>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script>
+            const ctx = document.getElementById('visitorChart').getContext('2d');
+            const visitorChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: {!! json_encode($months ?? []) !!},
+                    datasets: [{
+                        label: 'Visitors',
+                        data: {!! json_encode($visitorCounts ?? []) !!},
+                        backgroundColor: 'rgba(59, 130, 246, 0.5)', // Tailwind blue-500
+                        borderColor: 'rgba(59, 130, 246, 1)',
+                        borderWidth: 1,
+                        borderRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false, // Important for mobile
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                precision: 0 // Force whole numbers
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            labels: {
+                                font: {
+                                    size: 12 // Better readability on mobile
+                                }
+                            }
                         }
                     }
                 }
-            }
-        });
-    </script>
+            });
+        </script>
+    </div>
 
 
     <!-- Search bar with responsive layout -->

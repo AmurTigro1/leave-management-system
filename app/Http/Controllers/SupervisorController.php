@@ -7,6 +7,7 @@ use App\Http\Requests\EmailUpdateRequest;
 use App\Models\Leave;
 use App\Models\User;
 use Carbon\Carbon;
+use App\Models\VisitorLog;
 use App\Models\YearlyHoliday;
 use Barryvdh\DomPDF\Facade\Pdf;
 use App\Models\HRSupervisor;
@@ -27,7 +28,7 @@ class SupervisorController extends Controller
     public function index(Request $request)
     {
         $search = $request->input('search');
-    
+
         $query = User::query();
     
         if ($search) {
@@ -41,31 +42,49 @@ class SupervisorController extends Controller
         $employees = $query->paginate(10)->withQueryString();
     
         if ($request->ajax()) {
-            // Return only the employee list as a partial view for AJAX requests
             return view('supervisor.partials.employee-list', compact('employees'))->render();
         }
     
-        $totalUsers = User::count();
-        $approvedLeaves = Leave::where('supervisor_status', 'approved')->count();
-        $pendingLeaves = Leave::where('status', 'waiting_for_supervisor')->count();
-        $rejectedLeaves = Leave::where('supervisor_status', 'rejected')->count();
-        $approvedCto = OvertimeRequest::where('supervisor_status', 'approved')->count();
-        $pendingCto = OvertimeRequest::where('supervisor_status', 'pending')->count();
-        $rejectedCto = OvertimeRequest::where('supervisor_status', 'rejected')->count();
+    
+        $pendingLeaves = Leave::where('admin_status', 'approved')->get();
+    
+        $totalEmployees = User::count();
+        $totalPendingLeaves = Leave::where('admin_status', 'approved')->count();
+        $totalApprovedLeaves = Leave::where('status', 'approved')->count();
+        $totalRejectedLeaves = Leave::where('status', 'rejected')->count();
+        $totalApprovedOvertime = OvertimeRequest::where('status', 'approved')->count();
+        $totalPendingOvertime = OvertimeRequest::where('status', 'pending')->count();
+        $totalRejectedOvertime = OvertimeRequest::where('status', 'rejected')->count();
     
         $leaveStats = [
-            'Pending' => $pendingLeaves,
-            'Approved' => $approvedLeaves,
-            'Rejected' => $rejectedLeaves,
-        ];
-
-        $cocStats = [
-            'Pending' => $pendingCto,
-            'Approved' => $approvedCto,
-            'Rejected' => $rejectedCto,
+            'Pending' => $totalPendingLeaves,
+            'Approved' => $totalApprovedLeaves,
+            'Rejected' => $totalRejectedLeaves,
         ];
     
-        return view('supervisor.dashboard', compact('totalUsers', 'approvedLeaves', 'pendingLeaves', 'rejectedLeaves', 'leaveStats', 'cocStats' , 'employees', 'search'));
+        $cocStats = [
+            'Pending' => $totalPendingOvertime,
+            'Approved' => $totalApprovedOvertime,
+            'Rejected' => $totalRejectedOvertime,
+        ];
+
+        $selectedYear = $request->input('year', now()->year);
+
+        $rawData = VisitorLog::selectRaw('COUNT(*) as count, MONTH(visited_at) as month')
+        ->whereYear('visited_at', $selectedYear)
+        ->groupBy('month')
+        ->pluck('count', 'month');
+
+        // Create full 12 months so that empty months still show as 0
+        $months = collect(range(1, 12))->map(function ($month) {
+            return \Carbon\Carbon::create()->month($month)->format('F');
+        });
+
+        $visitorCounts = $months->map(function ($monthName, $index) use ($rawData) {
+            return $rawData->get($index + 1, 0); // +1 because Carbon months start at 1
+        });
+    
+        return view('supervisor.dashboard', compact('employees', 'pendingLeaves', 'totalEmployees', 'leaveStats', 'cocStats', 'search', 'months', 'visitorCounts', 'selectedYear'));
     }
     
     

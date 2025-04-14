@@ -124,8 +124,8 @@
     </div>
 </header>
 
-<div id="logoutModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden px-4 max-sm:m-10 z-[9999]">
-    <div class="bg-white rounded-lg shadow-lg p-6 w-[90%] max-w-[450px]">
+<div id="logoutModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden z-[9999]">
+    <div class="bg-white rounded-lg shadow-lg p-6 w-[90%] max-w-[450px] mx-auto">
         <div class="flex justify-center">
             <img src="/img/dilg-main.png" alt="DILG Logo" class="h-[70px] w-[70px] sm:h-[80px] sm:w-[80px] mb-4">
         </div>
@@ -148,7 +148,7 @@
                 </button>
             </form>
 
-            <div id="loading-screen" class="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 hidden">
+            <div id="loading-screen" class="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 hidden z-[10000]">
                 <div class="flex flex-col items-center bg-white p-6 rounded-lg shadow-lg">
                     <svg class="animate-spin h-10 w-10 text-blue-500 mb-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 12h16m-8-8v16" />
@@ -159,6 +159,7 @@
         </div>
     </div>
 </div>
+
 <meta name="csrf-token" content="{{ csrf_token() }}">
 
 <script>
