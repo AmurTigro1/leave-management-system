@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+use App\Mail\CTOApprovalMail;
 use App\Models\User;
 use App\Models\HRSupervisor;
 use App\Models\Leave;
@@ -22,6 +23,8 @@ use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
+use App\Mail\LeaveApprovalMail;
+use Illuminate\Support\Facades\Mail;
 use App\Models\Holiday;
 use App\Models\CocLog;
 
@@ -968,6 +971,15 @@ public function deleteLeave($id) {
             $leave, 
             'leave' 
         ));
+
+        $status = $leave->status;
+            try {
+                Mail::to($user->email)->queue(new LeaveApprovalMail($leave, $status));
+            } catch (\Exception $e) {
+             
+                \Log::error('Failed to send leave approval email: ' . $e->getMessage());
+            }
+
      
         notify()->success('Leave application reviewed successfully!');
         return redirect()->route('hr.requests');
@@ -1035,6 +1047,14 @@ public function deleteLeave($id) {
             $cto, 
             'leave' 
         ));
+        $user = $cto->user; 
+        $status = $cto->status;
+        try {
+            Mail::to($user->email)->queue(new CTOApprovalMail($cto, $status));
+        } catch (\Exception $e) {
+            \Log::error('Failed to send CTO email: ' . $e->getMessage());
+        }
+        
 
         notify()->success('CTO application reviewed by HR.');
         return redirect()->route('hr.requests');
