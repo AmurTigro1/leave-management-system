@@ -18,6 +18,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'admin' => \App\Http\Middleware\AdminMiddleware::class,
             'auth' => \App\Http\Middleware\AuthMiddleware::class,
             'role' => \App\Http\Middleware\CheckRole::class,
+            'visitor' => \App\Http\Middleware\LogVisitor::class,
         ]);
 
         $middleware->append([

@@ -9,6 +9,7 @@ use App\Services\YearlyHolidayService;
 use App\Models\Leave;
 use App\Models\YearlyHoliday;
 use App\Models\OvertimeRequest;
+use App\Models\VisitorLog;
 use App\Models\User;
 use Illuminate\Support\Facades\Storage;
 use Carbon\Carbon;
@@ -65,8 +66,24 @@ class AdminController extends Controller
             'Approved' => $totalApprovedOvertime,
             'Rejected' => $totalRejectedOvertime,
         ];
+
+        $selectedYear = $request->input('year', now()->year);
+
+        $rawData = VisitorLog::selectRaw('COUNT(*) as count, MONTH(visited_at) as month')
+        ->whereYear('visited_at', $selectedYear)
+        ->groupBy('month')
+        ->pluck('count', 'month');
+
+        // Create full 12 months so that empty months still show as 0
+        $months = collect(range(1, 12))->map(function ($month) {
+            return \Carbon\Carbon::create()->month($month)->format('F');
+        });
+
+        $visitorCounts = $months->map(function ($monthName, $index) use ($rawData) {
+            return $rawData->get($index + 1, 0); // +1 because Carbon months start at 1
+        });
     
-        return view('admin.dashboard', compact('employees', 'pendingLeaves', 'totalEmployees', 'leaveStats', 'cocStats', 'search'));
+        return view('admin.dashboard', compact('employees', 'pendingLeaves', 'totalEmployees', 'leaveStats', 'cocStats', 'search', 'months', 'visitorCounts', 'selectedYear'));
     }
 
     public function makeLeaveRequest()

@@ -44,6 +44,58 @@
                 </div>
             </div>        
         </div>
+        
+        <div class="mt-4">
+            <form method="GET" action="{{ route('hr.dashboard') }}">
+                <label for="year" class="text-sm font-medium text-gray-700">Select Year:</label>
+                <select name="year" id="year" class="border rounded p-2 w-[10%]">
+                    @foreach(range(now()->year, now()->year - 5) as $yr)
+                        <option value="{{ $yr }}" {{ request('year', now()->year) == $yr ? 'selected' : '' }}>
+                            {{ $yr }}
+                        </option>
+                    @endforeach
+                </select>
+                <button type="submit" class="ml-2 bg-blue-500 text-white px-4 py-1 rounded">Apply</button>
+            </form>
+            
+                <!-- Visitor Chart Section -->
+            <div class="bg-white p-6 rounded-lg shadow-md mt-6">
+                <h2 class="text-lg font-bold text-gray-800 mb-4">
+                    Monthly Visitor Analytics for {{ $selectedYear }}
+                </h2>
+                
+                <canvas id="visitorChart" height="100"></canvas>
+            </div>
+            <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+            <script>
+                const ctx = document.getElementById('visitorChart').getContext('2d');
+                const visitorChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: {!! json_encode($months ?? []) !!},
+                        datasets: [{
+                            label: 'Visitors',
+                            data: {!! json_encode($visitorCounts ?? []) !!},
+                            backgroundColor: 'rgba(59, 130, 246, 0.5)', // blue-500
+                            borderColor: 'rgba(59, 130, 246, 1)',
+                            borderWidth: 1,
+                            borderRadius: 6
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    precision: 0 // force whole numbers
+                                }
+                            }
+                        }
+                    }
+                });
+            </script>
+        </div>
     </div>   
 
     <div class="flex items-center space-x-2 my-5" x-data="{ search: '' }">

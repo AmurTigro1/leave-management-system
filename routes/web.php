@@ -14,7 +14,7 @@ use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\CocLogController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', [AuthenticatedSessionController::class, 'landing']);
+Route::get('/', [AuthenticatedSessionController::class, 'landing'])->middleware('visitor');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
