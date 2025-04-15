@@ -4,7 +4,7 @@
     <div class="container mx-auto max-w-7xl px-4 flex sm:flex-row justify-between space-y-3 sm:space-y-0">
         <div class="mr-52"></div>
 
-        <nav class="flex items-center space-x-6">
+        <nav class="flex items-center -ml-5">
             <div class="flex flex-row text-gray-600 space-x-2">
                 <div class="sm:flex hidden text-gray-600 space-x-4">
                     <div class="flex items-center">
@@ -74,35 +74,36 @@
                 <button id="dropdown-btn" class="flex items-center justify-between w-full px-4 rounded-lg transition-all duration-200 ease-in-out">
                     <div class="flex items-center justify-between p-2 rounded-lg">
                         
-                        <div class="flex items-center space-x-4">
-                            <div class="w-10 h-10 rounded-full overflow-hidden bg-gray-100 flex items-center justify-center border-2 border-gray-200 hover:border-blue-300 transition-all duration-300">
-                                @php
-                                    $profileImage = null;
-                            
-                                    if (auth()->user()->profile_image) {
-                                        $imagePath1 = 'storage/profile_images/' . auth()->user()->profile_image;
-                                        $imagePath2 = 'storage/profile_pictures/' . auth()->user()->profile_image;
-                            
-                                        if (file_exists(public_path($imagePath1))) {
-                                            $profileImage = asset($imagePath1);
-                                        } elseif (file_exists(public_path($imagePath2))) {
-                                            $profileImage = asset($imagePath2);
+                            <div class="flex items-center space-x-4">
+                                <div class="w-10 h-10 rounded-full overflow-hidden bg-gray-100 flex items-center justify-center border-2 border-gray-200 hover:border-blue-300 transition-all duration-300">
+                                    @php
+                                        $profileImage = null;
+                                
+                                        if (auth()->user()->profile_image) {
+                                            $imagePath1 = 'storage/profile_images/' . auth()->user()->profile_image;
+                                            $imagePath2 = 'storage/profile_pictures/' . auth()->user()->profile_image;
+                                
+                                            if (file_exists(public_path($imagePath1))) {
+                                                $profileImage = asset($imagePath1);
+                                            } elseif (file_exists(public_path($imagePath2))) {
+                                                $profileImage = asset($imagePath2);
+                                            }
                                         }
-                                    }
-                                @endphp
-                            
-                                @if ($profileImage)
-                                    <img src="{{ $profileImage }}" class="w-full h-full object-cover">
-                                @else
-                                    <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"></path>
-                                    </svg>
-                                @endif
+                                    @endphp
+                                
+                                    @if ($profileImage)
+                                        <img src="{{ $profileImage }}" class="w-full h-full object-cover">
+                                    @else
+                                        <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"></path>
+                                        </svg>
+                                    @endif
+                                </div>
+                                
+                                <span class="hidden md:inline text-gray-700 font-semibold text-sm hover:text-blue-600 transition-colors duration-300">
+                                    {{ Auth::user()->first_name }}
+                                </span>
                             </div>
-                    
-                            <span class="text-gray-700 font-semibold text-sm hover:text-blue-600 transition-colors duration-300">
-                                {{ Auth::user()->first_name }}
-                            </span>
                         </div>
                     </div>
                     <svg class="w-4 h-4 text-gray-500 ml-2" fill="currentColor" viewBox="0 0 20 20">

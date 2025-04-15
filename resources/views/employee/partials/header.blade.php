@@ -3,7 +3,7 @@
     <div class="container mx-auto max-w-7xl px-4 flex sm:flex-row justify-between space-y-3 sm:space-y-0">
         <div class="mr-52"></div>
 
-        <nav class="flex items-center space-x-6">
+        <nav class="flex items-center -ml-5">
             <div class="flex flex-row text-gray-600 space-x-2">
                 <div class="sm:flex hidden text-gray-600 space-x-4">
                     <div class="flex items-center">
@@ -100,8 +100,7 @@
                                 @endif
                             </div>
                             
-                    
-                            <span class="text-gray-700 font-semibold text-sm hover:text-blue-600 transition-colors duration-300">
+                            <span class="hidden md:inline text-gray-700 font-semibold text-sm hover:text-blue-600 transition-colors duration-300">
                                 {{ Auth::user()->first_name }}
                             </span>
                         </div>
@@ -124,16 +123,6 @@
                         </li> 
                     </ul>
                 </div>
-            </div>
-            
-            @else
-            <div class="flex items-center space-x-4">
-                <a href="{{ route('login') }}" class="text-gray-600 hover:text-blue-600 font-semibold text-lg">
-                    {{ __('Login') }}
-                </a>
-                <a href="{{ route('register') }}" class="text-gray-600 hover:text-blue-600 font-semibold text-lg">
-                    {{ __('Register') }}
-                </a>
             </div>
             @endif
         </nav>

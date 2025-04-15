@@ -4,7 +4,7 @@
     <div class="container mx-auto max-w-7xl px-4 flex sm:flex-row justify-between space-y-3 sm:space-y-0">
         <div class="mr-52"></div>
 
-        <nav class="flex items-center space-x-6">
+        <nav class="flex items-center -ml-5">
             <div class="flex flex-row text-gray-600 space-x-2">
                 <div class="sm:flex hidden text-gray-600 space-x-4">
                     <div class="flex items-center">
@@ -99,8 +99,8 @@
                                     </svg>
                                 @endif
                             </div>
-                    
-                            <span class="text-gray-700 font-semibold text-sm hover:text-blue-600 transition-colors duration-300">
+                            
+                            <span class="hidden md:inline text-gray-700 font-semibold text-sm hover:text-blue-600 transition-colors duration-300">
                                 {{ Auth::user()->first_name }}
                             </span>
                         </div>
