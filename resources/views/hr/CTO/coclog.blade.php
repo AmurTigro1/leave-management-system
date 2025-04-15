@@ -60,7 +60,7 @@
                             <span class="text-xs font-medium">COC Earned:</span>
                             @if($log->is_expired)
                                 <span class="text-xs bg-red-100 text-red-800 px-2 py-1 rounded-full">{{ $log->coc_earned }} hours</span>
-                            @elseif($log->consumed)
+                            @elseif($log->consumed || $log->coc_earned == 0)
                                 <span class="text-xs bg-red-100 text-red-800 px-2 py-1 rounded-full">{{ $log->coc_earned }} hours</span>
                             @else
                                 <span class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full">{{ $log->coc_earned }} hours</span>
@@ -70,7 +70,7 @@
                             <span class="text-xs font-medium">Status:</span>
                             @if($log->is_expired)
                                 <span class="text-xs bg-red-100 text-red-800 px-2 py-1 rounded-full">Expired</span>
-                            @elseif($log->consumed)
+                            @elseif($log->consumed || $log->coc_earned == 0)
                                 <span class="text-xs bg-red-100 text-red-800 px-2 py-1 rounded-full">Used</span>
                             @else
                                 <span class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full">Active</span>
@@ -143,7 +143,7 @@
                                     <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
                                         {{ $log->coc_earned }} hours
                                     </span>
-                                @elseif($log->consumed)
+                                @elseif($log->consumed || $log->coc_earned == 0)
                                     <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
                                         {{ $log->coc_earned }} hours
                                     </span>
@@ -157,7 +157,7 @@
                             <td class="px-4 py-4 whitespace-nowrap">
                                 @if($log->is_expired)
                                     <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">Expired</span>
-                                @elseif($log->consumed)
+                                @elseif($log->consumed || $log->coc_earned == 0)
                                     <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">Used</span>
                                 @else
                                     <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Active</span>
