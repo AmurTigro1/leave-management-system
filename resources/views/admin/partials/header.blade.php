@@ -70,6 +70,7 @@
                 <button id="dropdown-btn" class="flex items-center justify-between w-full px-4 rounded-lg transition-all duration-200 ease-in-out">
                     <div class="flex items-center justify-between p-2 rounded-lg">
                         
+                        <div class="flex items-center space-x-4">
                             <div class="flex items-center space-x-4">
                                 <div class="w-10 h-10 rounded-full overflow-hidden bg-gray-100 flex items-center justify-center border-2 border-gray-200 hover:border-blue-300 transition-all duration-300">
                                     @php
