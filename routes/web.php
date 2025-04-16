@@ -124,6 +124,10 @@ Route::middleware('auth')->group(function () {
         Route::delete('/hr/my-CTO-requests/delete/{id}', [HrController::class, 'deleteCTO'])->name('hr.cto_delete');
         // Route::get('/hr-CTO/view/{id}', [HrController::class, 'viewCtoPdf'])->name('hr.overtime.viewPdf');
 
+        //Alter Employee Balances
+        Route::get('hr/employee-balances', [EmployeeBalanceController::class, 'indexHr'])->name('hr.employee-balances.index');
+        Route::put('hr/employee-balances/{user}', [EmployeeBalanceController::class, 'updateHr'])->name('hr.employee-balances.update');
+
         Route::get('/check-existing-roles', [UserController::class, 'checkExistingRoles'])->name('check.existing.roles');
         Route::post('/swap-roles', [UserController::class, 'swapRoles'])->name('swap.roles');
 

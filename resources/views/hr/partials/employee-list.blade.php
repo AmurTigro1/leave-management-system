@@ -1,6 +1,6 @@
 <a id="pagination"></a>
 <div class="p-4 sm:p-6 bg-white shadow-md rounded-lg">
-    <h3 class="text-xl sm:text-2xl font-semibold text-gray-800 mb-4">Employee Balances</h3>
+    <h3 class="text-xl sm:text-2xl font-semibold text-gray-800 mb-4">Employee List</h3>
     
     <div class="overflow-x-auto">
         <table class="min-w-full bg-white border border-gray-200 text-xs sm:text-sm text-gray-700">

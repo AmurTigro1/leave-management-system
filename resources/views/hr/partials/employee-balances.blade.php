@@ -1,5 +1,4 @@
 <div class="w-full">
-    {{-- Desktop Table --}}
     <div class="hidden sm:block overflow-x-auto">
         <table class="min-w-full divide-y divide-gray-200">
             <thead class="bg-gray-50">
@@ -10,6 +9,7 @@
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Department</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Vacation Leave</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sick Leave</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Balance</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                 </tr>
             </thead>
@@ -56,12 +56,12 @@
                         <button onclick="openEditModal({{ json_encode($employee) }})" class="text-indigo-600 hover:text-indigo-900">Edit</button>
                     </td>
                 </tr>
+                
                 @endforeach
             </tbody>
         </table>
     </div>
 
-    {{-- Mobile Card Layout --}}
     <div class="sm:hidden space-y-4">
         @foreach($employees as $employee)
             <div class="bg-white shadow rounded-lg p-4">
