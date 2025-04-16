@@ -61,20 +61,31 @@
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700">Leave Type</label>
-                    <select name="leave_type" id="leave_type" class="mt-1 w-full p-2 border rounded-md text-sm sm:text-base focus:ring-blue-500 focus:border-blue-500">
+                    <select name="leave_type" id="leave_type" class="mt-1 w-full p-2 border rounded" onchange="handleLeaveType()">
                         <option value="">Select Leave Type</option>
                         <option value="Vacation Leave">Vacation Leave (Sec. 51, Rule XVI, Omnibus Rules Implementing E.O. No. 292)  </option>
                         <option value="Mandatory Leave">Mandatory/Forced Leave (Sec. 25, Rule XVL, Omnibus Rules Implementing E.O. No. 292)</option>
                         <option value="Sick Leave">Sick Leave (Sec. 43, Rule XVI, Omnibus Rules Implementing E.O. No. 292)</option>
+                        @if($gender == 'female')
                         <option value="Maternity Leave">Maternity Leave (R.A. No. 11210/IRR issued by CSC, DOLE and SSS)</option>
+                        @endif
+                        @if($gender == 'male')
                         <option value="Paternity Leave">Paternity Leave (R.A. 8187/CSC MC No. 71, s. 1998, as amended)</option>
+                        @endif
                         <option value="Special Privilege Leave">Special Privilege Leave (Sec. 21, Rule XVI, Omnibus Rules Implementing E.O. No. 292)</option>
                         <option value="Solo Parent Leave">Solo Parent Leave (R.A No. 8972/CSC MC No. 8, s. 2004)</option>
                         <option value="Study Leave">Study Leave (Sec. 68, Rule XVL, Omnibus Rules Implementing E.O. No. 292)</option>
+                        @if($gender == 'female')
                         <option value="10-Day VAWC Leave">10-Day VAWC Leave (R.A. No. 9262/CSC MC No. 15, s. 2005)</option>
+                        @endif
                         <option value="Rehabilitation Privilege">Rehabilitation Privilege (Sec. 55, Rule XVL, Omnibus Rules Implementing E.O. No. 292)</option>
-                        <option value="Special Leave Benefits for Women Leave">Special Leave Benefits for Women (R>A. No. 9710/CSC MC No. 25, s. 2010))</option>
+                        @if($gender == 'female')
+                        <option value="Special Leave Benefits for Women Leave">Special Leave Benefits for Women (R>A. No. 9710/CSC MC No. 25, s. 2010)</option>
+                        @endif
                         <option value="Special Emergency Leave">Special Emergency (Calamity) Leave (CSC MC No. 2, s. 2012, as amended)</option>
+                        {{-- <option value="Adoption Leave ">Adoption Leave (R.A. No. 8552)</option> --}}
+                        {{-- <option value="Other Purposes">Other Purposes</option>
+                        <option value="Others">Others</option>  --}}
                     </select>
                     @error('leave_type')
                     <p class="text-red-500 text-sm">{{ $message }}</p>

@@ -98,7 +98,8 @@ class EmployeeController extends Controller
     public function makeRequest()
     {
         $leaves = Leave::where('user_id', Auth::id())->latest()->get();
-        return view('employee.make_request', compact('leaves'));
+        $gender = Auth::user()->gender;
+        return view('employee.make_request', compact('leaves', 'gender'));
     }
     
     public function store(Request $request, YearlyHolidayService $yearlyHolidayService)  

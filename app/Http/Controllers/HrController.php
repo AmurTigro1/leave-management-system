@@ -119,7 +119,8 @@ class HrController extends Controller
     public function makeLeaveRequest()
     {
         $leaves = Leave::where('user_id', Auth::id())->latest()->get();
-        return view('hr.make_leave_request', compact('leaves'));
+        $gender = Auth::user()->gender;
+        return view('hr.make_leave_request', compact('leaves', 'gender'));
     }
 
     public function storeLeave(Request $request, YearlyHolidayService $yearlyHolidayService)  

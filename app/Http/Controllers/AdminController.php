@@ -89,7 +89,8 @@ class AdminController extends Controller
     public function makeLeaveRequest()
     {
         $leaves = Leave::where('user_id', Auth::id())->latest()->get();
-        return view('admin.make_leave_request', compact('leaves'));
+        $gender = Auth::user()->gender;
+        return view('admin.make_leave_request', compact('leaves', 'gender'));
     }
 
     public function storeLeave(Request $request, YearlyHolidayService $yearlyHolidayService)  

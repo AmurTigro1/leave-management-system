@@ -18,6 +18,7 @@ class UserController extends Controller
         'first_name' => 'required|string|max:100',
         'middle_name' => 'nullable|string|max:100',
         'last_name' => 'required|string|max:100',
+        'gender' => 'required|string|max:100',
         'position' => 'required|string|max:100',
         'department' => 'required|string|max:100',
         'email' => 'required|email|unique:users,email',
@@ -45,6 +46,7 @@ class UserController extends Controller
         'first_name' => $validatedData['first_name'],
         'middle_name' => $validatedData['middle_name'] ?? null,
         'last_name' => $validatedData['last_name'],
+        'gender' => $validatedData['gender'],
         'position' => $validatedData['position'],
         'department' => $validatedData['department'],
         'email' => $validatedData['email'],
@@ -68,6 +70,7 @@ public function update(Request $request, $id)
         'first_name' => 'required|string|max:100',
         'middle_name' => 'nullable|string|max:100',
         'last_name' => 'required|string|max:100',
+        'gender' => 'required|string|max:100',
         'position' => 'required|string|max:100',
         'department' => 'required|string|max:100',
         'email' => 'required|email|unique:users,email,' . $user->id,
@@ -125,6 +128,7 @@ public function update(Request $request, $id)
     $user->first_name = $validatedData['first_name'];
     $user->middle_name = $validatedData['middle_name'] ?? null;
     $user->last_name = $validatedData['last_name'];
+    $user->gender = $validatedData['gender'];
     $user->position = $validatedData['position'];
     $user->department = $validatedData['department'];
     $user->email = $validatedData['email'];
