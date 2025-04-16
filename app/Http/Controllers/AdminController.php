@@ -424,11 +424,11 @@ class AdminController extends Controller
         }
     
         $leaveApplications = Leave::where('admin_status', 'pending')
-        ->orderBy('created_at', 'desc') 
+        ->orderBy('created_at', 'asc') 
         ->paginate(9); 
 
         $ctoApplications = OvertimeRequest::where('admin_status', 'pending')
-        ->orderBy('created_at', 'desc') 
+        ->orderBy('created_at', 'asc') 
         ->paginate(9); 
 
         return view('admin.requests', compact('leaveApplications', 'ctoApplications'));
