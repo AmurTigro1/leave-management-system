@@ -26,6 +26,7 @@
                 @csrf
                 @method('PUT')
 
+                <p class="text-sm border-yellow-600 border-l-4 bg-yellow-100 text-yellow-900 py-2 px-4 rounded-lg mb-2">More than 10 days leave</p>
                 <div class="mb-4">
                     <label class="block text-gray-700 font-bold mb-2">Supervisor Name</label>
                     <input type="text" name="supervisor_name" class="w-full border p-2 rounded-lg"
@@ -38,7 +39,7 @@
                         value="{{ $official->hr_name }}" required>
                 </div>
 
-                <div class="mb-4">
+                {{-- <div class="mb-4">
                     <label class="block text-gray-700 font-bold mb-2">Upload Supervisor Signature</label>
                     <input type="file" name="supervisor_signature" class="w-full border p-2 rounded-lg" accept="image/*,.pdf">
                     @if($official->supervisor_signature)
@@ -60,7 +61,7 @@
                             </a>
                         </p>
                     @endif
-                </div>
+                </div> --}}
 
                 <div class="flex justify-center gap-2">
                     <button type="submit" class="bg-blue-600 text-white py-2 px-4 rounded-lg">Update</button>
