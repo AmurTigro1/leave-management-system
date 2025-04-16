@@ -33,15 +33,16 @@
                             'cancelled' => 'bg-gray-500 line-through'
                         ];
                         $status = 'pending';
-                        if ($overtime->hr_status == 'approved' && $overtime->supervisor_status == 'pending' && $overtime->admin_status == 'Ready for Review') {
+
+                        if ($overtime->status == 'cancelled' || $overtime->supervisor_status == 'cancelled') {
+                            $status = 'cancelled';
+                        } elseif ($overtime->hr_status == 'approved' && $overtime->supervisor_status == 'pending' && $overtime->admin_status == 'Ready for Review') {
                             $status = 'waiting';
                         } elseif ($overtime->hr_status == 'approved' && $overtime->supervisor_status == 'approved') {
                             $status = 'approved';
                         } elseif ($overtime->hr_status == 'rejected' || $overtime->supervisor_status == 'rejected') {
                             $status = 'rejected';
-                        } elseif ($overtime->status == 'cancelled' || $overtime->supervisor_status == 'cancelled') {
-                            $status = 'cancelled';
-                        } 
+                        }
                     @endphp
                     <span class="px-2 py-1 text-xs text-white rounded-lg {{ $status_classes[$status] }}">
                         {{ ucfirst($status) }}
@@ -117,15 +118,16 @@
                                             'cancelled' => 'bg-gray-500 line-through'
                                         ];
                                         $status = 'pending';
-                                        if ($overtime->hr_status == 'approved' && $overtime->supervisor_status == 'pending' && $overtime->admin_status == 'Ready for Review') {
+
+                                        if ($overtime->status == 'cancelled' || $overtime->supervisor_status == 'cancelled') {
+                                            $status = 'cancelled';
+                                        } elseif ($overtime->hr_status == 'approved' && $overtime->supervisor_status == 'pending' && $overtime->admin_status == 'Ready for Review') {
                                             $status = 'waiting';
                                         } elseif ($overtime->hr_status == 'approved' && $overtime->supervisor_status == 'approved') {
                                             $status = 'approved';
                                         } elseif ($overtime->hr_status == 'rejected' || $overtime->supervisor_status == 'rejected') {
                                             $status = 'rejected';
-                                        } elseif ($overtime->status == 'cancelled' || $overtime->supervisor_status == 'cancelled') {
-                                            $status = 'cancelled';
-                                        } 
+                                        }
                                     @endphp
                                     <span class="px-2 py-1 text-xs text-white rounded-lg {{ $status_classes[$status] }}">
                                         {{ ucfirst($status) }}

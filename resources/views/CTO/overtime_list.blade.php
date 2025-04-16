@@ -33,15 +33,16 @@
                             'cancelled' => 'bg-gray-500 line-through'
                         ];
                         $status = 'pending';
-                        if ($overtime->hr_status == 'approved' && $overtime->supervisor_status == 'pending' && $overtime->admin_status == 'Ready for Review') {
+
+                        if ($overtime->status == 'cancelled' || $overtime->supervisor_status == 'cancelled') {
+                            $status = 'cancelled';
+                        } elseif ($overtime->hr_status == 'approved' && $overtime->supervisor_status == 'pending' && $overtime->admin_status == 'Ready for Review') {
                             $status = 'waiting';
                         } elseif ($overtime->hr_status == 'approved' && $overtime->supervisor_status == 'approved') {
                             $status = 'approved';
                         } elseif ($overtime->hr_status == 'rejected' || $overtime->supervisor_status == 'rejected') {
                             $status = 'rejected';
-                        } elseif ($overtime->status == 'cancelled' || $overtime->supervisor_status == 'cancelled') {
-                            $status = 'cancelled';
-                        } 
+                        }
                     @endphp
                     <span class="px-2 py-1 text-xs text-white rounded-lg {{ $status_classes[$status] }}">
                         {{ ucfirst($status) }}
@@ -67,7 +68,7 @@
                         <button onclick="opencocRequestUpdateModal({{$overtime->id}})" class="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded hover:bg-gray-200">
                             Edit
                         </button>
-                        @if($overtime->status === 'pending')
+                        @if($overtime->status === 'pending' || $overtime->status === 'approved')
                         <button type="button" onclick="openCancelCtoModal({{ $overtime->id }})"
                                 class="text-xs bg-yellow-100 text-yellow-600 px-2 py-1 rounded hover:bg-yellow-200">
                             Cancel
@@ -121,15 +122,17 @@
                                             'cancelled' => 'bg-gray-500 line-through'
                                         ];
                                         $status = 'pending';
-                                        if ($overtime->hr_status == 'approved' && $overtime->supervisor_status == 'pending' && $overtime->admin_status == 'Ready for Review') {
+
+                                        if ($overtime->status == 'cancelled' || $overtime->supervisor_status == 'cancelled') {
+                                            $status = 'cancelled';
+                                        } elseif ($overtime->hr_status == 'approved' && $overtime->supervisor_status == 'pending' && $overtime->admin_status == 'Ready for Review') {
                                             $status = 'waiting';
                                         } elseif ($overtime->hr_status == 'approved' && $overtime->supervisor_status == 'approved') {
                                             $status = 'approved';
                                         } elseif ($overtime->hr_status == 'rejected' || $overtime->supervisor_status == 'rejected') {
                                             $status = 'rejected';
-                                        } elseif ($overtime->status == 'cancelled' || $overtime->supervisor_status == 'cancelled') {
-                                            $status = 'cancelled';
-                                        } 
+                                        }
+
                                     @endphp
                                     <span class="px-2 py-1 text-xs text-white rounded-lg {{ $status_classes[$status] }}">
                                         {{ ucfirst($status) }}
@@ -146,7 +149,6 @@
                                             </svg>
                                         </button>
                                 
-                                        <!-- Dropdown menu -->
                                         <div x-show="open" @click.away="open = false" 
                                         class="fixed transform -translate-x-1/2 mt-2 w-40 bg-white border rounded-lg shadow-lg z-50">
                                             @if($overtime->status === 'cancelled')
@@ -175,16 +177,16 @@
                                                 Edit
                                             </button>
 
-                                            @if($overtime->status === 'pending')
-                                                    <button type="button" onclick="openCancelCtoModal({{ $overtime->id }})" class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                                                        Cancel Request
-                                                    </button>
-                                                    @elseif($overtime->status === 'cancelled')
-                                                    <button type="button" onclick="openRestoreCtoModal({{ $overtime->id }})"
-                                                        class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                                                        Restore Request
-                                                    </button>
-                                                @endif
+                                            @if($overtime->status === 'pending' || $overtime->status === 'approved')
+                                                <button type="button" onclick="openCancelCtoModal({{ $overtime->id }})" class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                                    Cancel Request
+                                                </button>
+                                            @elseif($overtime->status === 'cancelled')
+                                                <button type="button" onclick="openRestoreCtoModal({{ $overtime->id }})"
+                                                    class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                                    Restore Request
+                                                </button>
+                                            @endif
                                     
                                                 <button type="button" onclick="openDeleteOvertimeModal({{ $overtime->id }})" class="block w-full text-left px-4 py-2 text-sm text-red-700 hover:bg-red-100">
                                                     Delete
