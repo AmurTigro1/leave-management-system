@@ -29,6 +29,8 @@ class User extends Authenticatable
         'email',
         'employee_code',
         'birthday',
+        'certification_leave',
+        'certification_coc',
         'password',
         'role', 
         'vacation_leave_balance',

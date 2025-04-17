@@ -282,7 +282,7 @@
             </div>
             <div class="last-part">
                 <p class="leave-info2">7.A CERTIFICATION OF LEAVE CREDITS</p>
-                <p class="last-part-info">As of ________<span class="underline">{{ \Carbon\Carbon::parse($leave->date_filing)->format('F d, Y') }}</span>________</p>
+                <p class="last-part-info">As of ________<span class="underline">{{ \Carbon\Carbon::parse($leave->user->certification_leave)->format('F d, Y') }}</span>________</p>
                 <div class="last-table">
                     <table>
                         <thead>

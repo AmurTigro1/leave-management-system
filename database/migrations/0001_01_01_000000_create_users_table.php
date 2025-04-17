@@ -38,6 +38,8 @@ return new class extends Migration
             $table->integer('solo_parent_leave_taken')->default(0);
             $table->integer('overtime_balance')->default(0);
             $table->string('role')->default('employee'); 
+            $table->date('certification_leave')->nullable();
+            $table->date('certification_coc')->nullable();
             $table->date('birthday')->nullable();
             $table->string('profile_image')->nullable();
             $table->timestamp('email_verified_at')->nullable();

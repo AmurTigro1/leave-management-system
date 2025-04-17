@@ -41,9 +41,9 @@
                     </div>
                     <div class="middle">
                         <p class="cert">CERTIFICATION OF COMPENSATORY CREDITS (COC)</p>
-                        <p class="as-of">As of _______<span class="underline">{{ \Carbon\Carbon::parse($overtime->date_filed)->format('F') }}, {{ \Carbon\Carbon::parse($overtime->date_filed)->format('d') }}</span>_______, 20<span class="underline">{{ \Carbon\Carbon::parse($overtime->date_filed)->format('y') }}</span>.</p>
+                        <p class="as-of">As of _______<span class="underline">{{ \Carbon\Carbon::parse($overtime->user->certification_coc)->format('F') }}, {{ \Carbon\Carbon::parse($overtime->user->certification_coc)->format('d') }}</span>_______, 20<span class="underline">{{ \Carbon\Carbon::parse($overtime->user->certification_coc)->format('y') }}</span>.</p>
                         <p class="sub">(Month)</p>
-                        <p class="num">Number of hours earned: _________<span class="underline">{{ $overtime->user->overtime_balance}} hours</span>__________</p>
+                        <p class="num">Number of hours earned: _________________________</p>
                     </div>
                     <div class="end">
                         <p class="certified">CERTIFIED BY:</p>
@@ -99,10 +99,10 @@
                     </thead>
                     <tbody>
                         <tr>
-                            <td>{{ $overtime->user->overtime_balance }} hours</td>
+                            <td>{{ $overtime->user->overtime_balance + $overtime->working_hours_applied }} hours</td>
                             <td>{{ \Carbon\Carbon::parse($overtime->date_filed)->format('F d, Y') }}</td>
                             <td>{{ $overtime->working_hours_applied}} hours</td>
-                            <td></td>
+                            <td>{{ $overtime->user->overtime_balance }} hours</td>
                             <td></td>
                         </tr>
                         <tr>

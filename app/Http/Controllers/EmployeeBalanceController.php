@@ -63,6 +63,9 @@ class EmployeeBalanceController extends Controller
             'overtime_balance' => 'required|integer|min:0',
         ]);
 
+        $validated['certification_leave'] = now();
+        $validated['certification_coc'] = now();
+
         $user->update($validated);
 
         return response()->json([
@@ -128,6 +131,9 @@ class EmployeeBalanceController extends Controller
             'special_emergency_leave' => 'required|integer|min:0',
             'overtime_balance' => 'required|integer|min:0',
         ]);
+
+        $validated['certification_leave'] = now();
+        $validated['certification_coc'] = now();
 
         $user->update($validated);
 
