@@ -472,11 +472,11 @@ class HrController extends Controller
         }
 
         $leaveApplications = Leave::where('admin_status', 'approved')
-            ->orderBy('created_at', 'asc')
+            ->orderBy('created_at', 'desc')
             ->paginate(9);
 
         $ctoApplications = OvertimeRequest::where('admin_status', 'Ready for Review')
-            ->orderBy('created_at', 'asc')
+            ->orderBy('created_at', 'desc')
             ->paginate(9);
 
         $officials = HRSupervisor::all();
