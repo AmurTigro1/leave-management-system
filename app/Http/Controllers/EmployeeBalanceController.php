@@ -60,7 +60,7 @@ class EmployeeBalanceController extends Controller
             'special_leave_benefit' => 'required|integer|min:0',
             'special_privilege_leave' => 'required|integer|min:0',
             'special_emergency_leave' => 'required|integer|min:0',
-            'overtime_balance' => 'required|integer|min:0',
+            // 'overtime_balance' => 'required|integer|min:0',
         ]);
 
         $validated['certification_leave'] = now();
@@ -129,7 +129,7 @@ class EmployeeBalanceController extends Controller
             'special_leave_benefit' => 'required|integer|min:0',
             'special_privilege_leave' => 'required|integer|min:0',
             'special_emergency_leave' => 'required|integer|min:0',
-            'overtime_balance' => 'required|integer|min:0',
+            // 'overtime_balance' => 'required|integer|min:0',
         ]);
 
         $validated['certification_leave'] = now();

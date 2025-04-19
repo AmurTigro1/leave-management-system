@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\OvertimeRequest;
+use App\Models\CocLog;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Requests\ProfileUpdateRequest;
 use Illuminate\Http\RedirectResponse;
@@ -144,10 +145,12 @@ class OvertimeRequestController extends Controller
     {
         $overtime = OvertimeRequest::findOrFail($id);
 
+        $earned = CocLog::findOrFail($id);
+
         $supervisor = User::where('role', 'supervisor')->first();
         $hr = User::where('role', 'hr')->first();
         
-        $pdf = PDF::loadView('pdf.overtime_details', compact('overtime', 'supervisor', 'hr'));
+        $pdf = PDF::loadView('pdf.overtime_details', compact('overtime', 'supervisor', 'hr', 'earned'));
         
         return $pdf->stream('overtime_request_' . $overtime->id . '.pdf');
     }

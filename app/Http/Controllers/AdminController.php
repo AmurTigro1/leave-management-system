@@ -6,6 +6,7 @@ use App\Models\HRSupervisor;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use App\Services\YearlyHolidayService;
+use App\Models\CocLog;
 use App\Models\Leave;
 use App\Models\YearlyHoliday;
 use App\Models\OvertimeRequest;
@@ -469,11 +470,12 @@ class AdminController extends Controller
     public function viewCtoPdf($id)
     {
         $overtime = OvertimeRequest::findOrFail($id);
+        $earned = CocLog::findOrFail($id);
 
         $supervisor = User::where('role', 'supervisor')->first();
         $hr = User::where('role', 'hr')->first();
         
-        $pdf = PDF::loadView('pdf.overtime_details', compact('overtime', 'supervisor', 'hr'));
+        $pdf = PDF::loadView('pdf.overtime_details', compact('overtime', 'supervisor', 'hr', 'earned'));
         
         return $pdf->stream('overtime_request_' . $overtime->id . '.pdf');
     }

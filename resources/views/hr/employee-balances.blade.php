@@ -104,11 +104,11 @@
                                     class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
                             </div>
 
-                            <div>
+                            {{-- <div>
                                 <label for="overtime_balance" class="block text-sm font-medium text-gray-700">Overtime (hours)</label>
                                 <input type="number" name="overtime_balance" id="overtime_balance"
                                     class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-                            </div>
+                            </div> --}}
                         </div>
 
                         <!-- Special Leaves -->
@@ -221,7 +221,7 @@
         
         document.getElementById('vacation_leave_balance').value = employee.vacation_leave_balance;
         document.getElementById('sick_leave_balance').value = employee.sick_leave_balance;
-        document.getElementById('overtime_balance').value = employee.overtime_balance;
+        // document.getElementById('overtime_balance').value = employee.overtime_balance;
         document.getElementById('maternity_leave').value = employee.maternity_leave;
         document.getElementById('paternity_leave').value = employee.paternity_leave;
         document.getElementById('solo_parent_leave').value = employee.solo_parent_leave;
@@ -340,7 +340,7 @@ function showErrorNotification(message) {
         const leaveTypes = {
             'paternity_leave': 'P',
             'maternity_leave': 'M',
-            'overtime_balance': 'OT',
+            // 'overtime_balance': 'OT',
             'study_leave': 'Study',
             'vawc_leave': 'VAWC',
             'rehabilitation_leave': 'Rehab',
