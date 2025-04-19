@@ -129,7 +129,7 @@
         </div>
 
         <!-- Desktop Table View -->
-        <div class="hidden sm:block overflow-x-auto">
+        <div class="hidden sm:block">
             <table class="w-full border-collapse">
                 <thead>
                     <tr class="text-gray-600 text-sm bg-gray-100 border-b">

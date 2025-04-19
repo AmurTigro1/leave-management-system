@@ -119,7 +119,8 @@ class HrController extends Controller
     public function makeLeaveRequest()
     {
         $leaves = Leave::where('user_id', Auth::id())->latest()->get();
-        return view('hr.make_leave_request', compact('leaves'));
+        $gender = Auth::user()->gender;
+        return view('hr.make_leave_request', compact('leaves', 'gender'));
     }
 
     public function storeLeave(Request $request, YearlyHolidayService $yearlyHolidayService)  
@@ -471,11 +472,11 @@ class HrController extends Controller
         }
 
         $leaveApplications = Leave::where('admin_status', 'approved')
-            ->orderBy('created_at', 'asc')
+            ->orderBy('created_at', 'desc')
             ->paginate(9);
 
         $ctoApplications = OvertimeRequest::where('admin_status', 'Ready for Review')
-            ->orderBy('created_at', 'asc')
+            ->orderBy('created_at', 'desc')
             ->paginate(9);
 
         $officials = HRSupervisor::all();

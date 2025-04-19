@@ -48,6 +48,16 @@
                         <p class="text-red-500 text-xs">{{ $message }}</p>
                         @enderror
                     </div>
+                    <div class="mb-3">
+                        <label class="block text-xs text-gray-700 font-semibold">Role</label>
+                        <select name="role" id="role" class="w-full border rounded-lg focus:ring-2 focus:ring-blue-400 p-2 text-xs sm:text-sm" required>
+                            <option value="">Select Role</option>
+                            <option value="employee" selected>Employee</option>
+                            <option value="admin">Admin</option>
+                            {{-- <option value="hr">HR</option>
+                            <option value="supervisor">Supervisor</option> --}}
+                        </select>
+                    </div>
                 </div>
             </div>
 
@@ -84,24 +94,22 @@
                     </div>
 
                     <div class="mb-3">
-                        <label class="block text-xs text-gray-700 font-semibold">Birthday</label>
-                        <input type="date" name="birthday" id="birthday" class="w-full border rounded-lg focus:ring-2 focus:ring-blue-400 p-2 text-xs sm:text-sm" required>
-                        @error('birthday')
-                        <p class="text-red-500 text-xs">{{ $message }}</p>
-                        @enderror
+                        <label class="block text-xs text-gray-700 font-semibold">Gender</label>
+                        <select name="gender" id="gender" class="w-full border rounded-lg focus:ring-2 focus:ring-blue-400 p-2 text-xs sm:text-sm" required>
+                            <option value="">Select Gender</option>
+                            <option value="male">Male</option>
+                            <option value="female">Female</option>
+                        </select>
                     </div>
                 </div>
 
                 <div>
                     <div class="mb-3">
-                        <label class="block text-xs text-gray-700 font-semibold">Role</label>
-                        <select name="role" id="role" class="w-full border rounded-lg focus:ring-2 focus:ring-blue-400 p-2 text-xs sm:text-sm" required>
-                            <option value="">Select Role</option>
-                            <option value="employee" selected>Employee</option>
-                            <option value="admin">Admin</option>
-                            {{-- <option value="hr">HR</option>
-                            <option value="supervisor">Supervisor</option> --}}
-                        </select>
+                        <label class="block text-xs text-gray-700 font-semibold">Birthday</label>
+                        <input type="date" name="birthday" id="birthday" class="w-full border rounded-lg focus:ring-2 focus:ring-blue-400 p-2 text-xs sm:text-sm" required>
+                        @error('birthday')
+                        <p class="text-red-500 text-xs">{{ $message }}</p>
+                        @enderror
                     </div>
 
                     <div class="mb-3">

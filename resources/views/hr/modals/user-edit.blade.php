@@ -70,6 +70,17 @@
                             class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm 
                                 focus:outline-none focus:ring-blue-400 focus:border-blue-400 text-xs sm:text-sm">
                     </div>
+                    <div>
+                        <label class="block text-xs sm:text-sm font-medium text-gray-700">Role</label>
+                        <select name="role" 
+                            class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm 
+                                focus:outline-none focus:ring-blue-400 focus:border-blue-400 text-xs sm:text-sm">
+                            <option value="employee" {{ $user->role == 'employee' ? 'selected' : '' }}>Employee</option>
+                            <option value="admin" {{ $user->role == 'admin' ? 'selected' : '' }}>Admin</option>
+                            <option value="hr" {{ $user->role == 'hr' ? 'selected' : '' }}>HR</option>
+                            <option value="supervisor" {{ $user->role == 'supervisor' ? 'selected' : '' }}>Supervisor</option>
+                        </select>
+                    </div>
                 </div>
             </div>
 
@@ -103,25 +114,23 @@
                                 focus:outline-none focus:ring-blue-400 focus:border-blue-400 text-xs sm:text-sm">
                     </div>
                     <div>
-                        <label class="block text-xs sm:text-sm font-medium text-gray-700">Birthday</label>
-                        <input type="date" name="birthday" value="{{ $user->birthday }}" 
+                        <label class="block text-xs sm:text-sm font-medium text-gray-700">Gender</label>
+                        <select name="gender" 
                             class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm 
                                 focus:outline-none focus:ring-blue-400 focus:border-blue-400 text-xs sm:text-sm">
+                            <option value="male" {{ $user->gender == 'male' ? 'selected' : '' }}>Male</option>
+                            <option value="female" {{ $user->gender == 'female' ? 'selected' : '' }}>Female</option>
+                        </select>
                     </div>
                 </div>
 
                 <!-- Right Column -->
                 <div class="space-y-2 sm:space-y-3">
                     <div>
-                        <label class="block text-xs sm:text-sm font-medium text-gray-700">Role</label>
-                        <select name="role" 
+                        <label class="block text-xs sm:text-sm font-medium text-gray-700">Birthday</label>
+                        <input type="date" name="birthday" value="{{ $user->birthday }}" 
                             class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm 
                                 focus:outline-none focus:ring-blue-400 focus:border-blue-400 text-xs sm:text-sm">
-                            <option value="employee" {{ $user->role == 'employee' ? 'selected' : '' }}>Employee</option>
-                            <option value="admin" {{ $user->role == 'admin' ? 'selected' : '' }}>Admin</option>
-                            <option value="hr" {{ $user->role == 'hr' ? 'selected' : '' }}>HR</option>
-                            <option value="supervisor" {{ $user->role == 'supervisor' ? 'selected' : '' }}>Supervisor</option>
-                        </select>
                     </div>
                     <div>
                         <label class="block text-xs sm:text-sm font-medium text-gray-700">Username</label>

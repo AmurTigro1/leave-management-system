@@ -159,17 +159,18 @@
                     </span>
                     
                 </div>
-                
+                @if($gender == 'female')
                 <!-- Maternity Leave -->
                 <div class="flex justify-between items-center bg-white p-2 rounded shadow-sm">
                     <span class="text-sm sm:text-base text-gray-600">Maternity:</span>
                     <span class="font-medium text-gray-600">
                         {{ $user->maternity_leave ?? 0 }} 
                         {{ Str::plural('day', $user->maternity_leave ?? 0) }}
-                    </span>
-                    
+                    </span> 
                 </div>
-                
+                @endif
+
+                @if($gender == 'male')
                 <!-- Paternity Leave -->
                 <div class="flex justify-between items-center bg-white p-2 rounded shadow-sm">
                     <span class="text-sm sm:text-base text-gray-600">Paternity:</span>
@@ -178,7 +179,8 @@
                         {{ Str::plural('day', $user->paternity_leave ?? 0) }}
                     </span> 
                 </div>
-                <!-- Paternity Leave -->
+                @endif
+
                 <div class="flex justify-between items-center bg-white p-2 rounded shadow-sm">
                     <span class="text-sm sm:text-base text-gray-600">Special Privilege Leave:</span>
                     <span class="font-medium text-gray-600">
@@ -207,15 +209,16 @@
                     
                 </div>
                 
+                @if($gender == 'female')
                 <!-- VAWC Leave -->
                 <div class="flex justify-between items-center bg-white p-2 rounded shadow-sm">
                     <span class="text-sm sm:text-base text-gray-600">VAWC:</span>
                     <span class="font-medium text-gray-600">
                         {{ $user->vawc_leave ?? 0 }} 
                         {{ Str::plural('day', $user->vawc_leave ?? 0) }}
-                    </span>
-                    
+                    </span>      
                 </div>
+                @endif
                 
                 <!-- Rehabilitation Leave -->
                 <div class="flex justify-between items-center bg-white p-2 rounded shadow-sm">
@@ -227,15 +230,16 @@
                     
                 </div>
                 
+                @if($gender == 'female')
                 <!-- Special Leave Benefit -->
                 <div class="flex justify-between items-center bg-white p-2 rounded shadow-sm">
                     <span class="text-sm sm:text-base text-gray-600">Special Benefits :</span>
                     <span class="font-medium text-gray-600">
                         {{ $user->special_leave_benefit ?? 0 }} 
                         {{ Str::plural('day', $user->special_leave_benefit ?? 0) }}
-                    </span>
-                    
+                    </span>     
                 </div>
+                @endif
                 
                 <!-- Special Emergency Leave -->
                 <div class="flex justify-between items-center bg-white p-2 rounded shadow-sm">
