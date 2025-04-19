@@ -636,21 +636,20 @@ private function deductLeaveBalance($user, $leave)
     
     public function profile() {
         $user = Auth::user();
+        $gender = $user->gender;
         $currentYear = date('Y');
         
-        // Calculate the used mandatory leave days
+
         $usedMandatoryLeaveDays = Leave::where('user_id', $user->id)
             ->where('leave_type', 'Mandatory Leave')
             ->whereYear('start_date', $currentYear)
-            ->where('status', 'approved') // Only count approved leaves
+            ->where('status', 'approved') 
             ->sum('days_applied');
     
-        // Check if all mandatory leave is used
-        $mandatoryLeaveDays = 5; // Assuming the employee is required to take 5 days
+        $mandatoryLeaveDays = 5;
         $remainingLeaveDays = $mandatoryLeaveDays - $usedMandatoryLeaveDays;
     
-        // Pass data to the view
-        return view('employee.profile.index', compact('user', 'usedMandatoryLeaveDays', 'remainingLeaveDays'));
+        return view('employee.profile.index', compact('user', 'usedMandatoryLeaveDays', 'remainingLeaveDays', 'gender'));
     }
     
     

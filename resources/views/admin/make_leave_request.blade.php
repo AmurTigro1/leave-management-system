@@ -1,5 +1,5 @@
 @extends('layouts.admin.sidebar-header')
-    
+        
 @section('content')
 <div class="fixed top-4 right-4 z-[9999]">
     <x-notify::notify />
@@ -39,19 +39,18 @@
         <form method="POST" action="{{ route('admin-request.leave') }}" class=" p-4 rounded-lg" enctype="multipart/form-data">
             @csrf
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <!-- Enhanced Info Message -->
-            <div id="info_message" class="col-span-2 hidden">
-                <div class="p-4 bg-blue-50 border-l-4 border-blue-400 rounded-md shadow-sm">
-                    <div class="flex items-start">
-                        <div class="flex-shrink-0">
-                            <svg class="h-5 w-5 text-blue-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2h-1V9z" clip-rule="evenodd" />
-                            </svg>
-                        </div>
-                            <div class="ml-3">
+                <div id="info_message" class="hidden w-full md:col-span-2">
+                    <div class="p-3 sm:p-4 bg-blue-50 border-l-4 border-blue-400 rounded-md shadow-sm">
+                        <div class="flex items-start">
+                            <div class="flex-shrink-0 pt-0.5">
+                                <svg class="h-5 w-5 text-blue-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2h-1V9z" clip-rule="evenodd" />
+                                </svg>
+                            </div>
+                            <div class="ml-3 flex-1 min-w-0">
                                 <h3 class="text-sm font-medium text-blue-800" id="info_title">Information</h3>
                                 <div class="mt-1 text-sm text-blue-700">
-                                    <p id="info_text"></p>
+                                    <p id="info_text" class="break-words"></p>
                                 </div>
                                 <div class="mt-2">
                                     <button type="button" onclick="document.getElementById('info_message').classList.add('hidden')" class="text-blue-700 hover:text-blue-600 text-sm font-medium focus:outline-none">
@@ -387,25 +386,19 @@
                             </script>
             </div>      
             
-            <!-- Vacation Leave & Special Privilege Leave -->
-            <div id="vacation_options" class="hidden">
-                <div class="mt-4">
-                    <label>
-                        <input type="checkbox" name="within_philippines" value="1"> Within the Philippines
-                    </label>
-                    <input type="text" name="within_philippines" class="border rounded p-1">
+            <div id="vacation_options" class="hidden space-y-3">
+                <div>
+                    <label><input type="checkbox" name="within_philippines" value="1"> Within the Philippines</label>
+                    <input type="text" name="within_philippines" class="w-full border rounded p-1 mt-1">
                     @error('within_philippines')
-                    <p class="text-red-500 text-sm">{{ $message }}</p>
+                        <p class="text-red-500 text-sm">{{ $message }}</p>
                     @enderror
                 </div>
-                
-                <div class="mt-2">
-                    <label>
-                        <input type="checkbox" name="abroad" value="1"> Abroad
-                    </label>
-                    <input type="text" name="abroad_details" class="border rounded p-1" placeholder="Specify">
+                <div>
+                    <label><input type="checkbox" name="abroad" value="1"> Abroad</label>
+                    <input type="text" name="abroad_details" class="w-full border rounded p-1 mt-1" placeholder="Specify">
                     @error('abroad_details')
-                    <p class="text-red-500 text-sm">{{ $message }}</p>
+                        <p class="text-red-500 text-sm">{{ $message }}</p>
                     @enderror
                 </div>
             </div>

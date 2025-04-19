@@ -161,15 +161,7 @@
                     
                 </div>
                 
-                <!-- Paternity Leave -->
-                <div class="flex justify-between items-center bg-white p-2 rounded shadow-sm">
-                    <span class="text-sm sm:text-base text-gray-600">Paternity:</span>
-                    <span class="font-medium text-gray-600">
-                        {{ $user->paternity_leave ?? 0 }} 
-                        {{ Str::plural('day', $user->paternity_leave ?? 0) }}
-                    </span> 
-                </div>
-                <!-- Paternity Leave -->
+
                 <div class="flex justify-between items-center bg-white p-2 rounded shadow-sm">
                     <span class="text-sm sm:text-base text-gray-600">Special Privilege Leave:</span>
                     <span class="font-medium text-gray-600">
