@@ -43,7 +43,7 @@
                         <p class="cert">CERTIFICATION OF COMPENSATORY CREDITS (COC)</p>
                         <p class="as-of">As of _______<span class="underline">{{ \Carbon\Carbon::parse($overtime->user->certification_coc)->format('F') }}, {{ \Carbon\Carbon::parse($overtime->user->certification_coc)->format('d') }}</span>_______, 20<span class="underline">{{ \Carbon\Carbon::parse($overtime->user->certification_coc)->format('y') }}</span>.</p>
                         <p class="sub">(Month)</p>
-                        <p class="num">Number of hours earned: _________________________</p>
+                        <p class="num">Number of hours earned: _________{{ $earned->coc_earned}} hours_________</p>
                     </div>
                     <div class="end">
                         <p class="certified">CERTIFIED BY:</p>
