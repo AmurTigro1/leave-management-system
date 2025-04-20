@@ -26,7 +26,7 @@
     
         <div class="bg-white p-4 sm:p-6 rounded-lg shadow-md text-center mt-4 sm:mt-6">
             <h3 class="text-lg sm:text-xl font-semibold text-gray-700 mb-2">Total Employees</h3>
-            <p class="text-4xl sm:text-5xl md:text-6xl font-bold text-blue-600">{{ $totalEmployees }}</p>
+            <p class="text-4xl sm:text-5xl md:text-6xl lg:text-6xl font-bold text-blue-600">{{ $totalEmployees }}</p>
         </div>
     
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mt-4 sm:mt-6">

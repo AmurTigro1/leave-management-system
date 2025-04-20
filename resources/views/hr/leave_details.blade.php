@@ -14,7 +14,7 @@
     </div>
 </div>
 
-<div class="hidden md:block lg:flex justify-between items-start gap-4 h-full">
+<div class="hidden md:block md:flex lg:flex justify-between items-start gap-4 h-full">
     <!-- Right side -->
     <div class="bg-white shadow-xl rounded-lg p-6 space-y-6 w-[60%] min-h-[865px] h-full">
         <h2 class="text-2xl font-bold">Leave Balances</h2>
@@ -265,19 +265,30 @@
 <!-- Mobile View (only on small devices) -->
 <div class="block md:hidden space-y-6 bg-white p-4 rounded-lg shadow animate-fade-in">
     <div class="flex flex-col items-center">
+        @if ($leave->user->profile_image)
         @php
             $profileImage = null;
-            $imagePath1 = 'storage/profile_images/' . $leave->user->profile_image;
-            $imagePath2 = 'storage/profile_pictures/' . $leave->user->profile_image;
-            if (file_exists(public_path($imagePath1))) {
-                $profileImage = asset($imagePath1);
-            } elseif (file_exists(public_path($imagePath2))) {
-                $profileImage = asset($imagePath2);
+
+            if ($leave->user->profile_image) {
+                $imagePath1 = 'storage/profile_images/' . $leave->user->profile_image;
+                $imagePath2 = 'storage/profile_pictures/' . $leave->user->profile_image;
+
+                if (file_exists(public_path($imagePath1))) {
+                    $profileImage = asset($imagePath1);
+                } elseif (file_exists(public_path($imagePath2))) {
+                    $profileImage = asset($imagePath2);
+                }
             }
         @endphp
-        <img src="{{ $profileImage ?? asset('img/default-avatar.png') }}"
-             class="w-32 h-32 object-cover rounded-full mb-2"
-             alt="{{ $leave->user->name }}">
+
+        <img src="{{ $profileImage ?? asset('img/default-avatar.png') }}" 
+            class="w-32 h-32 object-cover"
+            alt="{{ $leave->user->name }}">
+        @else
+            <img src="{{ asset('img/default-avatar.png') }}" 
+                alt="" 
+                class="w-32 h-32 object-cover">
+        @endif
         <p class="font-semibold text-gray-500">Employee: {{ $leave->user->first_name }} {{ strtoupper(substr($leave->user->middle_name, 0, 1)) }}. {{ $leave->user->last_name }}</p>
         <p class="text-gray-500 text-sm">Email: {{ $leave->user->email }}</p>
         <p class="text-gray-500 text-sm mb-4">Position: {{ $leave->user->position }}</p>
