@@ -64,7 +64,6 @@ class EmployeeBalanceController extends Controller
         ]);
 
         $validated['certification_leave'] = now();
-        $validated['certification_coc'] = now();
 
         $user->update($validated);
 
@@ -133,7 +132,6 @@ class EmployeeBalanceController extends Controller
         ]);
 
         $validated['certification_leave'] = now();
-        $validated['certification_coc'] = now();
 
         $user->update($validated);
 

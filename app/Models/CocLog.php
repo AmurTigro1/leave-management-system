@@ -16,6 +16,7 @@ class CocLog extends Model
         'coc_earned',
         'consumed',
         'issuance',
+        'certification_coc',
         'expires_at',
         'is_expired'
     ];

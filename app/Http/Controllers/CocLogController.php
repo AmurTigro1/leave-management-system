@@ -56,6 +56,8 @@ class CocLogController extends Controller
             'issuance' => 'required|string|max:255',
         ]);
 
+        $validated['certification_coc'] = now();
+
         $validated['created_by'] = auth()->id();
         
         // Log timezone information for debugging
@@ -92,6 +94,8 @@ class CocLogController extends Controller
             'issuance' => 'nullable|string'
         ]);
 
+        $validated['certification_coc'] = now();
+        
         $originalCoc = $cocLog->coc_earned;
         $difference = 0;
 
