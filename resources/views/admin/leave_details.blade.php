@@ -6,7 +6,7 @@
     &larr; Back to Requests
 </a>
 
-<div class="hidden lg:flex justify-between items-start gap-4 h-full">
+<div class="hidden md:block lg:flex justify-between items-start gap-4 h-full">
     <!-- Right side -->
     <div class="bg-white shadow-xl rounded-lg p-6 space-y-6 w-[60%] min-h-[865px] h-full">
         <h2 class="text-2xl font-bold">Leave Balances</h2>
@@ -195,7 +195,7 @@
 </div>
 
 <!-- Mobile View (only on small devices) -->
-<div class="block lg:hidden space-y-6 bg-white p-4 rounded-lg shadow animate-fade-in">
+<div class="block md:hidden space-y-6 bg-white p-4 rounded-lg shadow animate-fade-in">
     <div class="flex flex-col items-center">
         @php
             $profileImage = null;
