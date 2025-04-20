@@ -2,7 +2,11 @@
 @section('content')
 
 <x-notify::notify />
-
+@foreach ($leaves as $leave)
+    @include('employee.leave modal.cancel_leavel_request', ['leave' => $leave])
+    @include('employee.leave modal.restore_leave_request', ['leave' => $leave])
+    @include('employee.leave modal.delete_leave_request', ['leave' => $leave])
+@endforeach
 <div class="animate-fade-in">
     <div class="bg-white shadow-md rounded-lg p-4 sm:p-6">
 
@@ -11,9 +15,6 @@
         <!-- Mobile Cards View -->
         <div class="block sm:hidden space-y-4">
             @foreach ($leaves as $leave)
-            @include('employee.leave modal.cancel_leavel_request', ['leave' => $leave])
-            @include('employee.leave modal.restore_leave_request', ['leave' => $leave])
-            @include('employee.leave modal.delete_leave_request', ['leave' => $leave])
                 <div class="border rounded-lg p-4 hover:shadow-md transition">
                     <div class="flex justify-between items-start">
                         <div>
