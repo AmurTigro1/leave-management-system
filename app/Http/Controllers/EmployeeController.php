@@ -183,7 +183,7 @@ class EmployeeController extends Controller
         ],
         'end_date' => 'required|date|after_or_equal:start_date',
         'reason' => 'nullable|string',
-        'leave_files.*' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048', // Multiple files
+        'leave_files.*' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048', 
         'days_applied' => 'required|integer|min:1',
         'signature' => 'required|image|mimes:jpeg,png,jpg|max:2048',
         'commutation' => 'required|boolean',
@@ -235,7 +235,7 @@ class EmployeeController extends Controller
         }
     }
 
-    $leaveTypeForBalance = $request->leave_type === 'Mandatory Leave' ? 'Vacation Leave' : $request->leave_type;
+    $leaveTypeForBalance = $request->leave_type; 
 
     if ($leaveTypeForBalance === 'Sick Leave') {
         $availableLeaveBalance = $user->sick_leave_balance;
@@ -243,6 +243,7 @@ class EmployeeController extends Controller
         $availableLeaveBalance = $user->vacation_leave_balance;
     } else {
         $availableLeaveBalance = match ($leaveTypeForBalance) {
+            'Mandatory Leave' => $user->mandatory_leave_balance,
             'Special Privilege Leave' => $user->special_privilege_leave,
             'Maternity Leave' => $user->maternity_leave,
             'Paternity Leave' => $user->paternity_leave,
@@ -320,14 +321,14 @@ class EmployeeController extends Controller
         }
     }
 
-    // Track how many days of Mandatory Leave already taken this year
+
     if ($request->leave_type === 'Mandatory Leave') {
         $currentYear = Carbon::now()->year;
         
         $mandatoryLeaveUsed = Leave::where('user_id', $user->id)
             ->where('leave_type', 'Mandatory Leave')
             ->whereYear('start_date', $currentYear)
-            ->whereIn('status', ['approved', 'pending']) // optionally include only 'approved'
+            ->whereIn('status', ['approved'])
             ->sum('days_applied');
 
         $remainingMandatoryLeave = 5 - $mandatoryLeaveUsed;

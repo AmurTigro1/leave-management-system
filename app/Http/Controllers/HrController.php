@@ -895,9 +895,8 @@ public function deleteLeave($id) {
         ];
     
         if ($hr_status === 'approved') {
-    
-            $leaveTypeForDeduction = $leave->leave_type === 'Mandatory Leave' ? 'Vacation Leave' : $leave->leave_type;
-    
+            $leaveTypeForDeduction = $leave->leave_type;
+        
             switch ($leaveTypeForDeduction) {
                 case 'Sick Leave':
                     if ($user->sick_leave_balance >= $leave->days_applied) {
@@ -908,7 +907,7 @@ public function deleteLeave($id) {
                         $user->vacation_leave_balance -= $remainingDays;
                     }
                     break;
-    
+        
                 case 'Vacation Leave':
                     if ($user->vacation_leave_balance >= $leave->days_applied) {
                         $user->vacation_leave_balance -= $leave->days_applied;
@@ -918,45 +917,51 @@ public function deleteLeave($id) {
                         $user->sick_leave_balance -= $remainingDays;
                     }
                     break;
+        
+                case 'Mandatory Leave':
+                    $user->mandatory_leave_balance -= $leave->days_applied;
+                    break;
+        
                 case 'Special Privilege Leave':
                     $user->special_privilege_leave -= $leave->days_applied;
                     break;
+        
                 case 'Maternity Leave':
                     $user->maternity_leave -= $leave->days_applied;
                     break;
-    
+        
                 case 'Paternity Leave':
                     $user->paternity_leave -= $leave->days_applied;
                     break;
-    
+        
                 case 'Solo Parent Leave':
                     $user->solo_parent_leave -= $leave->days_applied;
                     break;
-    
+        
                 case 'Study Leave':
                     $user->study_leave -= $leave->days_applied;
                     break;
-    
+        
                 case '10-Day VAWC Leave':
                     $user->vawc_leave -= $leave->days_applied;
                     break;
-    
+        
                 case 'Rehabilitation Privilege':
                     $user->rehabilitation_leave -= $leave->days_applied;
                     break;
-    
+        
                 case 'Special Leave Benefits for Women Leave':
                     $user->special_leave_benefit -= $leave->days_applied;
                     break;
-    
+        
                 case 'Special Emergency Leave':
                     $user->special_emergency_leave -= $leave->days_applied;
                     break;
-    
+        
                 default:
                     break;
             }
-    
+        
             $updateData['supervisor_status'] = 'approved';
             $updateData['supervisor_id'] = auth()->id();
             $updateData['status'] = 'approved';

@@ -40,15 +40,16 @@
                 
                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                         <div class="flex flex-wrap gap-1">
-                            @if($employee->maternity_leave) <span class="badge bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded">M: {{ $employee->maternity_leave }}d</span> @endif
-                            @if($employee->paternity_leave) <span class="badge bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded">P: {{ $employee->paternity_leave }}d</span> @endif
-                            @if($employee->overtime_balance) <span class="badge bg-yellow-100 text-yellow-800 text-xs font-semibold px-2.5 py-0.5 rounded">OT: {{ $employee->overtime_balance }}h</span> @endif
-                            @if($employee->study_leave) <span class="badge bg-green-100 text-green-800 text-xs font-semibold px-2.5 py-0.5 rounded">Study: {{ $employee->study_leave }}d</span> @endif
-                            @if($employee->vawc_leave) <span class="badge bg-red-100 text-red-800 text-xs font-semibold px-2.5 py-0.5 rounded">VAWC: {{ $employee->vawc_leave }}d</span> @endif
-                            @if($employee->rehabilitation_leave) <span class="badge bg-purple-100 text-purple-800 text-xs font-semibold px-2.5 py-0.5 rounded">Rehab: {{ $employee->rehabilitation_leave }}d</span> @endif
-                            @if($employee->special_leave_benefit) <span class="badge bg-pink-100 text-pink-800 text-xs font-semibold px-2.5 py-0.5 rounded">SLB: {{ $employee->special_leave_benefit }}d</span> @endif
-                            @if($employee->special_privilege_leave) <span class="badge bg-indigo-100 text-indigo-800 text-xs font-semibold px-2.5 py-0.5 rounded">SPL: {{ $employee->special_privilege_leave }}d</span> @endif
-                            @if($employee->special_emergency_leave) <span class="badge bg-orange-100 text-orange-800 text-xs font-semibold px-2.5 py-0.5 rounded">SEL: {{ $employee->special_emergency_leave }}d</span> @endif
+                            @if($employee->maternity_leave) <span class="badge  text-gray-500 text-xs font-semibold px-2.5 py-0.5 rounded">M: {{ $employee->maternity_leave }}d</span> @endif
+                            @if($employee->paternity_leave) <span class="badge  text-gray-500 text-xs font-semibold px-2.5 py-0.5 rounded">P: {{ $employee->paternity_leave }}d</span> @endif
+                            @if($employee->overtime_balance) <span class="badge  text-gray-500 text-xs font-semibold px-2.5 py-0.5 rounded">OT: {{ $employee->overtime_balance }}h</span> @endif
+                            @if($employee->study_leave) <span class="badge text-gray-500 text-xs font-semibold px-2.5 py-0.5 rounded">Study: {{ $employee->study_leave }}d</span> @endif
+                            @if($employee->vawc_leave) <span class="badge  text-gray-500 text-xs font-semibold px-2.5 py-0.5 rounded">VAWC: {{ $employee->vawc_leave }}d</span> @endif
+                            @if($employee->rehabilitation_leave) <span class="badge  text-gray-500 text-xs font-semibold px-2.5 py-0.5 rounded">Rehab: {{ $employee->rehabilitation_leave }}d</span> @endif
+                            @if($employee->mandatory_leave_balance) <span class="badge text-gray-500 text-xs font-semibold px-2.5 py-0.5 rounded">ML: {{ $employee->mandatory_leave_balance }}d</span> @endif
+                            @if($employee->special_leave_benefit) <span class="badge  text-gray-500 text-xs font-semibold px-2.5 py-0.5 rounded">SLB: {{ $employee->special_leave_benefit }}d</span> @endif
+                            @if($employee->special_privilege_leave) <span class="badge text-gray-500 text-xs font-semibold px-2.5 py-0.5 rounded">SPL: {{ $employee->special_privilege_leave }}d</span> @endif
+                            @if($employee->special_emergency_leave) <span class="badge text-gray-500  text-xs font-semibold px-2.5 py-0.5 rounded">SEL: {{ $employee->special_emergency_leave }}d</span> @endif
                         </div>
                     </td>
                 

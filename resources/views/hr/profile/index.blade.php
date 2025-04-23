@@ -147,8 +147,16 @@
                     <span class="font-medium text-gray-600">
                         {{ $user->sick_leave_balance ?? 0 }} 
                         {{ Str::plural('day', $user->sick_leave_balance ?? 0) }}
-                    </span>
-                    
+                    </span> 
+                </div>
+
+                <!-- Mandatory Leave -->
+                <div class="flex justify-between items-center bg-white p-2 rounded shadow-sm">
+                    <span class="text-sm sm:text-base text-gray-600">Mandatory Leave:</span>
+                    <span class="font-medium text-gray-600">
+                        {{ $user->mandatory_leave_balance ?? 0 }} 
+                        {{ Str::plural('day', $user->mandatory_leave_balance ?? 0) }}
+                    </span> 
                 </div>
                 
                 <!-- Maternity Leave -->

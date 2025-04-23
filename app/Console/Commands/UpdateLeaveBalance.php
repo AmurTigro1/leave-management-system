@@ -26,7 +26,7 @@ class UpdateLeaveBalance extends Command
      */
     public function handle()
     {
-               // ✅ Update all users' leave balances
+       
                $users = User::all();
 
                foreach ($users as $user) {
@@ -35,7 +35,7 @@ class UpdateLeaveBalance extends Command
                    $user->save();
                }
        
-               // ✅ Log the result
+         
                Log::info('Leave balances updated by 1.5 days for all users.');
        
                $this->info('Leave balances successfully updated.');

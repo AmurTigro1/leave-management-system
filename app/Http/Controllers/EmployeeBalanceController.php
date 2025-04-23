@@ -50,6 +50,7 @@ class EmployeeBalanceController extends Controller
     {
         $validated = $request->validate([
             'vacation_leave_balance' => 'required|numeric|min:0',
+            'mandatory_leave_balance' => 'required|numeric|min:0',
             'sick_leave_balance' => 'required|numeric|min:0',
             'maternity_leave' => 'required|integer|min:0',
             'paternity_leave' => 'required|integer|min:0',
@@ -118,6 +119,7 @@ class EmployeeBalanceController extends Controller
     {
         $validated = $request->validate([
             'vacation_leave_balance' => 'required|numeric|min:0',
+            'mandatory_leave_balance' => 'required|numeric|min:0',
             'sick_leave_balance' => 'required|numeric|min:0',
             'maternity_leave' => 'required|integer|min:0',
             'paternity_leave' => 'required|integer|min:0',

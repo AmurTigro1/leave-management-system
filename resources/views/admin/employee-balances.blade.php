@@ -107,6 +107,13 @@
                             </div>
 
                             <div>
+                                <label for="mandatory_leave_balance" class="block text-sm font-medium text-gray-700">Mandatory Leave (days)</label>
+                                <input type="number" step="0.01" name="mandatory_leave_balance" id="mandatory_leave_balance"
+                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                            </div>
+
+
+                            <div>
                                 <label for="sick_leave_balance" class="block text-sm font-medium text-gray-700">Sick Leave (days)</label>
                                 <input type="number" step="0.01" name="sick_leave_balance" id="sick_leave_balance"
                                     class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
@@ -231,6 +238,7 @@
         
         // Fill form fields
         document.getElementById('vacation_leave_balance').value = employee.vacation_leave_balance;
+        document.getElementById('mandatory_leave_balance').value = employee.mandatory_leave_balance;
         document.getElementById('sick_leave_balance').value = employee.sick_leave_balance;
         // document.getElementById('overtime_balance').value = employee.overtime_balance;
         document.getElementById('maternity_leave').value = employee.maternity_leave;
@@ -289,14 +297,14 @@
     .then(data => {
         if (data.success) {
             closeModal();
-            // Make sure you have this function defined or use alert for now
+       
             if (typeof showSuccessNotification === 'function') {
                 showSuccessNotification(data.message);
             } else {
-                alert(data.message); // Fallback if notification function doesn't exist
+                alert(data.message); 
             }
             
-            // Update the UI with the data returned from server
+         
             updateEmployeeRow(currentEmployeeId, data.data);
         }
     })
@@ -306,7 +314,7 @@
         if (typeof showErrorNotification === 'function') {
             showErrorNotification(errorMessage);
         } else {
-            alert(errorMessage); // Fallback if notification function doesn't exist
+            alert(errorMessage); 
         }
     })
     .finally(() => {
@@ -315,10 +323,8 @@
     });
 }
 
-// Add these notification functions if they don't exist
+
 function showSuccessNotification(message) {
-    // Implement your success notification UI here
-    // This could be a toast notification, alert, or any other UI element
     const notification = document.createElement('div');
     notification.className = 'fixed top-4 right-4 bg-green-500 text-white px-4 py-2 rounded shadow-lg';
     notification.textContent = message;
@@ -330,7 +336,6 @@ function showSuccessNotification(message) {
 }
 
 function showErrorNotification(message) {
-    // Implement your error notification UI here
     const notification = document.createElement('div');
     notification.className = 'fixed top-4 right-4 bg-red-500 text-white px-4 py-2 rounded shadow-lg';
     notification.textContent = message;
@@ -345,7 +350,6 @@ function showErrorNotification(message) {
         const row = document.querySelector(`tr[data-employee-id="${employeeId}"]`);
         if (!row) return;
 
-        // Update main leave balances
         if (updatedData.vacation_leave_balance !== undefined && row.querySelector('.vacation-leave')) {
             const cell = row.querySelector('.vacation-leave');
             cell.textContent = `${updatedData.vacation_leave_balance} days`;
@@ -358,7 +362,6 @@ function showErrorNotification(message) {
             highlightChange(cell);
         }
 
-        // Update other leave badges
         const leaveTypes = {
             'paternity_leave': 'P',
             'maternity_leave': 'M',
@@ -366,6 +369,7 @@ function showErrorNotification(message) {
             'study_leave': 'Study',
             'vawc_leave': 'VAWC',
             'rehabilitation_leave': 'Rehab',
+            'mandatory_leave_balance': 'ML',
             'special_leave_benefit': 'SLB',
             'special_privilege_leave': 'SPL',
             'special_emergency_leave': 'SEL'

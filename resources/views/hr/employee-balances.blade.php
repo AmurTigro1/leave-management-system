@@ -99,6 +99,12 @@
                             </div>
 
                             <div>
+                                <label for="mandatory_leave_balance" class="block text-sm font-medium text-gray-700">Mandatory Leave (days)</label>
+                                <input type="number" step="0.01" name="mandatory_leave_balance" id="mandatory_leave_balance"
+                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                            </div>
+
+                            <div>
                                 <label for="sick_leave_balance" class="block text-sm font-medium text-gray-700">Sick Leave (days)</label>
                                 <input type="number" step="0.01" name="sick_leave_balance" id="sick_leave_balance"
                                     class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
@@ -216,10 +222,9 @@
         currentEmployeeId = employee.id;
         
         document.getElementById('modalTitle').textContent = `Edit Leave Balances for ${employee.name}`;
-        
-        document.getElementById('balanceForm').action = `/hr/employee-balances/${employee.id}`;
-        
+        document.getElementById('balanceForm').action = `/hr/employee-balances/${employee.id}`; 
         document.getElementById('vacation_leave_balance').value = employee.vacation_leave_balance;
+        document.getElementById('mandatory_leave_balance').value = employee.mandatory_leave_balance;
         document.getElementById('sick_leave_balance').value = employee.sick_leave_balance;
         // document.getElementById('overtime_balance').value = employee.overtime_balance;
         document.getElementById('maternity_leave').value = employee.maternity_leave;
@@ -344,6 +349,7 @@ function showErrorNotification(message) {
             'study_leave': 'Study',
             'vawc_leave': 'VAWC',
             'rehabilitation_leave': 'Rehab',
+            'mandatory_leave_balance': 'ML',
             'special_leave_benefit': 'SLB',
             'special_privilege_leave': 'SPL',
             'special_emergency_leave': 'SEL'

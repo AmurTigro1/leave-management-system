@@ -33,8 +33,9 @@ return Application::configure(basePath: dirname(__DIR__))
 
         // $schedule->command('holidays:fetch')->monthly();
         // $schedule->command('leave:reset-yearly')->yearly();
-        $schedule->command('leave:forfeit-unused-mandatory')->yearlyOn(12, 31, '23:59');
-        // $schedule->command('leave:update-balance')->monthly();
+        // $schedule->command('leave:forfeit-unused-mandatory')->yearlyOn(12, 31, '23:59');
+        $schedule->command('leave:forfeit-mandatory')->yearlyOn(12, 31, '23:59');
+        $schedule->command('leave:update-balance')->monthly();
         // $schedule->command('leave:deduct')->monthlyOn(1, '00:00');
     })
     
