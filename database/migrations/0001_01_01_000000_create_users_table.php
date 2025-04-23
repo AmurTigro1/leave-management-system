@@ -23,7 +23,7 @@ return new class extends Migration
             $table->string('position');
             $table->string('email')->unique();
             $table->decimal('vacation_leave_balance', 8, 2)->default(0); //days
-            $table->integer('mandatory_leave_balance')->default(0); //days
+            // $table->integer('mandatory_leave_balance')->default(0); //days
             $table->date('vacation_leave_last_reset')->nullable();
             $table->decimal('sick_leave_balance', 8, 2)->default(0); //days
             $table->integer('maternity_leave')->default(0); //days
