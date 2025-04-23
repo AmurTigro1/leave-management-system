@@ -647,10 +647,11 @@ private function deductLeaveBalance($user, $leave)
             ->where('status', 'approved') 
             ->sum('days_applied');
     
+        $mandatoryBalance = $user->mandatory_leave_balance;
         $mandatoryLeaveDays = 5;
         $remainingLeaveDays = $mandatoryLeaveDays - $usedMandatoryLeaveDays;
     
-        return view('employee.profile.index', compact('user', 'usedMandatoryLeaveDays', 'remainingLeaveDays', 'gender'));
+        return view('employee.profile.index', compact('user', 'usedMandatoryLeaveDays', 'remainingLeaveDays', 'mandatoryBalance', 'gender'));
     }
     
     

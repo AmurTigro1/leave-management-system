@@ -1064,10 +1064,21 @@ public function deleteLeave($id) {
 
     public function profile() {
         $user = Auth::user();
+        $gender = $user->gender;
+        $currentYear = date('Y');
+        
+
+        $usedMandatoryLeaveDays = Leave::where('user_id', $user->id)
+            ->where('leave_type', 'Mandatory Leave')
+            ->whereYear('start_date', $currentYear)
+            ->where('status', 'approved') 
+            ->sum('days_applied');
     
-        return view('hr.profile.index', [
-            'user' => $user,
-        ]);
+        $mandatoryBalance = $user->mandatory_leave_balance;
+        $mandatoryLeaveDays = 5;
+        $remainingLeaveDays = $mandatoryLeaveDays - $usedMandatoryLeaveDays;
+    
+        return view('hr.profile.index', compact('user', 'usedMandatoryLeaveDays', 'remainingLeaveDays', 'mandatoryBalance', 'gender'));
     }
     
     public function profile_edit(Request $request): View
