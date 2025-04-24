@@ -246,7 +246,7 @@
                 <p class="leave-info2">6.C NUMBER OF WORKING DAYS APPLIED FOR</p>
                 <p class="fill-in">_________<span class="underline">{{ $leave->days_applied }}</span>_________</p> 
                 <p class="inclusive">INCLUSIVE DATES</p>
-                <p class="fill-in-2">____<span class="capitalize">{{ \Carbon\Carbon::parse($leave->start_date)->format('F d, Y') }}</span>____</p>
+                <p class="fill-in-2"><span class="capitalize">{{ \Carbon\Carbon::parse($leave->start_date)->format('F d, Y') }} - {{ \Carbon\Carbon::parse($leave->end_date)->format('F d, Y') }}</span></p>
             </div>
             <div class="middle-part2">
                 <p class="commutation-part">6.D COMMUTATION</p>
