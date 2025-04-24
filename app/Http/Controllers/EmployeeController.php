@@ -351,6 +351,8 @@ class EmployeeController extends Controller
         'leave_type' => $request->leave_type,
         'leave_details' => json_encode($leaveDetails),
         'start_date' => $request->start_date,
+        'vacation_balance_before' => auth()->user()->vacation_leave_balance,
+        'sick_balance_before' => auth()->user()->sick_leave_balance,        
         'end_date' => $request->end_date,
         'salary_file' => $request->salary_file,
         'days_applied' => $daysApplied,

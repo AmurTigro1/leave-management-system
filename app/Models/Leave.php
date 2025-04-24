@@ -17,6 +17,8 @@ class Leave extends Model
     'admin_status',
     'supervisor_id',
     'supervisor_status',
+    'vacation_balance_before',
+    'sick_balance_before',
     'hr_status',
     'hr_action_at'
 

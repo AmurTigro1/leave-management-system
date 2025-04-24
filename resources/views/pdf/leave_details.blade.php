@@ -295,8 +295,8 @@
                         <tbody>
                             <tr>
                                 <td>Total Earned</td>
-                                <td>{{ $leave->user->vacation_leave_balance }}</td>
-                                <td>{{ $leave->user->sick_leave_balance }}</td>
+                                <td>{{ $leave->vacation_balance_before }}</td>
+                                <td>{{ $leave->sick_balance_before }}</td>
                             </tr>
                             <tr>
                                 <td>Less this application</td>
@@ -305,6 +305,7 @@
                                 @else
                                     <td>0</td>
                                 @endif
+                
                                 @if($leave->leave_type == 'Sick Leave')
                                     <td>{{ $leave->days_applied }}</td>
                                 @else
@@ -315,22 +316,22 @@
                                 <td>Balance</td>
                                 <td>
                                     @if(in_array($leave->leave_type, ['Vacation Leave', 'Mandatory Leave']))
-                                        {{ $leave->user->vacation_leave_balance - $leave->days_applied }}
+                                        {{ $leave->vacation_balance_before - $leave->days_applied }}
                                     @else
-                                        {{ $leave->user->vacation_leave_balance }}
+                                        {{ $leave->vacation_balance_before }}
                                     @endif
                                 </td>
                                 <td>
                                     @if($leave->leave_type == 'Sick Leave')
-                                        {{ $leave->user->sick_leave_balance - $leave->days_applied }}
+                                        {{ $leave->sick_balance_before - $leave->days_applied }}
                                     @else
-                                        {{ $leave->user->sick_leave_balance }}
+                                        {{ $leave->sick_balance_before }}
                                     @endif
                                 </td>
                             </tr>
                         </tbody>                        
                     </table>                    
-                </div>  
+                </div>                
                 @if($leave->days_applied > 10)              
                     @foreach ($officials as $official)
                         <p class="last-sign">________<span class="underline">{{ $official->hr_name }}</span>________</p>
