@@ -52,20 +52,13 @@ class CocLogController extends Controller
             'user_id' => 'required|exists:users,id',
             'activity_name' => 'required|string|max:255',
             'activity_date' => 'required|string',
-            'coc_earned' => 'required|integer|min:0|multiple_of:4',
+            'coc_earned' => 'required|integer|min:0',
             'issuance' => 'required|string|max:255',
         ]);
 
         $validated['certification_coc'] = now();
 
         $validated['created_by'] = auth()->id();
-        
-        // Log timezone information for debugging
-        \Log::info('Creating COC log', [
-            'current_time' => now()->format('Y-m-d H:i:s'),
-            'timezone' => config('app.timezone'),
-            'calculated_expiration' => now()->startOfDay()->addYear()->format('Y-m-d H:i:s')
-        ]);
 
         DB::transaction(function () use ($validated) {
             $user = User::findOrFail($validated['user_id']);
@@ -123,15 +116,14 @@ class CocLogController extends Controller
         DB::transaction(function () use ($cocLog) {
             $cocEarned = $cocLog->coc_earned;
             $user = $cocLog->user;
-
+    
             $cocLog->delete();
-
-            $user->decrement('overtime_balance', $cocEarned);
-
-            // $user->notify(new CocLogCreatedNotification($cocLog, "Your COC Log entry has been deleted, and your overtime balance has been adjusted."));
+    
+            $newBalance = max(0, $user->overtime_balance - $cocEarned);
+            $user->update(['overtime_balance' => $newBalance]);
         });
-
+    
         notify()->success('COC Log deleted successfully and overtime balance adjusted.');
         return redirect()->back();
-    }
+    }    
 }

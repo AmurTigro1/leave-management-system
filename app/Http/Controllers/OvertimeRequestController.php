@@ -229,14 +229,9 @@ class OvertimeRequestController extends Controller
 
     public function deleteOvertime($id)
     {
-        $request = OvertimeRequest::findOrFail($id);
-    
-        $user = $request->user; 
-        $user->overtime_balance += $request->working_hours_applied; 
-        $user->save();
-    
-        $request->delete();
-    
-        return redirect()->back()->with('success', 'CTO request deleted and balance restored.');
+        OVertimeRequest::findOrFail($id)->delete();
+        
+        notify()->success('CTO request deleted successfully.');
+        return redirect()->back();
     } 
 }

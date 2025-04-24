@@ -1513,17 +1513,11 @@ public function deleteLeave($id) {
 
     public function deleteCTO($id)
     {
-        $request = OvertimeRequest::findOrFail($id);
-    
-        $user = $request->user; 
-        $user->overtime_balance += $request->working_hours_applied; 
-        $user->save();
-    
-        $request->delete();
+        OvertimeRequest::findOrFail($id)->delete();
         
-        notify()->success('CTO request deleted successfully and balance restored.');
+        notify()->success('CTO request deleted successfully.');
         return redirect()->back();
-    } 
+    }
 
     public function cancelCTO($id)
     {
