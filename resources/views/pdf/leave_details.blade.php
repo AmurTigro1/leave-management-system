@@ -244,9 +244,9 @@
             </div>
             <div class="bottom-part">
                 <p class="leave-info2">6.C NUMBER OF WORKING DAYS APPLIED FOR</p>
-                <p class="fill-in">_______<span class="underline">{{ $leave->days_applied }} day{{ $leave->days_applied > 1 ? 's' : '' }}</span>_______</p> 
+                <p class="fill-in">_________<span class="underline">{{ $leave->days_applied }}</span>_________</p> 
                 <p class="inclusive">INCLUSIVE DATES</p>
-                <p class="fill-in-2"><span class="underline">{{ \Carbon\Carbon::parse($leave->start_date)->format('F d, Y') }} - {{ \Carbon\Carbon::parse($leave->end_date)->format('F d, Y') }}</span></p>
+                <p class="fill-in-2">____<span class="capitalize">{{ \Carbon\Carbon::parse($leave->start_date)->format('F d, Y') }}</span>____</p>
             </div>
             <div class="middle-part2">
                 <p class="commutation-part">6.D COMMUTATION</p>
@@ -282,7 +282,7 @@
             </div>
             <div class="last-part">
                 <p class="leave-info2">7.A CERTIFICATION OF LEAVE CREDITS</p>
-                <p class="last-part-info">As of ________<span class="underline">{{ \Carbon\Carbon::parse($leave->user->certification_leave)->format('F d, Y') }}</span>________</p>
+                <p class="last-part-info">As of ________<span class="underline">{{ \Carbon\Carbon::parse($leave->user->certification_leave)->format('F  Y') }}</span>________</p>
                 <div class="last-table">
                     <table>
                         <thead>

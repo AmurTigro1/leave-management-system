@@ -5,6 +5,10 @@
         margin-top: -15px;
 
     }
+    .capitalize {
+        text-transform: uppercase;
+        text-decoration: underline;
+    }
     .uppertext {
         font-size: 10px;
         font-weight: bold;
