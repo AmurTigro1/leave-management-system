@@ -126,9 +126,8 @@
                         {{ Str::plural('day', $user->vacation_leave_balance ?? 0) }}
                     </span>
                 </div>
-
                 <!-- Mandatory Leave Notice -->
-                @if($remainingLeaveDays <= 0)
+                @if($mandatoryBalance <= 0)
                     <div class="bg-green-100 text-green-800 p-3 rounded mt-3 text-sm flex items-center border-l-4 border-green-500">
                         <svg class="w-5 h-5 mr-2 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M12 8h.01M12 18h.01M12 20h.01"></path>
@@ -138,13 +137,13 @@
                             Keep in mind that unused leave days will be forfeited after December 31st.
                         </span>
                     </div>
-                @elseif($remainingLeaveDays > 0)
+                @elseif($mandatoryBalance > 0)
                     <div class="bg-yellow-100 text-yellow-800 p-3 rounded mt-3 text-sm flex items-center border-l-4 border-yellow-500">
                         <svg class="w-5 h-5 mr-2 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M12 8h.01M12 18h.01M12 20h.01"></path>
                         </svg>
                         <span>
-                            <strong>Mandatory Leave Reminder:</strong> You still have <strong>{{ $remainingLeaveDays }}</strong> mandatory leave day(s) remaining for this year. 
+                            <strong>Mandatory Leave Reminder:</strong> You still have <strong>{{ $mandatoryBalance }}</strong> mandatory leave day(s) remaining for this year. 
                             Unused leave days will be forfeited after December 31st.
                         </span>
                     </div>

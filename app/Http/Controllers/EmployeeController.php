@@ -235,7 +235,7 @@ class EmployeeController extends Controller
         }
     }
 
-    $leaveTypeForBalance = $request->leave_type; 
+    $leaveTypeForBalance = $request->leave_type === 'Mandatory Leave' ? 'Vacation Leave' : $request->leave_type;
 
     if ($leaveTypeForBalance === 'Sick Leave') {
         $availableLeaveBalance = $user->sick_leave_balance;
@@ -243,7 +243,6 @@ class EmployeeController extends Controller
         $availableLeaveBalance = $user->vacation_leave_balance;
     } else {
         $availableLeaveBalance = match ($leaveTypeForBalance) {
-            'Mandatory Leave' => $user->mandatory_leave_balance,
             'Special Privilege Leave' => $user->special_privilege_leave,
             'Maternity Leave' => $user->maternity_leave,
             'Paternity Leave' => $user->paternity_leave,
