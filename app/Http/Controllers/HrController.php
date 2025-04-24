@@ -357,6 +357,8 @@ class HrController extends Controller
         'leave_details' => json_encode($leaveDetails),
         'start_date' => $request->start_date,
         'end_date' => $request->end_date,
+        'vacation_balance_before' => auth()->user()->vacation_leave_balance,
+        'sick_balance_before' => auth()->user()->sick_leave_balance,     
         'salary_file' => $request->salary_file,
         'days_applied' => $daysApplied,
         'commutation' => $request->commutation,
@@ -541,8 +543,12 @@ private function restoreLeaveBalance($user, $leave)
 
     switch ($leave->leave_type) {
         case 'Vacation Leave':
+            $user->vacation_leave_balance += $days;
+            break;
+
         case 'Mandatory Leave': 
             $user->vacation_leave_balance += $days;
+            $user->mandatory_leave_balance += $days;
             break;
 
         case 'Sick Leave':
@@ -591,25 +597,46 @@ private function deductLeaveBalance($user, $leave)
 
     switch ($leave->leave_type) {
         case 'Vacation Leave':
-        case 'Mandatory Leave':
+            
             if ($user->vacation_leave_balance >= $days) {
                 $user->vacation_leave_balance -= $days;
             } elseif (($user->vacation_leave_balance + $user->sick_leave_balance) >= $days) {
-                $combinedBalance = $user->vacation_leave_balance + $user->sick_leave_balance;
+                $remainingDays = $days;
 
-                if ($combinedBalance >= $days) {
-                    $remainingDays = $days;
-
-                    if ($user->vacation_leave_balance > 0) {
-                        $deductFromVacation = min($remainingDays, $user->vacation_leave_balance);
-                        $user->vacation_leave_balance -= $deductFromVacation;
-                        $remainingDays -= $deductFromVacation;
-                    }
-
-                    if ($remainingDays > 0) {
-                        $user->sick_leave_balance -= $remainingDays;
-                    }
+                if ($user->vacation_leave_balance > 0) {
+                    $deductFromVacation = min($remainingDays, $user->vacation_leave_balance);
+                    $user->vacation_leave_balance -= $deductFromVacation;
+                    $remainingDays -= $deductFromVacation;
                 }
+
+                if ($remainingDays > 0) {
+                    $user->sick_leave_balance -= $remainingDays;
+                }
+            } else {
+                throw ValidationException::withMessages(['error' => 'Insufficient combined Sick and Vacation Leave balance.']);
+            }
+            break;
+
+        case 'Mandatory Leave':
+         
+            if ($user->vacation_leave_balance >= $days) {
+                $user->vacation_leave_balance -= $days;
+                $user->mandatory_leave_balance -= $days;
+            } elseif (($user->vacation_leave_balance + $user->sick_leave_balance) >= $days) {
+                $remainingDays = $days;
+
+                if ($user->vacation_leave_balance > 0) {
+                    $deductFromVacation = min($remainingDays, $user->vacation_leave_balance);
+                    $user->vacation_leave_balance -= $deductFromVacation;
+                    $remainingDays -= $deductFromVacation;
+                }
+
+                if ($remainingDays > 0) {
+                    $user->sick_leave_balance -= $remainingDays;
+                }
+
+              
+                $user->mandatory_leave_balance -= $days;
             } else {
                 throw ValidationException::withMessages(['error' => 'Insufficient combined Sick and Vacation Leave balance.']);
             }
