@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
 use App\Models\User;
 use App\Models\Holiday;
+use Illuminate\Support\Facades\DB;
 use PDF;
 
 class OvertimeRequestController extends Controller
@@ -145,7 +146,9 @@ class OvertimeRequestController extends Controller
     {
         $overtime = OvertimeRequest::findOrFail($id);
 
-        $earned = CocLog::findOrFail($id);
+        $earned = CocLog::whereNotNull('certification_coc')
+            ->orderByDesc(DB::raw('GREATEST(created_at, updated_at)'))
+            ->first();
 
         $supervisor = User::where('role', 'supervisor')->first();
         $hr = User::where('role', 'hr')->first();

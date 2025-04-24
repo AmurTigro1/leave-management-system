@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Holiday;
 use App\Http\Requests\EmailUpdateRequest;
 use App\Models\Leave;
+use Illuminate\Support\Facades\DB;
 use App\Models\User;
 use Carbon\Carbon;
 use App\Models\VisitorLog;
@@ -392,7 +393,10 @@ class SupervisorController extends Controller
     public function ctoviewPdf($id)
     {
         $overtime = OvertimeRequest::findOrFail($id);
-        $earned = CocLog::findOrFail($id);
+
+        $earned = CocLog::whereNotNull('certification_coc')
+        ->orderByDesc(DB::raw('GREATEST(created_at, updated_at)'))
+        ->first();
 
         $supervisor = User::where('role', 'supervisor')->first();
         $hr = User::where('role', 'hr')->first();
