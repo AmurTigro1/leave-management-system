@@ -300,7 +300,7 @@
                             </tr>
                             <tr>
                                 <td>Less this application</td>
-                                @if($leave->leave_type == 'Vacation Leave')
+                                @if(in_array($leave->leave_type, ['Vacation Leave', 'Mandatory Leave']))
                                     <td>{{ $leave->days_applied }}</td>
                                 @else
                                     <td>0</td>
@@ -314,7 +314,7 @@
                             <tr>
                                 <td>Balance</td>
                                 <td>
-                                    @if($leave->leave_type == 'Vacation Leave')
+                                    @if(in_array($leave->leave_type, ['Vacation Leave', 'Mandatory Leave']))
                                         {{ $leave->user->vacation_leave_balance - $leave->days_applied }}
                                     @else
                                         {{ $leave->user->vacation_leave_balance }}
@@ -329,7 +329,7 @@
                                 </td>
                             </tr>
                         </tbody>                        
-                    </table>
+                    </table>                    
                 </div>  
                 @if($leave->days_applied > 10)              
                     @foreach ($officials as $official)
