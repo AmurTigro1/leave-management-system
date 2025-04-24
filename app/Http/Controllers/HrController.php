@@ -28,6 +28,7 @@ use Illuminate\Support\Facades\Mail;
 use App\Models\Holiday;
 use App\Models\CocLog;
 
+
 class HrController extends Controller
 {
     public function index(Request $request)
@@ -1273,7 +1274,10 @@ public function deleteLeave($id) {
     public function viewCtoPdf($id)
 {
     $overtime = OvertimeRequest::findOrFail($id);
-    $earned = CocLog::findOrFail($id);
+
+     $earned = CocLog::whereNotNull('certification_coc')
+            ->orderByDesc(DB::raw('GREATEST(created_at, updated_at)'))
+            ->first();
 
     $supervisor = User::where('role', 'supervisor')->first();
     $hr = User::where('role', 'hr')->first();
