@@ -52,9 +52,9 @@ class AdminController extends Controller
         $totalPendingLeaves = Leave::where('admin_status', 'pending')->count();
         $totalApprovedLeaves = Leave::where('admin_status', 'approved')->count();
         $totalRejectedLeaves = Leave::where('admin_status', 'rejected')->count();
-        $totalApprovedOvertime = OvertimeRequest::where('status', 'approved')->count();
-        $totalPendingOvertime = OvertimeRequest::where('status', 'pending')->count();
-        $totalRejectedOvertime = OvertimeRequest::where('status', 'rejected')->count();
+        $totalApprovedOvertime = OvertimeRequest::where('admin_status', 'Ready for Review')->count();
+        $totalPendingOvertime = OvertimeRequest::where('admin_status', 'pending')->count();
+        $totalRejectedOvertime = OvertimeRequest::where('admin_status', 'rejected')->count();
     
         $leaveStats = [
             'Pending' => $totalPendingLeaves,

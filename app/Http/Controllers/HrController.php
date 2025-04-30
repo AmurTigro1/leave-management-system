@@ -55,11 +55,18 @@ class HrController extends Controller
         $pendingLeaves = Leave::where('admin_status', 'approved')->get();
     
         $totalEmployees = User::count();
-        $totalPendingLeaves = Leave::where('admin_status', 'approved')->count();
+        $totalPendingLeaves = Leave::whereIn('admin_status', ['approved'])
+        ->where('hr_status', '!=', 'approved')
+        ->where('hr_status', '!=', 'rejected')
+        ->count();
         $totalApprovedLeaves = Leave::where('status', 'approved')->count();
         $totalRejectedLeaves = Leave::where('status', 'rejected')->count();
+
+        $totalPendingOvertime = OvertimeRequest::whereIn('admin_status', ['Ready for Review'])
+        ->where('hr_status', '!=', 'approved')
+        ->where('hr_status', '!=', 'rejected')
+        ->count();
         $totalApprovedOvertime = OvertimeRequest::where('status', 'approved')->count();
-        $totalPendingOvertime = OvertimeRequest::where('status', 'pending')->count();
         $totalRejectedOvertime = OvertimeRequest::where('status', 'rejected')->count();
     
         $leaveStats = [
