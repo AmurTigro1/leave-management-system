@@ -2,15 +2,12 @@
 
 @section('content')
     <div class="rounded-lg shadow-xl m-4 p-8 space-y-8 animate-fade-in">
-    <!-- Back Button -->
     <a href="{{ route('hr.overtime_requests') }}" class="inline-flex items-center text-blue-600 font-medium hover:underline transition duration-300">
         &larr; Back to Overtime Requests
     </a>
 
-    <!-- Title -->
     <h2 class="text-2xl font-bold text-gray-800">Overtime Request Details</h2>
 
-    <!-- PDF Download Button -->
     <div class="text-right">
         <a href="{{ route('overtime.viewPdf', $overtimeRequests->id) }}" target="_blank" 
             class="bg-blue-600 text-white px-6 py-2 rounded-lg shadow-md hover:bg-blue-700 transition">
@@ -18,7 +15,6 @@
         </a>
     </div>
 
-    <!-- Details Grid -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-gray-800">
         <div>
             <p class="font-semibold text-gray-900">Date Filed</p>
@@ -97,7 +93,6 @@
     </div>
     @endif
 
-    <!-- Accept and Reject Buttons -->
     @if($overtimeRequests->status === 'pending')
         <div class="flex justify-end space-x-4 mt-8">
             <form action="{{ route('overtime.approve', $overtimeRequests->id) }}" method="POST">
@@ -119,7 +114,6 @@
 </div>
 @endsection
 
-<!-- Custom CSS -->
 <style>
     .animate-fade-in {
         animation: fadeIn 0.8s ease-in-out;

@@ -1042,6 +1042,34 @@ public function deleteLeave($id) {
 
         if ($hrStatus === 'approved') {
             $supervisorStatus = 'approved';
+
+            $user = $cto->user;
+            $hours = $cto->working_hours_applied;
+
+            if ($user->overtime_balance >= $hours) {
+                $user->decrement('overtime_balance', $hours);
+
+                $remaining = $hours;
+                $logs = $user->cocLogs()
+                    ->where('coc_earned', '>', 0)
+                    ->orderBy('expires_at', 'asc')
+                    ->get();
+
+                foreach ($logs as $log) {
+                    if ($remaining <= 0) break;
+
+                    if ($log->coc_earned >= $remaining) {
+                        $log->decrement('coc_earned', $remaining);
+                        $remaining = 0;
+                    } else {
+                        $remaining -= $log->coc_earned;
+                        $log->decrement('coc_earned', $log->coc_earned);
+                    }
+                }
+            } else {
+                notify()->error('User does not have enough overtime balance.');
+                return redirect()->back();
+            }
         }
 
         $cto->update([

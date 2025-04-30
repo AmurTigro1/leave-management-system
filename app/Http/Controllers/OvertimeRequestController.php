@@ -103,28 +103,7 @@ class OvertimeRequestController extends Controller
             'admin_status' => 'pending', 
             'hr_status' => 'pending', 
         ]);
-        
-        $user->decrement('overtime_balance', $request->working_hours_applied);
 
-        $remaining = $request->working_hours_applied;
-
-        $logs = $user->cocLogs()
-            ->where('coc_earned', '>', 0)
-            ->orderBy('expires_at', 'asc')
-            ->get();
-        
-        foreach ($logs as $log) {
-            if ($remaining <= 0) break;
-        
-            if ($log->coc_earned >= $remaining) {
-                $log->decrement('coc_earned', $remaining);
-                $remaining = 0;
-            } else {
-                $remaining -= $log->coc_earned;
-                $log->decrement('coc_earned', $log->coc_earned);
-            }
-        }
-        
         notify()->success('Overtime request submitted successfully! Pending admin review.');
         return redirect()->back();
     }

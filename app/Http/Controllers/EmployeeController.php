@@ -388,24 +388,24 @@ public function cancel($id)
 
     public function cancelCTO($id)
     {
-        $CTO = OvertimeRequest::findOrFail($id);
-        
-        if ($CTO->status == 'cancelled') {
+        $cto = OvertimeRequest::findOrFail($id);
+        $user = Auth::user();
+    
+        if ($cto->status === 'cancelled') {
             notify()->warning('CTO request is already cancelled.');
             return redirect()->back();
         }
-
-        $user = Auth::user();
-
-        $user->increment('overtime_balance', $CTO->working_hours_applied);
-
-        $CTO->status = 'cancelled';
-        $CTO->save();
-
+    
+        if ($cto->status === 'approved' && $cto->hr_status === 'approved' && $cto->supervisor_status === 'approved') {
+            $user->increment('overtime_balance', $cto->working_hours_applied);
+        }
+    
+        $cto->status = 'cancelled';
+        $cto->save();
+    
         notify()->success('CTO request has been cancelled and balance restored.');
-
         return redirect()->back();
-    }
+    }    
 
 public function restore($id)
 {
@@ -435,11 +435,14 @@ public function restoreCTO($id)
         return redirect()->back();
     }
 
-    $user->decrement('overtime_balance', $CTO->working_hours_applied);
+    if ($CTO->status === 'cancelled' && $CTO->hr_status === 'approved') {
+        $user->decrement('overtime_balance', $CTO->working_hours_applied);
+        $CTO->status = 'approved';
+    } else {
+        $CTO->status = 'pending';
+    }
 
-    $CTO->status = 'pending'; 
     $CTO->save();
-
     notify()->success('CTO request has been restored and balance deducted.');
 
     return redirect()->back();
