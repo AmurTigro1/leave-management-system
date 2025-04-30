@@ -75,7 +75,6 @@ class EmployeeController extends Controller
                   ->whereYear('start_date', now()->year);
         }])->get();
     
-        // Calculate total absences for each employee
         $employees->each(function ($employee) {
             $employee->total_absences = $employee->leaves->sum(function ($leave) {
                 return \Carbon\Carbon::parse($leave->start_date)
@@ -337,7 +336,6 @@ class EmployeeController extends Controller
         }
     }
 
-    // Handle signature file upload (if present)
     $signaturePath = null;
     if ($request->hasFile('signature')) {
         $signatureFile = $request->file('signature');
@@ -818,30 +816,25 @@ private function deductLeaveBalance($user, $leave)
 
     public function calendar(Request $request)
     {
-        $selectedYear = (int) $request->input('year', date('Y'));  // Cast year to integer
+        $selectedYear = (int) $request->input('year', date('Y'));
     
-        // Get holidays for the selected year
         $holidays = YearlyHoliday::whereYear('date', $selectedYear)
             ->orWhere('repeats_annually', true)
             ->orderBy('date')
             ->get()
             ->map(function ($holiday) use ($selectedYear) {
-                // Ensure repeating holidays use the selected year
                 if ($holiday->repeats_annually) {
                     $date = Carbon::parse($holiday->date);
     
-                    // Force cast to integer to avoid the Carbon::setUnit() error
                     $holiday->date = Carbon::create((int) $selectedYear, (int) $date->month, (int) $date->day)->format('Y-m-d');
                 }
                 return $holiday;
             });
     
-        // Group holidays by month
         $groupedHolidays = $holidays->groupBy(function ($item) {
             return Carbon::parse($item->date)->format('F Y');
         });
     
-        // Prepare data for calendar view
         $calendarData = $this->prepareCalendarData($holidays, $selectedYear);
     
         return view('employee.holiday-calendar', compact(
@@ -856,7 +849,6 @@ private function deductLeaveBalance($user, $leave)
     $months = [];
 
     for ($month = 1; $month <= 12; $month++) {
-        // Cast year and month to integers to avoid Carbon errors
         $year = (int) $year;
         $month = (int) $month;
 
@@ -869,7 +861,6 @@ private function deductLeaveBalance($user, $leave)
             'days' => []
         ];
 
-        // Filter holidays for this month
         $monthHolidays = $holidays->filter(function ($holiday) use ($month) {
             return (int) Carbon::parse($holiday->date)->month === $month;
         });
@@ -907,7 +898,7 @@ private function deductLeaveBalance($user, $leave)
 
     $startDate = Carbon::parse($request->start_date);
     $endDate = Carbon::parse($request->end_date);
-    $days_applied = $startDate->diffInDays($endDate) + 1;  // Add 1 to include the start day
+    $days_applied = $startDate->diffInDays($endDate) + 1;
 
     $leaveValidationRules = [];
 
@@ -977,7 +968,6 @@ private function deductLeaveBalance($user, $leave)
                 $today = Carbon::now();
                 $advanceDaysRequired = $advanceFilingRules[$leaveType] ?? 0;
 
-                // Only validate based on the required advance filing days
                 if ($advanceDaysRequired > 0) {
                     $minStartDate = $today->copy()->addDays($advanceDaysRequired);
 
@@ -998,10 +988,6 @@ private function deductLeaveBalance($user, $leave)
 
     $user = Auth::user();
 
-    // Recalculate leave days (same as the store method)
-    // Other logic remains the same...
-
-    // Handle leave files (if new files are uploaded)
     $leaveFiles = [];
     if ($request->hasFile('leave_files')) {
         foreach ($request->file('leave_files') as $file) {
@@ -1012,10 +998,6 @@ private function deductLeaveBalance($user, $leave)
 
     $leaveDetails = [];
 
-    // Populate leave details based on leave type
-    // Same logic as in store function...
-
-    // Update the leave record
     $leave->update([
         'leave_type' => $request->leave_type,
         'leave_details' => json_encode($leaveDetails),
@@ -1027,7 +1009,7 @@ private function deductLeaveBalance($user, $leave)
         'reason' => $request->reason,
         'signature' => $request->signature,
         'leave_files' => json_encode($leaveFiles),
-        'status' => 'pending',  // Can be modified based on the requirements
+        'status' => 'pending', 
     ]);
 
     notify()->success('Leave request updated successfully!');

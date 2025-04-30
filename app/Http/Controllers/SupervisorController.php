@@ -77,13 +77,12 @@ class SupervisorController extends Controller
         ->groupBy('month')
         ->pluck('count', 'month');
 
-        // Create full 12 months so that empty months still show as 0
         $months = collect(range(1, 12))->map(function ($month) {
             return \Carbon\Carbon::create()->month($month)->format('F');
         });
 
         $visitorCounts = $months->map(function ($monthName, $index) use ($rawData) {
-            return $rawData->get($index + 1, 0); // +1 because Carbon months start at 1
+            return $rawData->get($index + 1, 0);
         });
     
         return view('supervisor.dashboard', compact('employees', 'pendingLeaves', 'totalEmployees', 'leaveStats', 'cocStats', 'search', 'months', 'visitorCounts', 'selectedYear'));
@@ -96,92 +95,17 @@ class SupervisorController extends Controller
             abort(403, 'Unauthorized access.');
         }
     
-        // Get leave applications waiting for supervisor approval with pagination
         $leaveApplications = Leave::where('status', 'approved')
             ->orderBy('created_at', 'desc')
-            ->paginate(5, ['*'], 'leave_page'); // Use a custom page name
+            ->paginate(5, ['*'], 'leave_page'); 
     
-        // Get CTO applications waiting for supervisor approval with pagination
         $ctoApplications = OvertimeRequest::where('status', 'approved')
             ->orderBy('created_at', 'desc')
-            ->paginate(5, ['*'], 'cto_page'); // Use a different page name to avoid conflict
+            ->paginate(5, ['*'], 'cto_page');
     
         return view('supervisor.requests', compact('leaveApplications', 'ctoApplications'));
     }
     
-
-//Supervisor Approve
-// public function approve(Request $request, $leave) {
-//     // Find the leave request
-//     $leaveRequest = Leave::findOrFail($leave);
-
-//     // Check if the request is already approved or rejected
-//     if ($leaveRequest->supervisor_status !== 'pending') {
-//         return redirect()->back()->withErrors(['status' => 'This leave request has already been processed.']);
-//     }
-
-//     // Get the user associated with the leave request
-//     $user = $leaveRequest->user;
-
-//     // Deduct leave credits based on the leave type
-//     switch ($leaveRequest->leave_type) {
-//         case 'Vacation Leave':
-//         case 'Sick Leave':
-//             // Deduct from Vacation Leave first, then Sick Leave
-//             if ($user->vacation_leave_balance >= $leaveRequest->days_applied) {
-//                 $user->vacation_leave_balance -= $leaveRequest->days_applied;
-//             } else {
-//                 $remainingDays = $leaveRequest->days_applied - $user->vacation_leave_balance;
-//                 $user->vacation_leave_balance = 0;
-//                 $user->sick_leave_balance -= $remainingDays;
-//             }
-//             break;
-//         case 'Maternity Leave':
-//             $user->maternity_leave -= $leaveRequest->days_applied;
-//             break;
-//         case 'Paternity Leave':
-//             $user->paternity_leave -= $leaveRequest->days_applied;
-//             break;
-//         case 'Solo Parent Leave':
-//             $user->solo_parent_leave -= $leaveRequest->days_applied;
-//             break;
-//         case 'Study Leave':
-//             $user->study_leave -= $leaveRequest->days_applied;
-//             break;
-//         case 'VAWC Leave':
-//             $user->vawc_leave -= $leaveRequest->days_applied;
-//             break;
-//         case 'Rehabilitation Leave':
-//             $user->rehabilitation_leave -= $leaveRequest->days_applied;
-//             break;
-//         case 'Special Leave Benefit':
-//             $user->special_leave_benefit -= $leaveRequest->days_applied;
-//             break;
-//         case 'Special Emergency Leave':
-//             $user->special_emergency_leave -= $leaveRequest->days_applied;
-//             break;
-//         default:
-//             return redirect()->back()->withErrors(['leave_type' => 'Invalid leave type.']);
-//     }
-
-//     // Update the supervisor status to approved
-//     $leaveRequest->supervisor_status = 'approved';
-
-//     // If HR status is also approved, update the overall status
-//     if ($leaveRequest->hr_status === 'approved') {
-//         $leaveRequest->status = 'approved';
-//     }
-
-//     // Save the updated leave request and user balances
-//     $leaveRequest->save();
-//     $user->save();
-
-//     notify()->success('Leave request approved successfully!');
-//     return redirect()->back()->with('success', 'Leave request successfully approved');
-// }
-
-
-    // Supervisor rejects the request
     public function reject(Request $request, Leave $leave)
 {
     if (Auth::user()->role !== 'supervisor') {
@@ -285,7 +209,7 @@ class SupervisorController extends Controller
     {
         $employees = User::with(['leaves' => function ($query) {
             $query->where('status', 'approved')
-                  ->whereMonth('start_date', now()->month) // Ensure it's within the month
+                  ->whereMonth('start_date', now()->month)
                   ->whereYear('start_date', now()->year);
         }])->get();
     
@@ -301,30 +225,25 @@ class SupervisorController extends Controller
 
     public function holiday(Request $request)
     {
-        $selectedYear = (int) $request->input('year', date('Y'));  // Cast year to integer
+        $selectedYear = (int) $request->input('year', date('Y'));
     
-        // Get holidays for the selected year
         $holidays = YearlyHoliday::whereYear('date', $selectedYear)
             ->orWhere('repeats_annually', true)
             ->orderBy('date')
             ->get()
             ->map(function ($holiday) use ($selectedYear) {
-                // Ensure repeating holidays use the selected year
                 if ($holiday->repeats_annually) {
                     $date = Carbon::parse($holiday->date);
     
-                    // Force cast to integer to avoid the Carbon::setUnit() error
                     $holiday->date = Carbon::create((int) $selectedYear, (int) $date->month, (int) $date->day)->format('Y-m-d');
                 }
                 return $holiday;
             });
     
-        // Group holidays by month
         $groupedHolidays = $holidays->groupBy(function ($item) {
             return Carbon::parse($item->date)->format('F Y');
         });
     
-        // Prepare data for calendar view
         $calendarData = $this->prepareCalendarData($holidays, $selectedYear);
     
         return view('supervisor.holiday-calendar', compact(
@@ -339,7 +258,6 @@ class SupervisorController extends Controller
     $months = [];
 
     for ($month = 1; $month <= 12; $month++) {
-        // Cast year and month to integers to avoid Carbon errors
         $year = (int) $year;
         $month = (int) $month;
 
@@ -352,7 +270,6 @@ class SupervisorController extends Controller
             'days' => []
         ];
 
-        // Filter holidays for this month
         $monthHolidays = $holidays->filter(function ($holiday) use ($month) {
             return (int) Carbon::parse($holiday->date)->month === $month;
         });

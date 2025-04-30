@@ -88,13 +88,12 @@ class HrController extends Controller
         ->groupBy('month')
         ->pluck('count', 'month');
 
-        // Create full 12 months so that empty months still show as 0
         $months = collect(range(1, 12))->map(function ($month) {
             return \Carbon\Carbon::create()->month($month)->format('F');
         });
 
         $visitorCounts = $months->map(function ($monthName, $index) use ($rawData) {
-            return $rawData->get($index + 1, 0); // +1 because Carbon months start at 1
+            return $rawData->get($index + 1, 0); 
         });
     
         return view('hr.dashboard', compact('employees', 'pendingLeaves', 'totalEmployees', 'leaveStats', 'cocStats', 'search', 'months', 'visitorCounts', 'selectedYear'));
@@ -201,7 +200,6 @@ class HrController extends Controller
                     $today = Carbon::now();
                     $advanceDaysRequired = $advanceFilingRules[$leaveType] ?? 0;
         
-                    // Only validate based on the required advance filing days
                     if ($advanceDaysRequired > 0) {
                         $minStartDate = $today->copy()->addDays($advanceDaysRequired);
                         
@@ -213,7 +211,7 @@ class HrController extends Controller
             ],
             'end_date' => 'required|date|after_or_equal:start_date',
             'reason' => 'nullable|string',
-            'leave_files.*' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048', // Multiple files
+            'leave_files.*' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',
             'days_applied' => 'required|integer|min:1',
             'signature' => 'required|image|mimes:jpeg,png,jpg|max:2048',
             'commutation' => 'required|boolean',
@@ -750,13 +748,11 @@ public function updateLeave(Request $request, $id, YearlyHolidayService $yearlyH
 {
 $leave = Leave::findOrFail($id);
 
-// Initialize today date
 $today = Carbon::now();
 
-// Initialize $days_applied, calculate the days between start_date and end_date
 $startDate = Carbon::parse($request->start_date);
 $endDate = Carbon::parse($request->end_date);
-$days_applied = $startDate->diffInDays($endDate) + 1;  // Add 1 to include the start day
+$days_applied = $startDate->diffInDays($endDate) + 1; 
 
 $leaveValidationRules = [];
 
@@ -826,7 +822,6 @@ $request->validate(array_merge([
             $today = Carbon::now();
             $advanceDaysRequired = $advanceFilingRules[$leaveType] ?? 0;
 
-            // Only validate based on the required advance filing days
             if ($advanceDaysRequired > 0) {
                 $minStartDate = $today->copy()->addDays($advanceDaysRequired);
 
@@ -838,7 +833,7 @@ $request->validate(array_merge([
     ],
     'end_date' => 'required|date|after_or_equal:start_date',
     'reason' => 'nullable|string',
-    'leave_files.*' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048', // Multiple files
+    'leave_files.*' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',
     'days_applied' => 'required|integer|min:1',
     'commutation' => 'required|boolean',
     'leave_details' => 'nullable|array',
@@ -847,10 +842,6 @@ $request->validate(array_merge([
 
 $user = Auth::user();
 
-// Recalculate leave days (same as the store method)
-// Other logic remains the same...
-
-// Handle leave files (if new files are uploaded)
 $leaveFiles = [];
 if ($request->hasFile('leave_files')) {
     foreach ($request->file('leave_files') as $file) {
@@ -861,10 +852,6 @@ if ($request->hasFile('leave_files')) {
 
 $leaveDetails = [];
 
-// Populate leave details based on leave type
-// Same logic as in store function...
-
-// Update the leave record
 $leave->update([
     'leave_type' => $request->leave_type,
     'leave_details' => json_encode($leaveDetails),
@@ -876,7 +863,7 @@ $leave->update([
     'reason' => $request->reason,
     'signature' => $request->signature,
     'leave_files' => json_encode($leaveFiles),
-    'status' => 'pending',  // Can be modified based on the requirements
+    'status' => 'pending',
 ]);
 
 notify()->success('Leave request updated successfully!');
@@ -954,7 +941,6 @@ public function deleteLeave($id) {
                             $user->sick_leave_balance -= $remainingDays;
                         }
             
-                        // If it's mandatory leave, also track the balance
                         if ($isMandatoryLeave) {
                             $user->mandatory_leave_balance -= $leave->days_applied;
                         }
@@ -1190,7 +1176,7 @@ public function deleteLeave($id) {
     {
         $employees = User::with(['leaves' => function ($query) {
             $query->where('status', 'approved')
-                  ->whereMonth('start_date', now()->month) // Ensure it's within the month
+                  ->whereMonth('start_date', now()->month)
                   ->whereYear('start_date', now()->year);
         }])->get();
     
@@ -1228,7 +1214,7 @@ public function deleteLeave($id) {
     
     public function calendar(Request $request)
     {
-        $selectedYear = (int) $request->input('year', date('Y'));  // Cast year to integer
+        $selectedYear = (int) $request->input('year', date('Y')); 
     
         $holidays = YearlyHoliday::whereYear('date', $selectedYear)
             ->orWhere('repeats_annually', true)
@@ -1311,7 +1297,7 @@ public function deleteLeave($id) {
             ? \Carbon\Carbon::parse(YearlyHoliday::max('date'))->year 
             : date('Y');
             
-        $years = range($minYear, $maxYear + 1); // Include next year
+        $years = range($minYear, $maxYear + 1);
         return array_combine($years, $years);
     }
     public function holiday()
@@ -1477,7 +1463,6 @@ public function deleteLeave($id) {
             $query->orderBy('first_name', 'asc'); 
         }
         
-        // For PDF export - get all users without pagination
         if ($request->has('export') && $request->export == 'pdf') {
             $users = $query->get();
             $pdf = Pdf::loadView('hr.partials.user-pdf', compact('users'));

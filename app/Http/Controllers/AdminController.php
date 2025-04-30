@@ -75,13 +75,12 @@ class AdminController extends Controller
         ->groupBy('month')
         ->pluck('count', 'month');
 
-        // Create full 12 months so that empty months still show as 0
         $months = collect(range(1, 12))->map(function ($month) {
             return \Carbon\Carbon::create()->month($month)->format('F');
         });
 
         $visitorCounts = $months->map(function ($monthName, $index) use ($rawData) {
-            return $rawData->get($index + 1, 0); // +1 because Carbon months start at 1
+            return $rawData->get($index + 1, 0);
         });
     
         return view('admin.dashboard', compact('employees', 'pendingLeaves', 'totalEmployees', 'leaveStats', 'cocStats', 'search', 'months', 'visitorCounts', 'selectedYear'));
@@ -175,7 +174,7 @@ class AdminController extends Controller
         ],
         'end_date' => 'required|date|after_or_equal:start_date',
         'reason' => 'nullable|string',
-        'leave_files.*' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048', // Multiple files
+        'leave_files.*' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',
         'days_applied' => 'required|integer|min:1',
         'signature' => 'required|image|mimes:jpeg,png,jpg|max:2048',
         'commutation' => 'required|boolean',
@@ -806,7 +805,7 @@ $request->validate(array_merge([
     ],
     'end_date' => 'required|date|after_or_equal:start_date',
     'reason' => 'nullable|string',
-    'leave_files.*' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048', // Multiple files
+    'leave_files.*' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',
     'days_applied' => 'required|integer|min:1',
     'commutation' => 'required|boolean',
     'leave_details' => 'nullable|array',
@@ -879,9 +878,7 @@ public function ctoreview(Request $request, OvertimeRequest $cto)
     $admin_status = strtolower($request->admin_status); 
 
     $cto->update([
-        'admin_status' => $admin_status, // Update HR status
-        // 'status' => $status, // Also update overall status if rejected
-        // 'disapproval_reason' => $request->disapproval_reason,
+        'admin_status' => $admin_status, 
         'admin_id' => Auth::id(),
     ]);
 
