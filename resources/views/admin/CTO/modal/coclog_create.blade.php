@@ -75,7 +75,7 @@
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">COC Earned (hours)*</label>
-                                <input type="number" name="coc_earned" value="{{ old('coc_earned') }}" required
+                                <input type="number" step="0.01" name="coc_earned" value="{{ old('coc_earned') }}" required
                                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
                                 @error('coc_earned')
                                     <p class="text-red-500 text-sm mt-1">{{ $message }}</p>

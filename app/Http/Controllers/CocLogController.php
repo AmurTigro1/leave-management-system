@@ -52,7 +52,7 @@ class CocLogController extends Controller
             'user_id' => 'required|exists:users,id',
             'activity_name' => 'required|string|max:255',
             'activity_date' => 'required|string',
-            'coc_earned' => 'required|integer|min:0',
+            'coc_earned' => 'required',
             'issuance' => 'required|string|max:255',
         ]);
 
@@ -83,7 +83,7 @@ class CocLogController extends Controller
         $validated = $request->validate([
             'activity_name' => 'required|string|max:255',
             'activity_date' => 'required|date',
-            'coc_earned' => 'required|numeric|min:0|multiple_of:4',
+            'coc_earned' => 'required',
             'issuance' => 'nullable|string'
         ]);
 
