@@ -414,7 +414,7 @@ class AdminController extends Controller
             'hr_status' => 'pending', 
         ]);
         
-        $user->decrement('overtime_balance', $request->working_hours_applied);
+        // $user->decrement('overtime_balance', $request->working_hours_applied);
 
         notify()->success('Overtime request submitted successfully! Pending admin review.');
         return redirect()->back();

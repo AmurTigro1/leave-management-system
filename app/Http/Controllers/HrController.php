@@ -1015,23 +1015,95 @@ public function deleteLeave($id) {
         return redirect()->route('hr.requests');
     }   
 
+    // public function ctoreview(Request $request, OvertimeRequest $cto)
+    // {
+    //     $request->validate([
+    //         'hr_status' => 'required|in:Approved,Rejected',
+    //         'disapproval_reason' => 'nullable|string',
+    //     ]);
+
+    //     $hrStatus = strtolower($request->hr_status);
+    //     $status = $hrStatus;
+    //     $supervisorStatus = $cto->supervisor_status;
+
+    //     if ($hrStatus === 'approved') {
+    //         $supervisorStatus = 'approved';
+
+    //         $user = $cto->user;
+    //         $hours = $cto->working_hours_applied;
+
+    //         if ($user->overtime_balance >= $hours) {
+    //             $user->decrement('overtime_balance', $hours);
+
+    //             $remaining = $hours;
+    //             $logs = $user->cocLogs()
+    //                 ->where('coc_earned', '>', 0)
+    //                 ->orderBy('expires_at', 'asc')
+    //                 ->get();
+
+    //             foreach ($logs as $log) {
+    //                 if ($remaining <= 0) break;
+
+    //                 if ($log->coc_earned >= $remaining) {
+    //                     $log->decrement('coc_earned', $remaining);
+    //                     $remaining = 0;
+    //                 } else {
+    //                     $remaining -= $log->coc_earned;
+    //                     $log->decrement('coc_earned', $log->coc_earned);
+    //                 }
+    //             }
+    //         } else {
+    //             notify()->error('User does not have enough overtime balance.');
+    //             return redirect()->back();
+    //         }
+    //     }
+
+    //     $cto->update([
+    //         'hr_status' => $hrStatus,
+    //         'supervisor_status' => $supervisorStatus,
+    //         'status' => $status,
+    //         'disapproval_reason' => $request->disapproval_reason,
+    //         'hr_officer_id' => auth()->id(),
+    //     ]);
+
+    //     $color = $status === 'approved' ? 'text-green-500' : 'text-red-500';
+
+    //     $cto->user->notify(new LeaveStatusNotification(
+    //         $cto,
+    //         "Your CTO request has been <span class='{$color}'>{$status}</span> by the HR.",
+    //         $cto,
+    //         'leave'
+    //     ));
+
+    //     try {
+    //         Mail::to($cto->user->email)->queue(new CTOApprovalMail($cto, $status));
+    //     } catch (\Exception $e) {
+    //         \Log::error('Failed to send CTO email: ' . $e->getMessage());
+    //     }
+
+    //     notify()->success('CTO application reviewed by HR.');
+    //     return redirect()->route('hr.requests');
+    // }
+
     public function ctoreview(Request $request, OvertimeRequest $cto)
-    {
-        $request->validate([
-            'hr_status' => 'required|in:Approved,Rejected',
-            'disapproval_reason' => 'nullable|string',
-        ]);
+{
+    $request->validate([
+        'hr_status' => 'required|in:Approved,Rejected',
+        'disapproval_reason' => 'nullable|string',
+    ]);
 
-        $hrStatus = strtolower($request->hr_status);
-        $status = $hrStatus;
-        $supervisorStatus = $cto->supervisor_status;
+    $hrStatus = strtolower($request->hr_status);
+    $status = $hrStatus;
+    $supervisorStatus = $cto->supervisor_status;
 
-        if ($hrStatus === 'approved') {
-            $supervisorStatus = 'approved';
+    if ($hrStatus === 'approved') {
+        $supervisorStatus = 'approved';
 
-            $user = $cto->user;
-            $hours = $cto->working_hours_applied;
+        $user = $cto->user;
+        $hours = $cto->working_hours_applied;
 
+        // Only deduct if not already deducted
+        if (!$cto->is_balance_deducted) {
             if ($user->overtime_balance >= $hours) {
                 $user->decrement('overtime_balance', $hours);
 
@@ -1052,38 +1124,44 @@ public function deleteLeave($id) {
                         $log->decrement('coc_earned', $log->coc_earned);
                     }
                 }
+
+                // Mark as deducted
+                $cto->is_balance_deducted = true;
             } else {
                 notify()->error('User does not have enough overtime balance.');
                 return redirect()->back();
             }
         }
-
-        $cto->update([
-            'hr_status' => $hrStatus,
-            'supervisor_status' => $supervisorStatus,
-            'status' => $status,
-            'disapproval_reason' => $request->disapproval_reason,
-            'hr_officer_id' => auth()->id(),
-        ]);
-
-        $color = $status === 'approved' ? 'text-green-500' : 'text-red-500';
-
-        $cto->user->notify(new LeaveStatusNotification(
-            $cto,
-            "Your CTO request has been <span class='{$color}'>{$status}</span> by the HR.",
-            $cto,
-            'leave'
-        ));
-
-        try {
-            Mail::to($cto->user->email)->queue(new CTOApprovalMail($cto, $status));
-        } catch (\Exception $e) {
-            \Log::error('Failed to send CTO email: ' . $e->getMessage());
-        }
-
-        notify()->success('CTO application reviewed by HR.');
-        return redirect()->route('hr.requests');
     }
+
+    $cto->update([
+        'hr_status' => $hrStatus,
+        'supervisor_status' => $supervisorStatus,
+        'status' => $status,
+        'disapproval_reason' => $request->disapproval_reason,
+        'hr_officer_id' => auth()->id(),
+        'is_balance_deducted' => $cto->is_balance_deducted ?? false, // update value
+    ]);
+
+    $color = $status === 'approved' ? 'text-green-500' : 'text-red-500';
+
+    $cto->user->notify(new LeaveStatusNotification(
+        $cto,
+        "Your CTO request has been <span class='{$color}'>{$status}</span> by the HR.",
+        $cto,
+        'leave'
+    ));
+
+    try {
+        Mail::to($cto->user->email)->queue(new CTOApprovalMail($cto, $status));
+    } catch (\Exception $e) {
+        \Log::error('Failed to send CTO email: ' . $e->getMessage());
+    }
+
+    notify()->success('CTO application reviewed by HR.');
+    return redirect()->route('hr.requests');
+}
+
 
         public function generateLeaveReport($leaveId)
     {
