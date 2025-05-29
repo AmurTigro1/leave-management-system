@@ -33,15 +33,16 @@
                         </select>
                     </div>
                     
-                    <div>
+                    {{-- <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Working Hours Applied</label>
-                        <input type="number" name="working_hours_applied" id="working_hours_applied" 
-                               value="{{ old('working_hours_applied') }}" min="1" 
-                               class="w-full border border-gray-300 p-2 sm:p-3 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
+                        <input type="number" name="working_hours_applied" id="working_hours_applied"
+                            value="{{ old('working_hours_applied', isset($totalHours) ? $totalHours : '') }}"
+                            readonly
+                            class="bg-gray-100 w-full border border-gray-300 p-2 sm:p-3 rounded-lg">
                         @error('working_hours_applied')
                             <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                         @enderror
-                    </div>
+                    </div> --}}
 
                     <div>
                         <label class="block text-sm font-medium text-gray-700">Signature <span class="text-red-600">(Required)</span></label>

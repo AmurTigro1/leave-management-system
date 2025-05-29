@@ -33,7 +33,7 @@
                         </select>
                     </div>
                     
-                    <div>
+                    {{-- <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Working Hours Applied</label>
                         <input type="number" name="working_hours_applied" id="working_hours_applied" 
                                value="{{ old('working_hours_applied') }}" min="1" 
@@ -41,7 +41,7 @@
                         @error('working_hours_applied')
                             <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                         @enderror
-                    </div>
+                    </div> --}}
 
                     <div>
                         <label class="block text-sm font-medium text-gray-700">Signature <span class="text-red-600">(Required)</span></label>
