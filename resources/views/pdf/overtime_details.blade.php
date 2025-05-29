@@ -37,7 +37,13 @@
                         <p>Office/Division </p> </p> <div class="info4"><span class="underline">{{ $overtime->user->department}}</span>___________________</div>
                         <p>Date of Filing </p> <div class="info5"><span class="underline">{{ \Carbon\Carbon::parse($overtime->date_filed)->format('F d, Y') }}</span>_____________________</div>
                         <p>No. of working hours applied for </p> <div class="info6">________<span class="underline">({{ $overtime->working_hours_applied}})</span>________</div>
-                        <p>Inclusive Date/s </p> <div class="info7">_______<span class="underline">{{ \Carbon\Carbon::parse($overtime->inclusive_dates)->format('F d, Y') }}</span>_______</div>
+                        <p>Inclusive Date/s </p> <div class="info7">_______<span class="underline">@php
+                                                                                                        $formatted_dates = collect(explode(',', $overtime->inclusive_dates))
+                                                                                                            ->map(fn($date) => \Carbon\Carbon::parse(trim($date))->format('F d, Y'))
+                                                                                                            ->implode(', ');
+                                                                                                    @endphp
+                                                                                                    <span class="underline">{{ $formatted_dates }}</span>
+                                                                                                    </span>_______</div>
                     </div>
                     <div class="middle">
                         <p class="cert">CERTIFICATION OF COMPENSATORY CREDITS (COC)</p>
