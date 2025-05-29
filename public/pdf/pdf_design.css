@@ -98,7 +98,7 @@
         margin-left: 553px;
     }
     .image-display {
-        margin-left: 100px;
+        margin-left: 120px;
     }
     .head-middle-body {
         border: 1px solid black;
@@ -238,6 +238,7 @@
     }
     .sign {
         margin-top: -15px;
+        margin-left: 25px;
         text-align: center;
     }
     .fill-in2 {

@@ -2,9 +2,17 @@
 
 @section('content')
 
-<a href="{{ route('admin.requests') }}" class="inline-flex items-center text-blue-500 hover:underline transition duration-300 mb-4">
-    &larr; Back to Requests
-</a>
+<div class="flex justify-between items-center">
+    <a href="{{ route('admin.requests') }}" class="inline-flex items-center text-blue-500 hover:underline transition duration-300 mb-4">
+        &larr; Back to Requests
+    </a>
+    <div class="flex justify-end items-center">
+        <a href="{{ route('admin.leave.viewPdf', $leave->id) }}" target="_blank" 
+            class="bg-blue-600 text-white px-6 py-2 rounded-lg shadow-md hover:bg-blue-700 transition">
+            View & Download PDF
+        </a>
+    </div>
+</div>
 
 <div class="hidden md:block md:flex lg:flex justify-between items-start gap-4 h-full">
     <!-- Right side -->

@@ -156,6 +156,7 @@ Route::middleware('auth')->group(function () {
 
         Route::get('/admin/details/{id}', [AdminController::class, 'show'])->name('admin.leave_show');
         Route::get('/admin-leave/view/{id}', [AdminController::class, 'viewPdf'])->name('admin.leave.viewPdf');
+        Route::get('/admin-cto/view/{id}', [AdminController::class, 'viewCtoPdf'])->name('admin.cto.viewPdf');
         Route::post('/leave/{leave}/admin-review', [AdminController::class, 'review'])->name('leave.admin-review');
         Route::post('/cto/{cto}/admin-review', [AdminController::class, 'ctoreview'])->name('cto.admin-review');
         Route::get('/admin/leave/details/{id}', [AdminController::class, 'showleave'])->name('admin.leave_details');

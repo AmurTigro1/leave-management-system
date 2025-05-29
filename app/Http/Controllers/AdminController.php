@@ -10,6 +10,7 @@ use App\Models\CocLog;
 use App\Models\Leave;
 use App\Models\YearlyHoliday;
 use App\Models\OvertimeRequest;
+use Illuminate\Support\Facades\DB;
 use App\Models\VisitorLog;
 use App\Models\User;
 use Illuminate\Support\Facades\Storage;
@@ -469,17 +470,20 @@ class AdminController extends Controller
     }
 
     public function viewCtoPdf($id)
-    {
-        $overtime = OvertimeRequest::findOrFail($id);
-        $earned = CocLog::findOrFail($id);
+{
+    $overtime = OvertimeRequest::findOrFail($id);
 
-        $supervisor = User::where('role', 'supervisor')->first();
-        $hr = User::where('role', 'hr')->first();
-        
-        $pdf = PDF::loadView('pdf.overtime_details', compact('overtime', 'supervisor', 'hr', 'earned'));
-        
-        return $pdf->stream('overtime_request_' . $overtime->id . '.pdf');
-    }
+     $earned = CocLog::whereNotNull('certification_coc')
+            ->orderByDesc(DB::raw('GREATEST(created_at, updated_at)'))
+            ->first();
+
+    $supervisor = User::where('role', 'supervisor')->first();
+    $hr = User::where('role', 'hr')->first();
+
+    $pdf = PDF::loadView('pdf.overtime_details', compact('overtime', 'supervisor', 'hr', 'earned'));
+    
+    return $pdf->stream('overtime_request_' . $overtime->id . '.pdf');
+}
 
     public function cancel($id)
 {
