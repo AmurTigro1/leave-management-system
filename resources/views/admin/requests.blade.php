@@ -124,7 +124,9 @@
                                     {{ $cto->user->first_name }} {{ strtoupper(substr($cto->user->middle_name, 0, 1)) }}. {{ $cto->user->last_name }}
                                 </h3>
                                 <p class="text-gray-600 text-xs sm:text-sm mb-1">Working Hours: {{ $cto->working_hours_applied }} hours</p>
-                                <p class="text-gray-600 text-xs sm:text-sm">Duration: <span class="font-semibold">{{ round(\Carbon\Carbon::parse($cto->inclusive_date_start)->diffInDays(\Carbon\Carbon::parse($cto->inclusive_date_end)) + 1) }} days</span></p>
+                                <p class="text-gray-600 text-xs sm:text-sm">
+                                    Duration: {{ count(explode(', ', $cto->inclusive_dates)) }} {{ Str::plural('day', count(explode(', ', $cto->inclusive_dates))) }}
+                                </p>
                             </div>
                             <a href="{{ route('admin.cto_details', ['id' => $cto->id]) }}" class="text-blue-600 text-sm sm:text-base">View Request</a>
                         </div>
@@ -231,7 +233,7 @@
                             <div>
                                 <h3 class="text-sm font-semibold uppercase">{{ $cto->user->first_name }} {{ strtoupper(substr($cto->user->middle_name, 0, 1)) }}. {{ $cto->user->last_name }}</h3>
                                 <p class="text-xs text-gray-500">Hours: {{ $cto->working_hours_applied }}</p>
-                                <p class="text-xs text-gray-500">Duration: {{ round(\Carbon\Carbon::parse($cto->inclusive_date_start)->diffInDays(\Carbon\Carbon::parse($cto->inclusive_date_end)) + 1) }} days</p>
+                                <p class="text-xs text-gray-500">Duration: {{ count(explode(', ', $cto->inclusive_dates)) }} {{ Str::plural('day', count(explode(', ', $cto->inclusive_dates))) }}</p>
                             </div>
                         </div>
                         <div class="flex items-center justify-between text-sm">

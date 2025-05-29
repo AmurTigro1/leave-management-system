@@ -138,7 +138,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/admin/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
         Route::get('/admin/employees', [AdminController::class, 'onLeave'])->name('admin.on_leave');
         Route::get('/admin/leaderboard', [AdminController::class, 'leaderboard'])->name('admin.leaderboard');
-        Route::get('admin/leave-requests', [AdminController::class, 'requests'])->name('admin.requests');
+        Route::get('admin/requests', [AdminController::class, 'requests'])->name('admin.requests');
         Route::get('/admin/my-leave-requests', [AdminController::class, 'myRequests'])->name('admin.my_requests');
         Route::get('/admin/my-leave-requests/edit/{id}', [AdminController::class, 'editLeave'])->name('admin.leave_edit');
         Route::put('/admin/my-leave-requests/update/{id}', [AdminController::class, 'updateLeave'])->name('admin.leave_update');
