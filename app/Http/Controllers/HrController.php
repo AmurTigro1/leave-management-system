@@ -400,36 +400,39 @@ class HrController extends Controller
             'wholeday' => 8,
         ];
 
+        $datesArray = explode(', ', $request->inclusive_dates);
+        $validDates = [];
+
+        foreach ($datesArray as $date) {
+            if (!strtotime($date)) {
+                return back()->withErrors(['inclusive_dates' => 'Invalid date format detected']);
+            }
+            $validDates[] = $date;
+        }
+
+        $totalHours = 0;
         if ($request->cto_type !== 'none') {
-            $request->merge(['working_hours_applied' => $ctoHoursMap[$request->cto_type]]);
+            $dayCount = count($validDates);
+            $hoursPerDay = $ctoHoursMap[$request->cto_type] ?? 0;
+            $totalHours = $dayCount * $hoursPerDay;
         }
 
         $request->validate([
             'inclusive_dates' => 'required|string',
             'cto_type' => 'nullable|in:none,halfday_morning,halfday_afternoon,wholeday',
             'signature' => 'required|image|mimes:jpeg,png,jpg|max:2048',
-            'working_hours_applied' => [
-                'required_without:cto_type',
-                'integer',
-                'min:4',
-                function ($attribute, $value, $fail) {
-                    if ($value % 4 !== 0) {
-                        $fail("The $attribute must be a multiple of 4.");
-                    }
-                },
-                function ($attribute, $value, $fail) use ($overtimeBalance) {
-                    if ($value > $overtimeBalance) {
-                        $fail("You cannot apply more than your available COC balance.");
-                    }
-                }
-            ],
         ]);
 
-        $datesArray = explode(', ', $request->inclusive_dates);
-        foreach ($datesArray as $date) {
-            if (!strtotime($date)) {
-                return back()->withErrors(['inclusive_dates' => 'Invalid date format detected']);
-            }
+        if ($totalHours < 4 || $totalHours % 4 !== 0) {
+            return back()->withErrors([
+                'cto_type' => 'Working hours must be a multiple of 4 and at least 4 hours.'
+            ])->withInput();
+        }
+
+        if ($totalHours > $overtimeBalance) {
+            return back()->withErrors([
+                'cto_type' => 'You cannot apply more than your available COC balance.'
+            ])->withInput();
         }
 
         $signaturePath = null;
@@ -443,32 +446,13 @@ class HrController extends Controller
         OvertimeRequest::create([
             'user_id' => auth()->id(),
             'date_filed' => now(),
-            'working_hours_applied' => $request->working_hours_applied,
+            'working_hours_applied' => $totalHours,
             'signature' => $signaturePath,
             'inclusive_dates' => $request->inclusive_dates,
-            'admin_status' => 'pending', 
-            'hr_status' => 'pending', 
+            'admin_status' => 'pending',
+            'hr_status' => 'pending',
         ]);
-        
-        $user->decrement('overtime_balance', $request->working_hours_applied);
-        $remaining = $request->working_hours_applied;
 
-        $logs = $user->cocLogs()
-            ->where('coc_earned', '>', 0)
-            ->orderBy('expires_at', 'asc')
-            ->get();
-        
-        foreach ($logs as $log) {
-            if ($remaining <= 0) break;
-        
-            if ($log->coc_earned >= $remaining) {
-                $log->decrement('coc_earned', $remaining);
-                $remaining = 0;
-            } else {
-                $remaining -= $log->coc_earned;
-                $log->decrement('coc_earned', $log->coc_earned);
-            }
-        }
         notify()->success('Overtime request submitted successfully! Pending admin review.');
         return redirect()->back();
     }
