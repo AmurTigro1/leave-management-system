@@ -106,7 +106,7 @@
                     <tbody>
                         <tr>
                             <td>{{ $overtime->user->overtime_balance + $overtime->working_hours_applied }} hours</td>
-                            <td>{{ \Carbon\Carbon::parse($overtime->inclusive_dates)->format('F d, Y') }}</td>
+                            <td>{{ $formatted_dates }}</td>
                             <td>{{ $overtime->working_hours_applied}} hours</td>
                             <td>{{ $overtime->user->overtime_balance }} hours</td>
                             <td></td>
