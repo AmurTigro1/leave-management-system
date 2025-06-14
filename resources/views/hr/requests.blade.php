@@ -183,8 +183,12 @@
                 @endforeach
             </div>
             @if (!$leaveFound)
-                <p class="text-gray-600">No leave applications available.</p>
-            @endif
+            <p class="text-gray-600">No leave applications available.</p>
+        @else
+            <div class="mt-6">
+                {{ $leaveApplications->links() }}
+            </div>
+        @endif        
         @endif
     </div>
 
@@ -261,6 +265,10 @@
             </div>
             @if (!$ctoFound)
                 <p class="text-gray-600">No CTO applications available.</p>
+            @else
+            <div class="mt-6">
+                {{ $ctoApplications->links() }}
+            </div>
             @endif
         @endif
     </div>

@@ -67,8 +67,12 @@
                     </div>
                     @endforeach
                 </div>
-            @endif
-        </div>
+            <div class="mt-6">
+                {{ $leaveApplications->links() }}
+            </div>
+        @endif
+    </div>
+
 
         <!-- CTO Applications Section -->
         <div class="shadow-lg rounded-lg p-4 w-full lg:w-1/2">
@@ -132,6 +136,9 @@
                         </div>
                     </div>
                     @endforeach
+                </div>
+                <div class="mt-6">
+                    {{ $leaveApplications->links() }}
                 </div>
             @endif
         </div>
