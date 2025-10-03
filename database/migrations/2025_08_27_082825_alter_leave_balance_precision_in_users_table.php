@@ -12,9 +12,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->decimal('vacation_leave_balance', 8, 3)->change();
-            $table->decimal('sick_leave_balance', 8, 3)->change();
-            $table->decimal('mandatory_leave_balance', 8, 3)->change();
+            $table->decimal('vacation_leave_balance', 8, 3)->default(0)->change();
+            $table->decimal('sick_leave_balance', 8, 3)->default(0)->change();
+            $table->decimal('mandatory_leave_balance', 8, 3)->default(0)->change();
         });
     }
 
