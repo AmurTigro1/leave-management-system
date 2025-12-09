@@ -121,7 +121,7 @@
                 </div>
                 
                 <script>
-                document.getElementById('signature-upload').addEventListener('change', function(e) {
+                    document.getElementById('signature-upload').addEventListener('change', function(e) {
                     const file = e.target.files[0];
                     const previewContainer = document.getElementById('signature-preview-container');
                     const imgPreview = document.getElementById('signature-preview');
@@ -156,58 +156,90 @@
                     <input type="text" name="salary_file" class="w-full border p-2 rounded" required placeholder="Enter Salary File">
                 </div> --}}
 
-                <div>
-                    <label class="block text-sm font-medium text-gray-700">Start of time-off</label>
-                    <input type="date" name="start_date" id="start_date" class="mt-1 w-full p-2 border rounded" required>
-                    @error('start_date')
-                    <p class="text-red-500 text-sm">{{ $message }}</p>
-                    @enderror
-                    <div class="">
-                        <input type="checkbox" id="one_day_leave" class="mr-2" onclick="toggleEndDate()">
-                        <label for="one_day_leave" class="text-sm">One-day leave</label>
-                    </div>
-                </div>
-                
-                <div>
-                    <label class="block text-sm font-medium text-gray-700">End of time-off</label>
-                    <input type="date" name="end_date" id="end_date" class="mt-1 w-full p-2 border rounded" required>
-                    @error('end_date')
-                    <p class="text-red-500 text-sm">{{ $message }}</p>
-                    @enderror
-                </div>
-                
-                <script>
-                function toggleEndDate() {
-                    let startDate = document.getElementById("start_date");
-                    let endDate = document.getElementById("end_date");
-                    let oneDayLeave = document.getElementById("one_day_leave");
-                
-                    if (oneDayLeave.checked) {
-                        endDate.value = startDate.value;
-                        endDate.readOnly = true;
-                    } else {
-                        endDate.readOnly = false;
-                    }
-                }
-                
-                // Ensure that when selecting a start date, the end date updates if one-day leave is checked
-                document.getElementById("start_date").addEventListener("change", function() {
-                    if (document.getElementById("one_day_leave").checked) {
-                        document.getElementById("end_date").value = this.value;
-                    }
-                });
-                </script>
-                <div>
-                    <label class="block mt-2 text-sm font-medium text-gray-700">Commutation:</label>
-                    <select name="commutation" class="w-full border p-2 rounded">
-                        <option value="1">Yes</option>
-                        <option value="0">No</option>
-                    </select>
-                </div>
-                <div class="">
-                    <label class="block mt-2 text-sm font-medium text-gray-700">Days Applied:</label>
-                    <input type="number" name="days_applied" class="w-full border p-2 rounded" min="1" required placeholder="Enter Days Applied">
-                </div>
+ {{-- Start Time --}}
+<div>
+    <label class="block text-sm font-medium text-gray-700">Start of time-off</label>
+    <input type="date" name="start_date" id="start_date" class="mt-1 w-full p-2 border rounded" onchange="updateDates()" required>
+    @error('start_date')
+    <p class="text-red-500 text-sm">{{ $message }}</p>
+    @enderror
+    <div class="">
+        <input type="checkbox" id="one_day_leave" class="mr-2" onchange="toggleEndDate()">
+        <label for="one_day_leave" class="text-sm">One-day leave</label>
+    </div>
+</div>
+
+{{-- End Time --}}
+<div>
+    <label class="block text-sm font-medium text-gray-700">End of time-off</label>
+    <input type="date" name="end_date" id="end_date" class="mt-1 w-full p-2 border rounded" onchange="updateDates()" required>
+    @error('end_date')
+    <p class="text-red-500 text-sm">{{ $message }}</p>
+    @enderror
+</div>
+
+{{-- Commutation --}}
+<div>
+    <label class="block mt-2 text-sm font-medium text-gray-700">Commutation:</label>
+    <select name="commutation" class="w-full border p-2 rounded">
+        <option value="1">Yes</option>
+        <option value="0">No</option>
+    </select>
+</div>
+
+{{-- Days Applied --}}
+<div class="">
+    <label class="block mt-2 text-sm font-medium text-gray-700">Days Applied:</label>
+    <input type="number" name="days_applied" id="days_applied" class="w-full border p-2 rounded" min="0" required placeholder="Enter Days Applied" readonly>
+</div>
+
+<script>
+    function toggleEndDate() {
+        let startDate = document.getElementById("start_date");
+        let endDate = document.getElementById("end_date");
+        let oneDayLeave = document.getElementById("one_day_leave");
+        
+        if (oneDayLeave.checked) {  
+            endDate.value = startDate.value;
+            endDate.readOnly = true;
+        } else {
+            endDate.readOnly = false;
+        }
+        updateDates();
+    }
+
+    function updateDates() {
+        let startDate = document.getElementById("start_date");
+        let endDate = document.getElementById("end_date");
+        let oneDayLeave = document.getElementById("one_day_leave");
+        let daysApplied = document.getElementById('days_applied');
+        
+        // If one-day leave is checked, sync the dates
+        if (oneDayLeave.checked && startDate.value) {
+            endDate.value = startDate.value;
+        }
+        
+        // Calculate days difference
+        if (startDate.value && endDate.value) {
+            const start = new Date(startDate.value);
+            const end = new Date(endDate.value);
+            const timeDiff = end.getTime() - start.getTime();
+            const dayDiff = Math.floor(timeDiff / (1000 * 60 * 60 * 24)) + 1;
+            
+            daysApplied.value = dayDiff > 0 ? dayDiff : 1;
+        } else {
+            // Show 0 when no dates are selected
+            daysApplied.value = 0;
+        }
+    }
+
+    // Initialize on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        updateDates();
+    });
+</script>
+
+                {{-- Reason  --}}
                 <div class="mt-2">
                     <label class="block text-sm font-medium text-gray-700">Reason (Optional)</label>
                     {{-- <input type="text" name="reason" class="mt-1 w-full p-2 border rounded"> --}}
@@ -243,7 +275,7 @@
                                 </div>
                             </div>
                             
-                            <script>
+                        <script>
                             document.addEventListener('DOMContentLoaded', function() {
                                 const fileInput = document.getElementById('leave_files');
                                 const dropzone = document.getElementById('dropzone');
@@ -383,7 +415,7 @@
                                     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
                                 }
                             });
-                            </script>
+                        </script>
             </div>      
             
             <div id="vacation_options" class="hidden space-y-3">
@@ -607,6 +639,7 @@
         toggleFileUpload();
     });
 </script>
+
 
 @notifyCss
 <style>
