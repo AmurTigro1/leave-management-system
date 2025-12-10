@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\HRSupervisor;
+use App\Notifications\LeaveStatusNotification;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use App\Services\YearlyHolidayService;
@@ -862,6 +863,8 @@ public function deleteLeave($id) {
 
     $status = ($admin_status === 'rejected') ? 'rejected' : $leave->status;
 
+    $user = $leave->user;
+
     $leave->update([
         'admin_status' => $admin_status,
         'status' => $status,
@@ -869,8 +872,18 @@ public function deleteLeave($id) {
         'admin_id' => Auth::id(),
     ]);
 
-    notify()->success('Leave application reviewed by Admin.');
+    $user->notify(new LeaveStatusNotification($leave,
+            "Your leave request has been <span class='" .
+            ($leave->status === 'approved' ? 'text-green-500' : 'text-red-500') . "'>" .
+            $leave->status . "</span> by the HR.",
+            $leave,
+            'leave'
+        ));
+
     return Redirect::route('admin.requests');
+
+
+
 }
 
 public function ctoreview(Request $request, OvertimeRequest $cto)

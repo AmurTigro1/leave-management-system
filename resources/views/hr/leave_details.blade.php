@@ -258,7 +258,6 @@
                 document.getElementById('disapproval_reason').value = ""; // Clear text area
             });
         </script>
-        
     </div>
 </div>
 

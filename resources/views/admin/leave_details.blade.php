@@ -48,18 +48,18 @@
             <div class="bg-gray-300 text-black rounded-lg p-2 text-[10px] w-[124px] text-center mr-2">{{ $leave->user->special_emergency_leave}} days</div>
         </div>
         <h2 class="text-2xl font-bold">Application Request</h2>
-       <div class="flex justify-between items-start gap-4">
-            <div class="w-full text-center">
-                <p class="mb-2">The Employeee requests the application to start and end at the following dates:</p>
-                <div class="p-2 bg-gray-300 text-black rounded-lg mb-2"> {{ \Carbon\Carbon::parse($leave->start_date)->format('F d, Y') }} - {{ \Carbon\Carbon::parse($leave->end_date)->format('F d, Y') }}</div>
-            </div>
-            <div class="w-full text-center">
-                <p class="mb-2">The Application request applied for the number of days to be taken:</p>
-                <div class="p-2 bg-gray-300 text-black rounded-lg">Applied days: {{ $leave->days_applied}}</div>
-            </div>
-       </div>
+    <div class="flex justify-between items-start gap-4">
+        <div class="w-full text-center">
+            <p class="mb-2">The Employeee requests the application to start and end at the following dates:</p>
+            <div class="p-2 bg-gray-300 text-black rounded-lg mb-2"> {{ \Carbon\Carbon::parse($leave->start_date)->format('F d, Y') }} - {{ \Carbon\Carbon::parse($leave->end_date)->format('F d, Y') }}</div>
+        </div>
+        <div class="w-full text-center">
+            <p class="mb-2">The Application request applied for the number of days to be taken:</p>
+            <div class="p-2 bg-gray-300 text-black rounded-lg">Applied days: {{ $leave->days_applied}}</div>
+        </div>
+    </div>
         <div class="flex justify-between items-start gap-4">
-           <div class="w-full">
+        <div class="w-full">
                 <p>Commutations required:</p>
                 <div class="flex justify-between items-start gap-4">
                     @if($leave->commutation == 1)
@@ -81,7 +81,7 @@
                         </div>
                     @endif
                 </div>
-           </div>
+        </div>
             <div class="w-full">
                 <p>Type of Leave requested and details:</p>
                 <div class="p-2 bg-gray-300 text-black rounded-lg mb-2 w-full text-center">{{ $leave->leave_type}}</div>
@@ -120,8 +120,9 @@
                 $decodedDetails = is_string($details) ? json_decode($details, true) : $details;
             @endphp
         
-        <textarea class="p-2 border text-black rounded-lg mb-2 w-full h-[100px] resize-none overflow-auto" 
-        readonly>{{ !empty($decodedDetails) ? (is_array($decodedDetails) ? implode(', ', $decodedDetails) : $decodedDetails) : 'None' }}</textarea>
+            <textarea readonly class="p-2 border text-black rounded-lg mb-2 w-full h-[100px] resize-none overflow-auto" >
+                {{ !empty($decodedDetails) ? (is_array($decodedDetails) ? implode(', ', $decodedDetails) : $decodedDetails) : 'None' }}
+            </textarea>
         </div>        
     </div>
         <!-- Modal -->
@@ -146,7 +147,7 @@
         </script>
 
     <!-- Left side -->
-    <div class="bg-white shadow-xl rounded-lg p-6 w-[500px] h-full min-h-[865px] flex flex-col">
+    <div class="bg-white shadow-xl rounded-lg p-6 w-[500px] h-auto min-h-[865px] flex flex-col">
        <div class="flex justify-center items-center">
         @if ($leave->user->profile_image)
         @php
@@ -172,33 +173,87 @@
                 alt="" 
                 class="w-[400px] h-[400px] object-cover">
         @endif
-       </div>
+    </div>
 
-        <p class="font-semibold mt-4 text-gray-500">Employee: {{ $leave->user->first_name}} {{ strtoupper(substr($leave->user->middle_name, 0, 1)) }}. {{ $leave->user->last_name}}</p>
-        <p class="font-semibold text-gray-500">Email:{{ $leave->user->email }}</p>
-        <p class="mb-4 font-semibold text-gray-500">Position: {{ $leave->user->position}}</p>
+    <p class="font-semibold mt-4 text-gray-500">Employee: {{ $leave->user->first_name}} {{ strtoupper(substr($leave->user->middle_name, 0, 1)) }}. {{ $leave->user->last_name}}</p>
+    <p class="font-semibold text-gray-500">Email:{{ $leave->user->email }}</p>
+    <p class="mb-4 font-semibold text-gray-500">Position: {{ $leave->user->position}}</p>
 
-        <div class="border-2 border-gray mb-[15px]"></div>
+    <div class="border-2 border-gray mb-[15px]"></div>
 
-        <h1 class="text-blue-600 font-bold text-center text-xl">Request Verification complete?</h1>
-        <h1 class="text-blue-600 font-bold text-center text-xl mb-[15px]">Proceed to HR!</h1>
+    <h1 class="text-blue-600 font-bold text-center text-xl">Request Verification complete?</h1>
+    <h1 class="text-blue-600 font-bold text-center text-xl mb-[15px]">Proceed to HR!</h1>
 
-        <div class="py-2 px-4 flex-grow">
-            <p class="text-sm text-gray-500">The request has been successfully reviewed and is now ready for submission to HR for final approval. Please take a moment to carefully verify all details to ensure accuracy and completeness before proceeding. Once submitted, any necessary changes may require additional processing time.</p>
-        </div>
+    <div class="py-2 px-4 flex-grow">
+        <p class="text-sm text-gray-500">The request has been successfully reviewed and is now ready for submission to HR for final approval. Please take a moment to carefully verify all details to ensure accuracy and completeness before proceeding. Once submitted, any necessary changes may require additional processing time.</p>
+    </div>
 
-        <div class="flex justify-center items-center mt-auto">
-            <form action="{{ route('leave.admin-review', $leave->id) }}" method="POST" class="space-y-2 w-full">
+    <div class="flex justify-center items-center space-y-2 w-full">
+        <div id="approveSection">
+            <form action="{{ route('leave.admin-review', $leave->id) }}" method="POST" class="">
                 @csrf 
                 <div class="flex gap-2">
                     <!-- Approve Button -->
                     <button type="submit" name="admin_status" value="Approved" 
-                        class="bg-blue-600 text-white py-2 px-4 rounded-lg w-full">
+                        class="bg-blue-600 text-white py-2 px-4 rounded-lg mr-3">
                         Proceed to HR
                     </button>
+
+                    <button type="button" id="rejectBtn" 
+                        class="bg-red-600 text-white py-2 px-4 rounded-lg">
+                        Return Request
+                    </button>
+                </div>
+
+                <!-- Hidden Approval Fields -->
+                <div id="approvalSection" class="mt-3 hidden h-auto">
+                    <label class="block text-gray-700 font-medium text-xs">Approved Days With Pay:</label>
+                    <input type="number" name="approved_days_with_pay" class="w-full border rounded p-2 text-xs focus:ring focus:ring-blue-200">
+        
+                    <label class="block text-gray-700 font-medium text-xs">Approved Days Without Pay:</label>
+                    <input type="number" name="approved_days_without_pay" class="w-full border rounded p-2 text-xs focus:ring focus:ring-blue-200">
+        
+                    <label class="block text-gray-700 font-medium text-xs">Others:</label>
+                    <textarea name="others" class="w-full border rounded p-2 text-xs focus:ring focus:ring-blue-200" 
+                        placeholder="Specify any other details..."></textarea>
+        
+                    <button type="submit" name="status" value="Approved" class="bg-green-600 text-white py-2 px-4 rounded-lg mt-2">
+                        Confirm Approval
+                    </button>
+                </div>
+
+                <!-- Hidden Disapproval Reason Field -->
+                <div id="disapprovalSection" class="mt-3 hidden h-auto">
+                    <label class="block text-gray-700 font-medium text-xs">Disapproval Reason:</label>
+                    <textarea name="disapproval_reason" id="disapproval_reason" 
+                        class="w-full border rounded p-2 text-xs focus:ring focus:ring-blue-200"></textarea>
+                    
+                    <div class="flex gap-2 mt-2">
+                        <button type="submit" name="status" value="Rejected" id="finalRejectBtn"
+                            class="bg-red-600 text-white py-2 px-4 rounded-lg">
+                            Confirm Rejection
+                        </button>
+                        
+                        <button type="button" id="cancelDisapprovalBtn" class="bg-gray-500 text-white py-2 px-4 rounded-lg">
+                            Cancel
+                        </button>
+                    </div>
                 </div>
             </form>
         </div>
+
+        <script>
+            document.getElementById('rejectBtn').addEventListener('click', function() {
+                console.log('Reject button clicked');
+                document.getElementById('disapprovalSection').classList.remove('hidden'); 
+                document.getElementById('approvalSection').classList.add('hidden');
+            });
+        
+            document.getElementById('cancelDisapprovalBtn').addEventListener('click', function() {
+                document.getElementById('disapprovalSection').classList.add('hidden');
+                document.getElementById('disapproval_reason').value = ""; // Clear text area
+            });
+        </script>
     </div>
 </div>
 
@@ -322,13 +377,28 @@
     function openModal(imageSrc) {
         document.getElementById('modalImage').src = imageSrc;
         document.getElementById('imageModal').classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
     }
 
     function closeModal(event) {
-        if (event.target.id === 'imageModal') {
-            document.getElementById('imageModal').classList.add('hidden');
-        }
+        document.getElementById('imageModal').classList.add('hidden');
+        document.body.style.overflow = 'auto';
     }
+
+    // Toggle Logic
+    document.getElementById('triggerApproveSection').addEventListener('click', function () {
+        document.getElementById('approveSection').classList.remove('hidden');
+        document.getElementById('rejectSection').classList.add('hidden');
+    });
+
+    document.getElementById('triggerRejectSection').addEventListener('click', function () {
+        document.getElementById('rejectSection').classList.remove('hidden');
+        document.getElementById('approveSection').classList.add('hidden');
+    });
+
+    document.getElementById('cancelRejectSection').addEventListener('click', function () {
+        document.getElementById('rejectSection').classList.add('hidden');
+    });
 </script>
 @endsection
 
