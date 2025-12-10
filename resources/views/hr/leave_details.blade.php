@@ -203,7 +203,7 @@
             <div class="border-2 border-gray mb-[15px]"></div>
 
             <h1 class="text-blue-600 font-bold text-center text-xl">Request Verification complete? </h1>
-            <h1 class="text-blue-600 font-bold text-center text-xl mb-[15px]">Process your Recommendation!</h1>
+            <h1 class=  "text-blue-600 font-bold text-center text-xl mb-[15px]">Process your Recommendation!</h1>
 
             <div class="py-2 px-4 flex-grow">
                 <p class="text-sm text-gray-500">The request has been successfully reviewed and is now ready for submission
@@ -441,6 +441,58 @@
                 </div>
             </form>
         </div>
+
+        
+        <script>
+            document.getElementById('approveBtn').addEventListener('click', function() {
+                document.getElementById('approvalSection').classList.remove('hidden'); // Show approval fields
+                document.getElementById('disapprovalSection').classList.add('hidden'); // Hide rejection fields
+            });
+        
+            document.getElementById('rejectBtn').addEventListener('click', function() {
+                document.getElementById('disapprovalSection').classList.remove('hidden'); // Show rejection fields
+                document.getElementById('approvalSection').classList.add('hidden'); // Hide approval fields
+            });
+        
+            document.getElementById('cancelDisapprovalBtn').addEventListener('click', function() {
+                document.getElementById('disapprovalSection').classList.add('hidden');
+                document.getElementById('disapproval_reason').value = ""; // Clear text area
+            });
+        </script>
+    </div>
+</div>
+
+<!-- Mobile View (only on small devices) -->
+<div class="block md:hidden space-y-6 bg-white p-4 rounded-lg shadow animate-fade-in">
+    <div class="flex flex-col items-center">
+        @if ($leave->user->profile_image)
+        @php
+            $profileImage = null;
+
+            if ($leave->user->profile_image) {
+                $imagePath1 = 'storage/profile_images/' . $leave->user->profile_image;
+                $imagePath2 = 'storage/profile_pictures/' . $leave->user->profile_image;
+
+                if (file_exists(public_path($imagePath1))) {
+                    $profileImage = asset($imagePath1);
+                } elseif (file_exists(public_path($imagePath2))) {
+                    $profileImage = asset($imagePath2);
+                }
+            }
+        @endphp
+
+        <img src="{{ $profileImage ?? asset('img/default-avatar.png') }}" 
+            class="w-32 h-32 object-cover"
+            alt="{{ $leave->user->name }}">
+        @else
+            <img src="{{ asset('img/default-avatar.png') }}" 
+                alt="" 
+                class="w-32 h-32 object-cover">
+        @endif
+        <p class="font-semibold text-gray-500">Employee: {{ $leave->user->first_name }} {{ strtoupper(substr($leave->user->middle_name, 0, 1)) }}. {{ $leave->user->last_name }}</p>
+        <p class="text-gray-500 text-sm">Email: {{ $leave->user->email }}</p>
+        <p class="text-gray-500 text-sm mb-4">Position: {{ $leave->user->position }}</p>
+
     </div>
 
     <!-- Image Modal -->
