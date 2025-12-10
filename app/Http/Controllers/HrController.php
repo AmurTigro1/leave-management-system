@@ -346,7 +346,7 @@ class HrController extends Controller
             }
         }
 
-        $signaturePath = null;
+    $signaturePath = null;
     if ($request->hasFile('signature')) {
         $signatureFile = $request->file('signature');
         $filename = time() . '_' . $signatureFile->getClientOriginalName();
@@ -463,11 +463,11 @@ class HrController extends Controller
 
         $leaveApplications = Leave::where('status', 'pending')->where('admin_status', 'approved')
             ->orderBy('created_at', 'desc')
-            ->paginate(10, ['*'], 'leave_page');
+            ->paginate(5, ['*'], 'leave_page');
 
         $ctoApplications = OvertimeRequest::where('admin_status', 'Ready for Review')
             ->orderBy('created_at', 'desc')
-            ->paginate(10, ['*'], 'cto_page');
+            ->paginate(5, ['*'], 'cto_page');
 
         $officials = HRSupervisor::all();
 

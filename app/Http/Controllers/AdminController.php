@@ -23,6 +23,7 @@ use Illuminate\Support\Facades\Redirect;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 use App\Models\Holiday;
+use App\Notifications\LeaveStatusNotification;
 
 class AdminController extends Controller
 {
@@ -862,6 +863,8 @@ public function deleteLeave($id) {
 
     $status = ($admin_status === 'rejected') ? 'rejected' : $leave->status;
 
+    $user = $leave->user;
+
     $leave->update([
         'admin_status' => $admin_status,
         'status' => $status,
@@ -869,7 +872,13 @@ public function deleteLeave($id) {
         'admin_id' => Auth::id(),
     ]);
 
-    notify()->success('Leave application reviewed by Admin.');
+    $user->notify(new LeaveStatusNotification($leave,
+            "Your leave request has been <span class='" .
+            ($leave->status === 'approved' ? 'text-green-500' : 'text-red-500') . "'>" .
+            $leave->status . "</span> by the HR.",
+            $leave,
+            'leave'
+        ));
     return Redirect::route('admin.requests');
 }
 
