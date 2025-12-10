@@ -32,7 +32,7 @@ class AdminController extends Controller
         $search = $request->input('search');
 
         $query = User::query();
-    
+
         if ($search) {
             $query->where('name', 'like', "%{$search}%")
                   ->orWhere('first_name', 'like', "%{$search}%")
@@ -40,16 +40,16 @@ class AdminController extends Controller
                   ->orWhere('email', 'like', "%{$search}%")
                   ->orWhere('position', 'like', "%{$search}%");
         }
-    
+
         $employees = $query->paginate(10)->withQueryString();
-    
+
         if ($request->ajax()) {
             return view('admin.partials.employee-list', compact('employees'))->render();
         }
-    
-    
+
+
         $pendingLeaves = Leave::where('status', 'pending')->get();
-    
+
         $totalEmployees = User::count();
         $totalPendingLeaves = Leave::where('admin_status', 'pending')->count();
         $totalApprovedLeaves = Leave::where('admin_status', 'approved')->count();
@@ -57,13 +57,13 @@ class AdminController extends Controller
         $totalApprovedOvertime = OvertimeRequest::where('admin_status', 'Ready for Review')->count();
         $totalPendingOvertime = OvertimeRequest::where('admin_status', 'pending')->count();
         $totalRejectedOvertime = OvertimeRequest::where('admin_status', 'rejected')->count();
-    
+
         $leaveStats = [
             'Pending' => $totalPendingLeaves,
             'Approved' => $totalApprovedLeaves,
             'Rejected' => $totalRejectedLeaves,
         ];
-    
+
         $cocStats = [
             'Pending' => $totalPendingOvertime,
             'Approved' => $totalApprovedOvertime,
@@ -84,7 +84,7 @@ class AdminController extends Controller
         $visitorCounts = $months->map(function ($monthName, $index) use ($rawData) {
             return $rawData->get($index + 1, 0);
         });
-    
+
         return view('admin.dashboard', compact('employees', 'pendingLeaves', 'totalEmployees', 'leaveStats', 'cocStats', 'search', 'months', 'visitorCounts', 'selectedYear'));
     }
 
@@ -95,7 +95,7 @@ class AdminController extends Controller
         return view('admin.make_leave_request', compact('leaves', 'gender'));
     }
 
-    public function storeLeave(Request $request, YearlyHolidayService $yearlyHolidayService)  
+    public function storeLeave(Request $request, YearlyHolidayService $yearlyHolidayService)
 {
     $leaveValidationRules = [];
 
@@ -141,9 +141,9 @@ class AdminController extends Controller
         'Special Privilege Leave' => 7,
         'Solo Parent Leave' => 5,
         'Special Leave Benefits for Women Leave' => 5,
-        'Sick Leave' => 0, 
-        'Maternity Leave' => 0, 
-        'Paternity Leave' => 0, 
+        'Sick Leave' => 0,
+        'Maternity Leave' => 0,
+        'Paternity Leave' => 0,
         'Mandatory Leave' => 0,
     ];
 
@@ -164,10 +164,10 @@ class AdminController extends Controller
                 $startDate = Carbon::parse($value);
                 $today = Carbon::now();
                 $advanceDaysRequired = $advanceFilingRules[$leaveType] ?? 0;
-    
+
                 if ($advanceDaysRequired > 0) {
                     $minStartDate = $today->copy()->addDays($advanceDaysRequired);
-                    
+
                     if ($startDate->lt($minStartDate)) {
                         $fail("You must request {$leaveType} at least {$advanceDaysRequired} days in advance.");
                     }
@@ -180,7 +180,7 @@ class AdminController extends Controller
         'days_applied' => 'required|integer|min:1',
         'signature' => 'required|image|mimes:jpeg,png,jpg|max:2048',
         'commutation' => 'required|boolean',
-        'leave_details' => 'nullable|array', 
+        'leave_details' => 'nullable|array',
         'abroad_details' => 'nullable|string',
     ], $leaveValidationRules));
 
@@ -192,32 +192,32 @@ class AdminController extends Controller
         'Maternity Leave' => 'Proof of Pregnancy (Ultrasound, Doctor’s Certificate)',
         'Paternity Leave' => 'Proof of Child Delivery (Birth Certificate, Medical Certificate, Marriage Contract)'
     ];
-    
+
     $requiresDocs = in_array($request->leave_type, ['Maternity Leave', 'Paternity Leave']);
-    
+
     if ($requiresDocs && !$request->hasFile('leave_files')) {
         return redirect()->back()->withErrors([
             'leave_files' => "For {$request->leave_type}, please upload the required documents: " . $requiredDocs[$request->leave_type]
         ]);
     }
-    
+
     if (in_array($request->leave_type, $inclusiveLeaveTypes)) {
         $daysApplied = $startDate->diffInDays($endDate) + 1;
     } else {
         $daysApplied = 0;
         $currentDate = $startDate->copy();
         $holidays = $yearlyHolidayService->getHolidaysBetweenDates($startDate, $endDate);
-    
+
         while ($currentDate->lte($endDate)) {
             if (!$currentDate->isWeekend() && !in_array($currentDate->format('Y-m-d'), $holidays)) {
                 $daysApplied++;
             }
             $currentDate->addDay();
         }
-    
+
         if ($daysApplied === 0) {
             $isValidStartDate = !$startDate->isWeekend() && !$yearlyHolidayService->isHoliday($startDate);
-    
+
             if ($isValidStartDate) {
                 $daysApplied = 1;
             } else {
@@ -269,7 +269,7 @@ class AdminController extends Controller
     }
 
     $leaveDetails = [];
-    
+
     if ($request->leave_type === 'Vacation Leave' || $request->leave_type === 'Special Privilege Leave') {
         if ($request->filled('within_philippines')) {
             $leaveDetails['Within the Philippines'] = $request->within_philippines;
@@ -291,7 +291,7 @@ class AdminController extends Controller
     if ($request->leave_type === 'Study Leave') {
         if ($request->has('completion_masters')) {
             $leaveDetails[] = 'Completion of Master\'s Degree';
-        }   
+        }
         if ($request->has('bar_review')) {
             $leaveDetails[] = 'BAR Review';
         }
@@ -328,7 +328,7 @@ class AdminController extends Controller
         'start_date' => $request->start_date,
         'end_date' => $request->end_date,
         'vacation_balance_before' => auth()->user()->vacation_leave_balance,
-        'sick_balance_before' => auth()->user()->sick_leave_balance,     
+        'sick_balance_before' => auth()->user()->sick_leave_balance,
         'salary_file' => $request->salary_file,
         'days_applied' => $daysApplied,
         'commutation' => $request->commutation,
@@ -350,7 +350,7 @@ class AdminController extends Controller
         $appliedDates = OvertimeRequest::where('user_id', auth()->id())
                     ->get('inclusive_dates');
         $holidays = Holiday::select('date')->get();
-        
+
         return view('admin.make_cto_request', compact('overtimereq', 'appliedDates', 'holidays'));
     }
 
@@ -427,33 +427,33 @@ class AdminController extends Controller
         if (Auth::user()->role !== 'admin') {
             abort(403, 'Unauthorized access.');
         }
-    
+
         $leaveApplications = Leave::where('admin_status', 'pending')
-        ->orderBy('created_at', 'desc') 
-        ->paginate(9); 
+            ->orderBy('created_at', 'desc')
+            ->paginate(10, ['*'], 'leave_page');
 
         $ctoApplications = OvertimeRequest::where('admin_status', 'pending')
-        ->orderBy('created_at', 'desc') 
-        ->paginate(9); 
+            ->orderBy('created_at', 'desc')
+            ->paginate(10, ['*'], 'cto_page');
 
         return view('admin.requests', compact('leaveApplications', 'ctoApplications'));
     }
 
     public function myRequests() {
         $user = auth()->user();
-    
+
         if (!$user) {
             return redirect()->route('login')->with('error', 'Please log in to view your reservations.');
         }
-    
-        $leaves = $user->leaves()->orderBy('created_at', 'desc')->paginate(10); 
-    
+
+        $leaves = $user->leaves()->orderBy('created_at', 'desc')->paginate(10);
+
         return view('admin.my_requests', compact('leaves',));
     }
 
     public function show($id) {
-        $leave = Leave::findOrFail($id); 
-    
+        $leave = Leave::findOrFail($id);
+
         return view('admin.leave_show', compact('leave'));
     }
 
@@ -464,9 +464,9 @@ class AdminController extends Controller
 
         $supervisor = User::where('role', 'supervisor')->first();
         $hr = User::where('role', 'hr')->first();
-        
+
         $pdf = PDF::loadView('pdf.leave_details', compact('leave', 'supervisor', 'hr', 'officials'));
-        
+
         return $pdf->stream('leave_request_' . $leave->id . '.pdf');
     }
 
@@ -482,7 +482,7 @@ class AdminController extends Controller
     $hr = User::where('role', 'hr')->first();
 
     $pdf = PDF::loadView('pdf.overtime_details', compact('overtime', 'supervisor', 'hr', 'earned'));
-    
+
     return $pdf->stream('overtime_request_' . $overtime->id . '.pdf');
 }
 
@@ -528,7 +528,7 @@ private function restoreLeaveBalance($user, $leave)
             $user->vacation_leave_balance += $days;
             break;
 
-        case 'Mandatory Leave': 
+        case 'Mandatory Leave':
             $user->vacation_leave_balance += $days;
             $user->mandatory_leave_balance += $days;
             break;
@@ -579,7 +579,7 @@ private function deductLeaveBalance($user, $leave)
 
     switch ($leave->leave_type) {
         case 'Vacation Leave':
-            
+
             if ($user->vacation_leave_balance >= $days) {
                 $user->vacation_leave_balance -= $days;
             } elseif (($user->vacation_leave_balance + $user->sick_leave_balance) >= $days) {
@@ -600,7 +600,7 @@ private function deductLeaveBalance($user, $leave)
             break;
 
         case 'Mandatory Leave':
-         
+
             if ($user->vacation_leave_balance >= $days) {
                 $user->vacation_leave_balance -= $days;
                 $user->mandatory_leave_balance -= $days;
@@ -617,7 +617,7 @@ private function deductLeaveBalance($user, $leave)
                     $user->sick_leave_balance -= $remainingDays;
                 }
 
-              
+
                 $user->mandatory_leave_balance -= $days;
             } else {
                 throw ValidationException::withMessages(['error' => 'Insufficient combined Sick and Vacation Leave balance.']);
@@ -775,9 +775,9 @@ $advanceFilingRules = [
     'Special Privilege Leave' => 7,
     'Solo Parent Leave' => 5,
     'Special Leave Benefits for Women Leave' => 5,
-    'Sick Leave' => 0, 
-    'Maternity Leave' => 0, 
-    'Paternity Leave' => 0, 
+    'Sick Leave' => 0,
+    'Maternity Leave' => 0,
+    'Paternity Leave' => 0,
     'Mandatory Leave' => 0,
 ];
 
@@ -788,7 +788,7 @@ $inclusiveLeaveTypes = [
     'Special Leave Benefits for Women Leave'
 ];
 
-$request->validate(array_merge([ 
+$request->validate(array_merge([
     'leave_type' => 'required|string',
     'start_date' => [
         'required',
@@ -854,16 +854,21 @@ public function deleteLeave($id) {
 
     public function review(Request $request, Leave $leave)
 {
+
     $request->validate([
         'admin_status' => 'required|in:Approved,Rejected',
         'disapproval_reason' => 'nullable|string',
     ]);
+
+    
 
     $admin_status = strtolower($request->admin_status);
 
     $status = ($admin_status === 'rejected') ? 'rejected' : $leave->status;
 
     $user = $leave->user;
+
+    
 
     $leave->update([
         'admin_status' => $admin_status,
@@ -879,6 +884,7 @@ public function deleteLeave($id) {
             $leave,
             'leave'
         ));
+    
 
     return Redirect::route('admin.requests');
 
@@ -892,10 +898,10 @@ public function ctoreview(Request $request, OvertimeRequest $cto)
         'admin_status' => 'required|in:Ready for Review,Rejected',
     ]);
 
-    $admin_status = strtolower($request->admin_status); 
+    $admin_status = strtolower($request->admin_status);
 
     $cto->update([
-        'admin_status' => $admin_status, 
+        'admin_status' => $admin_status,
         'admin_id' => Auth::id(),
     ]);
 
@@ -905,13 +911,13 @@ public function ctoreview(Request $request, OvertimeRequest $cto)
 
 
     public function showleave($id) {
-        $leave = Leave::findOrFail($id); 
+        $leave = Leave::findOrFail($id);
 
         return view('admin.leave_details', compact('leave'));
     }
 
     public function showcto($id) {
-        $cto = OvertimeRequest::findOrFail($id); 
+        $cto = OvertimeRequest::findOrFail($id);
 
         return view('admin.cto_details', compact('cto'));
     }
@@ -919,20 +925,20 @@ public function ctoreview(Request $request, OvertimeRequest $cto)
 
     public function onLeave(Request $request) {
         $month = $request->query('month', now()->month);
-        $today = now()->toDateString(); 
-    
+        $today = now()->toDateString();
+
         $birthdays = User::whereMonth('birthday', $month)
         ->orderByRaw('DAY(birthday) ASC')
         ->get();
-    
+
         $teamLeaves = Leave::whereMonth('start_date', $month)
                             ->where('status', 'approved')
                             ->where('end_date', '>=', $today)
                             ->with('user')
                             ->get();
-        $monthPadded = str_pad($month, 2, '0', STR_PAD_LEFT); 
+        $monthPadded = str_pad($month, 2, '0', STR_PAD_LEFT);
         $year = now()->year;
-        
+
         $overtimeRequests = OvertimeRequest::where('status', 'approved')
             ->where('inclusive_dates', 'LIKE', "%-{$monthPadded}-%")
             ->where('inclusive_dates', 'LIKE', "{$year}-%")
@@ -944,21 +950,21 @@ public function ctoreview(Request $request, OvertimeRequest $cto)
         $user = Auth::user();
         $gender = $user->gender;
         $currentYear = date('Y');
-        
+
 
         $usedMandatoryLeaveDays = Leave::where('user_id', $user->id)
             ->where('leave_type', 'Mandatory Leave')
             ->whereYear('start_date', $currentYear)
-            ->where('status', 'approved') 
+            ->where('status', 'approved')
             ->sum('days_applied');
-    
+
         $mandatoryBalance = $user->mandatory_leave_balance;
         $mandatoryLeaveDays = 5;
         $remainingLeaveDays = $mandatoryLeaveDays - $usedMandatoryLeaveDays;
-    
+
         return view('admin.profile.index', compact('user', 'usedMandatoryLeaveDays', 'remainingLeaveDays', 'gender', 'mandatoryBalance'));
     }
-    
+
     public function profile_edit(Request $request): View
     {
         return view('admin.profile.partials.update-profile-information-form', [
@@ -1005,7 +1011,7 @@ public function ctoreview(Request $request, OvertimeRequest $cto)
                   ->whereMonth('start_date', now()->month)
                   ->whereYear('start_date', now()->year);
         }])->get();
-    
+
         $employees->each(function ($employee) {
             $employee->total_absences = $employee->leaves->sum(function ($leave) {
                 return \Carbon\Carbon::parse($leave->start_date)
@@ -1018,8 +1024,8 @@ public function ctoreview(Request $request, OvertimeRequest $cto)
 
     public function holiday(Request $request)
     {
-        $selectedYear = (int) $request->input('year', date('Y')); 
-    
+        $selectedYear = (int) $request->input('year', date('Y'));
+
         $holidays = YearlyHoliday::whereYear('date', $selectedYear)
             ->orWhere('repeats_annually', true)
             ->orderBy('date')
@@ -1027,18 +1033,18 @@ public function ctoreview(Request $request, OvertimeRequest $cto)
             ->map(function ($holiday) use ($selectedYear) {
                 if ($holiday->repeats_annually) {
                     $date = Carbon::parse($holiday->date);
-    
+
                     $holiday->date = Carbon::create((int) $selectedYear, (int) $date->month, (int) $date->day)->format('Y-m-d');
                 }
                 return $holiday;
             });
-    
+
         $groupedHolidays = $holidays->groupBy(function ($item) {
             return Carbon::parse($item->date)->format('F Y');
         });
-    
+
         $calendarData = $this->prepareCalendarData($holidays, $selectedYear);
-    
+
         return view('admin.holiday-calendar', compact(
             'groupedHolidays',
             'calendarData',
@@ -1105,10 +1111,10 @@ public function ctoreview(Request $request, OvertimeRequest $cto)
     {
         $employees = User::with(['leaves' => function ($query) {
             $query->where('status', 'approved')
-                  ->whereMonth('start_date', now()->month) 
+                  ->whereMonth('start_date', now()->month)
                   ->whereYear('start_date', now()->year);
         }])
-        ->orderBy('last_name', 'asc')  
+        ->orderBy('last_name', 'asc')
         ->get();
         $employees->each(function ($employee) {
             $employee->total_absences = $employee->leaves->sum(function ($leave) {
@@ -1117,7 +1123,7 @@ public function ctoreview(Request $request, OvertimeRequest $cto)
             });
         });
         $employees = $employees
-        ->sortBy(['total_absences', 'last_name']) 
+        ->sortBy(['total_absences', 'last_name'])
         ->values();
 
         return view('admin.partials.admins-modal', compact('employees'));
@@ -1170,7 +1176,7 @@ public function ctoreview(Request $request, OvertimeRequest $cto)
 
     public function myCtoRequests($id) {
         $overtime = OvertimeRequest::findOrFail($id);
-    
+
         return view('admin.CTO.my_cto_show', compact('overtime'));
     }
 
@@ -1213,15 +1219,15 @@ public function ctoreview(Request $request, OvertimeRequest $cto)
     public function deleteCTO($id)
     {
         OvertimeRequest::findOrFail($id)->delete();
-        
+
         notify()->success('CTO request deleted successfully.');
         return redirect()->back();
-    } 
+    }
 
     public function cancelCTO($id)
     {
         $CTO = OvertimeRequest::findOrFail($id);
-        
+
         if ($CTO->status == 'cancelled') {
             notify()->warning('CTO request is already cancelled.');
             return redirect()->back();
@@ -1251,7 +1257,7 @@ public function ctoreview(Request $request, OvertimeRequest $cto)
 
         $user->decrement('overtime_balance', $CTO->working_hours_applied);
 
-        $CTO->status = 'pending'; 
+        $CTO->status = 'pending';
         $CTO->save();
 
         notify()->success('CTO request has been restored and balance deducted.');

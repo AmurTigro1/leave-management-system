@@ -205,22 +205,6 @@
                     </button>
                 </div>
 
-                <!-- Hidden Approval Fields -->
-                <div id="approvalSection" class="mt-3 hidden h-auto">
-                    <label class="block text-gray-700 font-medium text-xs">Approved Days With Pay:</label>
-                    <input type="number" name="approved_days_with_pay" class="w-full border rounded p-2 text-xs focus:ring focus:ring-blue-200">
-        
-                    <label class="block text-gray-700 font-medium text-xs">Approved Days Without Pay:</label>
-                    <input type="number" name="approved_days_without_pay" class="w-full border rounded p-2 text-xs focus:ring focus:ring-blue-200">
-        
-                    <label class="block text-gray-700 font-medium text-xs">Others:</label>
-                    <textarea name="others" class="w-full border rounded p-2 text-xs focus:ring focus:ring-blue-200" 
-                        placeholder="Specify any other details..."></textarea>
-        
-                    <button type="submit" name="status" value="Approved" class="bg-green-600 text-white py-2 px-4 rounded-lg mt-2">
-                        Confirm Approval
-                    </button>
-                </div>
 
                 <!-- Hidden Disapproval Reason Field -->
                 <div id="disapprovalSection" class="mt-3 hidden h-auto">
@@ -229,9 +213,9 @@
                         class="w-full border rounded p-2 text-xs focus:ring focus:ring-blue-200"></textarea>
                     
                     <div class="flex gap-2 mt-2">
-                        <button type="submit" name="status" value="Rejected" id="finalRejectBtn"
+                        <button type="submit" name="admin_status" value="Rejected" id="finalRejectBtn"
                             class="bg-red-600 text-white py-2 px-4 rounded-lg">
-                            Confirm Rejection
+                            Confirm Return
                         </button>
                         
                         <button type="button" id="cancelDisapprovalBtn" class="bg-gray-500 text-white py-2 px-4 rounded-lg">
