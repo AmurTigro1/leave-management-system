@@ -39,7 +39,7 @@
                         @endif
                     </button>
                 
-                    <div id="notification-container" class="absolute right-0 bg-white shadow-lg rounded-xl border border-gray-200 p-4 mt-2 w-64 hidden z-10">
+                    <div id="notification-container" class="absolute right-0 bg-white shadow-lg rounded-xl border border-gray-200 p-4 mt-2 w-64 hidden z-10 overflow-y-auto max-h-96">
                         <h3 class="text-gray-700 font-semibold mb-2">Notifications</h3>
                 
                         @forelse(auth()->user()->notifications as $notification)
