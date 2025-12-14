@@ -23,6 +23,7 @@ return new class extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             $table->dropColumn('mandatory_leave_balance');
+            $table->dropColumn('tmp_mandatory_leave_balance');
         });
     }
 };
