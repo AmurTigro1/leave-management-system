@@ -189,7 +189,7 @@ class EmployeeController extends Controller
         'reason' => 'nullable|string',
         'leave_files.*' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',
         'days_applied' => 'required|integer|min:1',
-        'signature' => 'required|image|mimes:jpeg,png,jpg|max:2048',
+        'signature' => auth()->user()->signature_path ? 'nullable|file|mimes:jpg,jpeg,png,pdf|max:5120' : 'required|file|mimes:jpg,jpeg,png,pdf|max:5120',
         'commutation' => 'required|boolean',
         'leave_details' => 'nullable|array',
         'abroad_details' => 'nullable|string',
@@ -370,13 +370,30 @@ class EmployeeController extends Controller
 
     }
 
-    $signaturePath = null;
-    if ($request->hasFile('signature')) {
-        $signatureFile = $request->file('signature');
-        $filename = time() . '_' . $signatureFile->getClientOriginalName();
-        $signatureFile->move(public_path('signatures'), $filename);
-        $signaturePath = 'signatures/' . $filename;
-    }
+    $signaturePath = auth()->user()->signature_path;
+
+
+
+        if ($request->hasFile('signature')) {
+
+
+
+            $signatureFile = $request->file('signature');
+            $filename = time() . '_' . $signatureFile->getClientOriginalName();
+
+
+            $signaturePath = $signatureFile->storeAs(
+                'signatures',
+                $filename,
+                'public'
+            );
+
+
+            auth()->user()->update([
+                'signature_path' => $signaturePath
+            ]);
+
+        }
 
     $before_vacation_balance = $user->vacation_leave_balance + $request->days_applied;
     $before_sick_leave_balance = $user->sick_leave_balance + $request->days_applied;
@@ -402,6 +419,7 @@ class EmployeeController extends Controller
         'leave_files' => json_encode($leaveFiles),
         'status' => 'pending',
     ]);
+
 
 
     notify()->success('Leave request submitted successfully! It is now pending approval.');

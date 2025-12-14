@@ -266,13 +266,14 @@
                     </p>
 
                     <p class="fill-in2">
-                        @if($leave->signature && file_exists(public_path($leave->signature)))
-                            <div class="image-display">
-                                <img src="{{ public_path($leave->signature) }}" alt="Signature" style="width: 120px; height: 80px; margin-top: -70px;">
-                            </div>
-                        @else
-                            ________________________________
-                        @endif
+                      @if ($leave->signature && file_exists(storage_path('app/public/' . $leave->signature)))
+                        <div class="image-display">
+                            <img src="{{ storage_path('app/public/' . $leave->signature) }}" alt="Signature"
+                                style="width: 120px; height: 80px; margin-top: -70px;">
+                        </div>
+                    @else
+                        ______________________________
+                    @endif
                     </p>
                     <p class="sign">(Signature of Applicant)</p>                    
                 <span></span>

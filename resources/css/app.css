@@ -1,3 +1,8 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+#notification-container {
+    scrollbar-width: thin;
+    scrollbar-color: #A0AEC0 #EDF2F7;
+}
