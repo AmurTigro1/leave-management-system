@@ -32,7 +32,7 @@ class User extends Authenticatable
         'certification_leave',
         'certification_coc',
         'password',
-        'role', 
+        'role',
         'vacation_leave_balance',
         'mandatory_leave_balance',
         'special_privilege_leave',
@@ -52,8 +52,9 @@ class User extends Authenticatable
         'profile_image',
         'special_leave_taken',
         'solo_parent_leave_taken',
+        'signature_path'
     ];
-    
+
     public function leaves() {
         return $this->hasMany(Leave::class);
     }
@@ -76,7 +77,7 @@ class User extends Authenticatable
     public function redirectToDashboard()
     {
         $user = Auth::user();
-        
+
         $dashboardRoute = match ($user->role) {
             'employee' => route('lms_cto.dashboard'),
             'supervisor' => route('supervisor.dashboard'),
@@ -84,11 +85,11 @@ class User extends Authenticatable
             'admin' => route('admin.dashboard'),
             default => route('lms_cto.dashboard'),
         };
-    
+
         notify()->success('Login Successful! Welcome Back.');
-    
+
         return $dashboardRoute;
-    }    
+    }
 
     public function cocLogs()
     {
@@ -98,7 +99,7 @@ class User extends Authenticatable
     {
         return $this->hasMany(LeaveLog::class);
     }
-    
+
     /**
      * The attributes that should be hidden for serialization.
      *

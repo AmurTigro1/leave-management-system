@@ -346,7 +346,7 @@ class HrController extends Controller
             }
         }
 
-        $signaturePath = null;
+    $signaturePath = null;
     if ($request->hasFile('signature')) {
         $signatureFile = $request->file('signature');
         $filename = time() . '_' . $signatureFile->getClientOriginalName();

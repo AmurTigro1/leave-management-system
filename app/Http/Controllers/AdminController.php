@@ -25,6 +25,7 @@ use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 use App\Models\Holiday;
 
+
 class AdminController extends Controller
 {
     public function index(Request $request)
@@ -860,7 +861,7 @@ public function deleteLeave($id) {
         'disapproval_reason' => 'nullable|string',
     ]);
 
-    
+
 
     $admin_status = strtolower($request->admin_status);
 
@@ -868,7 +869,6 @@ public function deleteLeave($id) {
 
     $user = $leave->user;
 
-    
 
     $leave->update([
         'admin_status' => $admin_status,
@@ -880,11 +880,11 @@ public function deleteLeave($id) {
     $user->notify(new LeaveStatusNotification($leave,
             "Your leave request has been <span class='" .
             ($leave->status === 'approved' ? 'text-green-500' : 'text-red-500') . "'>" .
-            $leave->status . "</span> by the HR.",
+            ($leave->status === 'approved' ? 'approved' : 'returned' ) . "</span> by the Admin.",
             $leave,
             'leave'
         ));
-    
+
 
     return Redirect::route('admin.requests');
 
