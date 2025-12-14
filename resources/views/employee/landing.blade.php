@@ -60,7 +60,8 @@
             <div class="lg:w-1/2 w-full flex mt-8 lg:mt-[60px] items-center justify-center relative">
                 <img src="/img/landing-image.avif" 
                     alt="Office Illustration"
-                    class="max-w-full lg:max-w-lg rounded-lg shadow-xl transform hover:scale-105 transition duration-500">
+                    class="max-w-full lg:max-w-lg rounded-lg shadow-xl transform hover:scale-105 transition duration-500"
+                >
                 
                 <div class="absolute mt-[-90px] animate-bounce bg-primary text-white text-xs lg:text-sm px-4 py-2 rounded-lg shadow-lg">
                     📊 Efficient Tracking
