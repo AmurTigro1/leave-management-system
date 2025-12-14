@@ -870,9 +870,6 @@ public function deleteLeave($id) {
     $user = $leave->user;
 
 
-
-
-
     $leave->update([
         'admin_status' => $admin_status,
         'status' => $status,
@@ -883,7 +880,7 @@ public function deleteLeave($id) {
     $user->notify(new LeaveStatusNotification($leave,
             "Your leave request has been <span class='" .
             ($leave->status === 'approved' ? 'text-green-500' : 'text-red-500') . "'>" .
-            $leave->status . "</span> by the HR.",
+            ($leave->status === 'approved' ? 'approved' : 'returned' ) . "</span> by the Admin.",
             $leave,
             'leave'
         ));
