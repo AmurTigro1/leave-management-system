@@ -8,3 +8,6 @@ storage/*
 !storage/app/**
 !storage/app/public/profile_images/
 !storage/app/public/profile_images/**
+/public/signatures/*
+/storage/app/public/signatures/*
+
