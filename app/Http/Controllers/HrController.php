@@ -878,6 +878,10 @@ public function deleteLeave($id) {
 
     public function review(Request $request, $leaveId)
     {
+
+        // dd($request);
+
+      
         $leave = Leave::findOrFail($leaveId);
         $user = $leave->user;
 
@@ -907,6 +911,7 @@ public function deleteLeave($id) {
                 case 'Sick Leave':
                     if ($user->sick_leave_balance >= $leave->days_applied) {
                         $user->sick_leave_balance -= $leave->days_applied;
+                        
                     } else {
                         $remainingDays = $leave->days_applied - $user->sick_leave_balance;
                         $user->sick_leave_balance = 0;
@@ -973,6 +978,15 @@ public function deleteLeave($id) {
             $updateData['status'] = 'approved';
         }
 
+        elseif ($hr_status === 'rejected'){
+              if($leave->leave_type === "Vacation Leave" || $leave->leave_type === "Special Privilege Leave" ||           $leave->leave_type === "Mandatory Leave" )
+                 $user->vacation_leave_balance += $leave->days_applied;
+    
+
+            elseif ($leave->leave_type === "Sick Leave") 
+                $user->vacation_sick_balance += $leave->days_applied;
+        }
+
         $leave->update($updateData);
         $user->save();
 
@@ -983,6 +997,8 @@ public function deleteLeave($id) {
             $leave,
             'leave'
         ));
+
+
 
         $status = $leave->status;
             try {

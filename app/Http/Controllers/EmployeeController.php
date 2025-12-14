@@ -105,6 +105,9 @@ class EmployeeController extends Controller
 
     public function store(Request $request, YearlyHolidayService $yearlyHolidayService)
 {
+
+    // dd($request);
+
     $leaveValidationRules = [];
 
     switch ($request->leave_type) {
@@ -238,11 +241,17 @@ class EmployeeController extends Controller
 
     $leaveTypeForBalance = $request->leave_type === 'Mandatory Leave' ? 'Vacation Leave' : $request->leave_type;
 
+      
     if ($leaveTypeForBalance === 'Sick Leave') {
         $availableLeaveBalance = $user->sick_leave_balance;
+
+      
+       
+
     } elseif ($leaveTypeForBalance === 'Vacation Leave') {
         $availableLeaveBalance = $user->vacation_leave_balance;
-    } else {
+     
+    }else {
         $availableLeaveBalance = match ($leaveTypeForBalance) {
             'Special Privilege Leave' => $user->special_privilege_leave,
             'Maternity Leave' => $user->maternity_leave,
@@ -278,13 +287,25 @@ class EmployeeController extends Controller
 
     $leaveDetails = [];
 
+    
+
     if ($request->leave_type === 'Vacation Leave' || $request->leave_type === 'Special Privilege Leave') {
+
         if ($request->filled('within_philippines')) {
             $leaveDetails['Within the Philippines'] = $request->within_philippines;
         }
         if ($request->filled('abroad_details')) {
             $leaveDetails['Abroad'] = $request->abroad_details;
         }
+
+        // Deduct the VL Balance
+
+        $user->vacation_leave_balance -= $request->days_applied;
+        $user->save();
+
+        // $current_vl_balance  = $user->vacation_leave_balance;
+       
+
     }
 
     if ($request->leave_type === 'Sick Leave') {
@@ -294,6 +315,12 @@ class EmployeeController extends Controller
         if ($request->has('out_patient')) {
             $leaveDetails['Out Patient'] = $request->input('out_patient_details', 'Yes');
         }
+
+         // Deduct the SL Balance
+        $user->sick_leave_balance = $user->sick_leave_balance - $request->days_applied;
+        $user->save();
+
+       $current_sl_balance =   $user->sick_leave_balance;
     }
 
     if ($request->leave_type === 'Study Leave') {
@@ -336,6 +363,11 @@ class EmployeeController extends Controller
         if ($daysApplied > $remainingMandatoryLeave) {
             return redirect()->back()->withErrors(['end_date' => 'You have exceeded the 5-day Mandatory Leave for the year.']);
         }
+
+        //Deduct the VL Balance
+        $user->vacation_leave_balance = $user->vacation_leave_balance - $request->days_applied;
+        $user->save();
+
     }
 
     $signaturePath = null;
@@ -346,13 +378,20 @@ class EmployeeController extends Controller
         $signaturePath = 'signatures/' . $filename;
     }
 
+    $before_vacation_balance = $user->vacation_leave_balance + $request->days_applied;
+    $before_sick_leave_balance = $user->sick_leave_balance + $request->days_applied;
+
+
+    // Create Leave
     Leave::create([
         'user_id' => auth()->id(),
         'leave_type' => $request->leave_type,
         'leave_details' => json_encode($leaveDetails),
         'start_date' => $request->start_date,
-        'vacation_balance_before' => auth()->user()->vacation_leave_balance,
-        'sick_balance_before' => auth()->user()->sick_leave_balance,
+        // 'vacation_balance_before' => auth()->user()->vacation_leave_balance,
+        'vacation_balance_before' => $before_vacation_balance,
+        // 'sick_balance_before' => auth()->user()->sick_leave_balance,
+        'sick_balance_before' => $before_sick_leave_balance,
         'end_date' => $request->end_date,
         'salary_file' => $request->salary_file,
         'days_applied' => $daysApplied,

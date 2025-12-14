@@ -66,6 +66,7 @@ class ForfeitMandatoryLeave extends Command
 
             // Reset or flag the mandatory leave (depends on your app logic)
             $user->mandatory_leave_balance = 0;
+            $user->tmp_manado;
             $user->save();
 
             // Log or notify

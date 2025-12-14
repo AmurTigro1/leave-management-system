@@ -296,15 +296,16 @@
                             <tr>
                                 <td>Total Earned</td>
                                 <td>{{ $leave->vacation_balance_before }}</td>
+                                {{-- <td> {{ $leave->vacation_balance_before + $leave->days_applied }} </td> --}}
                                 <td>{{ $leave->sick_balance_before }}</td>
                             </tr>
                             <tr>
                                 <td>Less this application</td>
-                                @if(in_array($leave->leave_type, ['Vacation Leave', 'Mandatory Leave']))
+                                @if(in_array($leave->leave_type, ['Vacation Leave', 'Mandatory Leave','Special Privilege Leave']))
                                     <td>{{ $leave->days_applied }}</td>
                                 @else
                                     <td>0</td>
-                                @endif
+                                @endif  
                 
                                 @if($leave->leave_type == 'Sick Leave')
                                     <td>{{ $leave->days_applied }}</td>
@@ -315,15 +316,17 @@
                             <tr>
                                 <td>Balance</td>
                                 <td>
-                                    @if(in_array($leave->leave_type, ['Vacation Leave', 'Mandatory Leave']))
+                                    @if(in_array($leave->leave_type, ['Vacation Leave', 'Mandatory Leave','Special Privilege Leave']))
                                         {{ $leave->vacation_balance_before - $leave->days_applied }}
+                                       
                                     @else
                                         {{ $leave->vacation_balance_before }}
                                     @endif
                                 </td>
                                 <td>
                                     @if($leave->leave_type == 'Sick Leave')
-                                        {{ $leave->sick_balance_before - $leave->days_applied }}
+                                        {{-- {{ $leave->sick_balance_before - $leave->days_applied }} --}}
+                                        {{ $leave->sick_balance_before  }}
                                     @else
                                         {{ $leave->sick_balance_before }}
                                     @endif
