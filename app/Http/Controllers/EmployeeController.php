@@ -244,10 +244,6 @@ class EmployeeController extends Controller
       
     if ($leaveTypeForBalance === 'Sick Leave') {
         $availableLeaveBalance = $user->sick_leave_balance;
-
-      
-       
-
     } elseif ($leaveTypeForBalance === 'Vacation Leave') {
         $availableLeaveBalance = $user->vacation_leave_balance;
      
@@ -300,7 +296,7 @@ class EmployeeController extends Controller
 
         // Deduct the VL Balance
 
-        $user->vacation_leave_balance -= $request->days_applied;
+        $user->vacation_leave_balance -= $daysApplied;
         $user->save();
 
         // $current_vl_balance  = $user->vacation_leave_balance;
@@ -317,10 +313,9 @@ class EmployeeController extends Controller
         }
 
          // Deduct the SL Balance
-        $user->sick_leave_balance = $user->sick_leave_balance - $request->days_applied;
+        $user->sick_leave_balance = $user->sick_leave_balance - $daysApplied;
         $user->save();
 
-       $current_sl_balance =   $user->sick_leave_balance;
     }
 
     if ($request->leave_type === 'Study Leave') {
@@ -365,7 +360,7 @@ class EmployeeController extends Controller
         }
 
         //Deduct the VL Balance
-        $user->vacation_leave_balance = $user->vacation_leave_balance - $request->days_applied;
+        $user->vacation_leave_balance = $user->vacation_leave_balance - $daysApplied;
         $user->save();
 
     }
@@ -395,8 +390,8 @@ class EmployeeController extends Controller
 
         }
 
-    $before_vacation_balance = $user->vacation_leave_balance + $request->days_applied;
-    $before_sick_leave_balance = $user->sick_leave_balance + $request->days_applied;
+    $before_vacation_balance = $user->vacation_leave_balance +  $daysApplied;
+    $before_sick_leave_balance = $user->sick_leave_balance +  $daysApplied;
 
 
     // Create Leave
