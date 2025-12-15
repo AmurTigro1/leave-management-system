@@ -360,7 +360,7 @@ class EmployeeController extends Controller
         }
 
         //Deduct the VL Balance
-        $user->vacation_leave_balance = $user->vacation_leave_balance - $request->days_applied;
+        $user->vacation_leave_balance = $user->vacation_leave_balance - $daysApplied;
         $user->save();
 
     }
