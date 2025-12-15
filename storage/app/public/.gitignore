@@ -1,2 +1,5 @@
 *
 !.gitignore
+/public/signatures/*
+/storage/app/public/signatures/*
+
