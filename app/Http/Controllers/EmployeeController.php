@@ -241,12 +241,12 @@ class EmployeeController extends Controller
 
     $leaveTypeForBalance = $request->leave_type === 'Mandatory Leave' ? 'Vacation Leave' : $request->leave_type;
 
-      
+
     if ($leaveTypeForBalance === 'Sick Leave') {
         $availableLeaveBalance = $user->sick_leave_balance;
     } elseif ($leaveTypeForBalance === 'Vacation Leave') {
         $availableLeaveBalance = $user->vacation_leave_balance;
-     
+
     }else {
         $availableLeaveBalance = match ($leaveTypeForBalance) {
             'Special Privilege Leave' => $user->special_privilege_leave,
@@ -260,6 +260,13 @@ class EmployeeController extends Controller
             'Special Emergency Leave' => $user->special_emergency_leave,
             default => 0,
         };
+    }
+
+    // dd($availableLeaveBalance);
+
+
+    if($availableLeaveBalance < $request->days_applied){
+        return redirect()->back()->withErrors(['You do not have enough Leave balance for this request.']);
     }
 
     if (in_array($leaveTypeForBalance, ['Sick Leave', 'Vacation Leave'])) {
@@ -283,7 +290,7 @@ class EmployeeController extends Controller
 
     $leaveDetails = [];
 
-    
+
 
     if ($request->leave_type === 'Vacation Leave' || $request->leave_type === 'Special Privilege Leave') {
 
@@ -300,7 +307,7 @@ class EmployeeController extends Controller
         $user->save();
 
         // $current_vl_balance  = $user->vacation_leave_balance;
-       
+
 
     }
 
