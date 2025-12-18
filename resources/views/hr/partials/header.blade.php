@@ -40,7 +40,8 @@
                         @endif
                     </button>
                 
-                    <div id="hr-notification-container" class="absolute right-0 bg-white shadow-lg rounded-lg sm:rounded-xl border border-gray-200 p-3 sm:p-4 mt-2 w-56 sm:w-64 md:w-72 hidden z-50">
+                    <div id="hr-notification-container" class="absolute right-0 bg-white shadow-lg rounded-lg sm:rounded-xl border border-gray-200 p-3 sm:p-4 mt-2 w-64 sm:w-64 md:w-72 hidden z-50">
+                        
                         <h3 class="text-sm sm:text-base font-semibold text-gray-700 mb-2">HR Notifications</h3>
 
                         <div class="max-h-60 overflow-y-auto">

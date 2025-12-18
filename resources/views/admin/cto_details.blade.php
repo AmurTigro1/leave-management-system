@@ -103,7 +103,7 @@
         </div>
 
         <!-- Right Side: Processing Steps -->
-        <div class="bg-white shadow-xl rounded-lg p-6 w-full lg:w-2/5 h-full min-h-[865px] flex flex-col">
+        <div class="bg-white shadow-xl rounded-lg p-6 w-[500px] h-auto min-h-[865px] flex flex-col">
             <div class="flex justify-center items-center">
                 @if ($cto->user->profile_image)
                 @php
@@ -144,18 +144,54 @@
                 <p class="text-sm text-gray-500">The request has been successfully reviewed and is now ready for submission to HR for final approval. Please take a moment to carefully verify all details to ensure accuracy and completeness before proceeding. Once submitted, any necessary changes may require additional processing time.</p>
             </div>
 
-            <div class="flex justify-center items-center mt-auto">
-                <form action="{{ route('cto.admin-review', $cto->id) }}" method="POST" class="space-y-2 w-full">
+            <div class="flex justify-center items-center space-y-2 w-full">
+                <form action="{{ route('cto.admin-review', $cto->id) }}" method="POST" class="space-y-2 w-auto flex flex-col items-center justify-center">
                     @csrf 
                     <div class="flex gap-2">
                         <!-- Approve Button -->
                         <button type="submit" name="admin_status" value="Ready for Review" 
-                            class="bg-blue-600 text-white py-2 px-4 rounded-lg w-full">
+                            class="bg-blue-600 text-white py-2 px-4 rounded-lg mr-3">
                             Proceed to HR
                         </button>
+
+                        <button type="button" id="rejectBtn" 
+                            class="bg-red-600 text-white py-2 px-4 rounded-lg">
+                            Return Request
+                        </button>
+                    </div>
+
+                    <!-- Hidden Disapproval Reason Field -->
+                    <div id="disapprovalSection" class="mt-3 hidden h-auto w-full">
+                        <label class="block text-gray-700 font-medium text-xs">Disapproval Reason:</label>
+                        <textarea name="disapproval_reason" id="disapproval_reason" 
+                            class="w-full border rounded p-2 text-xs focus:ring focus:ring-blue-200"></textarea>
+                        
+                        <div class="flex gap-2 mt-2">
+                            <button type="submit" name="admin_status" value="Rejected" id="finalRejectBtn"
+                                class="bg-red-600 text-white py-2 px-4 rounded-lg">
+                                Confirm Return
+                            </button>
+                            
+                            <button type="button" id="cancelDisapprovalBtn" class="bg-gray-500 text-white py-2 px-4 rounded-lg">
+                                Cancel
+                            </button>
+                        </div>
                     </div>
                 </form>
             </div>
+
+            <script>
+                document.getElementById('rejectBtn').addEventListener('click', function() {
+                    console.log('Reject button clicked');
+                    document.getElementById('disapprovalSection').classList.remove('hidden'); 
+                    document.getElementById('approvalSection').classList.add('hidden');
+                });
+            
+                document.getElementById('cancelDisapprovalBtn').addEventListener('click', function() {
+                    document.getElementById('disapprovalSection').classList.add('hidden');
+                    document.getElementById('disapproval_reason').value = ""; 
+                });
+            </script>
         </div>
     </div>
 </div>
