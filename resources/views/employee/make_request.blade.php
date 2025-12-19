@@ -113,78 +113,48 @@
                     @enderror
                 </div>
 
-                @if (auth()->user()->signature_path)
-                    {{-- Show existing signature preview --}}
-                    <div>
+                <div>
+                    @if (auth()->user()->signature_path)
                         <label class="block text-sm font-medium text-gray-700 mb-2">Signature Preview</label>
-                        <div class="border border-gray-300 rounded-lg p-4 bg-gray-50 flex justify-center">
-                            <img src="{{ asset('storage/' . auth()->user()->signature_path) }}" alt="Signature Preview"
-                                class="max-h-32 object-contain" />
-                        </div>
-                        <p class="text-xs text-gray-500 mt-2">Your signature will be automatically included in this leave
-                            application.</p>
-
-                        <!-- Preview container for new signature (hidden by default) -->
-                        <div id="signature-preview-container" class="hidden mt-3 mb-3">
-                            <p class="text-sm text-gray-500 mb-1">New Signature Preview:</p>
-                            <div class="border border-gray-300 rounded-lg p-2 flex justify-center">
-                                <img id="signature-preview" src="#" alt="Signature Preview"
-                                    class="max-h-32 object-contain hidden" />
-                                <p id="pdf-preview-message" class="text-sm text-gray-500 hidden">PDF file selected (preview
-                                    not available)</p>
-                            </div>
-                        </div>
-
-                        <!-- File input with better styling -->
-                        <div class="flex items-center space-x-4">
-                            <label
-                                class="flex flex-col items-center px-4 py-3 bg-white rounded-lg border border-gray-300 cursor-pointer hover:bg-gray-50">
-                                <span class="text-sm font-medium text-gray-700">Choose File</span>
-                                <input type="file" name="signature" id="signature-upload" class="hidden"
-                                    accept="image/*,.pdf">
-                            </label>
-                            <span id="file-name" class="text-sm text-gray-500">Edit Signature</span>
-                        </div>
-                        <p class="text-xs text-gray-500 mt-1">Supports JPG, PNG, or PDF (max 5MB)</p>
-                        @error('signature')
-                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                        @enderror
-                    </div>
-                @else
-                    {{-- No signature - show upload form --}}
-                    <div>
+                    @else
                         <label class="block text-sm font-medium text-gray-700">Signature <span
                                 class="text-red-600">(Required)</span></label>
+                    @endif
 
-                        <!-- Preview container (hidden by default) -->
-                        <div id="signature-preview-container" class="hidden mt-3 mb-3">
-                            <p class="text-sm text-gray-500 mb-1">Signature Preview:</p>
-                            <div class="border border-gray-300 rounded-lg p-2 flex justify-center">
-                                <img id="signature-preview" src="#" alt="Signature Preview"
-                                    class="max-h-32 object-contain hidden" />
-                                <p id="pdf-preview-message" class="text-sm text-gray-500 hidden">PDF file selected
-                                    (preview
-                                    not available)</p>
-                            </div>
+                    <!-- Single preview container -->
+                    <div id="signature-preview-container"
+                        class="{{ auth()->user()->signature_path ? 'mt-0' : 'hidden mt-3' }} mb-3">
+                        <div class="border border-gray-300 rounded-lg p-4 bg-gray-50 flex justify-center">
+                            <img id="signature-preview"
+                                src="{{ auth()->user()->signature_path ? asset('storage/' . auth()->user()->signature_path) : '#' }}"
+                                alt="Signature Preview"
+                                class="max-h-32 object-contain {{ auth()->user()->signature_path ? '' : 'hidden' }}" />
+                            <p id="pdf-preview-message" class="text-sm text-gray-500 hidden">PDF file selected (preview not
+                                available)</p>
                         </div>
-
-                        <!-- File input with better styling -->
-                        <div class="flex items-center space-x-4">
-                            <label
-                                class="flex flex-col items-center px-4 py-3 bg-white rounded-lg border border-gray-300 cursor-pointer hover:bg-gray-50">
-                                <span class="text-sm font-medium text-gray-700">Choose File</span>
-                                <input type="file" name="signature" id="signature-upload" class="hidden"
-                                    accept="image/*,.pdf">
-                            </label>
-                            <span id="file-name" class="text-sm text-gray-500">No file chosen</span>
-                        </div>
-                        <p class="text-xs text-gray-500 mt-1">Supports JPG, PNG, or PDF (max 5MB)</p>
-                        @error('signature')
-                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                        @enderror
                     </div>
-                @endif
 
+                    @if (auth()->user()->signature_path)
+                        <p class="text-xs text-gray-500 mt-2">Your signature will be automatically included in this leave
+                            application.</p>
+                    @endif
+
+                    <!-- File input with better styling -->
+                    <div class="flex items-center space-x-4">
+                        <label
+                            class="flex flex-col items-center px-4 py-3 bg-white rounded-lg border border-gray-300 cursor-pointer hover:bg-gray-50">
+                            <span class="text-sm font-medium text-gray-700">Choose File</span>
+                            <input type="file" name="signature" id="signature-upload" class="hidden"
+                                accept="image/*,.pdf">
+                        </label>
+                        <span id="file-name"
+                            class="text-sm text-gray-500">{{ auth()->user()->signature_path ? 'Edit Signature' : 'No file chosen' }}</span>
+                    </div>
+                    <p class="text-xs text-gray-500 mt-1">Supports JPG, PNG, or PDF (max 5MB)</p>
+                    @error('signature')
+                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                    @enderror
+                </div>
 
                 <script>
                     document.getElementById('signature-upload').addEventListener('change', function(e) {
@@ -194,13 +164,25 @@
                         const pdfMessage = document.getElementById('pdf-preview-message');
                         const fileNameDisplay = document.getElementById('file-name');
 
-                        fileNameDisplay.textContent = file ? file.name : 'No file chosen';
-
                         if (!file) {
-                            previewContainer.classList.add('hidden');
+                            fileNameDisplay.textContent = @json(auth()->user()->signature_path ? 'Edit Signature' : 'No file chosen');
+
+                            @if (auth()->user()->signature_path)
+                                // Reset to original signature
+                                imgPreview.src = "{{ asset('storage/' . auth()->user()->signature_path) }}";
+                                imgPreview.classList.remove('hidden');
+                                pdfMessage.classList.add('hidden');
+                                previewContainer.classList.remove('hidden');
+                            @else
+                                // Hide preview if no original signature
+                                previewContainer.classList.add('hidden');
+                                imgPreview.classList.add('hidden');
+                                pdfMessage.classList.add('hidden');
+                            @endif
                             return;
                         }
 
+                        fileNameDisplay.textContent = file.name;
                         previewContainer.classList.remove('hidden');
 
                         if (file.type.startsWith('image/')) {

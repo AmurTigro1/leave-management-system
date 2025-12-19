@@ -24,7 +24,7 @@ class OvertimeRequestController extends Controller
         $appliedDates = OvertimeRequest::where('user_id', auth()->id())
                     ->get('inclusive_dates');
         $holidays = Holiday::select('date')->get();
-        
+
         return view('CTO.overtime_request', compact('overtimereq', 'appliedDates', 'holidays'));
     }
 
@@ -73,7 +73,7 @@ class OvertimeRequestController extends Controller
         $request->validate([
             'inclusive_dates' => 'required|string',
             'cto_type' => 'nullable|in:none,halfday_morning,halfday_afternoon,wholeday',
-            'signature' => 'required|image|mimes:jpeg,png,jpg|max:2048',
+            'signature' => auth()->user()->signature_path ? 'nullable|file|mimes:jpg,jpeg,png,pdf|max:5120' : 'required|file|mimes:jpg,jpeg,png,pdf|max:5120',
         ]);
 
         if ($totalHours < 4 || $totalHours % 4 !== 0) {
@@ -88,12 +88,39 @@ class OvertimeRequestController extends Controller
             ])->withInput();
         }
 
-        $signaturePath = null;
+        // $signaturePath = null;
+        // if ($request->hasFile('signature')) {
+        //     $signatureFile = $request->file('signature');
+        //     $filename = time() . '_' . $signatureFile->getClientOriginalName();
+        //     $signatureFile->move(public_path('signatures'), $filename);
+        //     $signaturePath = 'signatures/' . $filename;
+        // }
+
+        $signaturePath = auth()->user()->signature_path;
+
+        // dd($signaturePath);
+
+
+
         if ($request->hasFile('signature')) {
+
+
+
             $signatureFile = $request->file('signature');
             $filename = time() . '_' . $signatureFile->getClientOriginalName();
-            $signatureFile->move(public_path('signatures'), $filename);
-            $signaturePath = 'signatures/' . $filename;
+
+
+            $signaturePath = $signatureFile->storeAs(
+                'signatures',
+                $filename,
+                'public'
+            );
+
+
+            auth()->user()->update([
+                'signature_path' => $signaturePath
+            ]);
+
         }
 
         OvertimeRequest::create([
@@ -120,7 +147,7 @@ class OvertimeRequestController extends Controller
 
     public function show($id) {
         $overtime = OvertimeRequest::findOrFail($id);
-    
+
         return view('CTO.overtime_show', compact('overtime'));
     }
 
@@ -134,15 +161,15 @@ class OvertimeRequestController extends Controller
 
         $supervisor = User::where('role', 'supervisor')->first();
         $hr = User::where('role', 'hr')->first();
-        
+
         $pdf = PDF::loadView('pdf.overtime_details', compact('overtime', 'supervisor', 'hr', 'earned'));
-        
+
         return $pdf->stream('overtime_request_' . $overtime->id . '.pdf');
     }
 
     public function profile() {
         $user = Auth::user();
-    
+
         return view('CTO.profile.index', [
             'user' => $user,
         ]);
@@ -212,8 +239,8 @@ class OvertimeRequestController extends Controller
     public function deleteOvertime($id)
     {
         OVertimeRequest::findOrFail($id)->delete();
-        
+
         notify()->success('CTO request deleted successfully.');
         return redirect()->back();
-    } 
+    }
 }
