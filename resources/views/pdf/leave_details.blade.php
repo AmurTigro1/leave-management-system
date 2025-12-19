@@ -327,7 +327,7 @@
                                 <td>
                                     @if($leave->leave_type == 'Sick Leave')
                                         {{-- {{ $leave->sick_balance_before - $leave->days_applied }} --}}
-                                        {{ $leave->sick_balance_before  }}
+                                        {{ $leave->sick_balance_before  - $leave->days_applied }}
                                     @else
                                         {{ $leave->sick_balance_before }}
                                     @endif

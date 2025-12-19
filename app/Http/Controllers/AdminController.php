@@ -856,6 +856,8 @@ public function deleteLeave($id) {
     public function review(Request $request, Leave $leave)
 {
 
+
+
     $request->validate([
         'admin_status' => 'required|in:Approved,Rejected',
         'disapproval_reason' => 'nullable|string',
@@ -885,18 +887,19 @@ public function deleteLeave($id) {
             'leave'
         ));
 
-    $employee = User::where('id', $leave->user_id)->first();
+        if($admin_status === 'rejected')
+        {
+            if($leave->leave_type === "Vacation Leave" || $leave->leave_type === "Special Privilege Leave" || $leave->leave_type === "Mandatory Leave" )
+                $user->vacation_leave_balance += $leave->days_applied;
+
+            elseif ($leave->leave_type === "Sick Leave")
+                $user->sick_leave_balance += $leave->days_applied;
+
+        $user->save();
+        }
 
 
-    if($leave->leave_type === "Vacation Leave" || $leave->leave_type === "Special Privilege Leave" || $leave->leave_type === "Mandatory Leave" )
-        $employee->vacation_leave_balance += $leave->days_applied;
 
-
-
-    elseif ($leave->leave_type === "Sick Leave")
-        $employee->vacation_sick_balance += $leave->days_applied;
-
-        $employee->save();
 
     return Redirect::route('admin.requests');
 

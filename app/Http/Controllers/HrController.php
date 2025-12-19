@@ -984,7 +984,7 @@ public function deleteLeave($id) {
     
 
             elseif ($leave->leave_type === "Sick Leave") 
-                $user->vacation_sick_balance += $leave->days_applied;
+                $user->sick_leave_balance += $leave->days_applied;
         }
 
         $leave->update($updateData);
