@@ -148,7 +148,7 @@
 
     <!-- Left side -->
     <div class="bg-white shadow-xl rounded-lg p-6 w-[500px] h-auto min-h-[865px] flex flex-col">
-        <div class="flex justify-center items-center">
+        <div class="">
             @if ($leave->user->profile_image)
             @php
                 $profileImage = null;
