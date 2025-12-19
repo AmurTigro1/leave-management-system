@@ -186,10 +186,13 @@
                                                 View
                                             </a>
 
-                                            <a href="{{ route('employee.leave_edit', $leave->id) }}"
-                                                class="block text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                                                Edit
-                                            </a>
+                                            @if ($leave->status !== 'approved' && $leave->status !== 'rejected')
+                                                <a href="{{ route('employee.leave_edit', $leave->id) }}"
+                                                    class="block text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                                    Edit
+                                                </a>
+                                            @endif
+
 
                                             @if ($leave->status !== 'cancelled')
                                                 <button type="button" onclick="openCancelLeaveModal({{ $leave->id }})"

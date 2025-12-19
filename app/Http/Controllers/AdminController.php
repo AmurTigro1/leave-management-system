@@ -887,7 +887,6 @@ public function deleteLeave($id) {
 
     $employee = User::where('id', $leave->user_id)->first();
 
-    dd($employee->vacation_sick_balance);
 
     if($leave->leave_type === "Vacation Leave" || $leave->leave_type === "Special Privilege Leave" || $leave->leave_type === "Mandatory Leave" )
         $employee->vacation_leave_balance += $leave->days_applied;

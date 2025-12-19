@@ -13,38 +13,6 @@
 
             <div class="sm:hidden space-y-3">
                 @foreach ($overtimereq as $overtime)
-                    @php
-                        $status_classes = [
-                            'pending' => 'bg-yellow-500',
-                            'approved' => 'bg-green-500',
-                            'rejected' => 'bg-red-500',
-                            'waiting' => 'bg-orange-500',
-                            'cancelled' => 'bg-gray-500 line-through',
-                        ];
-                        $status = 'pending';
-
-                        if ($overtime->status == 'cancelled' || $overtime->supervisor_status == 'cancelled') {
-                            $status = 'cancelled';
-                        } elseif (
-                            $overtime->hr_status == 'approved' &&
-                            $overtime->supervisor_status == 'pending' &&
-                            $overtime->admin_status == 'Ready for Review'
-                        ) {
-                            $status = 'waiting';
-                        } elseif ($overtime->hr_status == 'approved' && $overtime->supervisor_status == 'approved') {
-                            $status = 'approved';
-                        } elseif (
-                            $overtime->hr_status == 'rejected' ||
-                            $overtime->supervisor_status == 'rejected' ||
-                            $overtime->admin_status == 'rejected'
-                        ) {
-                            $status = 'rejected';
-                        }
-
-                        // Determine if edit button should be shown
-                        $canEdit = in_array($status, ['pending', 'waiting', 'cancelled']);
-                    @endphp
-
                     <div class="border rounded-lg p-4 bg-white">
                         <div class="flex justify-between items-start">
                             <div>
@@ -56,6 +24,36 @@
                                 </p>
                             </div>
 
+                            @php
+                                $status_classes = [
+                                    'pending' => 'bg-yellow-500',
+                                    'approved' => 'bg-green-500',
+                                    'rejected' => 'bg-red-500',
+                                    'waiting' => 'bg-orange-500',
+                                    'cancelled' => 'bg-gray-500 line-through',
+                                ];
+                                $status = 'pending';
+
+                                if ($overtime->status == 'cancelled' || $overtime->supervisor_status == 'cancelled') {
+                                    $status = 'cancelled';
+                                } elseif (
+                                    $overtime->hr_status == 'approved' &&
+                                    $overtime->supervisor_status == 'pending' &&
+                                    $overtime->admin_status == 'Ready for Review'
+                                ) {
+                                    $status = 'waiting';
+                                } elseif (
+                                    $overtime->hr_status == 'approved' &&
+                                    $overtime->supervisor_status == 'approved'
+                                ) {
+                                    $status = 'approved';
+                                } elseif (
+                                    $overtime->hr_status == 'rejected' ||
+                                    $overtime->supervisor_status == 'rejected'
+                                ) {
+                                    $status = 'rejected';
+                                }
+                            @endphp
                             <span class="px-2 py-1 text-xs text-white rounded-lg {{ $status_classes[$status] }}">
                                 {{ ucfirst($status) }}
                             </span>
@@ -77,25 +75,25 @@
                                     View
                                 </a>
 
-                                @if ($canEdit)
+                                @if ($overtime->status !== 'approved' && $overtime->status !== 'rejected' && $overtime->admin_status !== 'rejected')
                                     <button onclick="opencocRequestUpdateModal({{ $overtime->id }})"
                                         class="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded hover:bg-gray-200">
                                         Edit
                                     </button>
                                 @endif
 
-                                @if ($status === 'pending' || $status === 'waiting')
+
+                                @if ($overtime->status === 'pending' || $overtime->status === 'approved')
                                     <button type="button" onclick="openCancelCtoModal({{ $overtime->id }})"
                                         class="text-xs bg-yellow-100 text-yellow-600 px-2 py-1 rounded hover:bg-yellow-200">
                                         Cancel
                                     </button>
-                                @elseif($status === 'cancelled')
+                                @elseif($overtime->status === 'cancelled')
                                     <button type="button" onclick="openRestoreCtoModal({{ $overtime->id }})"
                                         class="text-xs bg-green-100 text-green-600 px-2 py-1 rounded hover:bg-green-200">
                                         Restore
                                     </button>
                                 @endif
-
                                 <button type="button" onclick="openDeleteOvertimeModal({{ $overtime->id }})"
                                     class="text-xs bg-red-100 text-red-600 px-2 py-1 rounded hover:bg-red-200">
                                     Delete
@@ -120,44 +118,6 @@
                         </thead>
                         <tbody>
                             @foreach ($overtimereq as $overtime)
-                                @php
-                                    $status_classes = [
-                                        'pending' => 'bg-yellow-500',
-                                        'approved' => 'bg-green-500',
-                                        'rejected' => 'bg-red-500',
-                                        'waiting' => 'bg-orange-500',
-                                        'cancelled' => 'bg-gray-500 line-through',
-                                    ];
-                                    $status = 'pending';
-
-                                    if (
-                                        $overtime->status == 'cancelled' ||
-                                        $overtime->supervisor_status == 'cancelled'
-                                    ) {
-                                        $status = 'cancelled';
-                                    } elseif (
-                                        $overtime->hr_status == 'approved' &&
-                                        $overtime->supervisor_status == 'pending' &&
-                                        $overtime->admin_status == 'Ready for Review'
-                                    ) {
-                                        $status = 'waiting';
-                                    } elseif (
-                                        $overtime->hr_status == 'approved' &&
-                                        $overtime->supervisor_status == 'approved'
-                                    ) {
-                                        $status = 'approved';
-                                    } elseif (
-                                        $overtime->hr_status == 'rejected' ||
-                                        $overtime->supervisor_status == 'rejected' ||
-                                        $overtime->admin_status == 'rejected'
-                                    ) {
-                                        $status = 'rejected';
-                                    }
-
-                                    // Determine if edit button should be shown
-                                    $canEdit = in_array($status, ['pending', 'waiting', 'cancelled']);
-                                @endphp
-
                                 <tr class="border-b even:bg-gray-50 hover:bg-gray-100 transition">
                                     <td class="p-3 text-gray-700 whitespace-nowrap">
                                         {{ \Carbon\Carbon::parse($overtime->date_filed)->format('M d, Y') }}</td>
@@ -170,6 +130,41 @@
                                         </ul>
                                     </td>
                                     <td class="p-3 whitespace-nowrap">
+                                        @php
+                                            $status_classes = [
+                                                'pending' => 'bg-yellow-500',
+                                                'approved' => 'bg-green-500',
+                                                'rejected' => 'bg-red-500',
+                                                'waiting' => 'bg-orange-500',
+                                                'cancelled' => 'bg-gray-500 line-through',
+                                            ];
+                                            $status = 'pending';
+
+                                            if (
+                                                $overtime->status == 'cancelled' ||
+                                                $overtime->supervisor_status == 'cancelled'
+                                            ) {
+                                                $status = 'cancelled';
+                                            } elseif (
+                                                $overtime->hr_status == 'approved' &&
+                                                $overtime->supervisor_status == 'pending' &&
+                                                $overtime->admin_status == 'Ready for Review'
+                                            ) {
+                                                $status = 'waiting';
+                                            } elseif (
+                                                $overtime->hr_status == 'approved' &&
+                                                $overtime->supervisor_status == 'approved'
+                                            ) {
+                                                $status = 'approved';
+                                            } elseif (
+                                                $overtime->hr_status == 'rejected' ||
+                                                $overtime->supervisor_status == 'rejected' ||
+                                                $overtime->admin_status == 'rejected'
+                                            ) {
+                                                $status = 'rejected';
+                                            }
+
+                                        @endphp
                                         <span
                                             class="px-2 py-1 text-xs text-white rounded-lg {{ $status_classes[$status] }}">
                                             {{ ucfirst($status) }}
@@ -187,38 +182,61 @@
                                             </button>
 
                                             <div x-show="open" @click.away="open = false"
-                                                class="absolute right-0 mt-2 w-40 bg-white border rounded-lg shadow-lg z-50">
-                                                <a href="{{ route('cto.overtime_show', ['id' => $overtime->id]) }}"
-                                                    class="block text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                                                    View
-                                                </a>
+                                                class="fixed transform -translate-x-1/2 mt-2 w-40 bg-white border rounded-lg shadow-lg z-50">
+                                                @if ($overtime->status === 'cancelled')
+                                                    @if ($overtime->status === 'pending')
+                                                        <button type="button"
+                                                            onclick="openCancelCtoModal({{ $overtime->id }})"
+                                                            class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                                            Cancel Request
+                                                        </button>
+                                                    @elseif($overtime->status === 'cancelled')
+                                                        <button type="button"
+                                                            onclick="openRestoreCtoModal({{ $overtime->id }})"
+                                                            class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                                            Restore Request
+                                                        </button>
+                                                    @endif
 
-                                                @if ($canEdit)
-                                                    <button onclick="opencocRequestUpdateModal({{ $overtime->id }})"
-                                                        class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                                                        Edit
+                                                    <button type="button"
+                                                        onclick="openDeleteOvertimeModal({{ $overtime->id }})"
+                                                        class="block w-full text-left px-4 py-2 text-sm text-red-700 hover:bg-red-100">
+                                                        Delete
+                                                    </button>
+                                                @else
+                                                    <a href="{{ route('cto.overtime_show', ['id' => $overtime->id]) }}"
+                                                        class="block text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                                        View
+                                                    </a>
+
+                                                    @if ($overtime->status !== 'approved' && $overtime->status !== 'rejected' && $overtime->admin_status !== 'rejected')
+                                                        <button onclick="opencocRequestUpdateModal({{ $overtime->id }})"
+                                                            class="w-full block text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                                            Edit
+                                                        </button>
+                                                    @endif
+
+
+                                                    @if ($overtime->status === 'pending' || $overtime->status === 'approved')
+                                                        <button type="button"
+                                                            onclick="openCancelCtoModal({{ $overtime->id }})"
+                                                            class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                                            Cancel Request
+                                                        </button>
+                                                    @elseif($overtime->status === 'cancelled')
+                                                        <button type="button"
+                                                            onclick="openRestoreCtoModal({{ $overtime->id }})"
+                                                            class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                                            Restore Request
+                                                        </button>
+                                                    @endif
+
+                                                    <button type="button"
+                                                        onclick="openDeleteOvertimeModal({{ $overtime->id }})"
+                                                        class="block w-full text-left px-4 py-2 text-sm text-red-700 hover:bg-red-100">
+                                                        Delete
                                                     </button>
                                                 @endif
-
-                                                @if ($status === 'pending' || $status === 'waiting')
-                                                    <button type="button"
-                                                        onclick="openCancelCtoModal({{ $overtime->id }})"
-                                                        class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                                                        Cancel Request
-                                                    </button>
-                                                @elseif($status === 'cancelled')
-                                                    <button type="button"
-                                                        onclick="openRestoreCtoModal({{ $overtime->id }})"
-                                                        class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                                                        Restore Request
-                                                    </button>
-                                                @endif
-
-                                                <button type="button"
-                                                    onclick="openDeleteOvertimeModal({{ $overtime->id }})"
-                                                    class="block w-full text-left px-4 py-2 text-sm text-red-700 hover:bg-red-100">
-                                                    Delete
-                                                </button>
                                             </div>
                                         </div>
                                     </td>
