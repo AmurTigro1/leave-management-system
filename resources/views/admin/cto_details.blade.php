@@ -167,7 +167,7 @@
                             class="w-full border rounded p-2 text-xs focus:ring focus:ring-blue-200"></textarea>
                         
                         <div class="flex gap-2 mt-2">
-                            <button type="submit" name="admin_status" value="Rejected" id="finalRejectBtn"
+                            <button type="submit" name="admin_status" value="rejected" id="finalRejectBtn"
                                 class="bg-red-600 text-white py-2 px-4 rounded-lg">
                                 Confirm Return
                             </button>

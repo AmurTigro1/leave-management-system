@@ -907,11 +907,25 @@ public function deleteLeave($id) {
 
 public function ctoreview(Request $request, OvertimeRequest $cto)
 {
+
+    // dd($cto);
+
+
     $request->validate([
         'admin_status' => 'required|in:Ready for Review,Rejected',
     ]);
 
+    $user = $cto->user;
+
+
     $admin_status = strtolower($request->admin_status);
+
+    dd($admin_status);
+
+
+    if($admin_status === 'rejected'){
+        $user->overtime_balance += $cto->working_hours_applied;
+    }
 
     $cto->update([
         'admin_status' => $admin_status,

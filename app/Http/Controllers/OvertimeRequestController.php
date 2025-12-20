@@ -44,6 +44,8 @@ class OvertimeRequestController extends Controller
 
     public function store(Request $request)
     {
+
+        // dd($request);
         $user = auth()->user();
         $overtimeBalance = $user->overtime_balance;
 
@@ -88,6 +90,8 @@ class OvertimeRequestController extends Controller
             ])->withInput();
         }
 
+        // dd($totalHours);
+
         $signaturePath = null;
         if ($request->hasFile('signature')) {
             $signatureFile = $request->file('signature');
@@ -95,6 +99,7 @@ class OvertimeRequestController extends Controller
             $signatureFile->move(public_path('signatures'), $filename);
             $signaturePath = 'signatures/' . $filename;
         }
+
 
         OvertimeRequest::create([
             'user_id' => auth()->id(),
@@ -105,6 +110,9 @@ class OvertimeRequestController extends Controller
             'admin_status' => 'pending',
             'hr_status' => 'pending',
         ]);
+        
+        $user->overtime_balance -= $totalHours;
+        $user->save();
 
         notify()->success('Overtime request submitted successfully! Pending admin review.');
         return redirect()->back();
