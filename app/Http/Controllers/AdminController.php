@@ -856,7 +856,7 @@ public function deleteLeave($id) {
     public function review(Request $request, Leave $leave)
 {
 
-    // dd($request);
+
 
     $request->validate([
         'admin_status' => 'required|in:Approved,Rejected',
@@ -892,14 +892,14 @@ public function deleteLeave($id) {
             if($leave->leave_type === "Vacation Leave" || $leave->leave_type === "Special Privilege Leave" || $leave->leave_type === "Mandatory Leave" )
                 $user->vacation_leave_balance += $leave->days_applied;
 
-            elseif ($leave->leave_type === "Sick Leave") 
+            elseif ($leave->leave_type === "Sick Leave")
                 $user->sick_leave_balance += $leave->days_applied;
 
         $user->save();
         }
 
 
-   
+
 
     return Redirect::route('admin.requests');
 
@@ -907,32 +907,29 @@ public function deleteLeave($id) {
 
 public function ctoreview(Request $request, OvertimeRequest $cto)
 {
-
-    // dd($cto);
-
-
     $request->validate([
-        'admin_status' => 'required|in:Ready for Review,Rejected',
+        'admin_status' => 'required|in:Ready for Review,rejected',
     ]);
 
-    $user = $cto->user;
-
+    $user = $cto->user; 
 
     $admin_status = strtolower($request->admin_status);
 
-    dd($admin_status);
-
 
     if($admin_status === 'rejected'){
+        // dd($user);
+
         $user->overtime_balance += $cto->working_hours_applied;
+        $user->save();
     }
+
 
     $cto->update([
         'admin_status' => $admin_status,
         'admin_id' => Auth::id(),
     ]);
 
-    notify()->success('CTO application reviewed by Admin.');
+
     return Redirect::route('admin.requests');
 }
 
