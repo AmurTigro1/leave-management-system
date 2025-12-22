@@ -468,6 +468,9 @@ public function cancel($id)
             $user->increment('overtime_balance', $cto->working_hours_applied);
         }
 
+        $user->overtime_balance += $cto->working_hours_applied;
+        $user->save();
+
         $cto->status = 'cancelled';
         $cto->save();
 
@@ -509,6 +512,9 @@ public function restoreCTO($id)
     } else {
         $CTO->status = 'pending';
     }
+
+    $user->overtime_balance -= $CTO->working_hours_applied;
+    $user->save();
 
     $CTO->save();
     notify()->success('CTO request has been restored and balance deducted.');

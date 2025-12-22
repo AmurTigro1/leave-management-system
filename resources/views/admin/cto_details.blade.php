@@ -148,22 +148,30 @@
                         additional processing time.</p>
                 </div>
 
-                <div class="flex justify-center items-center space-y-2 w-full">
-                    <form action="{{ route('cto.admin-review', $cto->id) }}" method="POST"
-                        class="space-y-2 w-auto flex flex-col items-center justify-center">
-                        @csrf
-                        <div class="flex gap-2">
-                            <!-- Approve Button -->
-                            <button type="submit" name="admin_status" value="Ready for Review"
-                                class="bg-blue-600 text-white py-2 px-4 rounded-lg mr-3">
-                                Proceed to HR
-                            </button>
+            <div class="border-2 border-gray mb-[15px]"></div>
 
-                            <button type="button" id="rejectBtn" value="Rejected"
-                                class="bg-red-600 text-white py-2 px-4 rounded-lg">
-                                Return Request
-                            </button>
-                        </div>
+            <h1 class="text-blue-600 font-bold text-center text-xl">Request Verification complete?</h1>
+            <h1 class="text-blue-600 font-bold text-center text-xl mb-[15px]">Proceed to HR!</h1>
+
+            <div class="py-2 px-4 flex-grow">
+                <p class="text-sm text-gray-500">The request has been successfully reviewed and is now ready for submission to HR for final approval. Please take a moment to carefully verify all details to ensure accuracy and completeness before proceeding. Once submitted, any necessary changes may require additional processing time.</p>
+            </div>
+
+            <div class="flex justify-center items-center space-y-2 w-full">
+                <form action="{{ route('cto.admin-review', $cto->id) }}" method="POST" class="space-y-2 w-auto flex flex-col items-center justify-center">
+                    @csrf 
+                    <div class="flex gap-2">
+                        <!-- Approve Button -->
+                        <button type="submit" name="admin_status" value="Ready for Review" 
+                            class="bg-blue-600 text-white py-2 px-4 rounded-lg mr-3">
+                            Proceed to HR
+                        </button>
+
+                        <button type="button" id="rejectBtn" 
+                            class="bg-red-600 text-white py-2 px-4 rounded-lg">
+                            Return Request
+                        </button>
+                    </div>
 
                         <!-- Hidden Disapproval Reason Field -->
                         <div id="disapprovalSection" class="mt-3 hidden h-auto w-full">
@@ -172,7 +180,7 @@
                                 class="w-full border rounded p-2 text-xs focus:ring focus:ring-blue-200"></textarea>
 
                             <div class="flex gap-2 mt-2">
-                                <button type="submit" name="admin_status" value="Rejected" id="finalRejectBtn"
+                                <button type="submit" name="admin_status" value="rejected" id="finalRejectBtn"
                                     class="bg-red-600 text-white py-2 px-4 rounded-lg">
                                     Confirm Return
                                 </button>

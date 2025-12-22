@@ -923,27 +923,27 @@ public function deleteLeave($id) {
 
 public function ctoreview(Request $request, OvertimeRequest $cto)
 {
-
     $request->validate([
-        'admin_status' => 'required|in:Ready for Review,Rejected',
+        'admin_status' => 'required|in:Ready for Review,rejected',
     ]);
+
+    $user = $cto->user; 
 
     $admin_status = strtolower($request->admin_status);
 
-    if($admin_status == "rejected"){
-        notify()->success('CTO application rejected by Admin.');
-    }else{
-        notify()->success('CTO application reviewed by Admin.');
+
+    if($admin_status === 'rejected'){
+        // dd($user);
+
+        $user->overtime_balance += $cto->working_hours_applied;
+        $user->save();
     }
+
 
     $cto->update([
         'admin_status' => $admin_status,
         'admin_id' => Auth::id(),
     ]);
-
-
-
-
 
 
     return Redirect::route('admin.requests');

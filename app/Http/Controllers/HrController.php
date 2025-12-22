@@ -1104,13 +1104,15 @@ public function deleteLeave($id) {
     public function ctoreview(Request $request, OvertimeRequest $cto)
 {
     $request->validate([
-        'hr_status' => 'required|in:Approved,Rejected',
+        'hr_status' => 'required|in:Approved,rejected',
         'disapproval_reason' => 'nullable|string',
     ]);
 
     $hrStatus = strtolower($request->hr_status);
     $status = $hrStatus;
     $supervisorStatus = $cto->supervisor_status;
+    $user = $cto->user; 
+
 
     if ($hrStatus === 'approved') {
         $supervisorStatus = 'approved';
@@ -1148,6 +1150,13 @@ public function deleteLeave($id) {
                 return redirect()->back();
             }
         }
+    }
+
+    else if($hrStatus === 'rejected'){
+        // dd($user);
+
+        $user->overtime_balance += $cto->working_hours_applied;
+        $user->save();
     }
 
     $cto->update([
