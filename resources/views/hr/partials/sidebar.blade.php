@@ -142,6 +142,10 @@
                             class="block px-4 py-2 text-gray-700 hover:bg-gray-100">
                             My CTO Requests
                         </a>
+                        <a href="{{ route('hr.my_extend_leave_applications') }}"
+                            class="block px-4 py-2 text-gray-700 hover:bg-gray-100">
+                            Extend Leave Application
+                        </a>
                         <a href="{{ route('hr.requests') }}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">
                             Pending Requests
                             @if ($pendingRequestsCount > 0)

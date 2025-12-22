@@ -57,6 +57,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/hr/users', [HrController::class, 'users'])->name('hr.users');
         Route::get('/hr/requests', [HrController::class, 'requests'])->name('hr.requests');
         Route::get('/hr/my-requests', [HrController::class, 'myRequests'])->name('hr.my_requests');
+        Route::get('/hr/my-extend-leave-applications', [HrController::class, 'myExtendLeaveApplications'])->name('hr.my_extend_leave_applications');
         Route::get('/hr/my-requests/edit/{id}', [HrController::class, 'editLeave'])->name('hr.leave_edit');
         Route::put('/hr/my-requests/update/{id}', [HrController::class, 'updateLeave'])->name('hr.leave_update');
         Route::post('/hr/leaves/{id}/cancel', [HrController::class, 'cancel'])->name('hr.leave_cancel');
@@ -140,6 +141,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/admin/leaderboard', [AdminController::class, 'leaderboard'])->name('admin.leaderboard');
         Route::get('admin/requests', [AdminController::class, 'requests'])->name('admin.requests');
         Route::get('/admin/my-leave-requests', [AdminController::class, 'myRequests'])->name('admin.my_requests');
+        Route::get('/admin/my-extend-leave-applications', [AdminController::class, 'myExtendLeaveApplications'])->name('admin.my_extend_applications');
         Route::get('/admin/my-leave-requests/edit/{id}', [AdminController::class, 'editLeave'])->name('admin.leave_edit');
         Route::put('/admin/my-leave-requests/update/{id}', [AdminController::class, 'updateLeave'])->name('admin.leave_update');
         Route::post('/admin/leaves/{id}/cancel', [AdminController::class, 'cancel'])->name('admin.leave_cancel');
@@ -187,7 +189,7 @@ Route::middleware('auth')->group(function () {
         //Alter Employee Balances
         Route::get('/employee-balances', [EmployeeBalanceController::class, 'index'])->name('employee-balances.index');
         Route::put('/employee-balances/{user}', [EmployeeBalanceController::class, 'update'])->name('employee-balances.update');
-        
+
     });
 
 
