@@ -106,9 +106,9 @@ class EmployeeController extends Controller
     public function store(Request $request, YearlyHolidayService $yearlyHolidayService)
 {
 
-    // dd($request);
 
     $leaveValidationRules = [];
+    $isViolatesPriorDays = false;
 
     switch ($request->leave_type) {
         case 'Vacation Leave':
@@ -165,12 +165,13 @@ class EmployeeController extends Controller
         'Special Leave Benefits for Women Leave'
     ];
 
+    $isViolatesPriorDays = false;
     $request->validate(array_merge([
         'leave_type' => 'required|string',
         'start_date' => [
             'required',
             'date',
-            function ($attribute, $value, $fail) use ($request, $advanceFilingRules) {
+            function ($attribute, $value, $fail) use ($request, $advanceFilingRules, &$isViolatesPriorDays) {
                 $leaveType = $request->leave_type;
                 $startDate = Carbon::parse($value);
                 $today = Carbon::now();
@@ -180,7 +181,8 @@ class EmployeeController extends Controller
                     $minStartDate = $today->copy()->addDays($advanceDaysRequired);
 
                     if ($startDate->lt($minStartDate)) {
-                        $fail("You must request {$leaveType} at least {$advanceDaysRequired} days in advance.");
+                        $isViolatesPriorDays = true;
+                        // $fail("You must request {$leaveType} at least {$advanceDaysRequired} days in advance.");
                     }
                 }
             }
@@ -402,7 +404,7 @@ class EmployeeController extends Controller
 
 
     // Create Leave
-    Leave::create([
+    $leave = Leave::create([
         'user_id' => auth()->id(),
         'leave_type' => $request->leave_type,
         'leave_details' => json_encode($leaveDetails),
@@ -421,6 +423,13 @@ class EmployeeController extends Controller
         'leave_files' => json_encode($leaveFiles),
         'status' => 'pending',
     ]);
+
+    if($isViolatesPriorDays){
+
+        $leave->violations()->create([
+            'user_id' => auth()->id()
+        ]);
+    }
 
 
 

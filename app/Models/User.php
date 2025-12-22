@@ -122,4 +122,9 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    public function leaveViolations()
+    {
+        return $this->hasMany(LeaveViolation::class);
+    }
 }

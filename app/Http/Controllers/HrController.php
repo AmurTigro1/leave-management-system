@@ -5,6 +5,7 @@ use App\Mail\CTOApprovalMail;
 use App\Models\User;
 use App\Models\HRSupervisor;
 use App\Models\Leave;
+use App\Models\LeaveViolation;
 use App\Models\OvertimeRequest;
 use App\Models\YearlyHoliday;
 use App\Services\YearlyHolidayService;
@@ -486,6 +487,23 @@ class HrController extends Controller
         return view('hr.my_requests', compact('leaves',));
     }
 
+    public function myExtendLeaveApplications(Request $request){
+
+        $leaveApplications = LeaveViolation::with(['user', 'leave'])
+                ->when($request->filled('from_date'), function ($query) use ($request){
+                    $query->whereDate('created_at', '>=', $request->from_date);
+                })
+                ->when($request->filled('to_date'), function ($query) use ($request){
+                    $query->whereDate('created_at', '<=', $request->to_date);
+                })
+                ->orderBy('created_at', 'desc')
+                ->paginate(10)
+                ->withQueryString();
+
+
+        return view('hr.extend_leave_application', compact('leaveApplications'));
+    }
+
     public function show($id) {
         $leave = Leave::findOrFail($id);
 
@@ -881,7 +899,7 @@ public function deleteLeave($id) {
 
         // dd($request);
 
-      
+
         $leave = Leave::findOrFail($leaveId);
         $user = $leave->user;
 
@@ -911,7 +929,7 @@ public function deleteLeave($id) {
                 case 'Sick Leave':
                     if ($user->sick_leave_balance >= $leave->days_applied) {
                         $user->sick_leave_balance -= $leave->days_applied;
-                        
+
                     } else {
                         $remainingDays = $leave->days_applied - $user->sick_leave_balance;
                         $user->sick_leave_balance = 0;
@@ -981,9 +999,9 @@ public function deleteLeave($id) {
         elseif ($hr_status === 'rejected'){
               if($leave->leave_type === "Vacation Leave" || $leave->leave_type === "Special Privilege Leave" ||           $leave->leave_type === "Mandatory Leave" )
                  $user->vacation_leave_balance += $leave->days_applied;
-    
 
-            elseif ($leave->leave_type === "Sick Leave") 
+
+            elseif ($leave->leave_type === "Sick Leave")
                 $user->sick_leave_balance += $leave->days_applied;
         }
 

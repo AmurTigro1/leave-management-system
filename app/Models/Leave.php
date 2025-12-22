@@ -49,6 +49,11 @@ public function getDisplayStatusAttribute()
         return $this->belongsTo(User::class);
     }
 
+    public function violations()
+    {
+        return $this->hasMany(LeaveViolation::class);
+    }
+
     public function files()
     {
         return $this->hasMany(LeaveFile::class);

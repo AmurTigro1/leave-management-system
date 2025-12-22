@@ -24,7 +24,7 @@ use Illuminate\Support\Facades\Redirect;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 use App\Models\Holiday;
-
+use App\Models\LeaveViolation;
 
 class AdminController extends Controller
 {
@@ -450,6 +450,22 @@ class AdminController extends Controller
         $leaves = $user->leaves()->orderBy('created_at', 'desc')->paginate(10);
 
         return view('admin.my_requests', compact('leaves',));
+    }
+
+    public function myExtendLeaveApplications(Request $request){
+
+        $leaveApplications = LeaveViolation::with(['user', 'leave'])
+                ->when($request->filled('from_date'), function ($query) use ($request){
+                    $query->whereDate('created_at', '>=', $request->from_date);
+                })
+                ->when($request->filled('to_date'), function ($query) use ($request){
+                    $query->whereDate('created_at', '<=', $request->to_date);
+                })
+                ->orderBy('created_at', 'desc')
+                ->paginate(10)
+                ->withQueryString();
+
+        return view('admin.extend_leave_applications', compact('leaveApplications'));
     }
 
     public function show($id) {
