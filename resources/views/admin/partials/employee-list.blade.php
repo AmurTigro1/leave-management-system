@@ -15,7 +15,7 @@
                 </tr>
             </thead>
             <tbody class="text-center">
-                @foreach ($employees as $employee)
+                @foreach ($employees as $employee)  
                     <tr class="hover:bg-gray-100 transition-colors">
                         <td class="py-2 px-2 sm:py-3 sm:px-4 border-b">
                             <div class="whitespace-nowrap">
