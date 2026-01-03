@@ -30,7 +30,7 @@ class DatabaseSeeder extends Seeder
             'position' => 'Ojt',
             'role' => 'employee',
         ]);
-    
+
         $employees = [
             [ '1987-11-05' , 'ellelee130613@gmail.com' , 'PARTOSA' ,'employee' , 'LENNOIRE' , '05861', 'LADY LENNOIRE', 'ABAD' , 'LGOO VI', 'LENNOIRE.jpg', 'female'],
             [ '1979-07-04' , 'normansamsheikh@gmail.com' , 'LOQUELLANO' ,'employee' , 'NORMAN' , '06793', 'NORMAN', 'ALI' , 'LGOO VI', 'NORMAN.jpg', 'male'],
@@ -47,7 +47,7 @@ class DatabaseSeeder extends Seeder
             [ '1986-07-02' , 'mbcabanag@dilg.gov.ph' , 'BABOR' ,'employee' , 'MICHAEL', '05853', 'MICHAEL', 'CABANAG', 'LGOO VI', 'MICHAEL.jpg', 'male'],
             [ '1985-01-04' , 'cfcagampang@dilg.gov.ph' , 'FABIO' ,'employee' , 'CHRISTINE', '05877', 'CHRISTINE ROSE', 'CAGAMPANG', 'LGOO VI', 'CAGAMPANG.jpg', 'female'],
             [ '1964-08-31' , 'redem64@gmail.com' , 'GABATO' ,'employee' , 'REDEMCION', '05389', 'REDEMCION', 'CAG-ONG', 'LGOO VI', 'REDEMCION.jpg', 'female'],
-               [ '1972-05-09' , 'jeancam51896@gmail.com' , 'CACHO' ,'employee' , 'JEANETTE', '05786', 'JEANETTE', 'CAMILOTES', 'LGOO III', 'JEANETTE.jpg', 'female'],
+            [ '1972-05-09' , 'jeancam51896@gmail.com' , 'CACHO' ,'employee' , 'JEANETTE', '05786', 'JEANETTE', 'CAMILOTES', 'LGOO III', 'JEANETTE.jpg', 'female'],
             [ '1988-02-08' , 'glendzcamp@gmail.com' , 'BARQUILLA' ,'employee' , 'GLENDA', 'COS3', 'GLENDA', 'CAMPECINO', 'ENGINEER II', 'CAMPECINO.jpg', 'female'],
             [ '1986-11-10' , 'falkens86@gmail.com' , 'QUINAL' ,'employee' , 'CARLOS', 'COS4', 'CARLOS FALCON', 'CELOSIA', 'ENGINEER II', 'CARLOS.jpg', 'male'],
             [ '1997-03-07' , 'enicccorona.dilg7@gmail.com' , 'CHIU' ,'employee' , 'ERIKA', '001', 'ERIKA NICOLE', 'CORONA', 'LGOO II', 'ERIKA.png', 'female'],
@@ -136,7 +136,7 @@ class DatabaseSeeder extends Seeder
                 'position' => $employee[8],
                 'profile_image' => $employee[9]
             ]);
-        }   
+        }
         $this->call(YearlyHolidaysSeeder::class);
     }
 }

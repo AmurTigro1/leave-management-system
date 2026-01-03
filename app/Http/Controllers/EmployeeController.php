@@ -425,7 +425,6 @@ class EmployeeController extends Controller
     ]);
 
     if($isViolatesPriorDays){
-
         $leave->violations()->create([
             'user_id' => auth()->id()
         ]);
@@ -452,7 +451,7 @@ public function cancel($id)
 
     notify()->success('Leave request has been cancelled and balance restored.');
     return redirect()->back();
-    }
+}
 
     public function cancelCTO($id)
     {
