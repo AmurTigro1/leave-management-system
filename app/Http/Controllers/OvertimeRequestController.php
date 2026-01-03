@@ -90,21 +90,7 @@ class OvertimeRequestController extends Controller
             ])->withInput();
         }
 
-        // dd($totalHours);
-
-        $signaturePath = null;
-
-        // $signaturePath = null;
-        // if ($request->hasFile('signature')) {
-        //     $signatureFile = $request->file('signature');
-        //     $filename = time() . '_' . $signatureFile->getClientOriginalName();
-        //     $signatureFile->move(public_path('signatures'), $filename);
-        //     $signaturePath = 'signatures/' . $filename;
-        // }
-
         $signaturePath = auth()->user()->signature_path;
-
-        // dd($signaturePath);
 
 
 
@@ -139,7 +125,7 @@ class OvertimeRequestController extends Controller
             'admin_status' => 'pending',
             'hr_status' => 'pending',
         ]);
-        
+
         $user->overtime_balance -= $totalHours;
         $user->save();
 

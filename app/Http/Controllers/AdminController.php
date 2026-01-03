@@ -99,6 +99,7 @@ class AdminController extends Controller
     public function storeLeave(Request $request, YearlyHolidayService $yearlyHolidayService)
 {
     $leaveValidationRules = [];
+    $isViolatesPriorDays = false;
 
     switch ($request->leave_type) {
         case 'Vacation Leave':
@@ -155,12 +156,13 @@ class AdminController extends Controller
         'Special Leave Benefits for Women Leave'
     ];
 
+    $isViolatesPriorDays = false;
     $request->validate(array_merge([
         'leave_type' => 'required|string',
         'start_date' => [
             'required',
             'date',
-            function ($attribute, $value, $fail) use ($request, $advanceFilingRules) {
+            function ($attribute, $value, $fail) use ($request, $advanceFilingRules, &$isViolatesPriorDays) {
                 $leaveType = $request->leave_type;
                 $startDate = Carbon::parse($value);
                 $today = Carbon::now();
@@ -170,7 +172,8 @@ class AdminController extends Controller
                     $minStartDate = $today->copy()->addDays($advanceDaysRequired);
 
                     if ($startDate->lt($minStartDate)) {
-                        $fail("You must request {$leaveType} at least {$advanceDaysRequired} days in advance.");
+                        $isViolatesPriorDays = true;
+                        // $fail("You must request {$leaveType} at least {$advanceDaysRequired} days in advance.");
                     }
                 }
             }
@@ -179,7 +182,7 @@ class AdminController extends Controller
         'reason' => 'nullable|string',
         'leave_files.*' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',
         'days_applied' => 'required|integer|min:1',
-        'signature' => 'required|image|mimes:jpeg,png,jpg|max:2048',
+        'signature' => auth()->user()->signature_path ? 'nullable|file|mimes:jpg,jpeg,png,pdf|max:5120' : 'required|file|mimes:jpg,jpeg,png,pdf|max:5120',
         'commutation' => 'required|boolean',
         'leave_details' => 'nullable|array',
         'abroad_details' => 'nullable|string',
@@ -231,11 +234,13 @@ class AdminController extends Controller
 
     $leaveTypeForBalance = $request->leave_type === 'Mandatory Leave' ? 'Vacation Leave' : $request->leave_type;
 
+
     if ($leaveTypeForBalance === 'Sick Leave') {
         $availableLeaveBalance = $user->sick_leave_balance;
     } elseif ($leaveTypeForBalance === 'Vacation Leave') {
         $availableLeaveBalance = $user->vacation_leave_balance;
-    } else {
+
+    }else {
         $availableLeaveBalance = match ($leaveTypeForBalance) {
             'Special Privilege Leave' => $user->special_privilege_leave,
             'Maternity Leave' => $user->maternity_leave,
@@ -248,6 +253,13 @@ class AdminController extends Controller
             'Special Emergency Leave' => $user->special_emergency_leave,
             default => 0,
         };
+    }
+
+    // dd($availableLeaveBalance);
+
+
+    if($availableLeaveBalance < $request->days_applied){
+        return redirect()->back()->withErrors(['You do not have enough Leave balance for this request.']);
     }
 
     if (in_array($leaveTypeForBalance, ['Sick Leave', 'Vacation Leave'])) {
@@ -271,13 +283,25 @@ class AdminController extends Controller
 
     $leaveDetails = [];
 
+
+
     if ($request->leave_type === 'Vacation Leave' || $request->leave_type === 'Special Privilege Leave') {
+
         if ($request->filled('within_philippines')) {
             $leaveDetails['Within the Philippines'] = $request->within_philippines;
         }
         if ($request->filled('abroad_details')) {
             $leaveDetails['Abroad'] = $request->abroad_details;
         }
+
+        // Deduct the VL Balance
+
+        $user->vacation_leave_balance -= $daysApplied;
+        $user->save();
+
+        // $current_vl_balance  = $user->vacation_leave_balance;
+
+
     }
 
     if ($request->leave_type === 'Sick Leave') {
@@ -287,6 +311,11 @@ class AdminController extends Controller
         if ($request->has('out_patient')) {
             $leaveDetails['Out Patient'] = $request->input('out_patient_details', 'Yes');
         }
+
+         // Deduct the SL Balance
+        $user->sick_leave_balance = $user->sick_leave_balance - $daysApplied;
+        $user->save();
+
     }
 
     if ($request->leave_type === 'Study Leave') {
@@ -314,22 +343,68 @@ class AdminController extends Controller
         }
     }
 
-    $signaturePath = null;
-    if ($request->hasFile('signature')) {
-        $signatureFile = $request->file('signature');
-        $filename = time() . '_' . $signatureFile->getClientOriginalName();
-        $signatureFile->move(public_path('signatures'), $filename);
-        $signaturePath = 'signatures/' . $filename;
+
+    if ($request->leave_type === 'Mandatory Leave') {
+        $currentYear = Carbon::now()->year;
+
+        $mandatoryLeaveUsed = Leave::where('user_id', $user->id)
+            ->where('leave_type', 'Mandatory Leave')
+            ->whereYear('start_date', $currentYear)
+            ->whereIn('status', ['approved'])
+            ->sum('days_applied');
+
+        $remainingMandatoryLeave = 5 - $mandatoryLeaveUsed;
+
+        if ($daysApplied > $remainingMandatoryLeave) {
+            return redirect()->back()->withErrors(['end_date' => 'You have exceeded the 5-day Mandatory Leave for the year.']);
+        }
+
+        //Deduct the VL Balance
+        $user->vacation_leave_balance = $user->vacation_leave_balance - $daysApplied;
+        $user->save();
+
     }
 
-    Leave::create([
+    $signaturePath = auth()->user()->signature_path;
+
+
+
+        if ($request->hasFile('signature')) {
+
+
+
+            $signatureFile = $request->file('signature');
+            $filename = time() . '_' . $signatureFile->getClientOriginalName();
+
+
+            $signaturePath = $signatureFile->storeAs(
+                'signatures',
+                $filename,
+                'public'
+            );
+
+
+            auth()->user()->update([
+                'signature_path' => $signaturePath
+            ]);
+
+        }
+
+    $before_vacation_balance = $user->vacation_leave_balance +  $daysApplied;
+    $before_sick_leave_balance = $user->sick_leave_balance +  $daysApplied;
+
+
+    // Create Leave
+    $leave = Leave::create([
         'user_id' => auth()->id(),
         'leave_type' => $request->leave_type,
         'leave_details' => json_encode($leaveDetails),
         'start_date' => $request->start_date,
+        // 'vacation_balance_before' => auth()->user()->vacation_leave_balance,
+        'vacation_balance_before' => $before_vacation_balance,
+        // 'sick_balance_before' => auth()->user()->sick_leave_balance,
+        'sick_balance_before' => $before_sick_leave_balance,
         'end_date' => $request->end_date,
-        'vacation_balance_before' => auth()->user()->vacation_leave_balance,
-        'sick_balance_before' => auth()->user()->sick_leave_balance,
         'salary_file' => $request->salary_file,
         'days_applied' => $daysApplied,
         'commutation' => $request->commutation,
@@ -339,6 +414,14 @@ class AdminController extends Controller
         'leave_files' => json_encode($leaveFiles),
         'status' => 'pending',
     ]);
+
+    if($isViolatesPriorDays){
+        $leave->violations()->create([
+            'user_id' => auth()->id()
+        ]);
+    }
+
+
 
     notify()->success('Leave request submitted successfully! It is now pending approval.');
     return redirect()->back();
@@ -386,7 +469,7 @@ class AdminController extends Controller
         $request->validate([
             'inclusive_dates' => 'required|string',
             'cto_type' => 'nullable|in:none,halfday_morning,halfday_afternoon,wholeday',
-            'signature' => 'required|image|mimes:jpeg,png,jpg|max:2048',
+            'signature' => auth()->user()->signature_path ? 'nullable|file|mimes:jpg,jpeg,png,pdf|max:5120' : 'required|file|mimes:jpg,jpeg,png,pdf|max:5120',
         ]);
 
         if ($totalHours < 4 || $totalHours % 4 !== 0) {
@@ -401,12 +484,29 @@ class AdminController extends Controller
             ])->withInput();
         }
 
-        $signaturePath = null;
+         $signaturePath = auth()->user()->signature_path;
+
+
+
         if ($request->hasFile('signature')) {
+
+
+
             $signatureFile = $request->file('signature');
             $filename = time() . '_' . $signatureFile->getClientOriginalName();
-            $signatureFile->move(public_path('signatures'), $filename);
-            $signaturePath = 'signatures/' . $filename;
+
+
+            $signaturePath = $signatureFile->storeAs(
+                'signatures',
+                $filename,
+                'public'
+            );
+
+
+            auth()->user()->update([
+                'signature_path' => $signaturePath
+            ]);
+
         }
 
         OvertimeRequest::create([
@@ -418,6 +518,9 @@ class AdminController extends Controller
             'admin_status' => 'pending',
             'hr_status' => 'pending',
         ]);
+
+        $user->overtime_balance -= $totalHours;
+        $user->save();
 
         notify()->success('Overtime request submitted successfully! Pending admin review.');
         return redirect()->back();
@@ -452,21 +555,89 @@ class AdminController extends Controller
         return view('admin.my_requests', compact('leaves',));
     }
 
-    public function myExtendLeaveApplications(Request $request){
+    public function myExtendLeaveApplications(Request $request)
+    {
+        // Get users who have leave violations with count
+        $usersWithViolations = User::whereHas('leaveViolations', function ($query) use ($request) {
+            $query
+            ->whereHas('leave', function ($q) {
+                $q->whereNotIn('status', ['cancelled', 'rejected']);
+            })
+            ->when($request->filled('from_date'), function ($q) use ($request) {
+                $q->whereDate('created_at', '>=', $request->from_date);
+            })
+            ->when($request->filled('to_date'), function ($q) use ($request) {
+                $q->whereDate('created_at', '<=', $request->to_date);
+            });
+        })
+        ->withCount(['leaveViolations' => function ($query) use ($request) {
+            $query
+            ->whereHas('leave', function ($q) {
+                $q->whereNotIn('status', ['cancelled', 'rejected']);
+            })
+            ->when($request->filled('from_date'), function ($q) use ($request) {
+                $q->whereDate('created_at', '>=', $request->from_date);
+            })
+            ->when($request->filled('to_date'), function ($q) use ($request) {
+                $q->whereDate('created_at', '<=', $request->to_date);
+            });
+        }])
+        ->orderBy('leave_violations_count', 'desc')
+        ->paginate(10)
+        ->withQueryString();
 
-        $leaveApplications = LeaveViolation::with(['user', 'leave'])
-                ->when($request->filled('from_date'), function ($query) use ($request){
-                    $query->whereDate('created_at', '>=', $request->from_date);
-                })
-                ->when($request->filled('to_date'), function ($query) use ($request){
-                    $query->whereDate('created_at', '<=', $request->to_date);
-                })
-                ->orderBy('created_at', 'desc')
-                ->paginate(10)
-                ->withQueryString();
-
-        return view('admin.extend_leave_applications', compact('leaveApplications'));
+        return view('admin.extend_leave_applications', compact('usersWithViolations'));
     }
+
+    // Add this new method to fetch leave applications for a specific user via AJAX
+    public function getUserLeaveApplications(Request $request, $userId)
+    {
+        $leaveApplications = LeaveViolation::with(['user', 'leave'])
+            ->where('user_id', $userId)
+            ->whereHas('leave', function ($q) {
+                $q->whereNotIn('status', ['cancelled', 'rejected']);
+            })
+            ->when($request->filled('from_date'), function ($query) use ($request) {
+                $query->whereDate('created_at', '>=', $request->from_date);
+            })
+            ->when($request->filled('to_date'), function ($query) use ($request) {
+                $query->whereDate('created_at', '<=', $request->to_date);
+            })
+            ->orderBy('created_at', 'desc')
+            ->get()
+            ->map(function ($violation) {
+
+                // Format leave_details as a simple string
+                $leaveDetailsText = 'N/A';
+                $leaveDetails = $violation->leave->leave_details ?? null;
+
+                if ($leaveDetails) {
+                    $decoded = json_decode($leaveDetails, true);
+                    if (is_array($decoded) && !empty($decoded)) {
+                        // Convert to readable string like "key1: value1, key2: value2"
+                        $parts = [];
+                        foreach ($decoded as $key => $value) {
+                            $parts[] = "$key: $value";
+                        }
+                        $leaveDetailsText = implode(', ', $parts);
+                    }
+                }
+
+                return [
+                    'type' => $violation->leave->leave_type ?? 'N/A',
+                    'leave_details' => $leaveDetailsText ?? 'N/A',
+                    'reason' => $violation->leave->reason ?? 'No reason provided',
+                    'start_date' => $violation->leave->start_date ?? 'N/A',
+                    'end_date' => $violation->leave->end_date ?? 'N/A',
+                    'status' => $violation->leave->status ?? 'Pending',
+                    'days_applied' => $violation->leave->days_applied ?? 0,
+                    'filed_date' => $violation->created_at->format('Y-m-d H:i:s'),
+                ];
+            });
+
+        return response()->json($leaveApplications);
+    }
+
 
     public function show($id) {
         $leave = Leave::findOrFail($id);
@@ -505,12 +676,22 @@ class AdminController extends Controller
 
     public function cancel($id)
 {
+
     $leave = Leave::findOrFail($id);
     $user = Auth::user();
 
     if ($leave->status === 'approved' && $leave->hr_status === 'approved') {
         $this->restoreLeaveBalance($user, $leave);
     }
+
+    if($leave->leave_type === "Vacation Leave" || $leave->leave_type === "Special Privilege Leave" || $leave->leave_type === "Mandatory Leave" )
+        $user->vacation_leave_balance += $leave->days_applied;
+
+    elseif ($leave->leave_type === "Sick Leave")
+        $user->sick_leave_balance += $leave->days_applied;
+
+
+    $user->save();
 
     $leave->status = 'cancelled';
     $leave->save();
@@ -530,6 +711,14 @@ public function restore($id)
     } else {
         $leave->status = 'pending';
     }
+
+    if($leave->leave_type === "Vacation Leave" || $leave->leave_type === "Special Privilege Leave" || $leave->leave_type === "Mandatory Leave" )
+        $user->vacation_leave_balance -= $leave->days_applied;
+
+    elseif ($leave->leave_type === "Sick Leave")
+        $user->sick_leave_balance -= $leave->days_applied;
+
+    $user->save();
 
     $leave->save();
 
@@ -927,7 +1116,7 @@ public function ctoreview(Request $request, OvertimeRequest $cto)
         'admin_status' => 'required|in:Ready for Review,rejected',
     ]);
 
-    $user = $cto->user; 
+    $user = $cto->user;
 
     $admin_status = strtolower($request->admin_status);
 
@@ -1280,6 +1469,9 @@ public function ctoreview(Request $request, OvertimeRequest $cto)
         $CTO->status = 'cancelled';
         $CTO->save();
 
+        // $user->overtime_balance += $CTO->working_hours_applied;
+        // $user->save();
+
         notify()->success('CTO request has been cancelled and balance restored.');
 
         return redirect()->back();
@@ -1289,6 +1481,11 @@ public function ctoreview(Request $request, OvertimeRequest $cto)
     {
         $CTO = OvertimeRequest::findOrFail($id);
         $user = Auth::user();
+
+         if($user->overtime_balance < $CTO->working_hours_applied){
+            notify()->warning('Sorry your CTO balance is not enough :(');
+            return redirect()->back();
+        }
 
         if ($CTO->status !== 'cancelled') {
             notify()->warning('This CTO request is not cancelled and cannot be restored.');

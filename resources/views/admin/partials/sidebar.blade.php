@@ -137,7 +137,7 @@
                         </a>
                         <a href="{{ route('admin.my_extend_applications') }}"
                             class="block px-4 py-2 text-gray-700 hover:bg-gray-100">
-                            Untimely Leave Applications
+                            Untimely Leave Application
                         </a>
                         <a href="{{ route('admin.requests') }}"
                             class="block px-4 py-2 text-gray-700 hover:bg-gray-100">
