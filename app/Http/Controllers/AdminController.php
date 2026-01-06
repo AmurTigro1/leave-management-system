@@ -1400,6 +1400,7 @@ public function ctoreview(Request $request, OvertimeRequest $cto)
     {
         $overtimereq = OvertimeRequest::where('user_id', Auth::id())->latest()->paginate(10);
         $overtime = OvertimeRequest::where('user_id', Auth::id())->first();
+
         return view('admin.CTO.my_cto_list', compact('overtimereq', 'overtime'));
     }
 

@@ -27,6 +27,8 @@ Route::middleware('auth')->group(function () {
     //Supervisor Routes
     Route::middleware('supervisor')->group(function () {
         Route::get('/supervisor/dashboard', [SupervisorController::class, 'index'])->name('supervisor.dashboard');
+        Route::get('/supervisor/untimely-leave-applications', [SupervisorController::class, 'myUntimelyLeaveApplications'])->name('supervisor.untimely-leave-applications');
+        Route::get('/supervisor/untimely-leave-applications/{userId}', [SupervisorController::class, 'getUserLeaveApplications']);
         Route::get('/supervisor/leaderboard', [SupervisorController::class, 'leaderboard'])->name('supervisor.leaderboard');
         Route::get('/supervisor/employees', [SupervisorController::class, 'onLeave'])->name('supervisor.on_leave');
         Route::get('/supervisor/requests', [SupervisorController::class, 'requests'])->name('supervisor.requests');
