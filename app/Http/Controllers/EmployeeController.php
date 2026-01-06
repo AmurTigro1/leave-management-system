@@ -152,7 +152,7 @@ class EmployeeController extends Controller
         'Special Privilege Leave' => 7,
         'Solo Parent Leave' => 5,
         'Special Leave Benefits for Women Leave' => 5,
-        'Sick Leave' => 0,
+        'Sick Leave' => 5,
         'Maternity Leave' => 0,
         'Paternity Leave' => 0,
         'Mandatory Leave' => 0,

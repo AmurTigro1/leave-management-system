@@ -17,6 +17,7 @@ use App\Models\OvertimeRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Requests\ProfileUpdateRequest;
+use App\Models\LeaveViolation;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
@@ -32,7 +33,7 @@ class SupervisorController extends Controller
         $search = $request->input('search');
 
         $query = User::query();
-    
+
         if ($search) {
             $query->where('name', 'like', "%{$search}%")
                   ->orWhere('first_name', 'like', "%{$search}%")
@@ -40,16 +41,16 @@ class SupervisorController extends Controller
                   ->orWhere('email', 'like', "%{$search}%")
                   ->orWhere('position', 'like', "%{$search}%");
         }
-    
+
         $employees = $query->paginate(10)->withQueryString();
-    
+
         if ($request->ajax()) {
             return view('supervisor.partials.employee-list', compact('employees'))->render();
         }
-    
-    
+
+
         $pendingLeaves = Leave::where('admin_status', 'approved')->get();
-    
+
         $totalEmployees = User::count();
         $totalPendingLeaves = Leave::where('admin_status', 'approved')->count();
         $totalApprovedLeaves = Leave::where('status', 'approved')->count();
@@ -57,13 +58,13 @@ class SupervisorController extends Controller
         $totalApprovedOvertime = OvertimeRequest::where('status', 'approved')->count();
         $totalPendingOvertime = OvertimeRequest::where('status', 'pending')->count();
         $totalRejectedOvertime = OvertimeRequest::where('status', 'rejected')->count();
-    
+
         $leaveStats = [
             'Pending' => $totalPendingLeaves,
             'Approved' => $totalApprovedLeaves,
             'Rejected' => $totalRejectedLeaves,
         ];
-    
+
         $cocStats = [
             'Pending' => $totalPendingOvertime,
             'Approved' => $totalApprovedOvertime,
@@ -84,28 +85,112 @@ class SupervisorController extends Controller
         $visitorCounts = $months->map(function ($monthName, $index) use ($rawData) {
             return $rawData->get($index + 1, 0);
         });
-    
+
         return view('supervisor.dashboard', compact('employees', 'pendingLeaves', 'totalEmployees', 'leaveStats', 'cocStats', 'search', 'months', 'visitorCounts', 'selectedYear'));
     }
-    
-    
+
+
+    public function myUntimelyLeaveApplications(Request $request)
+    {
+        // Get users who have leave violations with count
+        $usersWithViolations = User::whereHas('leaveViolations', function ($query) use ($request) {
+            $query
+            ->whereHas('leave', function ($q) {
+                $q->whereNotIn('status', ['cancelled', 'rejected']);
+            })
+            ->when($request->filled('from_date'), function ($q) use ($request) {
+                $q->whereDate('created_at', '>=', $request->from_date);
+            })
+            ->when($request->filled('to_date'), function ($q) use ($request) {
+                $q->whereDate('created_at', '<=', $request->to_date);
+            });
+        })
+        ->withCount(['leaveViolations' => function ($query) use ($request) {
+            $query
+            ->whereHas('leave', function ($q) {
+                $q->whereNotIn('status', ['cancelled', 'rejected']);
+            })
+            ->when($request->filled('from_date'), function ($q) use ($request) {
+                $q->whereDate('created_at', '>=', $request->from_date);
+            })
+            ->when($request->filled('to_date'), function ($q) use ($request) {
+                $q->whereDate('created_at', '<=', $request->to_date);
+            });
+        }])
+        ->orderBy('leave_violations_count', 'desc')
+        ->paginate(10)
+        ->withQueryString();
+
+        return view('supervisor.untimely_leave_applications', compact('usersWithViolations'));
+    }
+
+    // Add this new method to fetch leave applications for a specific user via AJAX
+    public function getUserLeaveApplications(Request $request, $userId)
+    {
+        $leaveApplications = LeaveViolation::with(['user', 'leave'])
+            ->where('user_id', $userId)
+            ->whereHas('leave', function ($q) {
+                $q->whereNotIn('status', ['cancelled', 'rejected']);
+            })
+            ->when($request->filled('from_date'), function ($query) use ($request) {
+                $query->whereDate('created_at', '>=', $request->from_date);
+            })
+            ->when($request->filled('to_date'), function ($query) use ($request) {
+                $query->whereDate('created_at', '<=', $request->to_date);
+            })
+            ->orderBy('created_at', 'desc')
+            ->get()
+            ->map(function ($violation) {
+
+                // Format leave_details as a simple string
+                $leaveDetailsText = 'N/A';
+                $leaveDetails = $violation->leave->leave_details ?? null;
+
+                if ($leaveDetails) {
+                    $decoded = json_decode($leaveDetails, true);
+                    if (is_array($decoded) && !empty($decoded)) {
+                        // Convert to readable string like "key1: value1, key2: value2"
+                        $parts = [];
+                        foreach ($decoded as $key => $value) {
+                            $parts[] = "$key: $value";
+                        }
+                        $leaveDetailsText = implode(', ', $parts);
+                    }
+                }
+
+                return [
+                    'type' => $violation->leave->leave_type ?? 'N/A',
+                    'leave_details' => $leaveDetailsText ?? 'N/A',
+                    'reason' => $violation->leave->reason ?? 'No reason provided',
+                    'start_date' => $violation->leave->start_date ?? 'N/A',
+                    'end_date' => $violation->leave->end_date ?? 'N/A',
+                    'status' => $violation->leave->status ?? 'Pending',
+                    'days_applied' => $violation->leave->days_applied ?? 0,
+                    'filed_date' => $violation->created_at->format('Y-m-d H:i:s'),
+                ];
+            });
+
+        return response()->json($leaveApplications);
+    }
+
+
     public function requests()
     {
         if (Auth::user()->role !== 'supervisor') {
             abort(403, 'Unauthorized access.');
         }
-    
+
         $leaveApplications = Leave::where('status', 'approved')
             ->orderBy('created_at', 'desc')
-            ->paginate(5, ['*'], 'leave_page'); 
-    
+            ->paginate(5, ['*'], 'leave_page');
+
         $ctoApplications = OvertimeRequest::where('status', 'approved')
             ->orderBy('created_at', 'desc')
             ->paginate(5, ['*'], 'cto_page');
-    
+
         return view('supervisor.requests', compact('leaveApplications', 'ctoApplications'));
     }
-    
+
     public function reject(Request $request, Leave $leave)
 {
     if (Auth::user()->role !== 'supervisor') {
@@ -137,12 +222,12 @@ class SupervisorController extends Controller
 
     public function profile() {
         $user = Auth::user();
-    
+
         return view('supervisor.profile.index', [
             'user' => $user,
         ]);
     }
-    
+
     public function profile_edit(Request $request): View
     {
         return view('supervisor.profile.partials.update-profile-information-form', [
@@ -184,20 +269,20 @@ class SupervisorController extends Controller
 
     public function onLeave(Request $request) {
         $month = $request->query('month', now()->month);
-        $today = now()->toDateString(); 
-    
+        $today = now()->toDateString();
+
         $birthdays = User::whereMonth('birthday', $month)
         ->orderByRaw('DAY(birthday) ASC')
         ->get();
-    
+
         $teamLeaves = Leave::whereMonth('start_date', $month)
                             ->where('status', 'approved')
                             ->where('end_date', '>=', $today)
                             ->with('user')
                             ->get();
-        $monthPadded = str_pad($month, 2, '0', STR_PAD_LEFT); 
+        $monthPadded = str_pad($month, 2, '0', STR_PAD_LEFT);
         $year = now()->year;
-        
+
         $overtimeRequests = OvertimeRequest::where('status', 'approved')
             ->where('inclusive_dates', 'LIKE', "%-{$monthPadded}-%")
             ->where('inclusive_dates', 'LIKE', "{$year}-%")
@@ -212,7 +297,7 @@ class SupervisorController extends Controller
                   ->whereMonth('start_date', now()->month)
                   ->whereYear('start_date', now()->year);
         }])->get();
-    
+
         $employees->each(function ($employee) {
             $employee->total_absences = $employee->leaves->sum(function ($leave) {
                 return \Carbon\Carbon::parse($leave->start_date)
@@ -226,7 +311,7 @@ class SupervisorController extends Controller
     public function holiday(Request $request)
     {
         $selectedYear = (int) $request->input('year', date('Y'));
-    
+
         $holidays = YearlyHoliday::whereYear('date', $selectedYear)
             ->orWhere('repeats_annually', true)
             ->orderBy('date')
@@ -234,18 +319,18 @@ class SupervisorController extends Controller
             ->map(function ($holiday) use ($selectedYear) {
                 if ($holiday->repeats_annually) {
                     $date = Carbon::parse($holiday->date);
-    
+
                     $holiday->date = Carbon::create((int) $selectedYear, (int) $date->month, (int) $date->day)->format('Y-m-d');
                 }
                 return $holiday;
             });
-    
+
         $groupedHolidays = $holidays->groupBy(function ($item) {
             return Carbon::parse($item->date)->format('F Y');
         });
-    
+
         $calendarData = $this->prepareCalendarData($holidays, $selectedYear);
-    
+
         return view('supervisor.holiday-calendar', compact(
             'groupedHolidays',
             'calendarData',
@@ -301,9 +386,9 @@ class SupervisorController extends Controller
 
         $supervisor = User::where('role', 'supervisor')->first();
         $hr = User::where('role', 'hr')->first();
-        
+
         $pdf = PDF::loadView('pdf.leave_details', compact('leave', 'supervisor', 'hr', 'officials'));
-        
+
         return $pdf->stream( $leave->user->last_name . ', '. $leave->user->first_name . '- Leave Request' . '.pdf');
     }
 
@@ -317,9 +402,9 @@ class SupervisorController extends Controller
 
         $supervisor = User::where('role', 'supervisor')->first();
         $hr = User::where('role', 'hr')->first();
-        
+
         $pdf = PDF::loadView('pdf.overtime_details', compact('overtime', 'supervisor', 'hr', 'earned'));
-        
+
         return $pdf->stream( $overtime->user->last_name . ', '. $overtime->user->first_name . '- CTO Request' . '.pdf');
 
     }
@@ -338,15 +423,15 @@ class SupervisorController extends Controller
     public function delete($id)
     {
         $notification = auth()->user()->notifications()->find($id);
-    
+
         if ($notification) {
             $notification->delete();
             return response()->json(['success' => true]);
         }
-    
+
         return response()->json(['success' => false, 'message' => 'Notification not found']);
     }
-    
+
 
     public function deleteAll()
     {
@@ -364,10 +449,10 @@ class SupervisorController extends Controller
     {
         $employees = User::with(['leaves' => function ($query) {
             $query->where('status', 'approved')
-                  ->whereMonth('start_date', now()->month) 
+                  ->whereMonth('start_date', now()->month)
                   ->whereYear('start_date', now()->year);
         }])
-        ->orderBy('last_name', 'asc')  
+        ->orderBy('last_name', 'asc')
         ->get();
         $employees->each(function ($employee) {
             $employee->total_absences = $employee->leaves->sum(function ($leave) {
