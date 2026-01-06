@@ -1,4 +1,4 @@
-@extends('layouts.admin.sidebar-header')
+@extends('layouts.supervisor.sidebar-header')
 
 @section('content')
     <div class="animate-fade-in p-6">
@@ -130,7 +130,7 @@
 
                 // Fetch leave applications for this user
                 const response = await fetch(
-                    `/admin/my-extend-leave-applications/${userId}?from_date=${fromDate}&to_date=${toDate}`);
+                    `/supervisor/untimely-leave-applications/${userId}?from_date=${fromDate}&to_date=${toDate}`);
                 const applications = await response.json();
 
                 // Hide loading, show table

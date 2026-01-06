@@ -78,28 +78,35 @@
                                         View
                                     </a>
 
-                                    <a href="{{ route('employee.leave_edit', $leave->id) }}"
-                                        class="block text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                                        Edit
-                                    </a>
+                                    @if (!now()->gte(\Carbon\Carbon::parse($leave->start_date)))
+                                        @if ($leave->status !== 'approved' && $leave->status !== 'rejected')
+                                            <a href="{{ route('employee.leave_edit', $leave->id) }}"
+                                                class="block text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                                Edit
+                                            </a>
+                                        @endif
 
-                                    @if ($leave->status !== 'cancelled')
-                                        <button type="button" onclick="openCancelLeaveModal({{ $leave->id }})"
-                                            class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                                            Cancel
+
+                                        @if ($leave->status !== 'cancelled')
+                                            <button type="button" onclick="openCancelLeaveModal({{ $leave->id }})"
+                                                class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                                Cancel Request
+                                            </button>
+                                        @endif
+
+                                        @if ($leave->status === 'cancelled')
+                                            <button type="button" onclick="openRestoreLeaveModal({{ $leave->id }})"
+                                                class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                                Restore Request
+                                            </button>
+                                        @endif
+                                        <button type="button" onclick="openDeleteLeaveModal({{ $leave->id }})"
+                                            class="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-100">
+                                            Delete
                                         </button>
                                     @endif
 
-                                    @if ($leave->status === 'cancelled')
-                                        <button type="button" onclick="openRestoreLeaveModal({{ $leave->id }})"
-                                            class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                                            Restore
-                                        </button>
-                                    @endif
-                                    <button type="button" onclick="openDeleteLeaveModal({{ $leave->id }})"
-                                        class="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-100">
-                                        Delete
-                                    </button>
+
                                 </div>
                             </div>
                         </div>
@@ -186,31 +193,37 @@
                                                 View
                                             </a>
 
-                                            @if ($leave->status !== 'approved' && $leave->status !== 'rejected')
-                                                <a href="{{ route('employee.leave_edit', $leave->id) }}"
-                                                    class="block text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                                                    Edit
-                                                </a>
-                                            @endif
+                                            @if (!now()->gte(\Carbon\Carbon::parse($leave->start_date)))
+                                                @if ($leave->status !== 'approved' && $leave->status !== 'rejected')
+                                                    <a href="{{ route('employee.leave_edit', $leave->id) }}"
+                                                        class="block text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                                        Edit
+                                                    </a>
+                                                @endif
 
 
-                                            @if ($leave->status !== 'cancelled')
-                                                <button type="button" onclick="openCancelLeaveModal({{ $leave->id }})"
-                                                    class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                                                    Cancel Request
+                                                @if ($leave->status !== 'cancelled')
+                                                    <button type="button"
+                                                        onclick="openCancelLeaveModal({{ $leave->id }})"
+                                                        class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                                        Cancel Request
+                                                    </button>
+                                                @endif
+
+                                                @if ($leave->status === 'cancelled')
+                                                    <button type="button"
+                                                        onclick="openRestoreLeaveModal({{ $leave->id }})"
+                                                        class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                                        Restore Request
+                                                    </button>
+                                                @endif
+                                                <button type="button" onclick="openDeleteLeaveModal({{ $leave->id }})"
+                                                    class="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-100">
+                                                    Delete
                                                 </button>
                                             @endif
 
-                                            @if ($leave->status === 'cancelled')
-                                                <button type="button" onclick="openRestoreLeaveModal({{ $leave->id }})"
-                                                    class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                                                    Restore Request
-                                                </button>
-                                            @endif
-                                            <button type="button" onclick="openDeleteLeaveModal({{ $leave->id }})"
-                                                class="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-100">
-                                                Delete
-                                            </button>
+
                                         </div>
                                     </div>
                                 </td>
