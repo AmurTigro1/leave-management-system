@@ -139,6 +139,10 @@
                             class="block px-4 py-2 text-gray-700 hover:bg-gray-100">
                             Untimely Leave Applications
                         </a>
+                        <a href="{{ route('admin.my_untimely_sick_applications') }}"
+                            class="block px-4 py-2 text-gray-700 hover:bg-gray-100">
+                            Untimely Sick Leave Applications
+                        </a>
                         <a href="{{ route('admin.requests') }}"
                             class="block px-4 py-2 text-gray-700 hover:bg-gray-100">
                             Pending Requests

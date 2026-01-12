@@ -20,6 +20,7 @@ use App\Http\Requests\ProfileUpdateRequest;
 use App\Http\Requests\EmailUpdateRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 
 class EmployeeController extends Controller
@@ -103,8 +104,27 @@ class EmployeeController extends Controller
         return view('employee.make_request', compact('leaves', 'gender'));
     }
 
+
+    private function isDocumentRequired(Request  $request){
+        if($request->start_date < now() && $request->days_applied > 5){
+            return true;
+        }
+
+        if($request->start_date > now()){
+            return true;
+        }
+
+        if($request->days_applied > 5){
+            return true;
+        }
+
+        return false;
+    }
+
     public function store(Request $request, YearlyHolidayService $yearlyHolidayService)
 {
+
+    // dd($request->all());
 
 
     $leaveValidationRules = [];
@@ -123,6 +143,9 @@ class EmployeeController extends Controller
             $leaveValidationRules = [
                 'in_hospital_details' => 'required_without:out_patient_details|string|nullable',
                 'out_patient_details' => 'required_without:in_hospital_details|string|nullable',
+                'leave_files' => $this->isDocumentRequired($request) ? 'required|array' : 'array',
+                'leave_files.*' => 'file|mimes:pdf,jpg,jpeg,png|max:1048'
+
             ];
             break;
 
@@ -152,7 +175,7 @@ class EmployeeController extends Controller
         'Special Privilege Leave' => 7,
         'Solo Parent Leave' => 5,
         'Special Leave Benefits for Women Leave' => 5,
-        'Sick Leave' => 5,
+        'Sick Leave' => 0,
         'Maternity Leave' => 0,
         'Paternity Leave' => 0,
         'Mandatory Leave' => 0,
@@ -182,7 +205,6 @@ class EmployeeController extends Controller
 
                     if ($startDate->lt($minStartDate)) {
                         $isViolatesPriorDays = true;
-                        // $fail("You must request {$leaveType} at least {$advanceDaysRequired} days in advance.");
                     }
                 }
             }
@@ -197,9 +219,14 @@ class EmployeeController extends Controller
         'abroad_details' => 'nullable|string',
     ], $leaveValidationRules));
 
+
+
     $user = Auth::user();
     $startDate = Carbon::parse($request->start_date);
     $endDate = Carbon::parse($request->end_date);
+    $daysBetween = $endDate->diffInDays(now());
+
+
 
     $requiredDocs = [
         'Maternity Leave' => 'Proof of Pregnancy (Ultrasound, Doctor’s Certificate)',
@@ -374,6 +401,8 @@ class EmployeeController extends Controller
 
     }
 
+
+
     $signaturePath = auth()->user()->signature_path;
 
 
@@ -403,6 +432,8 @@ class EmployeeController extends Controller
     $before_sick_leave_balance = $user->sick_leave_balance +  $daysApplied;
 
 
+
+
     // Create Leave
     $leave = Leave::create([
         'user_id' => auth()->id(),
@@ -424,9 +455,18 @@ class EmployeeController extends Controller
         'status' => 'pending',
     ]);
 
+    dd($leave->leave_files);
+
     if($isViolatesPriorDays){
         $leave->violations()->create([
             'user_id' => auth()->id()
+        ]);
+    }
+
+    if($request->leave_type === 'Sick Leave' && $daysBetween >= 7 && $startDate < now()){
+        $leave->violations()->create([
+            'user_id' => auth()->id(),
+            'violation_type' => 'sick_leave'
         ]);
     }
 
