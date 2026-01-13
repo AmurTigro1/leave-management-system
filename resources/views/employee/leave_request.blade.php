@@ -85,6 +85,7 @@
                                                 Edit
                                             </a>
                                         @endif
+                                    @endif
 
                                     @if($leave->status !== 'cancelled' && $leave->status !== 'rejected')
                                         <form action="{{ route('hr.leave_cancel', $leave->id) }}" method="POST" class="w-full">
@@ -107,7 +108,6 @@
                                             </button>
                                         </form>
                                     @endif
-
 
                                     <button type="button" onclick="openDeleteLeaveModal({{ $leave->id }})"
                                         class="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-100">
@@ -206,7 +206,7 @@
                                                         Edit
                                                     </a>
                                                 @endif
-
+                                            @endif
 
                                             @if($leave->status !== 'cancelled' && $leave->status !== 'rejected')
                                                 <form action="{{ route('hr.leave_cancel', $leave->id) }}" method="POST" class="w-full">

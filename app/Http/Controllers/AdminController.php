@@ -439,92 +439,84 @@ class AdminController extends Controller
     }
 
     public function storeCTO(Request $request)
-    {
-        $user = auth()->user();
-        $overtimeBalance = $user->overtime_balance;
+{
+    $user = auth()->user();
+    $overtimeBalance = $user->overtime_balance;
 
-        $ctoHoursMap = [
-            'halfday_morning' => 4,
-            'halfday_afternoon' => 4,
-            'wholeday' => 8,
-        ];
+    $ctoHoursMap = [
+        'halfday_morning' => 4,
+        'halfday_afternoon' => 4,
+        'wholeday' => 8,
+    ];
 
-        $datesArray = explode(', ', $request->inclusive_dates);
-        $validDates = [];
+    $datesArray = explode(', ', $request->inclusive_dates);
+    $validDates = [];
 
-        foreach ($datesArray as $date) {
-            if (!strtotime($date)) {
-                return back()->withErrors(['inclusive_dates' => 'Invalid date format detected']);
-            }
-            $validDates[] = $date;
+    foreach ($datesArray as $date) {
+        if (!strtotime($date)) {
+            return back()->withErrors(['inclusive_dates' => 'Invalid date format detected']);
         }
-
-        $totalHours = 0;
-        if ($request->cto_type !== 'none') {
-            $dayCount = count($validDates);
-            $hoursPerDay = $ctoHoursMap[$request->cto_type] ?? 0;
-            $totalHours = $dayCount * $hoursPerDay;
-        }
-
-        $request->validate([
-            'inclusive_dates' => 'required|string',
-            'cto_type' => 'nullable|in:none,halfday_morning,halfday_afternoon,wholeday',
-            'signature' => auth()->user()->signature_path ? 'nullable|file|mimes:jpg,jpeg,png,pdf|max:5120' : 'required|file|mimes:jpg,jpeg,png,pdf|max:5120',
-        ]);
-
-        if ($totalHours < 4 || $totalHours % 4 !== 0) {
-            return back()->withErrors([
-                'cto_type' => 'Working hours must be a multiple of 4 and at least 4 hours.'
-            ])->withInput();
-        }
-
-        if ($totalHours > $overtimeBalance) {
-            return back()->withErrors([
-                'cto_type' => 'You cannot apply more than your available COC balance.'
-            ])->withInput();
-        }
-
-         $signaturePath = auth()->user()->signature_path;
-
-
-
-        if ($request->hasFile('signature')) {
-
-
-
-            $signatureFile = $request->file('signature');
-            $filename = time() . '_' . $signatureFile->getClientOriginalName();
-
-
-            $signaturePath = $signatureFile->storeAs(
-                'signatures',
-                $filename,
-                'public'
-            );
-
-
-            auth()->user()->update([
-                'signature_path' => $signaturePath
-            ]);
-
-        }
-
-        OvertimeRequest::create([
-            'user_id' => auth()->id(),
-            'date_filed' => now(),
-            'working_hours_applied' => $totalHours,
-            'signature' => $signaturePath,
-            'inclusive_dates' => $request->inclusive_dates,
-            'admin_status' => 'pending',
-            'hr_status' => 'pending',
-        ]);
-
-        $user->overtime_balance -= $totalHours;
-        $user->save();
-
-        notify()->success('Overtime request submitted successfully! Pending admin review.');
-        return redirect()->back();
+        $validDates[] = $date;
     }
+
+    $totalHours = 0;
+    if ($request->cto_type !== 'none') {
+        $dayCount = count($validDates);
+        $hoursPerDay = $ctoHoursMap[$request->cto_type] ?? 0;
+        $totalHours = $dayCount * $hoursPerDay;
+    }
+
+    $request->validate([
+        'inclusive_dates' => 'required|string',
+        'cto_type' => 'nullable|in:none,halfday_morning,halfday_afternoon,wholeday',
+        'signature' => auth()->user()->signature_path ? 'nullable|file|mimes:jpg,jpeg,png,pdf|max:5120' : 'required|file|mimes:jpg,jpeg,png,pdf|max:5120',
+    ]);
+
+    if ($totalHours < 4 || $totalHours % 4 !== 0) {
+        return back()->withErrors([
+            'cto_type' => 'Working hours must be a multiple of 4 and at least 4 hours.'
+        ])->withInput();
+    }
+
+    if ($totalHours > $overtimeBalance) {
+        return back()->withErrors([
+            'cto_type' => 'You cannot apply more than your available COC balance.'
+        ])->withInput();
+    }
+
+    $signaturePath = auth()->user()->signature_path;
+
+    if ($request->hasFile('signature')) {
+        $signatureFile = $request->file('signature');
+        $filename = time() . '_' . $signatureFile->getClientOriginalName();
+
+        $signaturePath = $signatureFile->storeAs(
+            'signatures',
+            $filename,
+            'public'
+        );
+
+        auth()->user()->update([
+            'signature_path' => $signaturePath
+        ]);
+    }
+
+    // Create the CTO request
+    OvertimeRequest::create([
+        'user_id' => auth()->id(),
+        'date_filed' => now(),
+        'working_hours_applied' => $totalHours,
+        'signature' => $signaturePath,
+        'inclusive_dates' => $request->inclusive_dates,
+        'admin_status' => 'pending',
+        'hr_status' => 'pending',
+    ]);
+
+    $user->decrement('overtime_balance', $totalHours);
+
+    notify()->success('Overtime request submitted successfully! Pending admin review.');
+    return redirect()->back();
+}
 
     public function requests()
     {

@@ -90,7 +90,7 @@
                                     Edit
                                 </a>
 
-                                @if($leave->status !== 'cancelled')
+                                @if($leave->status !== 'cancelled' && $leave->status !== 'rejected')
                                     <form action="{{ route('hr.leave_cancel', $leave->id) }}" method="POST" class="w-full">
                                         @csrf
                                         <button type="submit"
@@ -111,6 +111,7 @@
                                         </button>
                                     </form>
                                 @endif
+
 
                                 <form action="{{ route('hr.leave_delete', $leave->id) }}" method="POST" class="w-full">
                                     @csrf
@@ -209,7 +210,7 @@
                                             Edit
                                         </a>
 
-                                        @if($leave->status !== 'cancelled')
+                                        @if($leave->status !== 'cancelled' && $leave->status !== 'rejected')
                                             <form action="{{ route('hr.leave_cancel', $leave->id) }}" method="POST" class="w-full">
                                                 @csrf
                                                 <button type="submit"

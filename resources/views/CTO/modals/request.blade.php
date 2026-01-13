@@ -1,7 +1,7 @@
 <div id="requestModal"
     class="{{ $errors->any() ? '' : 'hidden' }} fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center px-4 z-50 overflow-auto"
     onclick="closeRequestModal(event)">
-    <div class="w-full max-w-2xl mx-4 bg-white shadow-xl rounded-lg p-4 md:p-4 relative max-h-70vh] overflow-y-auto"
+    <div class="w-full max-w-2xl mx-4 bg-white shadow-xl rounded-lg p-4 md:p-4 relative max-h-[90vh] overflow-y-auto"
         onclick="event.stopPropagation()">
         <div class="text-center border-b pb-4">
             <h3 class="text-2xl font-bold text-gray-900">Overtime Request</h3>
