@@ -84,7 +84,7 @@
 
                 <a href="{{ route('supervisor.untimely-leave-applications') }}"
                     class="hover:bg-gray-200 flex items-center p-2 space-x-2 rounded-md
-          {{ request()->routeIs('employee.leave_request') ? 'bg-white shadow-lg' : 'text-gray-500' }}">
+                {{ request()->routeIs('employee.leave_request') ? 'bg-white shadow-lg' : 'text-gray-500' }}">
 
                     <!-- Clock / Late Icon -->
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
@@ -96,6 +96,19 @@
                     <span>Untimely Leave Applications</span>
                 </a>
 
+
+                <a href="{{ route('supervisor.my_untimely_sick_applications') }}"
+                    class="hover:bg-gray-200 flex items-center p-2 space-x-2 rounded-md
+                {{ request()->routeIs('employee.leave_request') ? 'bg-white shadow-lg' : 'text-gray-500' }}">
+
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+                        class="size-8">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6l4 2" /> <path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /> <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v6M9 12h6" />
+                    </svg>
+
+                    <span>Untimely Sick Leave Applications</span>
+                </a>
 
 
                 <a href="{{ route('supervisor.holiday.calendar') }}"

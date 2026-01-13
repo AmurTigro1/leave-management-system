@@ -33,6 +33,11 @@ Route::middleware('auth')->group(function () {
         Route::get('/supervisor/employees', [SupervisorController::class, 'onLeave'])->name('supervisor.on_leave');
         Route::get('/supervisor/requests', [SupervisorController::class, 'requests'])->name('supervisor.requests');
         // Route::post('/supervisor/{leaveId}/approve', [SupervisorController::class, 'approve'])->name('supervisor.approve');
+
+         // Untimely Sick Leave
+        Route::get('/supervisor/my-untimely-sick-leave-applications', [SupervisorController::class, 'untimelySickLeave'])->name('supervisor.my_untimely_sick_applications');
+        Route::get('/supervisor/my-untimely-sick-leave-applications/{userId}', [SupervisorController::class, 'getUserUntimelySickLeaveApplications']);
+
         Route::post('/supervisor/reject/{leave}', [SupervisorController::class, 'reject'])->name('supervisor.reject');
         Route::get('/supervisor-profile', [SupervisorController::class, 'profile'])->name('supervisor.profile.index');
         Route::get('/supervisor/profile-edit', [SupervisorController::class, 'profile_edit'])->name('supervisor.profile.partials.update-profile-information-form');
@@ -80,6 +85,10 @@ Route::middleware('auth')->group(function () {
         Route::get('hr/holidays/{holiday}/edit', [HrController::class, 'edit'])->name('hr.holidays.edit');
         Route::put('hr/holidays/{holiday}', [HrController::class, 'update'])->name('hr.holidays.update');
         Route::delete('hr/holidays/{holiday}', [HrController::class, 'destroy'])->name('hr.holidays.destroy');
+
+        // Untimely Sick Leave
+        Route::get('/hr/my-untimely-sick-leave-applications', [HrController::class, 'untimelySickLeave'])->name('hr.my_untimely_sick_applications');
+        Route::get('/hr/my-untimely-sick-leave-applications/{userId}', [HrController::class, 'getUserUntimelySickLeaveApplications']);
 
         Route::get('/hr/leave-certification/{leaveId}', [HrController::class, 'showLeaveCertification'])->name('hr.leave_certification');
         Route::post('/leave/{leave}/review', [HrController::class, 'review'])->name('leave.review');
