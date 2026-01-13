@@ -146,6 +146,10 @@ Route::middleware('auth')->group(function () {
         Route::get('/admin/my-leave-requests', [AdminController::class, 'myRequests'])->name('admin.my_requests');
         Route::get('/admin/my-extend-leave-applications', [AdminController::class, 'myExtendLeaveApplications'])->name('admin.my_extend_applications');
         Route::get('/admin/my-extend-leave-applications/{userId}', [AdminController::class, 'getUserLeaveApplications']);
+        //untimely sick leave
+        Route::get('/admin/my-untimely-sick-leave-applications', [AdminController::class, 'untimelySickLeave'])->name('admin.my_untimely_sick_applications');
+        Route::get('/admin/my-untimely-sick-leave-applications/{userId}', [AdminController::class, 'getUserUntimelySickLeaveApplications']);
+
         Route::get('/admin/my-leave-requests/edit/{id}', [AdminController::class, 'editLeave'])->name('admin.leave_edit');
         Route::put('/admin/my-leave-requests/update/{id}', [AdminController::class, 'updateLeave'])->name('admin.leave_update');
         Route::post('/admin/leaves/{id}/cancel', [AdminController::class, 'cancel'])->name('admin.leave_cancel');

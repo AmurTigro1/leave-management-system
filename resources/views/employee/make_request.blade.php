@@ -265,6 +265,13 @@
                         let oneDayLeave = document.getElementById("one_day_leave");
                         let daysApplied = document.getElementById('days_applied');
 
+                        const leaveType = document.querySelector('select[name="leave_type"]');
+                        const selectedType = leaveType.value;
+                        const fileUploadSection = document.getElementById('file_upload_section');
+
+                        const todayStr = new Date().toISOString().split("T")[0];
+
+
                         // If one-day leave is checked, sync the dates
                         if (oneDayLeave.checked && startDate.value) {
                             endDate.value = startDate.value;
@@ -281,6 +288,32 @@
                         } else {
                             // Show 0 when no dates are selected
                             daysApplied.value = 0;
+                        }
+
+                        if (leaveType.value === 'Sick Leave') {
+
+
+                            if (startDate.value < todayStr && daysApplied.value > 5) {
+                                fileUploadSection.classList.remove('hidden');
+                                return
+                            }
+
+
+                            if (startDate.value > todayStr) {
+                                fileUploadSection.classList.remove('hidden');
+                                return
+                            }
+
+
+                            if (daysApplied.value > 5) {
+                                fileUploadSection.classList.remove('hidden');
+                                return
+                            }
+
+                            fileUploadSection.classList.add('hidden');
+
+                        } else {
+                            fileUploadSection.classList.add('hidden');
                         }
                     }
 
@@ -581,6 +614,8 @@
         const fileUploadSection = document.getElementById('file_upload_section');
         const oneDayLeave = document.getElementById('one_day_leave');
 
+        let daysApplied = document.getElementById('days_applied');
+
         // ✅ Leave messages
         const leaveMessages = {
             "Vacation Leave": "Vacation Leave must be filed at least <strong>5 days in advance</strong>.",
@@ -644,6 +679,31 @@
                 fileUploadSection.classList.remove('hidden');
                 return;
             }
+
+            // if (selectedType === 'Sick Leave') {
+
+
+            //     const todayStr = new Date().toISOString().split("T")[0];
+
+            //     if (startDate.value < todayStr && daysApplied.value > 5) {
+            //         fileUploadSection.classList.remove('hidden');
+            //         return;
+            //     }
+            //     if (startDate.value > todayStr) {
+            //         fileUploadSection.classList.remove('hidden');
+            //         return;
+            //     }
+
+
+            //     if (daysApplied.value > 5) {
+            //         fileUploadSection.classList.remove('hidden');
+            //         return;
+            //     }
+
+
+            //     fileUploadSection.classList.remove('hidden');
+            //     return;
+            // }
 
             // Hide the upload section if no date is selected
             if (!startDate.value || !endDate.value) {
