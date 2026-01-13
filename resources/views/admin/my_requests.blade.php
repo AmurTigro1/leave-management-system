@@ -77,18 +77,26 @@
                                     Edit
                                 </a>
 
-                                @if ($leave->status !== 'cancelled')
-                                    <button type="button" onclick="openCancelLeaveModal({{ $leave->id }})"
-                                        class="text-xs bg-yellow-100 text-yellow-600 px-3 py-1.5 rounded hover:bg-yellow-200">
-                                        Cancel
-                                    </button>
+                                @if($leave->status !== 'cancelled' && $leave->status !== 'rejected')
+                                    <form action="{{ route('hr.leave_cancel', $leave->id) }}" method="POST" class="w-full">
+                                        @csrf
+                                        <button type="submit"
+                                                onclick="return confirm('Are you sure you want to cancel this leave request?')"
+                                                class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                            Cancel
+                                        </button>
+                                    </form>
                                 @endif
 
-                                @if ($leave->status === 'cancelled')
-                                    <button type="submit" onclick="openRestoreLeaveModal({{ $leave->id }})"
-                                        class="text-xs bg-green-100 text-green-600 px-3 py-1.5 rounded hover:bg-green-200">
-                                        Restore
-                                    </button>
+                                @if($leave->status === 'cancelled')
+                                    <form action="{{ route('hr.leave_restore', $leave->id) }}" method="POST" class="w-full">
+                                        @csrf
+                                        <button type="submit"
+                                            onclick="return confirm('Do you want to restore this canceled request?')"
+                                            class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                            Restore
+                                        </button>
+                                    </form>
                                 @endif
 
                                 <button type="button" onclick="openDeleteLeaveModal({{ $leave->id }})"
@@ -189,20 +197,28 @@
                                                         Edit
                                                     </a>
 
-                                                    <!-- Hide "Cancel Request" if already cancelled -->
-                                                    @if ($leave->status !== 'cancelled')
-                                                        <button type="button"
-                                                            onclick="openCancelLeaveModal({{ $leave->id }})"
-                                                            class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Cancel
-                                                            Request</button>
+                                                    @if($leave->status !== 'cancelled' && $leave->status !== 'rejected')
+                                                        <form action="{{ route('hr.leave_cancel', $leave->id) }}" method="POST" class="w-full">
+                                                            @csrf
+                                                            <button type="submit"
+                                                                    onclick="return confirm('Are you sure you want to cancel this leave request?')"
+                                                                    class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                                                Cancel Request
+                                                            </button>
+                                                        </form>
                                                     @endif
 
-                                                    @if ($leave->status === 'cancelled')
-                                                        <button type="submit"
-                                                            onclick="openRestoreLeaveModal({{ $leave->id }})"
-                                                            class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Restore
-                                                            Request</button>
+                                                    @if($leave->status === 'cancelled')
+                                                        <form action="{{ route('hr.leave_restore', $leave->id) }}" method="POST" class="w-full">
+                                                            @csrf
+                                                            <button type="submit"
+                                                                onclick="return confirm('Do you want to restore this canceled request?')"
+                                                                class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                                                Restore Request
+                                                            </button>
+                                                        </form>
                                                     @endif
+
 
                                                     <button type="button"
                                                         onclick="openDeleteLeaveModal({{ $leave->id }})"

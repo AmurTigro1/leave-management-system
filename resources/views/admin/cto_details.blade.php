@@ -136,18 +136,6 @@
                 <p class="font-semibold text-gray-500">Email: {{ $cto->user->email }}</p>
                 <p class="mb-4 font-semibold text-gray-500">Position: {{ $cto->user->position }}</p>
 
-                <div class="border-2 border-gray mb-[15px]"></div>
-
-                <h1 class="text-blue-600 font-bold text-center text-xl">Request Verification complete?</h1>
-                <h1 class="text-blue-600 font-bold text-center text-xl mb-[15px]">Proceed to HR!</h1>
-
-                <div class="py-2 px-4 flex-grow">
-                    <p class="text-sm text-gray-500">The request has been successfully reviewed and is now ready for
-                        submission to HR for final approval. Please take a moment to carefully verify all details to ensure
-                        accuracy and completeness before proceeding. Once submitted, any necessary changes may require
-                        additional processing time.</p>
-                </div>
-
             <div class="border-2 border-gray mb-[15px]"></div>
 
             <h1 class="text-blue-600 font-bold text-center text-xl">Request Verification complete?</h1>
@@ -159,15 +147,15 @@
 
             <div class="flex justify-center items-center space-y-2 w-full">
                 <form action="{{ route('cto.admin-review', $cto->id) }}" method="POST" class="space-y-2 w-auto flex flex-col items-center justify-center">
-                    @csrf 
+                    @csrf
                     <div class="flex gap-2">
                         <!-- Approve Button -->
-                        <button type="submit" name="admin_status" value="Ready for Review" 
+                        <button type="submit" name="admin_status" value="Ready for Review"
                             class="bg-blue-600 text-white py-2 px-4 rounded-lg mr-3">
                             Proceed to HR
                         </button>
 
-                        <button type="button" id="rejectBtn" 
+                        <button type="button" id="rejectBtn"
                             class="bg-red-600 text-white py-2 px-4 rounded-lg">
                             Return Request
                         </button>
