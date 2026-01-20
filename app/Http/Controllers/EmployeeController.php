@@ -124,8 +124,6 @@ class EmployeeController extends Controller
     public function store(Request $request, YearlyHolidayService $yearlyHolidayService)
 {
 
-    // dd($request->all());
-
 
     $leaveValidationRules = [];
     $isViolatesPriorDays = false;
@@ -161,6 +159,18 @@ class EmployeeController extends Controller
                 'monetization' => 'required_without:terminal_leave|boolean|nullable',
                 'terminal_leave' => 'required_without:monetization|boolean|nullable',
             ];
+            break;
+        case 'Wellness Leave':
+            if($request->wellness_leave_type === 'sick'){
+
+                $leaveValidationRules = [
+                    'in_hospital_details' => 'required_without:out_patient_details|string|nullable',
+                    'out_patient_details' => 'required_without:in_hospital_details|string|nullable',
+                    'leave_files' => $this->isDocumentRequired($request) ? 'required|array' : 'array',
+                    'leave_files.*' => 'file|mimes:pdf,jpg,jpeg,png|max:1048'
+
+                ];
+            }
             break;
 
         case 'Others':
@@ -287,6 +297,7 @@ class EmployeeController extends Controller
             'Rehabilitation Privilege' => $user->rehabilitation_leave,
             'Special Leave Benefits for Women Leave' => $user->special_leave_benefit,
             'Special Emergency Leave' => $user->special_emergency_leave,
+            'Wellness Leave' => $user->wellness_leave_balance,
             default => 0,
         };
     }
@@ -352,6 +363,31 @@ class EmployeeController extends Controller
         $user->sick_leave_balance = $user->sick_leave_balance - $daysApplied;
         $user->save();
 
+    }
+
+    // WELLNESS
+    if($request->leave_type === 'Wellness Leave'){
+
+        if($request->wellness_leave_type === 'vacation'){
+            if ($request->filled('within_philippines')) {
+            $leaveDetails['Within the Philippines'] = $request->within_philippines;
+            }
+            if ($request->filled('abroad_details')) {
+                $leaveDetails['Abroad'] = $request->abroad_details;
+            }
+        }
+
+        if($request->wellness_leave_type === 'sick'){
+            if ($request->has('in_hospital')) {
+            $leaveDetails['In Hospital'] = $request->input('in_hospital_details', 'Yes');
+            }
+            if ($request->has('out_patient')) {
+                $leaveDetails['Out Patient'] = $request->input('out_patient_details', 'Yes');
+            }
+        }
+
+        $user->wellness_leave_balance = $user->wellness_leave_balance - $daysApplied;
+        $user->save();
     }
 
     if ($request->leave_type === 'Study Leave') {
@@ -455,7 +491,6 @@ class EmployeeController extends Controller
         'status' => 'pending',
     ]);
 
-    dd($leave->leave_files);
 
     if($isViolatesPriorDays){
         $leave->violations()->create([
@@ -482,9 +517,12 @@ public function cancel($id)
     $leave = Leave::findOrFail($id);
     $user = Auth::user();
 
-    if ($leave->status === 'approved' && $leave->hr_status === 'approved') {
-        $this->restoreLeaveBalance($user, $leave);
-    }
+
+    // if ($leave->status === 'approved' && $leave->hr_status === 'approved') {
+    //     $this->restoreLeaveBalance($user, $leave);
+    // }
+
+    $this->restoreLeaveBalance($user, $leave);
 
     $leave->status = 'cancelled';
     $leave->save();
@@ -507,6 +545,7 @@ public function cancel($id)
             $user->increment('overtime_balance', $cto->working_hours_applied);
         }
 
+        $this->restoreNewestCocLog($user, $cto->working_hours_applied);
         $user->overtime_balance += $cto->working_hours_applied;
         $user->save();
 
@@ -516,6 +555,46 @@ public function cancel($id)
         notify()->success('CTO request has been cancelled and balance restored.');
         return redirect()->back();
     }
+
+    private function restoreNewestCocLog($user, int $totalHours): void
+    {
+        $cocLogs = $user->cocLogs()
+            ->where('consumed', '>', 0)
+            ->orderBy('expires_at', 'desc') // NEWEST first
+            ->lockForUpdate()
+            ->get();
+
+        foreach ($cocLogs as $cocLog) {
+            if ($totalHours <= 0) {
+                break;
+            }
+
+            $restorable = $cocLog->consumed;
+
+            if ($restorable <= 0) {
+                continue;
+            }
+
+            if ($restorable >= $totalHours) {
+                // Can fully restore here
+                $cocLog->consumed -= $totalHours;
+                $cocLog->coc_earned += $totalHours;
+                $totalHours = 0;
+            } else {
+                // Restore everything and continue
+                $cocLog->coc_earned += $restorable;
+                $cocLog->consumed = 0;
+                $totalHours -= $restorable;
+            }
+
+            $cocLog->save();
+        }
+
+        if ($totalHours > 0) {
+            throw new \Exception('Unable to fully restore COC balance.');
+        }
+    }
+
 
 public function restore($id)
 {
@@ -528,6 +607,17 @@ public function restore($id)
     } else {
         $leave->status = 'pending';
     }
+
+    if($leave->leave_type === "Vacation Leave" || $leave->leave_type === "Special Privilege Leave" || $leave->leave_type === "Mandatory Leave" )
+        $user->vacation_leave_balance -= $leave->days_applied;
+
+    elseif ($leave->leave_type === "Sick Leave")
+        $user->sick_leave_balance -= $leave->days_applied;
+
+    elseif($leave->leave_type === "Wellness Leave")
+        $user->wellness_leave_balance -= $leave->days_applied;
+
+    $user->save();
 
     $leave->save();
 
@@ -552,6 +642,7 @@ public function restoreCTO($id)
         $CTO->status = 'pending';
     }
 
+    $this->deductOldestCocLog($user, $CTO->working_hours_applied);
     $user->overtime_balance -= $CTO->working_hours_applied;
     $user->save();
 
@@ -560,6 +651,47 @@ public function restoreCTO($id)
 
     return redirect()->back();
 }
+
+
+private function deductOldestCocLog($user, int $totalHours): void
+    {
+        $cocLogs = $user->cocLogs()
+            ->where('is_expired', false)
+            ->where('coc_earned', '>', 0)
+            ->orderBy('expires_at', 'asc')
+            ->lockForUpdate()
+            ->get();
+
+        foreach ($cocLogs as $cocLog) {
+            if ($totalHours <= 0) {
+                break;
+            }
+
+            $available = $cocLog->coc_earned;
+
+            if ($available <= 0) {
+                continue;
+            }
+
+            if ($available >= $totalHours) {
+                // Enough balance in this log
+                $cocLog->coc_earned -= $totalHours;
+                $cocLog->consumed += $totalHours;
+                $totalHours = 0;
+            } else {
+                // Not enough → consume everything
+                $cocLog->consumed += $available;
+                $cocLog->coc_earned = 0;
+                $totalHours -= $available;
+            }
+
+            $cocLog->save();
+        }
+
+        if ($totalHours > 0) {
+            throw new \Exception('Not enough COC balance to deduct.');
+        }
+    }
 
 private function restoreLeaveBalance($user, $leave)
 {
@@ -577,6 +709,9 @@ private function restoreLeaveBalance($user, $leave)
 
         case 'Sick Leave':
             $user->sick_leave_balance += $days;
+            break;
+        case 'Wellness Leave':
+            $user->wellness_leave_balance += $days;
             break;
 
         case 'Maternity Leave':

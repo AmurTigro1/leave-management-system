@@ -796,6 +796,9 @@ public function restore($id)
     elseif ($leave->leave_type === "Sick Leave")
         $user->sick_leave_balance -= $leave->days_applied;
 
+    elseif($leave->leave_type === "Wellness Leave")
+        $user->wellness_leave_balance -= $leave->days_applied;
+
     $user->save();
 
     $leave->save();

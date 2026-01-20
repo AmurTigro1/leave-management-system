@@ -133,7 +133,7 @@
 
                 // Fetch leave applications for this user
                 const response = await fetch(
-                    `/admin/my-untimely-sick-leave-applications/${userId}?from_date=${fromDate}&to_date=${toDate}`);
+                    `/hr/my-untimely-sick-leave-applications/${userId}?from_date=${fromDate}&to_date=${toDate}`);
                 const applications = await response.json();
 
                 // Hide loading, show table
