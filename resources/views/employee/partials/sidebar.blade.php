@@ -33,7 +33,7 @@
 
             <nav class="mt-6 space-y-2 m-4 text-gray-600">
                 <a href="{{ route('lms_cto.dashboard') }}"
-                    class="hover:bg-gray-200 flex items-center p-2 space-x-2 rounded-md  {{ request()->routeIs('lms_cto.dashboard') ? 'bg-white shadow-lg' : 'text-gray-500' }}">
+                    class="hover:bg-gray-200 flex items-center p-2 space-x-2 rounded-md {{ request()->routeIs('lms_cto.dashboard') ? 'bg-white shadow-lg' : 'text-gray-500' }}">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                         <path
                             d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />

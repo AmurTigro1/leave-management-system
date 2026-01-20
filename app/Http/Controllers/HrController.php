@@ -662,6 +662,91 @@ class HrController extends Controller
         return response()->json($leaveApplications);
     }
 
+     public function untimelySickLeave(Request $request){
+
+          $usersWithViolations = User::whereHas('leaveViolations', function ($query) use ($request) {
+            $query
+            ->where('violation_type', 'sick_leave')
+            ->whereHas('leave', function ($q) {
+                $q->whereNotIn('status', ['cancelled', 'rejected']);
+            })
+            ->when($request->filled('from_date'), function ($q) use ($request) {
+                $q->whereDate('created_at', '>=', $request->from_date);
+            })
+            ->when($request->filled('to_date'), function ($q) use ($request) {
+                $q->whereDate('created_at', '<=', $request->to_date);
+            });
+          })
+          ->withCount(['leaveViolations' => function ($query) use ($request) {
+            $query
+            ->where('violation_type', 'sick_leave')
+            ->whereHas('leave', function ($q) {
+                $q->whereNotIn('status', ['cancelled', 'rejected']);
+            })
+            ->when($request->filled('from_date'), function ($q) use ($request) {
+                $q->whereDate('created_at', '>=', $request->from_date);
+            })
+            ->when($request->filled('to_date'), function ($q) use ($request) {
+                $q->whereDate('created_at', '<=', $request->to_date);
+            });
+        }])
+        ->orderBy('leave_violations_count', 'desc')
+        ->paginate(10)
+        ->withQueryString();
+
+        return view('admin.untimely_sick_leave_applications', compact('usersWithViolations'));
+    }
+
+    public function getUserUntimelySickLeaveApplications(Request $request, $userId)
+    {
+        $leaveApplications = LeaveViolation::with(['user', 'leave'])
+            ->where('user_id', $userId)
+            ->where('violation_type', 'sick_leave')
+            ->whereHas('leave', function ($q) {
+                $q->whereNotIn('status', ['cancelled', 'rejected']);
+            })
+            ->when($request->filled('from_date'), function ($query) use ($request) {
+                $query->whereDate('created_at', '>=', $request->from_date);
+            })
+            ->when($request->filled('to_date'), function ($query) use ($request) {
+                $query->whereDate('created_at', '<=', $request->to_date);
+            })
+            ->orderBy('created_at', 'desc')
+            ->get()
+            ->map(function ($violation) {
+
+                // Format leave_details as a simple string
+                $leaveDetailsText = 'N/A';
+                $leaveDetails = $violation->leave->leave_details ?? null;
+
+                if ($leaveDetails) {
+                    $decoded = json_decode($leaveDetails, true);
+                    if (is_array($decoded) && !empty($decoded)) {
+                        // Convert to readable string like "key1: value1, key2: value2"
+                        $parts = [];
+                        foreach ($decoded as $key => $value) {
+                            $parts[] = "$key: $value";
+                        }
+                        $leaveDetailsText = implode(', ', $parts);
+                    }
+                }
+
+                return [
+                    'type' => $violation->leave->leave_type ?? 'N/A',
+                    'leave_details' => $leaveDetailsText ?? 'N/A',
+                    'reason' => $violation->leave->reason ?? 'No reason provided',
+                    'start_date' => $violation->leave->start_date ?? 'N/A',
+                    'end_date' => $violation->leave->end_date ?? 'N/A',
+                    'status' => $violation->leave->status ?? 'Pending',
+                    'days_applied' => $violation->leave->days_applied ?? 0,
+                    'filed_date' => $violation->created_at->format('Y-m-d H:i:s'),
+                    'leave_files' => $violation->leave->leave_files ? $violation->leave->leave_files : null,
+                ];
+            });
+
+        return response()->json($leaveApplications);
+    }
+
     public function show($id) {
         $leave = Leave::findOrFail($id);
 
