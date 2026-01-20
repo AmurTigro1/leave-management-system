@@ -694,7 +694,7 @@ class HrController extends Controller
         ->paginate(10)
         ->withQueryString();
 
-        return view('admin.untimely_sick_leave_applications', compact('usersWithViolations'));
+        return view('hr.untimely_sick_leave_applications', compact('usersWithViolations'));
     }
 
     public function getUserUntimelySickLeaveApplications(Request $request, $userId)
