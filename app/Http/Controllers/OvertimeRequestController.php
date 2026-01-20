@@ -126,12 +126,95 @@ class OvertimeRequestController extends Controller
             'hr_status' => 'pending',
         ]);
 
+        $this->deductOldestCocLog($user, $totalHours);
         $user->overtime_balance -= $totalHours;
         $user->save();
 
         notify()->success('Overtime request submitted successfully! Pending admin review.');
         return redirect()->back();
     }
+
+    // private function deductOldestCocLog($user, int $totalHours): void
+    // {
+    //     // Get oldest, non-expired COC logs with remaining balance
+    //     $cocLogs = $user->cocLogs()
+    //         ->where('is_expired', false)
+    //         ->whereColumn('consumed', '<', 'coc_earned')
+    //         ->orderBy('expires_at', 'asc') // or ->orderBy('created_at')
+    //         ->lockForUpdate() // VERY important if this affects balances
+    //         ->get();
+
+    //     foreach ($cocLogs as $cocLog) {
+    //         if ($totalHours <= 0) {
+    //             break;
+    //         }
+
+    //         $available = $cocLog->coc_earned - $cocLog->consumed;
+
+    //         if ($available <= 0) {
+    //             continue;
+    //         }
+
+    //         if ($available >= $totalHours) {
+    //             // Enough balance in this log
+    //             $cocLog->consumed += $totalHours;
+    //             $totalHours = 0;
+    //         } else {
+    //             // Not enough → consume everything and move to next
+    //             $cocLog->consumed = $cocLog->coc_earned;
+    //             $totalHours -= $available;
+    //         }
+
+    //         $cocLog->save();
+    //     }
+
+    //     if ($totalHours > 0) {
+    //         throw new \Exception('Not enough COC balance to deduct.');
+    //     }
+    // }
+
+    //ALSO DEDUCT THE COC EARNED
+        private function deductOldestCocLog($user, int $totalHours): void
+    {
+        $cocLogs = $user->cocLogs()
+            ->where('is_expired', false)
+            ->where('coc_earned', '>', 0)
+            ->orderBy('expires_at', 'asc')
+            ->lockForUpdate()
+            ->get();
+
+        foreach ($cocLogs as $cocLog) {
+            if ($totalHours <= 0) {
+                break;
+            }
+
+            $available = $cocLog->coc_earned;
+
+            if ($available <= 0) {
+                continue;
+            }
+
+            if ($available >= $totalHours) {
+                // Enough balance in this log
+                $cocLog->coc_earned -= $totalHours;
+                $cocLog->consumed += $totalHours;
+                $totalHours = 0;
+            } else {
+                // Not enough → consume everything
+                $cocLog->consumed += $available;
+                $cocLog->coc_earned = 0;
+                $totalHours -= $available;
+            }
+
+            $cocLog->save();
+        }
+
+        if ($totalHours > 0) {
+            throw new \Exception('Not enough COC balance to deduct.');
+        }
+    }
+
+
 
 
     public function list()

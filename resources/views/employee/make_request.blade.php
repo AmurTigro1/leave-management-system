@@ -73,6 +73,7 @@
                     <select name="leave_type" id="leave_type" class="mt-1 w-full p-2 border rounded"
                         onchange="handleLeaveType()">
                         <option value="">Select Leave Type</option>
+                        <option value="Wellness Leave">Wellness Leave </option>
                         <option value="Vacation Leave">Vacation Leave (Sec. 51, Rule XVI, Omnibus Rules Implementing E.O.
                             No. 292) </option>
                         <option value="Mandatory Leave">Mandatory/Forced Leave (Sec. 25, Rule XVL, Omnibus Rules
@@ -270,6 +271,8 @@
                         const fileUploadSection = document.getElementById('file_upload_section');
 
                         const todayStr = new Date().toISOString().split("T")[0];
+                        const wellnessOption = document.querySelector('input[name="wellness_leave_type"]:checked');
+                        const wellnessValue = wellnessOption ? wellnessOption.value : null;
 
 
                         // If one-day leave is checked, sync the dates
@@ -290,27 +293,31 @@
                             daysApplied.value = 0;
                         }
 
-                        if (leaveType.value === 'Sick Leave') {
+                        if (leaveType.value === 'Sick Leave' || leaveType.value === 'Wellness Leave') {
+
+                            console.log(wellnessValue)
+
+                            if ((wellnessValue !== null && wellnessValue !== 'vacation') || leaveType.value === 'Sick Leave') {
+                                if (startDate.value < todayStr && daysApplied.value > 5) {
+                                    fileUploadSection.classList.remove('hidden');
+                                    return
+                                }
 
 
-                            if (startDate.value < todayStr && daysApplied.value > 5) {
-                                fileUploadSection.classList.remove('hidden');
-                                return
-                            }
+                                if (startDate.value > todayStr) {
+                                    fileUploadSection.classList.remove('hidden');
+                                    return
+                                }
 
 
-                            if (startDate.value > todayStr) {
-                                fileUploadSection.classList.remove('hidden');
-                                return
-                            }
-
-
-                            if (daysApplied.value > 5) {
-                                fileUploadSection.classList.remove('hidden');
-                                return
+                                if (daysApplied.value > 5) {
+                                    fileUploadSection.classList.remove('hidden');
+                                    return
+                                }
                             }
 
                             fileUploadSection.classList.add('hidden');
+
 
                         } else {
                             fileUploadSection.classList.add('hidden');
@@ -330,6 +337,24 @@
                     <textarea name="reason" id="reason" cols="15" rows="5" class="mt-1 w-full p-2 border rounded"
                         placeholder="Enter Reason"></textarea>
                 </div>
+
+                {{-- Wellness Leave Options --}}
+                <div id="wellness_leave_options" class="hidden space-y-3">
+                    <div>
+                        <label>
+                            <input type="radio" name="wellness_leave_type" value="sick" required>
+                            WELLNESS SICK LEAVE
+                        </label>
+                    </div>
+
+                    <div>
+                        <label>
+                            <input type="radio" name="wellness_leave_type" value="vacation">
+                            WELLNESS VACATION LEAVE
+                        </label>
+                    </div>
+                </div>
+
                 <!-- File Upload for Required Documents -->
                 <div id="file_upload_section" class="hidden">
                     <div>
@@ -529,6 +554,8 @@
                 </div>
             </div>
 
+
+
             <!-- Sick Leave -->
             <div id="sick_leave_options" class="hidden">
                 <div class="mt-4">
@@ -603,6 +630,10 @@
         const sickLeaveOptions = document.getElementById("sick_leave_options");
         const studyLeaveOptions = document.getElementById("study_leave_options");
         const otherPurposesOptions = document.getElementById("other_purposes_options");
+        const wellnessLeaveOptions = document.getElementById('wellness_leave_options');
+        const wellnessRadios = document.querySelectorAll(
+            'input[name="wellness_leave_type"]'
+        );
 
         const successMessage = document.getElementById('success-message');
         const errorMessage = document.getElementById('error-message');
@@ -643,18 +674,38 @@
         // ✅ Show/hide different leave sections
         function toggleOptions() {
             const selectedValue = leaveType.value;
+            const isWellness = selectedValue === 'Wellness Leave'
+
+            wellnessRadios.forEach(radio => {
+                radio.required = isWellness;
+            });
+
+            // Optional: clear selection when disabled
+            if (!isWellness) {
+                wellnessRadios.forEach(radio => radio.checked = false);
+            }
 
             // Hide all sections
             vacationOptions.classList.add("hidden");
             sickLeaveOptions.classList.add("hidden");
             studyLeaveOptions.classList.add("hidden");
             otherPurposesOptions.classList.add("hidden");
+            wellnessLeaveOptions.classList.add('hidden');
+            fileUploadSection.classList.add('hidden');
+            const selected = document.querySelector('input[name="wellness_leave_type"]:checked');
+
+            if (selected) {
+                selected.checked = false;
+            }
+
 
             // Show the relevant section
             if (selectedValue === "Vacation Leave" || selectedValue === "Special Privilege Leave") {
                 vacationOptions.classList.remove("hidden");
             } else if (selectedValue === "Sick Leave") {
                 sickLeaveOptions.classList.remove("hidden");
+            } else if (selectedValue === "Wellness Leave") {
+                wellnessLeaveOptions.classList.remove("hidden");
             } else if (selectedValue === "Study Leave") {
                 studyLeaveOptions.classList.remove("hidden");
             } else if (selectedValue === "Other Purposes") {
@@ -755,6 +806,45 @@
         if (oneDayLeave) {
             oneDayLeave.addEventListener("change", toggleFileUpload);
         }
+
+        // This
+        document.querySelectorAll('input[name="wellness_leave_type"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                const output = document.getElementById('dynamic_content');
+
+                if (this.value === 'sick') {
+                    const todayStr = new Date().toISOString().split("T")[0];
+
+                    vacationOptions.classList.add("hidden");
+                    sickLeaveOptions.classList.remove("hidden");
+
+                    if (startDate.value < todayStr && daysApplied.value > 5) {
+                        fileUploadSection.classList.remove('hidden');
+                        return
+                    }
+
+
+                    if (startDate.value > todayStr) {
+                        fileUploadSection.classList.remove('hidden');
+                        return
+                    }
+
+
+                    if (daysApplied.value > 5) {
+                        fileUploadSection.classList.remove('hidden');
+                        return
+                    }
+
+                    fileUploadSection.classList.add('hidden');
+                }
+
+                if (this.value === 'vacation') {
+                    fileUploadSection.classList.add('hidden');
+                    sickLeaveOptions.classList.add("hidden");
+                    vacationOptions.classList.remove("hidden");
+                }
+            });
+        });
 
         // ✅ Initialize on page load
         toggleOptions();
