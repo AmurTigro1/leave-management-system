@@ -73,7 +73,7 @@
                     <select name="leave_type" id="leave_type" class="mt-1 w-full p-2 border rounded"
                         onchange="handleLeaveType()">
                         <option value="">Select Leave Type</option>
-                        <option value="Wellness Leave">Wellness Leave </option>
+                        <option value="Wellness Leave">Wellness Leave (CSC MC No. 01, s. 2026)</option>
                         <option value="Vacation Leave">Vacation Leave (Sec. 51, Rule XVI, Omnibus Rules Implementing E.O.
                             No. 292) </option>
                         <option value="Mandatory Leave">Mandatory/Forced Leave (Sec. 25, Rule XVL, Omnibus Rules
@@ -112,6 +112,23 @@
                     @error('leave_type')
                         <p class="text-red-500 text-sm">{{ $message }}</p>
                     @enderror
+
+                    {{-- Wellness Leave Options --}}
+                    <div id="wellness_leave_options" class="hidden space-y-3 mt-10">
+                        <div>
+                            <label>
+                                <input type="radio" name="wellness_leave_type" value="sick" required>
+                                WELLNESS SICK LEAVE
+                            </label>
+                        </div>
+
+                        <div>
+                            <label>
+                                <input type="radio" name="wellness_leave_type" value="vacation">
+                                WELLNESS VACATION LEAVE
+                            </label>
+                        </div>
+                    </div>
                 </div>
 
                 <div>
@@ -224,6 +241,8 @@
                     <label class="block text-sm font-medium text-gray-700">End of time-off</label>
                     <input type="date" name="end_date" id="end_date" class="mt-1 w-full p-2 border rounded"
                         onchange="updateDates()" required>
+                    <p id="wellness-warning" class="text-red-500 hidden">For this leave type, consecutive days must not
+                        exceed three (3) days.</p>
                     @error('end_date')
                         <p class="text-red-500 text-sm">{{ $message }}</p>
                     @enderror
@@ -265,6 +284,7 @@
                         let endDate = document.getElementById("end_date");
                         let oneDayLeave = document.getElementById("one_day_leave");
                         let daysApplied = document.getElementById('days_applied');
+                        const wellnessWarning = document.getElementById('wellness-warning');
 
                         const leaveType = document.querySelector('select[name="leave_type"]');
                         const selectedType = leaveType.value;
@@ -275,6 +295,7 @@
                         const wellnessValue = wellnessOption ? wellnessOption.value : null;
 
 
+                        wellnessWarning.classList.add('hidden');
                         // If one-day leave is checked, sync the dates
                         if (oneDayLeave.checked && startDate.value) {
                             endDate.value = startDate.value;
@@ -293,9 +314,15 @@
                             daysApplied.value = 0;
                         }
 
+                        if (leaveType.value === 'Wellness Leave') {
+                            if (daysApplied.value > 3) {
+                                //WARING HERE
+                                wellnessWarning.classList.remove('hidden');
+                            }
+                        }
+
                         if (leaveType.value === 'Sick Leave' || leaveType.value === 'Wellness Leave') {
 
-                            console.log(wellnessValue)
 
                             if ((wellnessValue !== null && wellnessValue !== 'vacation') || leaveType.value === 'Sick Leave') {
                                 if (startDate.value < todayStr && daysApplied.value > 5) {
@@ -322,6 +349,8 @@
                         } else {
                             fileUploadSection.classList.add('hidden');
                         }
+
+
                     }
 
                     // Initialize on page load
@@ -338,22 +367,7 @@
                         placeholder="Enter Reason"></textarea>
                 </div>
 
-                {{-- Wellness Leave Options --}}
-                <div id="wellness_leave_options" class="hidden space-y-3">
-                    <div>
-                        <label>
-                            <input type="radio" name="wellness_leave_type" value="sick" required>
-                            WELLNESS SICK LEAVE
-                        </label>
-                    </div>
 
-                    <div>
-                        <label>
-                            <input type="radio" name="wellness_leave_type" value="vacation">
-                            WELLNESS VACATION LEAVE
-                        </label>
-                    </div>
-                </div>
 
                 <!-- File Upload for Required Documents -->
                 <div id="file_upload_section" class="hidden">
@@ -656,7 +670,8 @@
             "Sick Leave": "Sick Leave exceeding 5 days or filed in advance requires a <strong>medical certificate</strong>.",
             "Maternity Leave": "Maternity Leave requires proof of pregnancy, such as <strong>ultrasound or doctor's certificate</strong>.",
             "Paternity Leave": "Paternity Leave requires proof of child's delivery, such as <strong>birth certificate</strong> or medical certificate.",
-            "Mandatory Leave": "Mandatory Leave must be taken annually. Unused leave will be <strong>forfeited</strong> if not availed within the year."
+            "Mandatory Leave": "Mandatory Leave must be taken annually. Unused leave will be <strong>forfeited</strong> if not availed within the year.",
+            "Wellness Leave": "Wellness Leave may only be taken for up to 3 consecutive days at a time."
         };
 
         // ✅ Display leave-specific message

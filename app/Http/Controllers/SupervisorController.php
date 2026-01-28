@@ -250,7 +250,9 @@ class SupervisorController extends Controller
                     'end_date' => $violation->leave->end_date ?? 'N/A',
                     'status' => $violation->leave->status ?? 'Pending',
                     'days_applied' => $violation->leave->days_applied ?? 0,
-                    'filed_date' => $violation->created_at->format('Y-m-d H:i:s'),
+                    'filed_date' => $violation->created_at
+                        ->timezone('Asia/Manila')
+                        ->format('Y-m-d h:i A'),
                     'leave_files' => $violation->leave->leave_files ? $violation->leave->leave_files : null,
                 ];
             });

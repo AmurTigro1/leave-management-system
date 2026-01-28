@@ -111,7 +111,6 @@ class EmployeeBalanceController extends Controller
         ->orderBy('department')  // Sorts alphabetically in ascending order
         ->pluck('department');
 
-
         // Return the full view with data
         return view('hr.employee-balances', compact('employees', 'departments', 'search', 'totalEmployees'));
     }
@@ -124,6 +123,7 @@ class EmployeeBalanceController extends Controller
             'vacation_leave_balance' => 'required|numeric|min:0',
             'mandatory_leave_balance' => 'required|numeric|min:0',
             'sick_leave_balance' => 'required|numeric|min:0',
+            'wellness_leave_balance' => 'required|numeric|min:0',
             'maternity_leave' => 'required|integer|min:0',
             'paternity_leave' => 'required|integer|min:0',
             'solo_parent_leave' => 'required|integer|min:0',

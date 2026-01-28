@@ -10,28 +10,63 @@ use App\Notifications\CocLogCreatedNotification;
 
 class CocLogController extends Controller
 {
-    public function indexHR()
+    public function indexHR(Request $request)
     {
-        $cocLogs = CocLog::where('is_expired', false)
+        $search = $request->input('search');
+        $query = CocLog::where('is_expired', false)
             ->with(['user', 'creator'])
-            ->orderBy('expires_at', 'desc') 
-            ->paginate(10);
+            ->orderBy('expires_at', 'desc');
 
-            $users = User::all();
+        // Apply search filter
+        if ($search) {
+            $query->whereHas('user', function ($q) use ($search) {
+                $q->where('first_name', 'LIKE', "%{$search}%")
+                ->orWhere('last_name', 'LIKE', "%{$search}%")
+                ->orWhere('position', 'LIKE', "%{$search}%");
+            });
+        }
+
+        // If it's an AJAX request, return a partial view
+        if ($request->ajax()) {
+            $cocLogs = $query->paginate(10)->withQueryString();
+            return view('admin.CTO.partials.coclog_table', compact('cocLogs'))->render();
+        }
+
+        // Get cocLogs with pagination
+        $cocLogs = $query->paginate(10)->withQueryString();
+        $users = User::all();
 
         return view('hr.CTO.coclog', compact('cocLogs', 'users'));
     }
 
-    public function indexAdmin()
+    public function indexAdmin(Request $request)
     {
-        $cocLogs = CocLog::where('is_expired', false)
+        $search = $request->input('search');
+        $query = CocLog::where('is_expired', false)
             ->with(['user', 'creator'])
-            ->orderBy('expires_at', 'desc') 
-            ->paginate(10);
+            ->orderBy('expires_at', 'desc');
 
+        // Apply search filter
+        if ($search) {
+            $query->whereHas('user', function ($q) use ($search) {
+                $q->where('first_name', 'LIKE', "%{$search}%")
+                ->orWhere('last_name', 'LIKE', "%{$search}%")
+                ->orWhere('position', 'LIKE', "%{$search}%");
+            });
+        }
+
+        // If it's an AJAX request, return a partial view
+        if ($request->ajax()) {
+            $cocLogs = $query->paginate(10)->withQueryString();
+            return view('admin.CTO.partials.coclog_table', compact('cocLogs'))->render();
+        }
+
+        // Get cocLogs with pagination
+        $cocLogs = $query->paginate(10)->withQueryString();
         $users = User::all();
 
-        return view('admin.CTO.coclog', compact('cocLogs', 'users'));
+        // Return the full view with data
+        return view('admin.CTO.coclog', compact('cocLogs', 'users', 'search'));
     }
 
     public function showHRCocLogs($id)
@@ -64,7 +99,7 @@ class CocLogController extends Controller
             $user = User::findOrFail($validated['user_id']);
             $cocLog = $user->cocLogs()->create($validated);
             $user->increment('overtime_balance', $validated['coc_earned']);
-            
+
             $user->notifyNow(new CocLogCreatedNotification($cocLog));
         });
 
@@ -75,7 +110,7 @@ class CocLogController extends Controller
     public function update(Request $request, CocLog $cocLog)
     {
         if ($cocLog->consumed || $cocLog->is_expired) {
-            notify()->error('Cannot modify COC log - it has already been ' . 
+            notify()->error('Cannot modify COC log - it has already been ' .
                         ($cocLog->consumed ? 'used' : 'expired'));
             return redirect()->back();
         }
@@ -88,7 +123,7 @@ class CocLogController extends Controller
         ]);
 
         $validated['certification_coc'] = now();
-        
+
         $originalCoc = $cocLog->coc_earned;
         $difference = 0;
 
@@ -103,7 +138,7 @@ class CocLogController extends Controller
 
         $message = 'COC Log updated successfully';
         if ($difference != 0) {
-            $message .= ' - Balance adjusted by ' . abs($difference) . ' hour(s) ' . 
+            $message .= ' - Balance adjusted by ' . abs($difference) . ' hour(s) ' .
                     ($difference > 0 ? 'added' : 'deducted');
         }
 
@@ -116,14 +151,14 @@ class CocLogController extends Controller
         DB::transaction(function () use ($cocLog) {
             $cocEarned = $cocLog->coc_earned;
             $user = $cocLog->user;
-    
+
             $cocLog->delete();
-    
+
             $newBalance = max(0, $user->overtime_balance - $cocEarned);
             $user->update(['overtime_balance' => $newBalance]);
         });
-    
+
         notify()->success('COC Log deleted successfully and overtime balance adjusted.');
         return redirect()->back();
-    }    
+    }
 }

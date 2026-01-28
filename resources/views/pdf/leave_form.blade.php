@@ -83,6 +83,8 @@
                             class="additional-detail"> (CSC MC No. 2, s. 2012, as amended)</span></p>
                     <p class="info2"><span class="leave-type"></span>Adoption Leave<span class="additional-detail">
                             (R.A No. 8552)</span></p>
+                    <p class="info2"><span class="leave-type"></span>Wellness Leave<span class="additional-detail">
+                            (CSC MC No. 01, s. 2026)</span></p>
                     <p class="other-option">Others:</p>
                     <p class="other-opt">______________________________</p>
                 </div>

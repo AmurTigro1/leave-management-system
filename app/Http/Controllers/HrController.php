@@ -129,6 +129,22 @@ class HrController extends Controller
         return view('hr.make_leave_request', compact('leaves', 'gender'));
     }
 
+    private function isDocumentRequired(Request  $request){
+        if($request->start_date < now() && $request->days_applied > 5){
+            return true;
+        }
+
+        if($request->start_date > now()){
+            return true;
+        }
+
+        if($request->days_applied > 5){
+            return true;
+        }
+
+        return false;
+    }
+
     public function storeLeave(Request $request, YearlyHolidayService $yearlyHolidayService)
     {
         $leaveValidationRules = [];
@@ -147,6 +163,9 @@ class HrController extends Controller
                 $leaveValidationRules = [
                     'in_hospital_details' => 'required_without:out_patient_details|string|nullable',
                     'out_patient_details' => 'required_without:in_hospital_details|string|nullable',
+                    'leave_files' => $this->isDocumentRequired($request) ? 'required|array' : 'array',
+                    'leave_files.*' => 'file|mimes:pdf,jpg,jpeg,png|max:1048'
+
                 ];
                 break;
 
@@ -162,6 +181,20 @@ class HrController extends Controller
                     'monetization' => 'required_without:terminal_leave|boolean|nullable',
                     'terminal_leave' => 'required_without:monetization|boolean|nullable',
                 ];
+                break;
+            case 'Wellness Leave':
+                $leaveValidationRules = [
+                'days_applied' => 'required|integer|max:3',
+                ];
+
+                if ($request->wellness_leave_type === 'sick') {
+                    $leaveValidationRules = array_merge($leaveValidationRules, [
+                        'in_hospital_details' => 'required_without:out_patient_details|string|nullable',
+                        'out_patient_details' => 'required_without:in_hospital_details|string|nullable',
+                        'leave_files' => $this->isDocumentRequired($request) ? 'required|array' : 'array',
+                        'leave_files.*' => 'file|mimes:pdf,jpg,jpeg,png|max:1048',
+                    ]);
+                }
                 break;
 
             case 'Others':
@@ -206,7 +239,6 @@ class HrController extends Controller
 
                         if ($startDate->lt($minStartDate)) {
                             $isViolatesPriorDays = true;
-                            // $fail("You must request {$leaveType} at least {$advanceDaysRequired} days in advance.");
                         }
                     }
                 }
@@ -221,9 +253,14 @@ class HrController extends Controller
             'abroad_details' => 'nullable|string',
         ], $leaveValidationRules));
 
+
+
         $user = Auth::user();
         $startDate = Carbon::parse($request->start_date);
         $endDate = Carbon::parse($request->end_date);
+        $daysBetween = $endDate->diffInDays(now());
+
+
 
         $requiredDocs = [
             'Maternity Leave' => 'Proof of Pregnancy (Ultrasound, Doctor’s Certificate)',
@@ -284,6 +321,7 @@ class HrController extends Controller
                 'Rehabilitation Privilege' => $user->rehabilitation_leave,
                 'Special Leave Benefits for Women Leave' => $user->special_leave_benefit,
                 'Special Emergency Leave' => $user->special_emergency_leave,
+                'Wellness Leave' => $user->wellness_leave_balance,
                 default => 0,
             };
         }
@@ -307,12 +345,15 @@ class HrController extends Controller
         }
 
         $leaveFiles = [];
+
         if ($request->hasFile('leave_files')) {
             foreach ($request->file('leave_files') as $file) {
                 $path = $file->store('leave_files', 'public');
                 $leaveFiles[] = $path;
             }
         }
+
+
 
         $leaveDetails = [];
 
@@ -349,6 +390,31 @@ class HrController extends Controller
             $user->sick_leave_balance = $user->sick_leave_balance - $daysApplied;
             $user->save();
 
+        }
+
+        // WELLNESS
+        if($request->leave_type === 'Wellness Leave'){
+
+            if($request->wellness_leave_type === 'vacation'){
+                if ($request->filled('within_philippines')) {
+                $leaveDetails['Within the Philippines'] = $request->within_philippines;
+                }
+                if ($request->filled('abroad_details')) {
+                    $leaveDetails['Abroad'] = $request->abroad_details;
+                }
+            }
+
+            if($request->wellness_leave_type === 'sick'){
+                if ($request->has('in_hospital')) {
+                $leaveDetails['In Hospital'] = $request->input('in_hospital_details', 'Yes');
+                }
+                if ($request->has('out_patient')) {
+                    $leaveDetails['Out Patient'] = $request->input('out_patient_details', 'Yes');
+                }
+            }
+
+            $user->wellness_leave_balance = $user->wellness_leave_balance - $daysApplied;
+            $user->save();
         }
 
         if ($request->leave_type === 'Study Leave') {
@@ -398,6 +464,8 @@ class HrController extends Controller
 
         }
 
+
+
         $signaturePath = auth()->user()->signature_path;
 
 
@@ -427,6 +495,8 @@ class HrController extends Controller
         $before_sick_leave_balance = $user->sick_leave_balance +  $daysApplied;
 
 
+
+
         // Create Leave
         $leave = Leave::create([
             'user_id' => auth()->id(),
@@ -448,11 +518,21 @@ class HrController extends Controller
             'status' => 'pending',
         ]);
 
+
         if($isViolatesPriorDays){
             $leave->violations()->create([
                 'user_id' => auth()->id()
             ]);
         }
+
+        if($request->leave_type === 'Sick Leave' && $daysBetween >= 7 && $startDate < now()){
+            $leave->violations()->create([
+                'user_id' => auth()->id(),
+                'violation_type' => 'sick_leave'
+            ]);
+        }
+
+
 
         notify()->success('Leave request submitted successfully! It is now pending approval.');
         return redirect()->back();
@@ -510,6 +590,7 @@ class HrController extends Controller
         }
 
         if ($totalHours > $overtimeBalance) {
+            notify()->warning('You cannot apply more than your available COC balance.');
             return back()->withErrors([
                 'cto_type' => 'You cannot apply more than your available COC balance.'
             ])->withInput();
@@ -739,7 +820,9 @@ class HrController extends Controller
                     'end_date' => $violation->leave->end_date ?? 'N/A',
                     'status' => $violation->leave->status ?? 'Pending',
                     'days_applied' => $violation->leave->days_applied ?? 0,
-                    'filed_date' => $violation->created_at->format('Y-m-d H:i:s'),
+                    'filed_date' => $violation->created_at
+                        ->timezone('Asia/Manila')
+                        ->format('Y-m-d h:i A'),
                     'leave_files' => $violation->leave->leave_files ? $violation->leave->leave_files : null,
                 ];
             });
@@ -754,25 +837,20 @@ class HrController extends Controller
     }
     public function cancel($id)
 {
-    $leave = Leave::findOrFail($id);
-    $user = Auth::user();
+        $leave = Leave::findOrFail($id);
+        $user = Auth::user();
 
-    if ($leave->status === 'approved' && $leave->hr_status === 'approved') {
+        // if ($leave->status === 'approved' && $leave->hr_status === 'approved') {
+        //     $this->restoreLeaveBalance($user, $leave);
+        // }
+
         $this->restoreLeaveBalance($user, $leave);
-    }
 
-    if($leave->leave_type === "Vacation Leave" || $leave->leave_type === "Special Privilege Leave" || $leave->leave_type === "Mandatory Leave" )
-        $user->vacation_leave_balance += $leave->days_applied;
+        $leave->status = 'cancelled';
+        $leave->save();
 
-    elseif ($leave->leave_type === "Sick Leave")
-        $user->sick_leave_balance += $leave->days_applied;
 
-    $user->save();
-
-    $leave->status = 'cancelled';
-    $leave->save();
-
-    return redirect()->back()->with('success', 'Leave request has been cancelled and balance restored.');
+        return redirect()->back()->with('success', 'Leave request has been cancelled and balance restored.');
 }
 
 
@@ -788,11 +866,36 @@ public function restore($id)
         $leave->status = 'pending';
     }
 
-    if($leave->leave_type === "Vacation Leave" || $leave->leave_type === "Special Privilege Leave" || $leave->leave_type === "Mandatory Leave" )
-        $user->vacation_leave_balance -= $leave->days_applied;
 
-    elseif ($leave->leave_type === "Sick Leave")
-        $user->sick_leave_balance -= $leave->days_applied;
+
+    if($leave->leave_type === "Vacation Leave" || $leave->leave_type === "Special Privilege Leave" || $leave->leave_type === "Mandatory Leave" ){
+            if($user->vacation_leave_balance < $leave->days_applied){
+            return redirect()->back()->with('error', 'Not enough balance.');
+        }
+        $user->vacation_leave_balance -= $leave->days_applied;
+    }
+
+
+    else if  ($leave->leave_type === "Sick Leave") {
+
+            if($user->sick_leave_balance < $leave->days_applied){
+
+                return redirect()->back()->with('error', 'Not enough balance.');
+            }
+
+            $user->sick_leave_balance -= $leave->days_applied;
+    }
+
+
+    else if($leave->leave_type === "Wellness Leave") {
+
+            if($user->wellness_leave_balance < $leave->days_applied){
+                return redirect()->back()->with('error', 'Not enough balance.');
+            }
+
+            $user->wellness_leave_balance -= $leave->days_applied;
+    }
+
 
     $user->save();
 
@@ -817,6 +920,10 @@ private function restoreLeaveBalance($user, $leave)
 
         case 'Sick Leave':
             $user->sick_leave_balance += $days;
+            break;
+
+        case 'Wellness Leave':
+            $user->wellness_leave_balance += $days;
             break;
 
         case 'Maternity Leave':

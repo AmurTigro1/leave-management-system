@@ -110,7 +110,7 @@
                     </div>
                 </div>
             </div>
-            @if (in_array($leave->leave_type, ['Sick Leave', 'Maternity Leave', 'Paternity Leave']))
+            @if (in_array($leave->leave_type, ['Sick Leave', 'Maternity Leave', 'Paternity Leave', 'Wellness Leave']))
                 <div>
                     <p>Attached Documents:</p>
                     @php
@@ -442,128 +442,126 @@
             </form>
         </div>
 
-        
+
         <script>
             document.getElementById('approveBtn').addEventListener('click', function() {
                 document.getElementById('approvalSection').classList.remove('hidden'); // Show approval fields
                 document.getElementById('disapprovalSection').classList.add('hidden'); // Hide rejection fields
             });
-        
+
             document.getElementById('rejectBtn').addEventListener('click', function() {
                 document.getElementById('disapprovalSection').classList.remove('hidden'); // Show rejection fields
                 document.getElementById('approvalSection').classList.add('hidden'); // Hide approval fields
             });
-        
+
             document.getElementById('cancelDisapprovalBtn').addEventListener('click', function() {
                 document.getElementById('disapprovalSection').classList.add('hidden');
                 document.getElementById('disapproval_reason').value = ""; // Clear text area
             });
         </script>
     </div>
-</div>
+    </div>
 
-<!-- Mobile View (only on small devices) -->
-<div class="block md:hidden space-y-6 bg-white p-4 rounded-lg shadow animate-fade-in">
-    <div class="flex flex-col items-center">
-        @if ($leave->user->profile_image)
-        @php
-            $profileImage = null;
+    <!-- Mobile View (only on small devices) -->
+    <div class="block md:hidden space-y-6 bg-white p-4 rounded-lg shadow animate-fade-in">
+        <div class="flex flex-col items-center">
+            @if ($leave->user->profile_image)
+                @php
+                    $profileImage = null;
 
-            if ($leave->user->profile_image) {
-                $imagePath1 = 'storage/profile_images/' . $leave->user->profile_image;
-                $imagePath2 = 'storage/profile_pictures/' . $leave->user->profile_image;
+                    if ($leave->user->profile_image) {
+                        $imagePath1 = 'storage/profile_images/' . $leave->user->profile_image;
+                        $imagePath2 = 'storage/profile_pictures/' . $leave->user->profile_image;
 
-                if (file_exists(public_path($imagePath1))) {
-                    $profileImage = asset($imagePath1);
-                } elseif (file_exists(public_path($imagePath2))) {
-                    $profileImage = asset($imagePath2);
+                        if (file_exists(public_path($imagePath1))) {
+                            $profileImage = asset($imagePath1);
+                        } elseif (file_exists(public_path($imagePath2))) {
+                            $profileImage = asset($imagePath2);
+                        }
+                    }
+                @endphp
+
+                <img src="{{ $profileImage ?? asset('img/default-avatar.png') }}" class="w-32 h-32 object-cover"
+                    alt="{{ $leave->user->name }}">
+            @else
+                <img src="{{ asset('img/default-avatar.png') }}" alt="" class="w-32 h-32 object-cover">
+            @endif
+            <p class="font-semibold text-gray-500">Employee: {{ $leave->user->first_name }}
+                {{ strtoupper(substr($leave->user->middle_name, 0, 1)) }}. {{ $leave->user->last_name }}</p>
+            <p class="text-gray-500 text-sm">Email: {{ $leave->user->email }}</p>
+            <p class="text-gray-500 text-sm mb-4">Position: {{ $leave->user->position }}</p>
+
+        </div>
+
+        <!-- Image Modal -->
+        <div id="imageModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex justify-center items-center z-[9999]"
+            onclick="closeModal(event)">
+            <div class="bg-white p-4 rounded-lg relative" onclick="event.stopPropagation()">
+                <img id="modalImage" src="" class="w-[300px] sm:w-[600px] h-auto object-cover rounded-lg">
+            </div>
+        </div>
+
+        <!-- JavaScript -->
+        <script>
+            function openModal(imageSrc) {
+                document.getElementById('modalImage').src = imageSrc;
+                document.getElementById('imageModal').classList.remove('hidden');
+            }
+
+            function closeModal(event) {
+                if (event.target.id === 'imageModal') {
+                    document.getElementById('imageModal').classList.add('hidden');
                 }
             }
-        @endphp
 
-        <img src="{{ $profileImage ?? asset('img/default-avatar.png') }}" 
-            class="w-32 h-32 object-cover"
-            alt="{{ $leave->user->name }}">
-        @else
-            <img src="{{ asset('img/default-avatar.png') }}" 
-                alt="" 
-                class="w-32 h-32 object-cover">
-        @endif
-        <p class="font-semibold text-gray-500">Employee: {{ $leave->user->first_name }} {{ strtoupper(substr($leave->user->middle_name, 0, 1)) }}. {{ $leave->user->last_name }}</p>
-        <p class="text-gray-500 text-sm">Email: {{ $leave->user->email }}</p>
-        <p class="text-gray-500 text-sm mb-4">Position: {{ $leave->user->position }}</p>
+            // Toggle Logic
+            document.getElementById('triggerApproveSection').addEventListener('click', function() {
+                document.getElementById('approveSection').classList.remove('hidden');
+                document.getElementById('rejectSection').classList.add('hidden');
+            });
 
-    </div>
+            document.getElementById('triggerRejectSection').addEventListener('click', function() {
+                document.getElementById('rejectSection').classList.remove('hidden');
+                document.getElementById('approveSection').classList.add('hidden');
+            });
 
-    <!-- Image Modal -->
-    <div id="imageModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex justify-center items-center z-[9999]"
-        onclick="closeModal(event)">
-        <div class="bg-white p-4 rounded-lg relative" onclick="event.stopPropagation()">
-            <img id="modalImage" src="" class="w-[300px] sm:w-[600px] h-auto object-cover rounded-lg">
-        </div>
-    </div>
+            document.getElementById('cancelRejectSection').addEventListener('click', function() {
+                document.getElementById('rejectSection').classList.add('hidden');
+            });
+        </script>
 
-    <!-- JavaScript -->
-    <script>
-        function openModal(imageSrc) {
-            document.getElementById('modalImage').src = imageSrc;
-            document.getElementById('imageModal').classList.remove('hidden');
+    @endsection
+
+    <style>
+        .animate-fade-in {
+            animation: fadeIn 1s ease-in-out;
         }
 
-        function closeModal(event) {
-            if (event.target.id === 'imageModal') {
-                document.getElementById('imageModal').classList.add('hidden');
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
             }
         }
 
-        // Toggle Logic
-        document.getElementById('triggerApproveSection').addEventListener('click', function() {
-            document.getElementById('approveSection').classList.remove('hidden');
-            document.getElementById('rejectSection').classList.add('hidden');
-        });
-
-        document.getElementById('triggerRejectSection').addEventListener('click', function() {
-            document.getElementById('rejectSection').classList.remove('hidden');
-            document.getElementById('approveSection').classList.add('hidden');
-        });
-
-        document.getElementById('cancelRejectSection').addEventListener('click', function() {
-            document.getElementById('rejectSection').classList.add('hidden');
-        });
-    </script>
-
-@endsection
-
-<style>
-    .animate-fade-in {
-        animation: fadeIn 1s ease-in-out;
-    }
-
-    @keyframes fadeIn {
-        from {
-            opacity: 0;
+        .animate-pulse {
+            animation: pulse 2s infinite;
         }
 
-        to {
-            opacity: 1;
-        }
-    }
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
 
-    .animate-pulse {
-        animation: pulse 2s infinite;
-    }
+            50% {
+                transform: scale(1.05);
+            }
 
-    @keyframes pulse {
-        0% {
-            transform: scale(1);
+            100% {
+                transform: scale(1);
+            }
         }
-
-        50% {
-            transform: scale(1.05);
-        }
-
-        100% {
-            transform: scale(1);
-        }
-    }
-</style>
+    </style>
