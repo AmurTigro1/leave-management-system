@@ -124,7 +124,6 @@ class EmployeeController extends Controller
     public function store(Request $request, YearlyHolidayService $yearlyHolidayService)
 {
 
-
     $leaveValidationRules = [];
     $isViolatesPriorDays = false;
 
@@ -161,16 +160,20 @@ class EmployeeController extends Controller
             ];
             break;
         case 'Wellness Leave':
-            if($request->wellness_leave_type === 'sick'){
 
-                $leaveValidationRules = [
+            $leaveValidationRules = [
+                'days_applied' => 'required|integer|max:3',
+            ];
+
+            if ($request->wellness_leave_type === 'sick') {
+                $leaveValidationRules = array_merge($leaveValidationRules, [
                     'in_hospital_details' => 'required_without:out_patient_details|string|nullable',
                     'out_patient_details' => 'required_without:in_hospital_details|string|nullable',
                     'leave_files' => $this->isDocumentRequired($request) ? 'required|array' : 'array',
-                    'leave_files.*' => 'file|mimes:pdf,jpg,jpeg,png|max:1048'
-
-                ];
+                    'leave_files.*' => 'file|mimes:pdf,jpg,jpeg,png|max:1048',
+                ]);
             }
+
             break;
 
         case 'Others':
@@ -608,14 +611,35 @@ public function restore($id)
         $leave->status = 'pending';
     }
 
-    if($leave->leave_type === "Vacation Leave" || $leave->leave_type === "Special Privilege Leave" || $leave->leave_type === "Mandatory Leave" )
+    if($leave->leave_type === "Vacation Leave" || $leave->leave_type === "Special Privilege Leave" || $leave->leave_type === "Mandatory Leave" ){
+            if($user->vacation_leave_balance < $leave->days_applied){
+            return redirect()->back()->with('error', 'Not enough balance.');
+        }
         $user->vacation_leave_balance -= $leave->days_applied;
+    }
 
-    elseif ($leave->leave_type === "Sick Leave")
-        $user->sick_leave_balance -= $leave->days_applied;
 
-    elseif($leave->leave_type === "Wellness Leave")
-        $user->wellness_leave_balance -= $leave->days_applied;
+    else if  ($leave->leave_type === "Sick Leave") {
+
+            if($user->sick_leave_balance < $leave->days_applied){
+
+                notify()->warning('Not enough balance.');
+                return redirect()->back();
+            }
+
+            $user->sick_leave_balance -= $leave->days_applied;
+    }
+
+
+    else if($leave->leave_type === "Wellness Leave") {
+
+            if($user->wellness_leave_balance < $leave->days_applied){
+                notify()->warning('Not enough balance.');
+                return redirect()->back();
+            }
+
+            $user->wellness_leave_balance -= $leave->days_applied;
+    }
 
     $user->save();
 
@@ -640,6 +664,11 @@ public function restoreCTO($id)
         $CTO->status = 'approved';
     } else {
         $CTO->status = 'pending';
+    }
+
+    if($CTO->working_hours_applied > $user->overtime_balance){
+        notify()->warning('Your CTO Balance is not enough.');
+        return redirect()->back();
     }
 
     $this->deductOldestCocLog($user, $CTO->working_hours_applied);

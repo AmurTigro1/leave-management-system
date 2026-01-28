@@ -85,6 +85,7 @@ class OvertimeRequestController extends Controller
         }
 
         if ($totalHours > $overtimeBalance) {
+            notify()->warning('You cannot apply more than your available COC balance.');
             return back()->withErrors([
                 'cto_type' => 'You cannot apply more than your available COC balance.'
             ])->withInput();

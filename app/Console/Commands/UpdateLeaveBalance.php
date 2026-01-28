@@ -26,7 +26,7 @@ class UpdateLeaveBalance extends Command
      */
     public function handle()
     {
-       
+
                $users = User::all();
 
                foreach ($users as $user) {
@@ -34,12 +34,11 @@ class UpdateLeaveBalance extends Command
                    $user->sick_leave_balance += 1.5;
                    $user->save();
                }
-       
-         
+
+
                Log::info('Leave balances updated by 1.5 days for all users.');
-       
+
                $this->info('Leave balances successfully updated.');
-           
+
     }
 }
-

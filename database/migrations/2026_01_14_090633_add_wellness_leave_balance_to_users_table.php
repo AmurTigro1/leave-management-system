@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->decimal('wellness_leave_balance', 8, 3)->default(0);
+            $table->decimal('wellness_leave_balance', 8, 3)->default(5.000);
         });
     }
 
@@ -22,7 +22,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            //
+            $table->dropColumn('wellness_leave_balance');
         });
     }
 };

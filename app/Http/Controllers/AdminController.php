@@ -96,6 +96,23 @@ class AdminController extends Controller
         return view('admin.make_leave_request', compact('leaves', 'gender'));
     }
 
+
+    private function isDocumentRequired(Request  $request){
+        if($request->start_date < now() && $request->days_applied > 5){
+            return true;
+        }
+
+        if($request->start_date > now()){
+            return true;
+        }
+
+        if($request->days_applied > 5){
+            return true;
+        }
+
+        return false;
+    }
+
     public function storeLeave(Request $request, YearlyHolidayService $yearlyHolidayService)
 {
     $leaveValidationRules = [];
@@ -114,6 +131,9 @@ class AdminController extends Controller
             $leaveValidationRules = [
                 'in_hospital_details' => 'required_without:out_patient_details|string|nullable',
                 'out_patient_details' => 'required_without:in_hospital_details|string|nullable',
+                'leave_files' => $this->isDocumentRequired($request) ? 'required|array' : 'array',
+                'leave_files.*' => 'file|mimes:pdf,jpg,jpeg,png|max:1048'
+
             ];
             break;
 
@@ -130,6 +150,20 @@ class AdminController extends Controller
                 'terminal_leave' => 'required_without:monetization|boolean|nullable',
             ];
             break;
+        case 'Wellness Leave':
+            $leaveValidationRules = [
+                'days_applied' => 'required|integer|max:3',
+                ];
+
+                if ($request->wellness_leave_type === 'sick') {
+                    $leaveValidationRules = array_merge($leaveValidationRules, [
+                        'in_hospital_details' => 'required_without:out_patient_details|string|nullable',
+                        'out_patient_details' => 'required_without:in_hospital_details|string|nullable',
+                        'leave_files' => $this->isDocumentRequired($request) ? 'required|array' : 'array',
+                        'leave_files.*' => 'file|mimes:pdf,jpg,jpeg,png|max:1048',
+                    ]);
+                }
+                break;
 
         case 'Others':
             $leaveValidationRules = [
@@ -173,7 +207,6 @@ class AdminController extends Controller
 
                     if ($startDate->lt($minStartDate)) {
                         $isViolatesPriorDays = true;
-                        // $fail("You must request {$leaveType} at least {$advanceDaysRequired} days in advance.");
                     }
                 }
             }
@@ -188,9 +221,14 @@ class AdminController extends Controller
         'abroad_details' => 'nullable|string',
     ], $leaveValidationRules));
 
+
+
     $user = Auth::user();
     $startDate = Carbon::parse($request->start_date);
     $endDate = Carbon::parse($request->end_date);
+    $daysBetween = $endDate->diffInDays(now());
+
+
 
     $requiredDocs = [
         'Maternity Leave' => 'Proof of Pregnancy (Ultrasound, Doctor’s Certificate)',
@@ -251,6 +289,7 @@ class AdminController extends Controller
             'Rehabilitation Privilege' => $user->rehabilitation_leave,
             'Special Leave Benefits for Women Leave' => $user->special_leave_benefit,
             'Special Emergency Leave' => $user->special_emergency_leave,
+            'Wellness Leave' => $user->wellness_leave_balance,
             default => 0,
         };
     }
@@ -274,12 +313,15 @@ class AdminController extends Controller
     }
 
     $leaveFiles = [];
+
     if ($request->hasFile('leave_files')) {
         foreach ($request->file('leave_files') as $file) {
             $path = $file->store('leave_files', 'public');
             $leaveFiles[] = $path;
         }
     }
+
+
 
     $leaveDetails = [];
 
@@ -316,6 +358,31 @@ class AdminController extends Controller
         $user->sick_leave_balance = $user->sick_leave_balance - $daysApplied;
         $user->save();
 
+    }
+
+    // WELLNESS
+    if($request->leave_type === 'Wellness Leave'){
+
+        if($request->wellness_leave_type === 'vacation'){
+            if ($request->filled('within_philippines')) {
+            $leaveDetails['Within the Philippines'] = $request->within_philippines;
+            }
+            if ($request->filled('abroad_details')) {
+                $leaveDetails['Abroad'] = $request->abroad_details;
+            }
+        }
+
+        if($request->wellness_leave_type === 'sick'){
+            if ($request->has('in_hospital')) {
+            $leaveDetails['In Hospital'] = $request->input('in_hospital_details', 'Yes');
+            }
+            if ($request->has('out_patient')) {
+                $leaveDetails['Out Patient'] = $request->input('out_patient_details', 'Yes');
+            }
+        }
+
+        $user->wellness_leave_balance = $user->wellness_leave_balance - $daysApplied;
+        $user->save();
     }
 
     if ($request->leave_type === 'Study Leave') {
@@ -365,6 +432,8 @@ class AdminController extends Controller
 
     }
 
+
+
     $signaturePath = auth()->user()->signature_path;
 
 
@@ -394,6 +463,8 @@ class AdminController extends Controller
     $before_sick_leave_balance = $user->sick_leave_balance +  $daysApplied;
 
 
+
+
     // Create Leave
     $leave = Leave::create([
         'user_id' => auth()->id(),
@@ -415,9 +486,17 @@ class AdminController extends Controller
         'status' => 'pending',
     ]);
 
+
     if($isViolatesPriorDays){
         $leave->violations()->create([
             'user_id' => auth()->id()
+        ]);
+    }
+
+    if($request->leave_type === 'Sick Leave' && $daysBetween >= 7 && $startDate < now()){
+        $leave->violations()->create([
+            'user_id' => auth()->id(),
+            'violation_type' => 'sick_leave'
         ]);
     }
 
@@ -440,83 +519,138 @@ class AdminController extends Controller
 
     public function storeCTO(Request $request)
 {
-    $user = auth()->user();
-    $overtimeBalance = $user->overtime_balance;
+    // dd($request);
+        $user = auth()->user();
+        $overtimeBalance = $user->overtime_balance;
 
-    $ctoHoursMap = [
-        'halfday_morning' => 4,
-        'halfday_afternoon' => 4,
-        'wholeday' => 8,
-    ];
+        $ctoHoursMap = [
+            'halfday_morning' => 4,
+            'halfday_afternoon' => 4,
+            'wholeday' => 8,
+        ];
 
-    $datesArray = explode(', ', $request->inclusive_dates);
-    $validDates = [];
+        $datesArray = explode(', ', $request->inclusive_dates);
+        $validDates = [];
 
-    foreach ($datesArray as $date) {
-        if (!strtotime($date)) {
-            return back()->withErrors(['inclusive_dates' => 'Invalid date format detected']);
+        foreach ($datesArray as $date) {
+            if (!strtotime($date)) {
+                return back()->withErrors(['inclusive_dates' => 'Invalid date format detected']);
+            }
+            $validDates[] = $date;
         }
-        $validDates[] = $date;
-    }
 
-    $totalHours = 0;
-    if ($request->cto_type !== 'none') {
-        $dayCount = count($validDates);
-        $hoursPerDay = $ctoHoursMap[$request->cto_type] ?? 0;
-        $totalHours = $dayCount * $hoursPerDay;
-    }
+        $totalHours = 0;
+        if ($request->cto_type !== 'none') {
+            $dayCount = count($validDates);
+            $hoursPerDay = $ctoHoursMap[$request->cto_type] ?? 0;
+            $totalHours = $dayCount * $hoursPerDay;
+        }
 
-    $request->validate([
-        'inclusive_dates' => 'required|string',
-        'cto_type' => 'nullable|in:none,halfday_morning,halfday_afternoon,wholeday',
-        'signature' => auth()->user()->signature_path ? 'nullable|file|mimes:jpg,jpeg,png,pdf|max:5120' : 'required|file|mimes:jpg,jpeg,png,pdf|max:5120',
-    ]);
-
-    if ($totalHours < 4 || $totalHours % 4 !== 0) {
-        return back()->withErrors([
-            'cto_type' => 'Working hours must be a multiple of 4 and at least 4 hours.'
-        ])->withInput();
-    }
-
-    if ($totalHours > $overtimeBalance) {
-        return back()->withErrors([
-            'cto_type' => 'You cannot apply more than your available COC balance.'
-        ])->withInput();
-    }
-
-    $signaturePath = auth()->user()->signature_path;
-
-    if ($request->hasFile('signature')) {
-        $signatureFile = $request->file('signature');
-        $filename = time() . '_' . $signatureFile->getClientOriginalName();
-
-        $signaturePath = $signatureFile->storeAs(
-            'signatures',
-            $filename,
-            'public'
-        );
-
-        auth()->user()->update([
-            'signature_path' => $signaturePath
+        $request->validate([
+            'inclusive_dates' => 'required|string',
+            'cto_type' => 'nullable|in:none,halfday_morning,halfday_afternoon,wholeday',
+            'signature' => auth()->user()->signature_path ? 'nullable|file|mimes:jpg,jpeg,png,pdf|max:5120' : 'required|file|mimes:jpg,jpeg,png,pdf|max:5120',
         ]);
-    }
 
-    // Create the CTO request
-    OvertimeRequest::create([
-        'user_id' => auth()->id(),
-        'date_filed' => now(),
-        'working_hours_applied' => $totalHours,
-        'signature' => $signaturePath,
-        'inclusive_dates' => $request->inclusive_dates,
-        'admin_status' => 'pending',
-        'hr_status' => 'pending',
-    ]);
 
-    $user->decrement('overtime_balance', $totalHours);
 
-    notify()->success('Overtime request submitted successfully! Pending admin review.');
-    return redirect()->back();
+        if ($totalHours < 4 || $totalHours % 4 !== 0) {
+            return back()->withErrors([
+                'cto_type' => 'Working hours must be a multiple of 4 and at least 4 hours.'
+            ])->withInput();
+        }
+
+        if ($totalHours > $overtimeBalance) {
+            notify()->warning('You cannot apply more than your available COC balance.');
+            return back()->withErrors([
+                'cto_type' => 'You cannot apply more than your available COC balance.'
+            ])->withInput();
+
+        }
+
+        $signaturePath = auth()->user()->signature_path;
+
+
+
+        if ($request->hasFile('signature')) {
+
+
+
+            $signatureFile = $request->file('signature');
+            $filename = time() . '_' . $signatureFile->getClientOriginalName();
+
+
+            $signaturePath = $signatureFile->storeAs(
+                'signatures',
+                $filename,
+                'public'
+            );
+
+
+            auth()->user()->update([
+                'signature_path' => $signaturePath
+            ]);
+
+        }
+
+
+        OvertimeRequest::create([
+            'user_id' => auth()->id(),
+            'date_filed' => now(),
+            'working_hours_applied' => $totalHours,
+            'signature' => $signaturePath,
+            'inclusive_dates' => $request->inclusive_dates,
+            'admin_status' => 'pending',
+            'hr_status' => 'pending',
+        ]);
+
+        $this->deductOldestCocLog($user, $totalHours);
+        $user->overtime_balance -= $totalHours;
+        $user->save();
+
+        notify()->success('Overtime request submitted successfully! Pending admin review.');
+        return redirect()->back();
 }
+
+    private function deductOldestCocLog($user, int $totalHours): void
+    {
+        $cocLogs = $user->cocLogs()
+            ->where('is_expired', false)
+            ->where('coc_earned', '>', 0)
+            ->orderBy('expires_at', 'asc')
+            ->lockForUpdate()
+            ->get();
+
+        foreach ($cocLogs as $cocLog) {
+            if ($totalHours <= 0) {
+                break;
+            }
+
+            $available = $cocLog->coc_earned;
+
+            if ($available <= 0) {
+                continue;
+            }
+
+            if ($available >= $totalHours) {
+                // Enough balance in this log
+                $cocLog->coc_earned -= $totalHours;
+                $cocLog->consumed += $totalHours;
+                $totalHours = 0;
+            } else {
+                // Not enough → consume everything
+                $cocLog->consumed += $available;
+                $cocLog->coc_earned = 0;
+                $totalHours -= $available;
+            }
+
+            $cocLog->save();
+        }
+
+        if ($totalHours > 0) {
+            throw new \Exception('Not enough COC balance to deduct.');
+        }
+    }
 
     public function requests()
     {
@@ -708,7 +842,9 @@ class AdminController extends Controller
                     'end_date' => $violation->leave->end_date ?? 'N/A',
                     'status' => $violation->leave->status ?? 'Pending',
                     'days_applied' => $violation->leave->days_applied ?? 0,
-                    'filed_date' => $violation->created_at->format('Y-m-d H:i:s'),
+                    'filed_date' => $violation->created_at
+                        ->timezone('Asia/Manila')
+                        ->format('Y-m-d h:i A'),
                     'leave_files' => $violation->leave->leave_files ? $violation->leave->leave_files : null,
                 ];
             });
@@ -753,29 +889,23 @@ class AdminController extends Controller
 }
 
     public function cancel($id)
-{
+    {
 
-    $leave = Leave::findOrFail($id);
-    $user = Auth::user();
+        $leave = Leave::findOrFail($id);
+        $user = Auth::user();
 
-    if ($leave->status === 'approved' && $leave->hr_status === 'approved') {
+        // if ($leave->status === 'approved' && $leave->hr_status === 'approved') {
+        //     $this->restoreLeaveBalance($user, $leave);
+        // }
+
         $this->restoreLeaveBalance($user, $leave);
+
+        $leave->status = 'cancelled';
+        $leave->save();
+
+        notify()->success('Leave request has been cancelled and balance restored.');
+        return redirect()->back();
     }
-
-    if($leave->leave_type === "Vacation Leave" || $leave->leave_type === "Special Privilege Leave" || $leave->leave_type === "Mandatory Leave" )
-        $user->vacation_leave_balance += $leave->days_applied;
-
-    elseif ($leave->leave_type === "Sick Leave")
-        $user->sick_leave_balance += $leave->days_applied;
-
-
-    $user->save();
-
-    $leave->status = 'cancelled';
-    $leave->save();
-
-    return redirect()->back()->with('success', 'Leave request has been cancelled and balance restored.');
-}
 
 
 public function restore($id)
@@ -790,14 +920,38 @@ public function restore($id)
         $leave->status = 'pending';
     }
 
-    if($leave->leave_type === "Vacation Leave" || $leave->leave_type === "Special Privilege Leave" || $leave->leave_type === "Mandatory Leave" )
+
+
+    if($leave->leave_type === "Vacation Leave" || $leave->leave_type === "Special Privilege Leave" || $leave->leave_type === "Mandatory Leave" ){
+            if($user->vacation_leave_balance < $leave->days_applied){
+            return redirect()->back()->with('error', 'Not enough balance.');
+        }
         $user->vacation_leave_balance -= $leave->days_applied;
+    }
 
-    elseif ($leave->leave_type === "Sick Leave")
-        $user->sick_leave_balance -= $leave->days_applied;
 
-    elseif($leave->leave_type === "Wellness Leave")
-        $user->wellness_leave_balance -= $leave->days_applied;
+    else if  ($leave->leave_type === "Sick Leave") {
+
+            if($user->sick_leave_balance < $leave->days_applied){
+
+                notify()->warning('Not enough balance.');
+                return redirect()->back();
+            }
+
+            $user->sick_leave_balance -= $leave->days_applied;
+    }
+
+
+    else if($leave->leave_type === "Wellness Leave") {
+
+            if($user->wellness_leave_balance < $leave->days_applied){
+                notify()->warning('Not enough balance.');
+                return redirect()->back();
+            }
+
+            $user->wellness_leave_balance -= $leave->days_applied;
+    }
+
 
     $user->save();
 
@@ -822,6 +976,10 @@ private function restoreLeaveBalance($user, $leave)
 
         case 'Sick Leave':
             $user->sick_leave_balance += $days;
+            break;
+
+        case 'Wellness Leave':
+            $user->wellness_leave_balance += $days;
             break;
 
         case 'Maternity Leave':
@@ -1537,26 +1695,66 @@ public function ctoreview(Request $request, OvertimeRequest $cto)
 
     public function cancelCTO($id)
     {
-        $CTO = OvertimeRequest::findOrFail($id);
+        $cto = OvertimeRequest::findOrFail($id);
+        $user = Auth::user();
 
-        if ($CTO->status == 'cancelled') {
+        if ($cto->status === 'cancelled') {
             notify()->warning('CTO request is already cancelled.');
             return redirect()->back();
         }
 
-        $user = Auth::user();
+        if ($cto->status === 'approved' && $cto->hr_status === 'approved' && $cto->supervisor_status === 'approved') {
+            $user->increment('overtime_balance', $cto->working_hours_applied);
+        }
 
-        $user->increment('overtime_balance', $CTO->working_hours_applied);
+        $this->restoreNewestCocLog($user, $cto->working_hours_applied);
+        $user->overtime_balance += $cto->working_hours_applied;
+        $user->save();
 
-        $CTO->status = 'cancelled';
-        $CTO->save();
-
-        // $user->overtime_balance += $CTO->working_hours_applied;
-        // $user->save();
+        $cto->status = 'cancelled';
+        $cto->save();
 
         notify()->success('CTO request has been cancelled and balance restored.');
-
         return redirect()->back();
+    }
+
+    private function restoreNewestCocLog($user, int $totalHours): void
+    {
+        $cocLogs = $user->cocLogs()
+            ->where('consumed', '>', 0)
+            ->orderBy('expires_at', 'desc') // NEWEST first
+            ->lockForUpdate()
+            ->get();
+
+        foreach ($cocLogs as $cocLog) {
+            if ($totalHours <= 0) {
+                break;
+            }
+
+            $restorable = $cocLog->consumed;
+
+            if ($restorable <= 0) {
+                continue;
+            }
+
+            if ($restorable >= $totalHours) {
+                // Can fully restore here
+                $cocLog->consumed -= $totalHours;
+                $cocLog->coc_earned += $totalHours;
+                $totalHours = 0;
+            } else {
+                // Restore everything and continue
+                $cocLog->coc_earned += $restorable;
+                $cocLog->consumed = 0;
+                $totalHours -= $restorable;
+            }
+
+            $cocLog->save();
+        }
+
+        if ($totalHours > 0) {
+            throw new \Exception('Unable to fully restore COC balance.');
+        }
     }
 
     public function restoreCTO($id)
@@ -1564,21 +1762,28 @@ public function ctoreview(Request $request, OvertimeRequest $cto)
         $CTO = OvertimeRequest::findOrFail($id);
         $user = Auth::user();
 
-         if($user->overtime_balance < $CTO->working_hours_applied){
-            notify()->warning('Sorry your CTO balance is not enough :(');
-            return redirect()->back();
-        }
-
         if ($CTO->status !== 'cancelled') {
             notify()->warning('This CTO request is not cancelled and cannot be restored.');
             return redirect()->back();
         }
 
-        $user->decrement('overtime_balance', $CTO->working_hours_applied);
+        if ($CTO->status === 'cancelled' && $CTO->hr_status === 'approved') {
+            $user->decrement('overtime_balance', $CTO->working_hours_applied);
+            $CTO->status = 'approved';
+        } else {
+            $CTO->status = 'pending';
+        }
 
-        $CTO->status = 'pending';
+        if($CTO->working_hours_applied > $user->overtime_balance){
+            notify()->warning('Your CTO Balance is not enough.');
+            return redirect()->back();
+        }
+
+        $this->deductOldestCocLog($user, $CTO->working_hours_applied);
+        $user->overtime_balance -= $CTO->working_hours_applied;
+        $user->save();
+
         $CTO->save();
-
         notify()->success('CTO request has been restored and balance deducted.');
 
         return redirect()->back();
