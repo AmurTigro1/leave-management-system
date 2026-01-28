@@ -1288,74 +1288,74 @@ public function deleteLeave($id) {
 
         if ($hr_status === 'approved') {
 
-            $isMandatoryLeave = $leave->leave_type === 'Mandatory Leave';
-            $leaveTypeForDeduction = $isMandatoryLeave ? 'Vacation Leave' : $leave->leave_type;
+            // $isMandatoryLeave = $leave->leave_type === 'Mandatory Leave';
+            // $leaveTypeForDeduction = $isMandatoryLeave ? 'Vacation Leave' : $leave->leave_type;
 
-            switch ($leaveTypeForDeduction) {
-                case 'Sick Leave':
-                    if ($user->sick_leave_balance >= $leave->days_applied) {
-                        $user->sick_leave_balance -= $leave->days_applied;
+            // switch ($leaveTypeForDeduction) {
+            //     case 'Sick Leave':
+            //         if ($user->sick_leave_balance >= $leave->days_applied) {
+            //             $user->sick_leave_balance -= $leave->days_applied;
 
-                    } else {
-                        $remainingDays = $leave->days_applied - $user->sick_leave_balance;
-                        $user->sick_leave_balance = 0;
-                        $user->vacation_leave_balance -= $remainingDays;
-                    }
-                    break;
+            //         } else {
+            //             $remainingDays = $leave->days_applied - $user->sick_leave_balance;
+            //             $user->sick_leave_balance = 0;
+            //             $user->vacation_leave_balance -= $remainingDays;
+            //         }
+            //         break;
 
-                    case 'Vacation Leave':
-                        if ($user->vacation_leave_balance >= $leave->days_applied) {
-                            $user->vacation_leave_balance -= $leave->days_applied;
-                        } else {
-                            $remainingDays = $leave->days_applied - $user->vacation_leave_balance;
-                            $user->vacation_leave_balance = 0;
-                            $user->sick_leave_balance -= $remainingDays;
-                        }
+            //         case 'Vacation Leave':
+            //             if ($user->vacation_leave_balance >= $leave->days_applied) {
+            //                 $user->vacation_leave_balance -= $leave->days_applied;
+            //             } else {
+            //                 $remainingDays = $leave->days_applied - $user->vacation_leave_balance;
+            //                 $user->vacation_leave_balance = 0;
+            //                 $user->sick_leave_balance -= $remainingDays;
+            //             }
 
-                        if ($isMandatoryLeave) {
-                            $user->mandatory_leave_balance -= $leave->days_applied;
-                        }
+            //             if ($isMandatoryLeave) {
+            //                 $user->mandatory_leave_balance -= $leave->days_applied;
+            //             }
 
-                        break;
+            //             break;
 
-                case 'Special Privilege Leave':
-                    $user->special_privilege_leave -= $leave->days_applied;
-                    break;
-                case 'Maternity Leave':
-                    $user->maternity_leave -= $leave->days_applied;
-                    break;
+            //     case 'Special Privilege Leave':
+            //         $user->special_privilege_leave -= $leave->days_applied;
+            //         break;
+            //     case 'Maternity Leave':
+            //         $user->maternity_leave -= $leave->days_applied;
+            //         break;
 
-                case 'Paternity Leave':
-                    $user->paternity_leave -= $leave->days_applied;
-                    break;
+            //     case 'Paternity Leave':
+            //         $user->paternity_leave -= $leave->days_applied;
+            //         break;
 
-                case 'Solo Parent Leave':
-                    $user->solo_parent_leave -= $leave->days_applied;
-                    break;
+            //     case 'Solo Parent Leave':
+            //         $user->solo_parent_leave -= $leave->days_applied;
+            //         break;
 
-                case 'Study Leave':
-                    $user->study_leave -= $leave->days_applied;
-                    break;
+            //     case 'Study Leave':
+            //         $user->study_leave -= $leave->days_applied;
+            //         break;
 
-                case '10-Day VAWC Leave':
-                    $user->vawc_leave -= $leave->days_applied;
-                    break;
+            //     case '10-Day VAWC Leave':
+            //         $user->vawc_leave -= $leave->days_applied;
+            //         break;
 
-                case 'Rehabilitation Privilege':
-                    $user->rehabilitation_leave -= $leave->days_applied;
-                    break;
+            //     case 'Rehabilitation Privilege':
+            //         $user->rehabilitation_leave -= $leave->days_applied;
+            //         break;
 
-                case 'Special Leave Benefits for Women Leave':
-                    $user->special_leave_benefit -= $leave->days_applied;
-                    break;
+            //     case 'Special Leave Benefits for Women Leave':
+            //         $user->special_leave_benefit -= $leave->days_applied;
+            //         break;
 
-                case 'Special Emergency Leave':
-                    $user->special_emergency_leave -= $leave->days_applied;
-                    break;
+            //     case 'Special Emergency Leave':
+            //         $user->special_emergency_leave -= $leave->days_applied;
+            //         break;
 
-                default:
-                    break;
-            }
+            //     default:
+            //         break;
+            // }
 
             $updateData['supervisor_status'] = 'approved';
             $updateData['supervisor_id'] = auth()->id();
@@ -1363,7 +1363,7 @@ public function deleteLeave($id) {
         }
 
         elseif ($hr_status === 'rejected'){
-              if($leave->leave_type === "Vacation Leave" || $leave->leave_type === "Special Privilege Leave" ||           $leave->leave_type === "Mandatory Leave" )
+              if($leave->leave_type === "Vacation Leave" || $leave->leave_type === "Special Privilege Leave" || $leave->leave_type === "Mandatory Leave" )
                  $user->vacation_leave_balance += $leave->days_applied;
 
 
@@ -1469,6 +1469,7 @@ public function deleteLeave($id) {
 
     public function ctoreview(Request $request, OvertimeRequest $cto)
 {
+    // dd('here');
     $request->validate([
         'hr_status' => 'required|in:Approved,rejected',
         'disapproval_reason' => 'nullable|string',
@@ -1486,36 +1487,37 @@ public function deleteLeave($id) {
         $user = $cto->user;
         $hours = $cto->working_hours_applied;
 
+        // Mark as deducted
+        $cto->is_balance_deducted = true;
         // Only deduct if not already deducted
-        if (!$cto->is_balance_deducted) {
-            if ($user->overtime_balance >= $hours) {
-                $user->decrement('overtime_balance', $hours);
+        // if (!$cto->is_balance_deducted) {
+        //     if ($user->overtime_balance >= $hours) {
+        //         $user->decrement('overtime_balance', $hours);
 
-                $remaining = $hours;
-                $logs = $user->cocLogs()
-                    ->where('coc_earned', '>', 0)
-                    ->orderBy('expires_at', 'asc')
-                    ->get();
+        //         $remaining = $hours;
+        //         $logs = $user->cocLogs()
+        //             ->where('coc_earned', '>', 0)
+        //             ->orderBy('expires_at', 'asc')
+        //             ->get();
 
-                foreach ($logs as $log) {
-                    if ($remaining <= 0) break;
+        //         foreach ($logs as $log) {
+        //             if ($remaining <= 0) break;
 
-                    if ($log->coc_earned >= $remaining) {
-                        $log->decrement('coc_earned', $remaining);
-                        $remaining = 0;
-                    } else {
-                        $remaining -= $log->coc_earned;
-                        $log->decrement('coc_earned', $log->coc_earned);
-                    }
-                }
+        //             if ($log->coc_earned >= $remaining) {
+        //                 $log->decrement('coc_earned', $remaining);
+        //                 $remaining = 0;
+        //             } else {
+        //                 $remaining -= $log->coc_earned;
+        //                 $log->decrement('coc_earned', $log->coc_earned);
+        //             }
+        //         }
 
-                // Mark as deducted
-                $cto->is_balance_deducted = true;
-            } else {
-                notify()->error('User does not have enough overtime balance.');
-                return redirect()->back();
-            }
-        }
+
+        //     } else {
+        //         notify()->error('User does not have enough overtime balance.');
+        //         return redirect()->back();
+        //     }
+        // }
     }
 
     else if($hrStatus === 'rejected'){
