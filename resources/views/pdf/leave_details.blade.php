@@ -312,16 +312,37 @@
                     </span>Requested
                 </p>
 
-                <p class="fill-in2">
-                    @if ($leave->signature && file_exists(storage_path('app/public/' . $leave->signature)))
-                        <div class="image-display">
-                            <img src="{{ storage_path('app/public/' . $leave->signature) }}" alt="Signature"
-                                style="width: 120px; height: 80px; margin-top: -70px;">
-                        </div>
-                    @else
-                        ______________________________
-                    @endif
-                </p>
+
+                @if ($leave->signature && file_exists(public_path($leave->signature)))
+                    <p class="fill-in2">
+                        @if ($leave->signature && file_exists(public_path($leave->signature)))
+                            <div class="image-display">
+                                <img src="{{ public_path($leave->signature) }}" alt="Signature"
+                                    style="width: 120px; height: 80px; margin-top: -70px;">
+                            </div>
+                        @else
+                            ______________________________
+                        @endif
+                    </p>
+                @else
+                    <p class="fill-in2">
+                        @if ($leave->signature && file_exists(storage_path('app/public/' . $leave->signature)))
+                            <div class="image-display">
+                                <img src="{{ storage_path('app/public/' . $leave->signature) }}" alt="Signature"
+                                    style="width: 120px; height: 80px; margin-top: -70px;">
+                            </div>
+                        @else
+                            ______________________________
+                        @endif
+                    </p>
+                @endif
+
+
+
+
+
+
+
                 <p class="sign">(Signature of Applicant)</p>
                 <span></span>
             </div>

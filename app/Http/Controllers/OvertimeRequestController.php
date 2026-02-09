@@ -43,82 +43,114 @@ class OvertimeRequestController extends Controller
     }
 
     public function store(Request $request)
-    {
+{
+    $ctoHoursMap = [
+        'halfday_morning' => 4,
+        'halfday_afternoon' => 4,
+        'wholeday' => 8,
+    ];
 
-        // dd($request);
-        $user = auth()->user();
-        $overtimeBalance = $user->overtime_balance;
+    $datesArray = explode(', ', $request->inclusive_dates);
+    $validDates = [];
 
-        $ctoHoursMap = [
-            'halfday_morning' => 4,
-            'halfday_afternoon' => 4,
-            'wholeday' => 8,
-        ];
-
-        $datesArray = explode(', ', $request->inclusive_dates);
-        $validDates = [];
-
-        foreach ($datesArray as $date) {
-            if (!strtotime($date)) {
-                return back()->withErrors(['inclusive_dates' => 'Invalid date format detected']);
-            }
-            $validDates[] = $date;
+    foreach ($datesArray as $date) {
+        if (!strtotime($date)) {
+            return back()->withErrors(['inclusive_dates' => 'Invalid date format detected']);
         }
+        $validDates[] = $date;
+    }
 
-        $totalHours = 0;
-        if ($request->cto_type !== 'none') {
-            $dayCount = count($validDates);
-            $hoursPerDay = $ctoHoursMap[$request->cto_type] ?? 0;
-            $totalHours = $dayCount * $hoursPerDay;
-        }
+    $totalHours = 0;
+    if ($request->cto_type !== 'none') {
+        $dayCount = count($validDates);
+        $hoursPerDay = $ctoHoursMap[$request->cto_type] ?? 0;
+        $totalHours = $dayCount * $hoursPerDay;
+    }
 
-        $request->validate([
-            'inclusive_dates' => 'required|string',
-            'cto_type' => 'nullable|in:none,halfday_morning,halfday_afternoon,wholeday',
-            'signature' => auth()->user()->signature_path ? 'nullable|file|mimes:jpg,jpeg,png,pdf|max:5120' : 'required|file|mimes:jpg,jpeg,png,pdf|max:5120',
+    $request->validate([
+        'inclusive_dates' => 'required|string',
+        'cto_type' => 'nullable|in:none,halfday_morning,halfday_afternoon,wholeday',
+        'signature' => auth()->user()->signature_path
+            ? 'nullable|file|mimes:jpg,jpeg,png,pdf|max:5120'
+            : 'required|file|mimes:jpg,jpeg,png,pdf|max:5120',
+    ]);
+
+    if ($totalHours < 4 || $totalHours % 4 !== 0) {
+        return back()->withErrors([
+            'cto_type' => 'Working hours must be a multiple of 4 and at least 4 hours.'
+        ])->withInput();
+    }
+
+    // Handle signature BEFORE transaction
+    $signaturePath = auth()->user()->signature_path;
+
+    if ($request->hasFile('signature')) {
+        $signatureFile = $request->file('signature');
+        $filename = time() . '_' . $signatureFile->getClientOriginalName();
+
+        $signaturePath = $signatureFile->storeAs(
+            'signatures',
+            $filename,
+            'public'
+        );
+
+        auth()->user()->update([
+            'signature_path' => $signaturePath
         ]);
+    }
 
-        if ($totalHours < 4 || $totalHours % 4 !== 0) {
-            return back()->withErrors([
-                'cto_type' => 'Working hours must be a multiple of 4 and at least 4 hours.'
-            ])->withInput();
-        }
+    // 🔥 SYNC CHECK - SEPARATE TRANSACTION BEFORE MAIN ONE
+    DB::transaction(function () use (&$user) {
 
-        if ($totalHours > $overtimeBalance) {
-            notify()->warning('You cannot apply more than your available COC balance.');
-            return back()->withErrors([
-                'cto_type' => 'You cannot apply more than your available COC balance.'
-            ])->withInput();
-        }
+        $user = User::where('id', auth()->id())->lockForUpdate()->first();
 
-        $signaturePath = auth()->user()->signature_path;
+        $actualBalance = $user->cocLogs()
+            ->where('is_expired', false)
+            ->sum('coc_earned');
 
-
-
-        if ($request->hasFile('signature')) {
-
-
-
-            $signatureFile = $request->file('signature');
-            $filename = time() . '_' . $signatureFile->getClientOriginalName();
-
-
-            $signaturePath = $signatureFile->storeAs(
-                'signatures',
-                $filename,
-                'public'
-            );
-
-
-            auth()->user()->update([
-                'signature_path' => $signaturePath
+        if ($user->overtime_balance != $actualBalance) {
+            \Log::warning('Auto-syncing COC balance before request submission', [
+                'user_id' => $user->id,
+                'user_name' => $user->name,
+                'old_balance' => $user->overtime_balance,
+                'actual_balance' => $actualBalance,
             ]);
 
+            $user->overtime_balance = $actualBalance;
+            $user->save();
+
+            // Update auth cache immediately
+            auth()->setUser($user->fresh());
         }
+    });
 
+    // Refresh user after sync transaction
+    $user = User::find(auth()->id());
 
+    // Check balance BEFORE starting main transaction
+    if ($totalHours > $user->overtime_balance) {
+        notify()->error('You cannot apply more than your available COC balance (' . $user->overtime_balance . ' hours).');
+        return back()->withErrors([
+            'cto_type' => 'You cannot apply more than your available COC balance (' . $user->overtime_balance . ' hours).'
+        ])->withInput();
+    }
+
+    // 🔥 MAIN TRANSACTION - For deduction and request creation
+    DB::beginTransaction();
+    try {
+        // Get fresh locked user instance
+        $user = User::where('id', auth()->id())->lockForUpdate()->first();
+
+        // Deduct from COC logs
+        $this->deductOldestCocLog($user, $totalHours);
+
+        // Deduct from user balance
+        $user->overtime_balance -= $totalHours;
+        $user->save();
+
+        // Create request
         OvertimeRequest::create([
-            'user_id' => auth()->id(),
+            'user_id' => $user->id,
             'date_filed' => now(),
             'working_hours_applied' => $totalHours,
             'signature' => $signaturePath,
@@ -127,13 +159,21 @@ class OvertimeRequestController extends Controller
             'hr_status' => 'pending',
         ]);
 
-        $this->deductOldestCocLog($user, $totalHours);
-        $user->overtime_balance -= $totalHours;
-        $user->save();
+        DB::commit();
+
+        // Update auth cache with latest data
+        auth()->setUser($user->fresh());
 
         notify()->success('Overtime request submitted successfully! Pending admin review.');
         return redirect()->back();
+
+    } catch (\Exception $e) {
+        DB::rollBack();
+
+        notify()->error($e->getMessage());
+        return back()->withErrors(['error' => $e->getMessage()])->withInput();
     }
+}
 
     // private function deductOldestCocLog($user, int $totalHours): void
     // {
@@ -176,44 +216,48 @@ class OvertimeRequestController extends Controller
 
     //ALSO DEDUCT THE COC EARNED
         private function deductOldestCocLog($user, int $totalHours): void
-    {
-        $cocLogs = $user->cocLogs()
-            ->where('is_expired', false)
-            ->where('coc_earned', '>', 0)
-            ->orderBy('expires_at', 'asc')
-            ->lockForUpdate()
-            ->get();
+        {
+            // Get COC logs with lock to prevent concurrent modifications
+            $cocLogs = $user->cocLogs()
+                ->where('is_expired', false)
+                ->where('coc_earned', '>', 0)
+                ->orderBy('expires_at', 'asc')
+                ->lockForUpdate()
+                ->get();
 
-        foreach ($cocLogs as $cocLog) {
-            if ($totalHours <= 0) {
-                break;
+            $originalTotalHours = $totalHours; // Keep track for error message
+
+            foreach ($cocLogs as $cocLog) {
+                if ($totalHours <= 0) {
+                    break;
+                }
+
+                $available = $cocLog->coc_earned;
+
+                if ($available <= 0) {
+                    continue;
+                }
+
+                if ($available >= $totalHours) {
+                    // Enough balance in this log
+                    $cocLog->coc_earned -= $totalHours;
+                    $cocLog->consumed += $totalHours;
+                    $totalHours = 0;
+                } else {
+                    // Not enough → consume everything
+                    $cocLog->consumed += $available;
+                    $cocLog->coc_earned = 0;
+                    $totalHours -= $available;
+                }
+
+                $cocLog->save();
             }
 
-            $available = $cocLog->coc_earned;
-
-            if ($available <= 0) {
-                continue;
+            // If there are still hours remaining, throw exception
+            if ($totalHours > 0) {
+                throw new \Exception('Not enough COC balance to deduct. Required: ' . $originalTotalHours . ' hours, but only ' . ($originalTotalHours - $totalHours) . ' hours available in COC logs.');
             }
-
-            if ($available >= $totalHours) {
-                // Enough balance in this log
-                $cocLog->coc_earned -= $totalHours;
-                $cocLog->consumed += $totalHours;
-                $totalHours = 0;
-            } else {
-                // Not enough → consume everything
-                $cocLog->consumed += $available;
-                $cocLog->coc_earned = 0;
-                $totalHours -= $available;
-            }
-
-            $cocLog->save();
         }
-
-        if ($totalHours > 0) {
-            throw new \Exception('Not enough COC balance to deduct.');
-        }
-    }
 
 
 

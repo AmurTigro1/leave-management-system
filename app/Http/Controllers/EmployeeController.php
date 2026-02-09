@@ -335,7 +335,7 @@ class EmployeeController extends Controller
 
 
 
-    if ($request->leave_type === 'Vacation Leave' || $request->leave_type === 'Special Privilege Leave') {
+    if ($request->leave_type === 'Vacation Leave') {
 
         if ($request->filled('within_philippines')) {
             $leaveDetails['Within the Philippines'] = $request->within_philippines;
@@ -353,6 +353,28 @@ class EmployeeController extends Controller
 
 
     }
+
+
+    if ( $request->leave_type === 'Special Privilege Leave') {
+
+        if ($request->filled('within_philippines')) {
+            $leaveDetails['Within the Philippines'] = $request->within_philippines;
+        }
+        if ($request->filled('abroad_details')) {
+            $leaveDetails['Abroad'] = $request->abroad_details;
+        }
+
+        // Deduct the VL Balance
+
+        $user->special_privilege_leave -= $daysApplied;
+        $user->save();
+
+        // $current_vl_balance  = $user->vacation_leave_balance;
+
+
+    }
+
+
 
     if ($request->leave_type === 'Sick Leave') {
         if ($request->has('in_hospital')) {
@@ -611,11 +633,19 @@ public function restore($id)
         $leave->status = 'pending';
     }
 
-    if($leave->leave_type === "Vacation Leave" || $leave->leave_type === "Special Privilege Leave" || $leave->leave_type === "Mandatory Leave" ){
+    if($leave->leave_type === "Vacation Leave" || $leave->leave_type === "Mandatory Leave" ){
             if($user->vacation_leave_balance < $leave->days_applied){
             return redirect()->back()->with('error', 'Not enough balance.');
         }
         $user->vacation_leave_balance -= $leave->days_applied;
+    }
+
+    else if($leave->leave_type === "Special Privilege Leave"){
+        if($user->special_privilege_leave < $leave->days_applied){
+
+                return redirect()->back()->with('error', 'Not enough balance.');
+            }
+        $user->special_privilege_leave -= $leave->days_applied;
     }
 
 
@@ -769,6 +799,10 @@ private function restoreLeaveBalance($user, $leave)
 
         case 'Special Leave Benefit':
             $user->special_leave_benefit += $days;
+            break;
+
+        case 'Special Privilege Leave':
+            $user->special_privilege_leave += $days;
             break;
 
         case 'Special Emergency Leave':
