@@ -1416,6 +1416,10 @@ public function deleteLeave($id) {
                 $user->special_privilege_leave += $leave->days_applied;
             }
 
+            elseif($leave->leave_type === "Wellness Leave"){
+                $user->wellness_leave_balance += $leave->days_applied;
+            }
+
         $user->save();
         }
 

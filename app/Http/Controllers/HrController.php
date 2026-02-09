@@ -1504,6 +1504,9 @@ public function deleteLeave($id) {
 
              elseif ($leave->leave_type === "Sick Leave")
                     $user->sick_leave_balance += $leave->days_applied;
+
+            elseif ($leave->leave_type === "Wellness Leave")
+                    $user->wellness_leave_balance += $leave->days_applied;
         }
 
         $leave->update($updateData);
