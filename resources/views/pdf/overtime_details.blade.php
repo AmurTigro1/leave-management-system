@@ -33,14 +33,31 @@
                         <p>Signature </p>
                         <div class="info2">
 
-                            @if ($overtime->signature && file_exists(storage_path('app/public/' . $overtime->signature)))
-                                <div class="image-display">
-                                    <img src="{{ storage_path('app/public/' . $overtime->signature) }}" alt="Signature"
-                                        style="width: 90px; height: 50px; margin-top: -12px; margin-left: 10px;">
-                                </div>
+                            @if ($overtime->signature && file_exists(public_path($overtime->signature)))
+                                <p class="fill-in2">
+                                    @if ($overtime->signature && file_exists(public_path($overtime->signature)))
+                                        <div class="image-display">
+                                            <img src="{{ public_path($overtime->signature) }}" alt="Signature"
+                                                style="width: 120px; height: 80px; margin-top: -70px;">
+                                        </div>
+                                    @else
+                                        ______________________________
+                                    @endif
+                                </p>
                             @else
-                                ___________________________________
+                                <p class="fill-in2">
+                                    @if ($overtime->signature && file_exists(storage_path('app/public/' . $overtime->signature)))
+                                        <div class="image-display">
+                                            <img src="{{ storage_path('app/public/' . $overtime->signature) }}"
+                                                alt="Signature"
+                                                style="width: 90px; height: 50px; margin-top: -12px; margin-left: 10px;">
+                                        </div>
+                                    @else
+                                        ___________________________________
+                                    @endif
+                                </p>
                             @endif
+
                         </div>
                         <p class="position">Position </p>
                         <div class="info3"><span

@@ -36,22 +36,12 @@
 
                                 if ($overtime->status == 'cancelled' || $overtime->supervisor_status == 'cancelled') {
                                     $status = 'cancelled';
-                                } elseif (
-                                    $overtime->hr_status == 'approved' &&
-                                    $overtime->supervisor_status == 'pending' &&
-                                    $overtime->admin_status == 'Ready for Review'
-                                ) {
-                                    $status = 'waiting';
-                                } elseif (
-                                    $overtime->hr_status == 'approved' &&
-                                    $overtime->supervisor_status == 'approved'
-                                ) {
+                                } elseif ($overtime->hr_status == 'approved') {
                                     $status = 'approved';
-                                } elseif (
-                                    $overtime->hr_status == 'rejected' ||
-                                    $overtime->supervisor_status == 'rejected'
-                                ) {
+                                } elseif ($overtime->hr_status == 'rejected' || $overtime->admin_status == 'rejected') {
                                     $status = 'rejected';
+                                } elseif ($overtime->admin_status == 'Ready for Review') {
+                                    $status = 'waiting';
                                 }
                             @endphp
                             <span class="px-2 py-1 text-xs text-white rounded-lg {{ $status_classes[$status] }}">
@@ -145,25 +135,16 @@
                                                 $overtime->supervisor_status == 'cancelled'
                                             ) {
                                                 $status = 'cancelled';
-                                            } elseif (
-                                                $overtime->hr_status == 'approved' &&
-                                                $overtime->supervisor_status == 'pending' &&
-                                                $overtime->admin_status == 'Ready for Review'
-                                            ) {
-                                                $status = 'waiting';
-                                            } elseif (
-                                                $overtime->hr_status == 'approved' &&
-                                                $overtime->supervisor_status == 'approved'
-                                            ) {
+                                            } elseif ($overtime->hr_status == 'approved') {
                                                 $status = 'approved';
                                             } elseif (
                                                 $overtime->hr_status == 'rejected' ||
-                                                $overtime->supervisor_status == 'rejected' ||
                                                 $overtime->admin_status == 'rejected'
                                             ) {
                                                 $status = 'rejected';
+                                            } elseif ($overtime->admin_status == 'Ready for Review') {
+                                                $status = 'waiting';
                                             }
-
                                         @endphp
                                         <span
                                             class="px-2 py-1 text-xs text-white rounded-lg {{ $status_classes[$status] }}">
@@ -217,7 +198,7 @@
                                                     @endif
 
 
-                                                    @if ($overtime->status === 'pending' || $overtime->status === 'approved')
+                                                    @if ($overtime->hr_status !== 'approved')
                                                         <button type="button"
                                                             onclick="openCancelCtoModal({{ $overtime->id }})"
                                                             class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">

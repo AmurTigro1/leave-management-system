@@ -359,7 +359,7 @@ class HrController extends Controller
 
 
 
-        if ($request->leave_type === 'Vacation Leave' || $request->leave_type === 'Special Privilege Leave') {
+        if ($request->leave_type === 'Vacation Leave') {
 
             if ($request->filled('within_philippines')) {
                 $leaveDetails['Within the Philippines'] = $request->within_philippines;
@@ -371,6 +371,28 @@ class HrController extends Controller
             // Deduct the VL Balance
 
             $user->vacation_leave_balance -= $daysApplied;
+            $user->save();
+
+            // $current_vl_balance  = $user->vacation_leave_balance;
+
+
+        }
+
+
+
+
+        if ( $request->leave_type === 'Special Privilege Leave') {
+
+            if ($request->filled('within_philippines')) {
+                $leaveDetails['Within the Philippines'] = $request->within_philippines;
+            }
+            if ($request->filled('abroad_details')) {
+                $leaveDetails['Abroad'] = $request->abroad_details;
+            }
+
+            // Deduct the VL Balance
+
+            $user->special_privilege_leave -= $daysApplied;
             $user->save();
 
             // $current_vl_balance  = $user->vacation_leave_balance;
@@ -551,9 +573,6 @@ class HrController extends Controller
 
     public function storeCTO(Request $request)
     {
-        $user = auth()->user();
-        $overtimeBalance = $user->overtime_balance;
-
         $ctoHoursMap = [
             'halfday_morning' => 4,
             'halfday_afternoon' => 4,
@@ -580,7 +599,9 @@ class HrController extends Controller
         $request->validate([
             'inclusive_dates' => 'required|string',
             'cto_type' => 'nullable|in:none,halfday_morning,halfday_afternoon,wholeday',
-            'signature' => auth()->user()->signature_path ? 'nullable|file|mimes:jpg,jpeg,png,pdf|max:5120' : 'required|file|mimes:jpg,jpeg,png,pdf|max:5120',
+            'signature' => auth()->user()->signature_path
+                ? 'nullable|file|mimes:jpg,jpeg,png,pdf|max:5120'
+                : 'required|file|mimes:jpg,jpeg,png,pdf|max:5120',
         ]);
 
         if ($totalHours < 4 || $totalHours % 4 !== 0) {
@@ -589,14 +610,9 @@ class HrController extends Controller
             ])->withInput();
         }
 
-        if ($totalHours > $overtimeBalance) {
-            notify()->warning('You cannot apply more than your available COC balance.');
-            return back()->withErrors([
-                'cto_type' => 'You cannot apply more than your available COC balance.'
-            ])->withInput();
-        }
-
+        // Handle signature BEFORE transaction
         $signaturePath = auth()->user()->signature_path;
+
         if ($request->hasFile('signature')) {
             $signatureFile = $request->file('signature');
             $filename = time() . '_' . $signatureFile->getClientOriginalName();
@@ -607,28 +623,130 @@ class HrController extends Controller
                 'public'
             );
 
-
             auth()->user()->update([
                 'signature_path' => $signaturePath
             ]);
         }
 
-        OvertimeRequest::create([
-            'user_id' => auth()->id(),
-            'date_filed' => now(),
-            'working_hours_applied' => $totalHours,
-            'signature' => $signaturePath,
-            'inclusive_dates' => $request->inclusive_dates,
-            'admin_status' => 'pending',
-            'hr_status' => 'pending',
-        ]);
+        // 🔥 SYNC CHECK - SEPARATE TRANSACTION BEFORE MAIN ONE
+        DB::transaction(function () use (&$user) {
 
-        $user->overtime_balance -= $totalHours;
-        $user->save();
+            $user = User::where('id', auth()->id())->lockForUpdate()->first();
 
-        notify()->success('Overtime request submitted successfully! Pending admin review.');
-        return redirect()->back();
+            $actualBalance = $user->cocLogs()
+                ->where('is_expired', false)
+                ->sum('coc_earned');
+
+            if ($user->overtime_balance != $actualBalance) {
+                \Log::warning('Auto-syncing COC balance before request submission', [
+                    'user_id' => $user->id,
+                    'user_name' => $user->name,
+                    'old_balance' => $user->overtime_balance,
+                    'actual_balance' => $actualBalance,
+                ]);
+
+                $user->overtime_balance = $actualBalance;
+                $user->save();
+
+                // Update auth cache immediately
+                auth()->setUser($user->fresh());
+            }
+        });
+
+        // Refresh user after sync transaction
+        $user = User::find(auth()->id());
+
+        // Check balance BEFORE starting main transaction
+        if ($totalHours > $user->overtime_balance) {
+            notify()->error('You cannot apply more than your available COC balance (' . $user->overtime_balance . ' hours).');
+            return back()->withErrors([
+                'cto_type' => 'You cannot apply more than your available COC balance (' . $user->overtime_balance . ' hours).'
+            ])->withInput();
+        }
+
+        // 🔥 MAIN TRANSACTION - For deduction and request creation
+        DB::beginTransaction();
+        try {
+            // Get fresh locked user instance
+            $user = User::where('id', auth()->id())->lockForUpdate()->first();
+
+            // Deduct from COC logs
+            $this->deductOldestCocLog($user, $totalHours);
+
+            // Deduct from user balance
+            $user->overtime_balance -= $totalHours;
+            $user->save();
+
+            // Create request
+            OvertimeRequest::create([
+                'user_id' => $user->id,
+                'date_filed' => now(),
+                'working_hours_applied' => $totalHours,
+                'signature' => $signaturePath,
+                'inclusive_dates' => $request->inclusive_dates,
+                'admin_status' => 'pending',
+                'hr_status' => 'pending',
+            ]);
+
+            DB::commit();
+
+            // Update auth cache with latest data
+            auth()->setUser($user->fresh());
+
+            notify()->success('Overtime request submitted successfully! Pending admin review.');
+            return redirect()->back();
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            notify()->error($e->getMessage());
+            return back()->withErrors(['error' => $e->getMessage()])->withInput();
+        }
     }
+
+    private function deductOldestCocLog($user, int $totalHours): void
+        {
+            // Get COC logs with lock to prevent concurrent modifications
+            $cocLogs = $user->cocLogs()
+                ->where('is_expired', false)
+                ->where('coc_earned', '>', 0)
+                ->orderBy('expires_at', 'asc')
+                ->lockForUpdate()
+                ->get();
+
+            $originalTotalHours = $totalHours; // Keep track for error message
+
+            foreach ($cocLogs as $cocLog) {
+                if ($totalHours <= 0) {
+                    break;
+                }
+
+                $available = $cocLog->coc_earned;
+
+                if ($available <= 0) {
+                    continue;
+                }
+
+                if ($available >= $totalHours) {
+                    // Enough balance in this log
+                    $cocLog->coc_earned -= $totalHours;
+                    $cocLog->consumed += $totalHours;
+                    $totalHours = 0;
+                } else {
+                    // Not enough → consume everything
+                    $cocLog->consumed += $available;
+                    $cocLog->coc_earned = 0;
+                    $totalHours -= $available;
+                }
+
+                $cocLog->save();
+            }
+
+            // If there are still hours remaining, throw exception
+            if ($totalHours > 0) {
+                throw new \Exception('Not enough COC balance to deduct. Required: ' . $originalTotalHours . ' hours, but only ' . ($originalTotalHours - $totalHours) . ' hours available in COC logs.');
+            }
+        }
 
     public function requests()
     {
@@ -868,11 +986,19 @@ public function restore($id)
 
 
 
-    if($leave->leave_type === "Vacation Leave" || $leave->leave_type === "Special Privilege Leave" || $leave->leave_type === "Mandatory Leave" ){
+    if($leave->leave_type === "Vacation Leave"  || $leave->leave_type === "Mandatory Leave" ){
             if($user->vacation_leave_balance < $leave->days_applied){
             return redirect()->back()->with('error', 'Not enough balance.');
         }
         $user->vacation_leave_balance -= $leave->days_applied;
+    }
+
+    else if($leave->leave_type === "Special Privilege Leave"){
+        if($user->special_privilege_leave < $leave->days_applied){
+
+                return redirect()->back()->with('error', 'Not enough balance.');
+            }
+        $user->special_privilege_leave -= $leave->days_applied;
     }
 
 
@@ -954,10 +1080,16 @@ private function restoreLeaveBalance($user, $leave)
             $user->special_leave_benefit += $days;
             break;
 
+        case 'Special Privilege Leave':
+            $user->special_privilege_leave += $days;
+            break;
+
         case 'Special Emergency Leave':
             $user->special_emergency_leave += $days;
             break;
     }
+
+
 
     $user->save();
 }
@@ -1363,12 +1495,15 @@ public function deleteLeave($id) {
         }
 
         elseif ($hr_status === 'rejected'){
-              if($leave->leave_type === "Vacation Leave" || $leave->leave_type === "Special Privilege Leave" || $leave->leave_type === "Mandatory Leave" )
+              if($leave->leave_type === "Vacation Leave" || $leave->leave_type === "Mandatory Leave" )
                  $user->vacation_leave_balance += $leave->days_applied;
 
+              elseif($leave->leave_type === "Special Privilege Leave"){
+                $user->special_privilege_leave += $leave->days_applied;
+              }
 
-            elseif ($leave->leave_type === "Sick Leave")
-                $user->sick_leave_balance += $leave->days_applied;
+             elseif ($leave->leave_type === "Sick Leave")
+                    $user->sick_leave_balance += $leave->days_applied;
         }
 
         $leave->update($updateData);
@@ -1488,7 +1623,7 @@ public function deleteLeave($id) {
         $hours = $cto->working_hours_applied;
 
         // Mark as deducted
-        $cto->is_balance_deducted = true;
+        // $cto->is_balance_deducted = true;
         // Only deduct if not already deducted
         // if (!$cto->is_balance_deducted) {
         //     if ($user->overtime_balance >= $hours) {
@@ -1522,18 +1657,19 @@ public function deleteLeave($id) {
 
     else if($hrStatus === 'rejected'){
         // dd($user);
-
+        $this->restoreNewestCocLog($user, $cto->working_hours_applied);
         $user->overtime_balance += $cto->working_hours_applied;
         $user->save();
     }
 
     $cto->update([
         'hr_status' => $hrStatus,
-        'supervisor_status' => $supervisorStatus,
+        // 'admin_status' => $hrStatus,
+        // 'supervisor_status' => $supervisorStatus,
         'status' => $status,
         'disapproval_reason' => $request->disapproval_reason,
         'hr_officer_id' => auth()->id(),
-        'is_balance_deducted' => $cto->is_balance_deducted ?? false, // update value
+        // 'is_balance_deducted' => $cto->is_balance_deducted ?? false,
     ]);
 
     $color = $status === 'approved' ? 'text-green-500' : 'text-red-500';
@@ -2039,23 +2175,66 @@ public function deleteLeave($id) {
 
     public function cancelCTO($id)
     {
-        $CTO = OvertimeRequest::findOrFail($id);
+        $cto = OvertimeRequest::findOrFail($id);
+        $user = Auth::user();
 
-        if ($CTO->status == 'cancelled') {
+        if ($cto->status === 'cancelled') {
             notify()->warning('CTO request is already cancelled.');
             return redirect()->back();
         }
 
-        $user = Auth::user();
+        if ($cto->status === 'approved' && $cto->hr_status === 'approved' && $cto->supervisor_status === 'approved') {
+            $user->increment('overtime_balance', $cto->working_hours_applied);
+        }
 
-        $user->increment('overtime_balance', $CTO->working_hours_applied);
+        $this->restoreNewestCocLog($user, $cto->working_hours_applied);
+        $user->overtime_balance += $cto->working_hours_applied;
+        $user->save();
 
-        $CTO->status = 'cancelled';
-        $CTO->save();
+        $cto->status = 'cancelled';
+        $cto->save();
 
         notify()->success('CTO request has been cancelled and balance restored.');
-
         return redirect()->back();
+    }
+
+    private function restoreNewestCocLog($user, int $totalHours): void
+    {
+        $cocLogs = $user->cocLogs()
+            ->where('consumed', '>', 0)
+            ->orderBy('expires_at', 'desc') // NEWEST first
+            ->lockForUpdate()
+            ->get();
+
+        foreach ($cocLogs as $cocLog) {
+            if ($totalHours <= 0) {
+                break;
+            }
+
+            $restorable = $cocLog->consumed;
+
+            if ($restorable <= 0) {
+                continue;
+            }
+
+            if ($restorable >= $totalHours) {
+                // Can fully restore here
+                $cocLog->consumed -= $totalHours;
+                $cocLog->coc_earned += $totalHours;
+                $totalHours = 0;
+            } else {
+                // Restore everything and continue
+                $cocLog->coc_earned += $restorable;
+                $cocLog->consumed = 0;
+                $totalHours -= $restorable;
+            }
+
+            $cocLog->save();
+        }
+
+        if ($totalHours > 0) {
+            throw new \Exception('Unable to fully restore COC balance.');
+        }
     }
 
     public function restoreCTO($id)
@@ -2068,11 +2247,23 @@ public function deleteLeave($id) {
             return redirect()->back();
         }
 
-        $user->decrement('overtime_balance', $CTO->working_hours_applied);
+        if ($CTO->status === 'cancelled' && $CTO->hr_status === 'approved') {
+            $user->decrement('overtime_balance', $CTO->working_hours_applied);
+            $CTO->status = 'approved';
+        } else {
+            $CTO->status = 'pending';
+        }
 
-        $CTO->status = 'pending';
+        if($CTO->working_hours_applied > $user->overtime_balance){
+            notify()->warning('Your CTO Balance is not enough.');
+            return redirect()->back();
+        }
+
+        $this->deductOldestCocLog($user, $CTO->working_hours_applied);
+        $user->overtime_balance -= $CTO->working_hours_applied;
+        $user->save();
+
         $CTO->save();
-
         notify()->success('CTO request has been restored and balance deducted.');
 
         return redirect()->back();
