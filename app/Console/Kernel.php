@@ -13,8 +13,8 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule): void
     {
         // Define your scheduled tasks here
-        $schedule->command('leave:update-balance')
-                 ->monthlyOn(1, '00:00'); // Runs at midnight on the 1st of every month
+        // $schedule->command('leave:update-balance')
+        //          ->monthlyOn(1, '00:00'); // Runs at midnight on the 1st of every month
     }
 
     /**
@@ -23,16 +23,16 @@ class Kernel extends ConsoleKernel
     protected function commands(): void
     {
         $this->load(__DIR__.'/Commands');
-    
+
         // Manually register the command if needed
-        $this->app->singleton('command.leave.update-balances', function () {
-            return new \App\Console\Commands\UpdateLeaveBalance;
-        });
-    
-        $this->commands([
-            'command.leave.update-balance',
-        ]);
-    
+        // $this->app->singleton('command.leave.update-balances', function () {
+        //     return new \App\Console\Commands\UpdateLeaveBalance;
+        // });
+
+        // $this->commands([
+        //     'command.leave.update-balance',
+        // ]);
+
         require base_path('routes/console.php');
     }
 }

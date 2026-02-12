@@ -27,8 +27,13 @@ class OvertimeRequest extends Model
         'hr_status',
         'admin_status',
         'status',
+        'cto_type',
+        'total_earned_cocs',
+        'used_cocs',
+        'remaining_cocs',
+        'coc_remarks'
     ];
-    
+
     /**
      * Get the user who filed the overtime request.
      */

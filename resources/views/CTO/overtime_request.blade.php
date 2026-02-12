@@ -43,6 +43,7 @@
                         <template x-for="blankDay in blankDays">
                             <div class="py-1"></div>
                         </template>
+
                         <template x-for="day in daysInMonth" :key="day">
                             <div @mousedown="!isPastDate(day) && startSelection(day)"
                                 @mouseover="!isPastDate(day) && dragSelection(day)" @mouseup="endSelection()"
@@ -55,6 +56,7 @@
                                     'bg-green-600': isAppliedDate(day),
                                     'bg-yellow-600': isHoliday(day)
                                 }">
+                                {{-- <span x-text="getAppliedInfoByDate(day).wholeDay"></span> --}}
                                 <span class="absolute top-1 right-2 text-md sm:text-md md:text-xl font-bold">
                                     <span x-text="day"></span>
                                 </span>
@@ -112,6 +114,38 @@
                     this.calculateDays();
                 },
 
+                getAppliedInfoByDate(day) {
+
+                    const dateString =
+                        `${this.year}-${String(this.month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+
+                    let info = {
+                        wholeDay: false,
+                        halfMorning: false,
+                        halfAfternoon: false
+                    };
+
+                    this.appliedDates.forEach(req => {
+                        const datesArray = req.inclusive_dates
+                            .split(',')
+                            .map(d => d.trim());
+
+
+                        if (datesArray.includes(dateString)) {
+                            if (req.cto_type === 'none') info.wholeDay = true;
+                            if (req.cto_type === 'halfday_morning') info.halfMorning = true;
+                            if (req.cto_type === 'halfday_afternoon') info.halfAfternoon = true;
+                        }
+                    });
+
+                    return info;
+                },
+
+                isWholeDayApplied(day) {
+                    return this.getAppliedInfoByDate(day).wholeDay;
+                },
+
+
                 calculateDays() {
                     let firstDayOfMonth = new Date(this.year, this.month).getDay();
                     let daysInMonth = new Date(this.year, this.month + 1, 0).getDate();
@@ -142,7 +176,8 @@
                         return true;
                     }
 
-                    return this.isAppliedDate(day);
+                    // return this.isAppliedDate(day);
+                    return this.isWholeDayApplied(day);
                 },
 
                 isAppliedDate(day) {
@@ -156,6 +191,39 @@
                         return datesArray.some(d => d === dateString);
                     });
                 },
+
+                getAppliedInfoByDate(day) {
+                    const dateString =
+                        `${this.year}-${String(this.month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+
+                    let info = {
+                        wholeDay: false,
+                        halfMorning: false,
+                        halfAfternoon: false
+                    };
+
+                    this.appliedDates.forEach(req => {
+                        const datesArray = req.inclusive_dates.split(', ');
+
+                        if (datesArray.includes(dateString)) {
+                            if (req.cto_type === 'wholeday') info.wholeDay = true;
+                            if (req.cto_type === 'halfday_morning') info.halfMorning = true;
+                            if (req.cto_type === 'halfday_afternoon') info.halfAfternoon = true;
+                        }
+                    });
+
+                    return info;
+                },
+
+                isWholeDayApplied(day) {
+                    if (this.getAppliedInfoByDate(day).halfMorning && this.getAppliedInfoByDate(day)
+                        .halfMorning) {
+                        return true
+                    }
+
+                    return this.getAppliedInfoByDate(day).wholeDay;
+                },
+
 
                 isHoliday(day) {
                     const date = new Date(this.year, this.month, day);

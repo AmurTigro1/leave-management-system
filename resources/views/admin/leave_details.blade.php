@@ -40,6 +40,10 @@
                 <div class="bg-blue-600 text-white rounded-lg p-2 text-[10px] w-[124px] text-center mr-2">Special Energency
                     Leave</div>
             </div>
+            <div class="flex justify-between items-center">
+                <div class="bg-blue-600 text-white rounded-lg p-2 text-[10px] w-[124px] text-center mr-2">Wellness
+                    Leave</div>
+            </div>
             <br>
             <div class="flex justify-between items-center">
                 <div class="bg-gray-300 text-black rounded-lg p-2 text-[10px] w-[124px] text-center mr-2">
@@ -64,6 +68,10 @@
                     {{ $leave->user->special_leave_benefit }} days</div>
                 <div class="bg-gray-300 text-black rounded-lg p-2 text-[10px] w-[124px] text-center mr-2">
                     {{ $leave->user->special_emergency_leave }} days</div>
+            </div>
+            <div class="flex justify-between items-center">
+                <div class="bg-gray-300 text-black rounded-lg p-2 text-[10px] w-[124px] text-center mr-2">
+                    {{ $leave->user->wellness_leave_balance }} days</div>
             </div>
             <h2 class="text-2xl font-bold">Application Request</h2>
             <div class="flex justify-between items-start gap-4">
