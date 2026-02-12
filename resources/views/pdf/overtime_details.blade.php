@@ -165,10 +165,11 @@
                     </thead>
                     <tbody>
                         <tr>
-                            <td>{{ $overtime->user->overtime_balance + $overtime->working_hours_applied }} hours</td>
+                            <td>{{ $overtime->total_earned_cocs ?? $overtime->user->overtime_balance + $overtime->working_hours_applied }}
+                                hours</td>
                             <td>{{ $formatted_dates }}</td>
-                            <td>{{ $overtime->working_hours_applied }} hours</td>
-                            <td>{{ $overtime->user->overtime_balance }} hours</td>
+                            <td>{{ $overtime->used_cocs ?? $overtime->working_hours_applied }} hours</td>
+                            <td>{{ $overtime->remaining_cocs ?? $overtime->user->overtime_balance }} hours</td>
                             <td></td>
                         </tr>
                         <tr>

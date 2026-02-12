@@ -30,8 +30,8 @@ class UpdateLeaveBalance extends Command
                $users = User::all();
 
                foreach ($users as $user) {
-                   $user->vacation_leave_balance += 1.5;
-                   $user->sick_leave_balance += 1.5;
+                   $user->vacation_leave_balance += 1.250;
+                   $user->sick_leave_balance += 1.250;
                    $user->save();
                }
 

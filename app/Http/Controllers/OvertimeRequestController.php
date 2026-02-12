@@ -22,8 +22,10 @@ class OvertimeRequestController extends Controller
         $overtimereq = OvertimeRequest::where('user_id', auth()->id())->get();
 
         $appliedDates = OvertimeRequest::where('user_id', auth()->id())
-                    ->get('inclusive_dates');
+            ->whereIn('status', ['pending', 'approved']) // ❗ ignore cancelled/rejected
+            ->get(['inclusive_dates', 'cto_type']);
         $holidays = Holiday::select('date')->get();
+
 
         return view('CTO.overtime_request', compact('overtimereq', 'appliedDates', 'holidays'));
     }
@@ -44,6 +46,7 @@ class OvertimeRequestController extends Controller
 
     public function store(Request $request)
 {
+
     $ctoHoursMap = [
         'halfday_morning' => 4,
         'halfday_afternoon' => 4,
@@ -157,6 +160,10 @@ class OvertimeRequestController extends Controller
             'inclusive_dates' => $request->inclusive_dates,
             'admin_status' => 'pending',
             'hr_status' => 'pending',
+            'cto_type' => $request->cto_type,
+            'total_earned_cocs' => $user->overtime_balance + $totalHours,
+            'used_cocs' => $totalHours,
+            'remaining_cocs' => $user->overtime_balance
         ]);
 
         DB::commit();

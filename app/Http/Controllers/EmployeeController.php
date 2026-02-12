@@ -281,7 +281,8 @@ class EmployeeController extends Controller
         }
     }
 
-    $leaveTypeForBalance = $request->leave_type === 'Mandatory Leave' ? 'Vacation Leave' : $request->leave_type;
+    // $leaveTypeForBalance = $request->leave_type === 'Mandatory Leave' ? 'Vacation Leave' : $request->leave_type;
+    $leaveTypeForBalance = $request->leave_type;
 
 
     if ($leaveTypeForBalance === 'Sick Leave') {
@@ -301,14 +302,14 @@ class EmployeeController extends Controller
             'Special Leave Benefits for Women Leave' => $user->special_leave_benefit,
             'Special Emergency Leave' => $user->special_emergency_leave,
             'Wellness Leave' => $user->wellness_leave_balance,
+            'Mandatory Leave' => $user->mandatory_leave_balance,
             default => 0,
         };
     }
 
-    // dd($availableLeaveBalance);
-
 
     if($availableLeaveBalance < $request->days_applied){
+
         return redirect()->back()->withErrors(['You do not have enough Leave balance for this request.']);
     }
 
@@ -353,6 +354,19 @@ class EmployeeController extends Controller
 
 
     }
+
+    if ($request->leave_type === 'Mandatory Leave') {
+
+        if($user->vacation_leave_balance < $daysApplied){
+            return redirect()->back()->withErrors(['You do not have enough Leave balance for this request.']);
+        }
+
+        $user->vacation_leave_balance -= $daysApplied;
+        $user->mandatory_leave_balance -= $daysApplied;
+        $user->save();
+
+    }
+
 
 
     if ( $request->leave_type === 'Special Privilege Leave') {
@@ -441,26 +455,26 @@ class EmployeeController extends Controller
     }
 
 
-    if ($request->leave_type === 'Mandatory Leave') {
-        $currentYear = Carbon::now()->year;
+    // if ($request->leave_type === 'Mandatory Leave') {
+    //     $currentYear = Carbon::now()->year;
 
-        $mandatoryLeaveUsed = Leave::where('user_id', $user->id)
-            ->where('leave_type', 'Mandatory Leave')
-            ->whereYear('start_date', $currentYear)
-            ->whereIn('status', ['approved'])
-            ->sum('days_applied');
+    //     $mandatoryLeaveUsed = Leave::where('user_id', $user->id)
+    //         ->where('leave_type', 'Mandatory Leave')
+    //         ->whereYear('start_date', $currentYear)
+    //         ->whereIn('status', ['approved'])
+    //         ->sum('days_applied');
 
-        $remainingMandatoryLeave = 5 - $mandatoryLeaveUsed;
+    //     $remainingMandatoryLeave = 5 - $mandatoryLeaveUsed;
 
-        if ($daysApplied > $remainingMandatoryLeave) {
-            return redirect()->back()->withErrors(['end_date' => 'You have exceeded the 5-day Mandatory Leave for the year.']);
-        }
+    //     if ($daysApplied > $remainingMandatoryLeave) {
+    //         return redirect()->back()->withErrors(['end_date' => 'You have exceeded the 5-day Mandatory Leave for the year.']);
+    //     }
 
-        //Deduct the VL Balance
-        $user->vacation_leave_balance = $user->vacation_leave_balance - $daysApplied;
-        $user->save();
 
-    }
+    //     $user->vacation_leave_balance = $user->vacation_leave_balance - $daysApplied;
+    //     $user->save();
+
+    // }
 
 
 

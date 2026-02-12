@@ -151,19 +151,21 @@ class AdminController extends Controller
             ];
             break;
         case 'Wellness Leave':
+
             $leaveValidationRules = [
                 'days_applied' => 'required|integer|max:3',
-                ];
+            ];
 
-                if ($request->wellness_leave_type === 'sick') {
-                    $leaveValidationRules = array_merge($leaveValidationRules, [
-                        'in_hospital_details' => 'required_without:out_patient_details|string|nullable',
-                        'out_patient_details' => 'required_without:in_hospital_details|string|nullable',
-                        'leave_files' => $this->isDocumentRequired($request) ? 'required|array' : 'array',
-                        'leave_files.*' => 'file|mimes:pdf,jpg,jpeg,png|max:1048',
-                    ]);
-                }
-                break;
+            if ($request->wellness_leave_type === 'sick') {
+                $leaveValidationRules = array_merge($leaveValidationRules, [
+                    'in_hospital_details' => 'required_without:out_patient_details|string|nullable',
+                    'out_patient_details' => 'required_without:in_hospital_details|string|nullable',
+                    'leave_files' => $this->isDocumentRequired($request) ? 'required|array' : 'array',
+                    'leave_files.*' => 'file|mimes:pdf,jpg,jpeg,png|max:1048',
+                ]);
+            }
+
+            break;
 
         case 'Others':
             $leaveValidationRules = [
@@ -270,7 +272,8 @@ class AdminController extends Controller
         }
     }
 
-    $leaveTypeForBalance = $request->leave_type === 'Mandatory Leave' ? 'Vacation Leave' : $request->leave_type;
+    // $leaveTypeForBalance = $request->leave_type === 'Mandatory Leave' ? 'Vacation Leave' : $request->leave_type;
+    $leaveTypeForBalance = $request->leave_type;
 
 
     if ($leaveTypeForBalance === 'Sick Leave') {
@@ -290,14 +293,14 @@ class AdminController extends Controller
             'Special Leave Benefits for Women Leave' => $user->special_leave_benefit,
             'Special Emergency Leave' => $user->special_emergency_leave,
             'Wellness Leave' => $user->wellness_leave_balance,
+            'Mandatory Leave' => $user->mandatory_leave_balance,
             default => 0,
         };
     }
 
-    // dd($availableLeaveBalance);
-
 
     if($availableLeaveBalance < $request->days_applied){
+
         return redirect()->back()->withErrors(['You do not have enough Leave balance for this request.']);
     }
 
@@ -313,15 +316,12 @@ class AdminController extends Controller
     }
 
     $leaveFiles = [];
-
     if ($request->hasFile('leave_files')) {
         foreach ($request->file('leave_files') as $file) {
             $path = $file->store('leave_files', 'public');
             $leaveFiles[] = $path;
         }
     }
-
-
 
     $leaveDetails = [];
 
@@ -346,24 +346,40 @@ class AdminController extends Controller
 
     }
 
+    if ($request->leave_type === 'Mandatory Leave') {
+
+        if($user->vacation_leave_balance < $daysApplied){
+            return redirect()->back()->withErrors(['You do not have enough Leave balance for this request.']);
+        }
+
+        $user->vacation_leave_balance -= $daysApplied;
+        $user->mandatory_leave_balance -= $daysApplied;
+        $user->save();
+
+    }
+
+
+
     if ( $request->leave_type === 'Special Privilege Leave') {
 
-            if ($request->filled('within_philippines')) {
-                $leaveDetails['Within the Philippines'] = $request->within_philippines;
-            }
-            if ($request->filled('abroad_details')) {
-                $leaveDetails['Abroad'] = $request->abroad_details;
-            }
-
-            // Deduct the VL Balance
-
-            $user->special_privilege_leave -= $daysApplied;
-            $user->save();
-
-            // $current_vl_balance  = $user->vacation_leave_balance;
-
-
+        if ($request->filled('within_philippines')) {
+            $leaveDetails['Within the Philippines'] = $request->within_philippines;
         }
+        if ($request->filled('abroad_details')) {
+            $leaveDetails['Abroad'] = $request->abroad_details;
+        }
+
+        // Deduct the VL Balance
+
+        $user->special_privilege_leave -= $daysApplied;
+        $user->save();
+
+        // $current_vl_balance  = $user->vacation_leave_balance;
+
+
+    }
+
+
 
     if ($request->leave_type === 'Sick Leave') {
         if ($request->has('in_hospital')) {
@@ -430,26 +446,26 @@ class AdminController extends Controller
     }
 
 
-    if ($request->leave_type === 'Mandatory Leave') {
-        $currentYear = Carbon::now()->year;
+    // if ($request->leave_type === 'Mandatory Leave') {
+    //     $currentYear = Carbon::now()->year;
 
-        $mandatoryLeaveUsed = Leave::where('user_id', $user->id)
-            ->where('leave_type', 'Mandatory Leave')
-            ->whereYear('start_date', $currentYear)
-            ->whereIn('status', ['approved'])
-            ->sum('days_applied');
+    //     $mandatoryLeaveUsed = Leave::where('user_id', $user->id)
+    //         ->where('leave_type', 'Mandatory Leave')
+    //         ->whereYear('start_date', $currentYear)
+    //         ->whereIn('status', ['approved'])
+    //         ->sum('days_applied');
 
-        $remainingMandatoryLeave = 5 - $mandatoryLeaveUsed;
+    //     $remainingMandatoryLeave = 5 - $mandatoryLeaveUsed;
 
-        if ($daysApplied > $remainingMandatoryLeave) {
-            return redirect()->back()->withErrors(['end_date' => 'You have exceeded the 5-day Mandatory Leave for the year.']);
-        }
+    //     if ($daysApplied > $remainingMandatoryLeave) {
+    //         return redirect()->back()->withErrors(['end_date' => 'You have exceeded the 5-day Mandatory Leave for the year.']);
+    //     }
 
-        //Deduct the VL Balance
-        $user->vacation_leave_balance = $user->vacation_leave_balance - $daysApplied;
-        $user->save();
 
-    }
+    //     $user->vacation_leave_balance = $user->vacation_leave_balance - $daysApplied;
+    //     $user->save();
+
+    // }
 
 
 
@@ -651,6 +667,9 @@ class AdminController extends Controller
             'inclusive_dates' => $request->inclusive_dates,
             'admin_status' => 'pending',
             'hr_status' => 'pending',
+            'total_earned_cocs' => $user->overtime_balance + $totalHours,
+            'used_cocs' => $totalHours,
+            'remaining_cocs' => $user->overtime_balance
         ]);
 
         DB::commit();
