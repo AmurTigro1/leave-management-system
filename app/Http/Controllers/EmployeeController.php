@@ -503,8 +503,25 @@ class EmployeeController extends Controller
 
         }
 
-    $before_vacation_balance = $user->vacation_leave_balance +  $daysApplied;
-    $before_sick_leave_balance = $user->sick_leave_balance +  $daysApplied;
+    if($request->leave_type == 'Sick Leave'){
+            $before_sick_leave_balance = $user->sick_leave_balance +  $daysApplied;
+            $before_vacation_balance = $user->vacation_leave_balance;
+    } else if($request->leave_type == 'Vacation Leave' || $request->leave_type == 'Mandatory Leave'){
+            $before_vacation_balance = $user->vacation_leave_balance +  $daysApplied;
+            $before_sick_leave_balance = $user->sick_leave_balance;
+    } else{
+        $before_sick_leave_balance = $user->sick_leave_balance;
+        $before_vacation_balance = $user->vacation_leave_balance;
+    }
+
+    // if($request->leave_type == 'Vacation Leave' || $request->leave_type == 'Mandatory Leave'){
+    //         $before_vacation_balance = $user->vacation_leave_balance +  $daysApplied;
+    // }else{
+    //         $before_sick_leave_balance = $user->sick_leave_balance +  $daysApplied;
+    // }
+
+    // $before_vacation_balance = $user->vacation_leave_balance +  $daysApplied;
+
 
 
 
