@@ -372,7 +372,7 @@
                             </tr>
                             <tr>
                                 <td>Less this application</td>
-                                @if (in_array($leave->leave_type, ['Vacation Leave', 'Mandatory Leave', 'Special Privilege Leave']))
+                                @if (in_array($leave->leave_type, ['Vacation Leave', 'Mandatory Leave']))
                                     <td>{{ $leave->days_applied }}</td>
                                 @else
                                     <td>0</td>
@@ -387,7 +387,7 @@
                             <tr>
                                 <td>Balance</td>
                                 <td>
-                                    @if (in_array($leave->leave_type, ['Vacation Leave', 'Mandatory Leave', 'Special Privilege Leave']))
+                                    @if (in_array($leave->leave_type, ['Vacation Leave', 'Mandatory Leave']))
                                         {{ $leave->vacation_balance_before - $leave->days_applied }}
                                     @else
                                         {{ $leave->vacation_balance_before }}
