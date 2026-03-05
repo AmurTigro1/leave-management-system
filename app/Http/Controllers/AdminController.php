@@ -1428,13 +1428,17 @@ public function deleteLeave($id) {
 
     // dd(($status));
 
-    $user->notify(new LeaveStatusNotification($leave,
+    if($leave->status !== 'pending'){
+        $user->notify(new LeaveStatusNotification($leave,
             "Your leave request has been <span class='" .
             ($leave->status === 'pending' ? 'text-green-500' : 'text-red-500') . "'>" .
             ($leave->status === 'pending' ? 'approved' : 'returned' ) . "</span> by the Admin.",
             $leave,
             'leave'
         ));
+    }
+
+
 
         if($admin_status === 'rejected')
         {
