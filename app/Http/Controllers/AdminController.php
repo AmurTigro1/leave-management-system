@@ -1426,10 +1426,12 @@ public function deleteLeave($id) {
         'admin_id' => Auth::id(),
     ]);
 
+    // dd(($status));
+
     $user->notify(new LeaveStatusNotification($leave,
             "Your leave request has been <span class='" .
-            ($leave->status === 'approved' ? 'text-green-500' : 'text-red-500') . "'>" .
-            ($leave->status === 'approved' ? 'approved' : 'returned' ) . "</span> by the Admin.",
+            ($leave->status === 'pending' ? 'text-green-500' : 'text-red-500') . "'>" .
+            ($leave->status === 'pending' ? 'approved' : 'returned' ) . "</span> by the Admin.",
             $leave,
             'leave'
         ));
