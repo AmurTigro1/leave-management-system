@@ -47,6 +47,7 @@ class OvertimeRequestController extends Controller
     public function store(Request $request)
 {
 
+    //CHANGE 4 to 5 and 8 to 10
     $ctoHoursMap = [
         'halfday_morning' => 4,
         'halfday_afternoon' => 4,
@@ -78,11 +79,12 @@ class OvertimeRequestController extends Controller
             : 'required|file|mimes:jpg,jpeg,png,pdf|max:5120',
     ]);
 
-    if ($totalHours < 4 || $totalHours % 4 !== 0) {
-        return back()->withErrors([
-            'cto_type' => 'Working hours must be a multiple of 4 and at least 4 hours.'
-        ])->withInput();
-    }
+    //COMMENT ME
+    // if ($totalHours < 4 || $totalHours % 4 !== 0) {
+    //     return back()->withErrors([
+    //         'cto_type' => 'Working hours must be a multiple of 4 and at least 4 hours.'
+    //     ])->withInput();
+    // }
 
     // Handle signature BEFORE transaction
     $signaturePath = auth()->user()->signature_path;
