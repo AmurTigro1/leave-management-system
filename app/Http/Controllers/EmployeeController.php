@@ -256,6 +256,10 @@ class EmployeeController extends Controller
 
     if (in_array($request->leave_type, $inclusiveLeaveTypes)) {
         $daysApplied = $startDate->diffInDays($endDate) + 1;
+        // ADDING 0.25 TO LEAVE APPLICATIONS
+        // $temp = $daysApplied * 0.25;
+        // $daysApplied = $temp + $daysApplied;
+        //-----------------------------------
     } else {
         $daysApplied = 0;
         $currentDate = $startDate->copy();
@@ -273,12 +277,21 @@ class EmployeeController extends Controller
 
             if ($isValidStartDate) {
                 $daysApplied = 1;
+                // ADDING 0.25 TO LEAVE APPLICATIONS
+                // $temp = $daysApplied * 0.25;
+                // $daysApplied = $temp + $daysApplied;
+                //-----------------------------------
             } else {
                 return redirect()->back()->withErrors([
                     'start_date' => 'Your selected dates only include weekends/holidays which are not counted for this leave type.'
                 ]);
             }
         }
+
+        // ADDING 0.25 TO LEAVE APPLICATIONS
+        // $temp = $daysApplied * 0.25;
+        // $daysApplied = $temp + $daysApplied;
+        //-----------------------------------
     }
 
     // $leaveTypeForBalance = $request->leave_type === 'Mandatory Leave' ? 'Vacation Leave' : $request->leave_type;

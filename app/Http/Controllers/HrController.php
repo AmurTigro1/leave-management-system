@@ -279,6 +279,10 @@ class HrController extends Controller
 
     if (in_array($request->leave_type, $inclusiveLeaveTypes)) {
         $daysApplied = $startDate->diffInDays($endDate) + 1;
+        // ADDING 0.25 TO LEAVE APPLICATIONS
+        // $temp = $daysApplied * 0.25;
+        // $daysApplied = $temp + $daysApplied;
+        //-----------------------------------
     } else {
         $daysApplied = 0;
         $currentDate = $startDate->copy();
@@ -296,12 +300,21 @@ class HrController extends Controller
 
             if ($isValidStartDate) {
                 $daysApplied = 1;
+                // ADDING 0.25 TO LEAVE APPLICATIONS
+                // $temp = $daysApplied * 0.25;
+                // $daysApplied = $temp + $daysApplied;
+                //-----------------------------------
             } else {
                 return redirect()->back()->withErrors([
                     'start_date' => 'Your selected dates only include weekends/holidays which are not counted for this leave type.'
                 ]);
             }
         }
+
+        // ADDING 0.25 TO LEAVE APPLICATIONS
+        // $temp = $daysApplied * 0.25;
+        // $daysApplied = $temp + $daysApplied;
+        //-----------------------------------
     }
 
     // $leaveTypeForBalance = $request->leave_type === 'Mandatory Leave' ? 'Vacation Leave' : $request->leave_type;
@@ -597,6 +610,7 @@ class HrController extends Controller
 
     public function storeCTO(Request $request)
     {
+        //CHANGE 4 to 5 and 8 to 10
         $ctoHoursMap = [
             'halfday_morning' => 4,
             'halfday_afternoon' => 4,
@@ -628,11 +642,11 @@ class HrController extends Controller
                 : 'required|file|mimes:jpg,jpeg,png,pdf|max:5120',
         ]);
 
-        if ($totalHours < 4 || $totalHours % 4 !== 0) {
-            return back()->withErrors([
-                'cto_type' => 'Working hours must be a multiple of 4 and at least 4 hours.'
-            ])->withInput();
-        }
+        // if ($totalHours < 4 || $totalHours % 4 !== 0) {
+        //     return back()->withErrors([
+        //         'cto_type' => 'Working hours must be a multiple of 4 and at least 4 hours.'
+        //     ])->withInput();
+        // }
 
         // Handle signature BEFORE transaction
         $signaturePath = auth()->user()->signature_path;
