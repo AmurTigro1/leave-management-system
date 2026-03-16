@@ -257,8 +257,8 @@ class EmployeeController extends Controller
     if (in_array($request->leave_type, $inclusiveLeaveTypes)) {
         $daysApplied = $startDate->diffInDays($endDate) + 1;
         // ADDING 0.25 TO LEAVE APPLICATIONS
-        // $temp = $daysApplied * 0.25;
-        // $daysApplied = $temp + $daysApplied;
+        $temp = $daysApplied * 0.25;
+        $daysApplied = $temp + $daysApplied;
         //-----------------------------------
     } else {
         $daysApplied = 0;
@@ -278,8 +278,8 @@ class EmployeeController extends Controller
             if ($isValidStartDate) {
                 $daysApplied = 1;
                 // ADDING 0.25 TO LEAVE APPLICATIONS
-                // $temp = $daysApplied * 0.25;
-                // $daysApplied = $temp + $daysApplied;
+                $temp = $daysApplied * 0.25;
+                $daysApplied = $temp + $daysApplied;
                 //-----------------------------------
             } else {
                 return redirect()->back()->withErrors([
@@ -289,8 +289,8 @@ class EmployeeController extends Controller
         }
 
         // ADDING 0.25 TO LEAVE APPLICATIONS
-        // $temp = $daysApplied * 0.25;
-        // $daysApplied = $temp + $daysApplied;
+        $temp = $daysApplied * 0.25;
+        $daysApplied = $temp + $daysApplied;
         //-----------------------------------
     }
 
@@ -321,7 +321,7 @@ class EmployeeController extends Controller
     }
 
 
-    if($availableLeaveBalance < $request->days_applied){
+    if($availableLeaveBalance < $daysApplied){
 
         return redirect()->back()->withErrors(['You do not have enough Leave balance for this request.']);
     }
