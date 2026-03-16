@@ -248,8 +248,8 @@ class AdminController extends Controller
     if (in_array($request->leave_type, $inclusiveLeaveTypes)) {
         $daysApplied = $startDate->diffInDays($endDate) + 1;
         // ADDING 0.25 TO LEAVE APPLICATIONS
-        // $temp = $daysApplied * 0.25;
-        // $daysApplied = $temp + $daysApplied;
+        $temp = $daysApplied * 0.25;
+        $daysApplied = $temp + $daysApplied;
         //-----------------------------------
     } else {
         $daysApplied = 0;
@@ -269,8 +269,8 @@ class AdminController extends Controller
             if ($isValidStartDate) {
                 $daysApplied = 1;
                 // ADDING 0.25 TO LEAVE APPLICATIONS
-                // $temp = $daysApplied * 0.25;
-                // $daysApplied = $temp + $daysApplied;
+                $temp = $daysApplied * 0.25;
+                $daysApplied = $temp + $daysApplied;
                 //-----------------------------------
             } else {
                 return redirect()->back()->withErrors([
@@ -280,8 +280,8 @@ class AdminController extends Controller
         }
 
             // ADDING 0.25 TO LEAVE APPLICATIONS
-            // $temp = $daysApplied * 0.25;
-            // $daysApplied = $temp + $daysApplied;
+            $temp = $daysApplied * 0.25;
+            $daysApplied = $temp + $daysApplied;
             //-----------------------------------
     }
 
@@ -312,7 +312,7 @@ class AdminController extends Controller
     }
 
 
-    if($availableLeaveBalance < $request->days_applied){
+    if($availableLeaveBalance < $daysApplied){
 
         return redirect()->back()->withErrors(['You do not have enough Leave balance for this request.']);
     }
@@ -580,9 +580,9 @@ class AdminController extends Controller
 {
     //CHANGE 4 to 5 and 8 to 10
     $ctoHoursMap = [
-        'halfday_morning' => 4,
-        'halfday_afternoon' => 4,
-        'wholeday' => 8,
+        'halfday_morning' => 5,
+        'halfday_afternoon' => 5,
+        'wholeday' => 10,
     ];
 
     $datesArray = explode(', ', $request->inclusive_dates);
