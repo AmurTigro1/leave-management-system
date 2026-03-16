@@ -86,7 +86,7 @@
                     <p class="info2"><span class="leave-type"></span>Wellness Leave<span class="additional-detail">
                             (CSC MC No. 01, s. 2026)</span></p>
                     <p class="other-option">Others:</p>
-                    <p class="other-opt">______________________________</p>
+                    <p class="other-option">______________________________</p>
                 </div>
                 <div class="middle-part2">
                     <p class="leave-info2">6.B DETAILS OF LEAVE</p>
